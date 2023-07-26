@@ -1,0 +1,13 @@
+#
+# Directories
+#
+.vscode/
+.history/
+dist/
+node_modules/
+
+#
+# Files
+#
+CHANGELOG.md
+package*.json

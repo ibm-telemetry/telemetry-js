@@ -30,27 +30,27 @@ const beginningKeys = [
 const endKeys = ['scripts', 'dependencies', 'peerDependencies', 'devDependencies']
 
 function sortTopLevelKeys(packageJson) {
-  const copy = { ...packageJson }
   const beginning = {}
+  const middle = {}
   const end = {}
 
   for (const key of beginningKeys) {
-    if (key in copy) {
-      beginning[key] = copy[key]
-      delete copy[key]
+    if (key in packageJson) {
+      beginning[key] = packageJson[key]
+    } else if (!endKeys.includes(key)) {
+      middle[key] = packageJson[key]
     }
   }
 
   for (const key of endKeys) {
-    if (key in copy) {
-      end[key] = copy[key]
-      delete copy[key]
+    if (key in packageJson) {
+      end[key] = packageJson[key]
     }
   }
 
   return {
     ...beginning,
-    ...copy,
+    ...middle,
     ...end
   }
 }

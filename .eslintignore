@@ -1,0 +1,18 @@
+#
+# Directories
+#
+.vscode/
+.history/
+dist/
+node_modules/
+
+#
+# Files
+#
+CHANGELOG.md
+package*.json
+
+# Enable config file linting except for copyright file
+!.*.js
+!.*.cjs
+.copyright.js

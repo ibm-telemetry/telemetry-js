@@ -41,7 +41,7 @@ jobs:
         run: npm run lint
 
   #
-  # Ensure all packages and services build properly
+  # Ensure the package builds properly
   #
   build:
     name: Build package

@@ -6,8 +6,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-env:
-  CI: 'true'
 
 #
 # Limit workflow to a single running instance at a time

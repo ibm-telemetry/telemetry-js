@@ -8,5 +8,6 @@
     // https://docs.renovatebot.com/presets-schedule/#scheduledaily
     "schedule:earlyMondays",
   ],
-  "commitMessagePrefix": "deps:"
+  "commitMessagePrefix": "deps:",
+  "commitMessageAction": "upgrade"
 }

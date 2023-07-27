@@ -44,7 +44,7 @@ jobs:
   # Ensure all packages and services build properly
   #
   build:
-    name: Build packages and services
+    name: Build package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎

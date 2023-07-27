@@ -1,22 +1,22 @@
+name: Release Please
 on:
-    push:
-      branches:
-        - main
+  push:
+    branches:
+      - main
 
 permissions:
-    contents: write
-    pull-requests: write
-
-name: release-please
+  contents: write
+  pull-requests: write
 
 jobs:
-    release-please:
-        runs-on: ubuntu-latest
-        steps:
-        - uses: google-github-actions/release-please-action@v3
-          with:
-                release-type: node
-                # TODO: correct name
-                package-name: "@ibm/transistor-js"
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update release PR 📥
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: node
+          # TODO: correct name
+          package-name: '@ibm/transistor-js'
 
-        # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm
+    # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm

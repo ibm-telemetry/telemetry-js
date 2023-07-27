@@ -18,8 +18,5 @@ jobs:
                 release-type: node
                 # TODO: correct name
                 package-name: "@ibm/transistor-js"
-                # https://github.com/google-github-actions/release-please-action#configuration
-                bump-minor-pre-major: true
-                bump-patch-for-minor-pre-major: true
 
         # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm

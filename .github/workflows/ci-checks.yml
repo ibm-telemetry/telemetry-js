@@ -19,7 +19,7 @@ jobs:
   # Ensure all files pass linting
   #
   lint:
-    name: Prettier, ESLint, Stylelint
+    name: Prettier, ESLint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎

@@ -18,5 +18,6 @@ jobs:
           release-type: node
           # TODO: correct name
           package-name: '@ibm/transistor-js'
+          pull-request-title-pattern: 'release${scope}: release${component} ${version}'
 
     # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm

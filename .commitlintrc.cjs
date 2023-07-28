@@ -20,6 +20,7 @@ module.exports = {
         'feat', // A new feature (corresponds to a minor version). Use "feat!" for a breaking change
         'fix', // A fix for an issue (corresponds to a patch version)
         'refactor', // A rework of existing code that does not change its behaviors or externals
+        'release', // reserved for automated release PRs only
         'revert', // A revert of a previous commit to cancel out its changes
         'test', // Changes/additions to tests
         'wip' // A work-in-progress commit, mostly for local use. Not intended for pushes to main

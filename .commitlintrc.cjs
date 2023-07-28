@@ -12,11 +12,10 @@ module.exports = {
     'scope-case': [2, 'always', 'lower-case'],
     'type-enum': [
       2,
-      'always', // laksd jkfl;as dk;lkfkkkks k;lkdkfkkl;k kskkdkkfk k;kskkkf kk;lkskdf ;lasd f;las df;l askl;f s;ladf ;lasd ;fl;as dfl;as fl;ksa ;lfsf
+      'always',
       [
         'build', // Changes that affect how code is built (e.g. npm, tsconfig, Dockerfile, etc.)
         'ci', // Changes to CI config files and scripts (e.g. GH Workflows, SonarCloud, ESLint, etc.)
-        'deps', // Changes to project dependencies
         'docs', // Documentation changes
         'feat', // A new feature (corresponds to a minor version). Use "feat!" for a breaking change
         'fix', // A fix for an issue (corresponds to a patch version)

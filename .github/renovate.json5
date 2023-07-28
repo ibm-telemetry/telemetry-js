@@ -1,13 +1,14 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:base',
     // https://docs.renovatebot.com/presets-npm/#npmunpublishsafe
-    "npm:unpublishSafe",
+    'npm:unpublishSafe',
 
     // https://docs.renovatebot.com/presets-schedule/#scheduledaily
-    "schedule:earlyMondays",
+    'schedule:earlyMondays'
   ],
-  "commitMessagePrefix": "deps:",
-  "commitMessageAction": "upgrade"
+  // Release Please does not consider `deps:` to be releasable units
+  commitMessagePrefix: 'fix:',
+  commitMessageAction: 'upgrade'
 }

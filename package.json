@@ -31,6 +31,12 @@
     "prepare": "husky install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "@opentelemetry/api": "^1.4.1",
+    "@opentelemetry/resources": "^1.15.1",
+    "@opentelemetry/sdk-metrics": "^1.15.1",
+    "@opentelemetry/semantic-conventions": "^1.15.1"
+  },
   "devDependencies": {
     "@commitlint/cli": "^17.6.7",
     "@commitlint/config-conventional": "^17.6.7",

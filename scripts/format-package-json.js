@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Copyright IBM Corp. 2022, 2023
  *

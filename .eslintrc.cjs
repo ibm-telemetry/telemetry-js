@@ -14,7 +14,8 @@ module.exports = {
   extends: [
     'standard-with-typescript',
     'plugin:@typescript-eslint/strict',
-    'plugin:eslint-comments/recommended'
+    'plugin:eslint-comments/recommended',
+    'plugin:n/recommended'
   ],
   overrides: [
     {

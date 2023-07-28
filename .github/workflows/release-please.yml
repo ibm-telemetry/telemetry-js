@@ -12,7 +12,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - name: Update release PR 📥
+      - name: Update release PR 🔄
         uses: google-github-actions/release-please-action@v3
         with:
           release-type: node

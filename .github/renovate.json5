@@ -14,5 +14,7 @@
   // Tell dependency dashboard to only require PR creation approval for major versions
   major: {
     dependencyDashboardApproval: true
-  }
+  },
+  // Move package.json forward along with package-lock.json
+  rangeStrategy: 'bump'
 }

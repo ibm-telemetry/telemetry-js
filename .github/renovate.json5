@@ -10,5 +10,9 @@
   ],
   // Release Please does not consider `deps:` to be releasable units
   commitMessagePrefix: 'fix:',
-  commitMessageAction: 'upgrade'
+  commitMessageAction: 'upgrade',
+  // Tell dependency dashboard to only require PR creation approval for major versions
+  major: {
+    dependencyDashboardApproval: true
+  }
 }

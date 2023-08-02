@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import * as packageInfo from '../package.json'
 import { initializeOpenTelemetry } from './main/core/instrumentation.js'
 import * as ResourceAttributes from './main/core/resource-attributes.js'
 
@@ -27,18 +28,13 @@ const config = {
   projectId: 'abecafa7681dfd65cc'
 }
 
-const packageJsonInfo = {
-  name: '@ibm/transistor-js',
-  version: '0.1.0'
-}
-
 const gitInfo = {
   remote: 'https://example.com/example-org/example-repo'
 }
 
 initializeOpenTelemetry({
-  [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
-  [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
+  [ResourceAttributes.EMITTER_NAME]: packageInfo.default.name,
+  [ResourceAttributes.EMITTER_VERSION]: packageInfo.default.version,
   [ResourceAttributes.PROJECT_ID]: config.projectId,
   [ResourceAttributes.ANALYZED_RAW]: gitInfo.remote,
   [ResourceAttributes.ANALYZED_HOST]: 'example.com',

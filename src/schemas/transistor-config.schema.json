@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://[HOSTHERE]/schemas/transistor-config.schema.json",
+  "title": "Transistor Config Schema",
+  "description": "Configuration outline for metrics collection using IBM transistor",
+  "type": "object",
+  "properties": {
+    "projectId": {
+      "type": "string",
+      "description": "Unique identifier assigned on a per-project basis. This is added to the resource attributes of data events during transmission."
+    },
+    "collect": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "The keys under 'collect' represent the various types of data that Transistor is capable of collecting (i.e. 'scopes').",
+      "properties": {
+        "npm": {
+          "type": "object",
+          "description": "configuration for collecting telemetry data from an npm environment",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "dependencies": {
+              "type": "null",
+              "description": "Enable telemetry data collection for package.json `dependencies` and `devDependencies`."
+            }
+          },
+          "required": ["dependencies"]
+        },
+        "jsx": {
+          "type": "object",
+          "description": "configuration for collecting telemetry data from JSX files",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "elements": {
+              "type": "object",
+              "description": "Enable telemetry data collection for JSX elements. The set of included elements is determined by looking at import/require statements across analyzed source files.",
+              "properties": {
+                "allowedAtrributeNames": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Enable telemetry data collection for specific JSX attributes. These are collected for all included JSX elements. Specifying an attributeName here will also turn on data collection for boolean and numeric attribute values. String value data collection is handled separately via the `allowedAttributeStringValues` key."
+                },
+                "allowedAttributeStringValues": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Enable telemetry data collection for specific string attribute values. These are collected for all defined attributes in the `allowedAttributeNames` key."
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["elements"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": ["projectId", "collect"]
+}

@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=./transistor-config.schema.json
+collect:
+    npm:
+        dependencies:
+    jsx:
+        elements:
+            allowedAttributeStringValues:
+              - "one"
+              - "two"
+
+projectId: "1234"

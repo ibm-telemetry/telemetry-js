@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "description": "configuration for collecting telemetry data from JSX files",
+  "description": "Configuration for collecting telemetry data from JSX files.",
   "minProperties": 1,
   "additionalProperties": false,
   "properties": {

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "description": "configuration for collecting telemetry data from JSX files",
+  "minProperties": 1,
+  "additionalProperties": false,
+  "properties": {
+    "elements": {
+      "oneOf": [{ "type": "object" }, { "type": "null" }],
+      "description": "Enable telemetry data collection for JSX elements. The set of included elements is determined by looking at import/require statements across analyzed source files.",
+      "properties": {
+        "allowedAtrributeNames": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Enable telemetry data collection for specific JSX attributes. These are collected for all included JSX elements. Specifying an attributeName here will also turn on data collection for boolean and numeric attribute values. String value data collection is handled separately via the `allowedAttributeStringValues` key."
+        },
+        "allowedAttributeStringValues": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Enable telemetry data collection for specific string attribute values. These are collected for all defined attributes in the `allowedAttributeNames` key."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

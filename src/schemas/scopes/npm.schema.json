@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "description": "configuration for collecting telemetry data from an npm environment",
+  "minProperties": 1,
+  "additionalProperties": false,
+  "properties": {
+    "dependencies": {
+      "type": "null",
+      "description": "Enable telemetry data collection for package.json `dependencies` and `devDependencies`."
+    }
+  }
+}

@@ -53,7 +53,7 @@ export interface Schema {
          * String value data collection is handled separately
          * via the `allowedAttributeStringValues` key.
          */
-        allowedAtrributeNames?: [string, ...string[]]
+        allowedAttributeNames?: [string, ...string[]]
         /**
          * Enable telemetry data collection for specific string attribute values.
          * These are collected for all defined attributes in the `allowedAttributeNames` key.

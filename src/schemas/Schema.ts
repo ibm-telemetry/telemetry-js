@@ -13,7 +13,6 @@
 export interface Schema {
   /**
    * Unique identifier assigned on a per-project basis.
-   * This is added to the resource attributes of data events during transmission.
    */
   projectId: string
   /**

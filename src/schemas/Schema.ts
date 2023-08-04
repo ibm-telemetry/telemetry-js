@@ -45,7 +45,7 @@ export interface Schema {
         /**
          * Enable telemetry data collection for specific JSX attributes.
          * These are collected for all included JSX elements.
-         * Specifying an `attributeName` here will also turn on data collection for
+         * Specifying an `attributeName` here will turn on data collection for
          * boolean and numeric attribute values.
          * String value data collection is handled separately
          * via the `allowedAttributeStringValues` key.

@@ -18,7 +18,7 @@ jobs:
           release-type: node
           draft-pull-request: true
           # TODO: correct name
-          package-name: '@ibm/transistor-js'
+          package-name: '@ibm/telemetrics-js'
           pull-request-title-pattern: 'release${scope}: release${component} ${version}'
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 

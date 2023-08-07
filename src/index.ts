@@ -28,7 +28,7 @@ const config = {
 }
 
 const packageJsonInfo = {
-  name: '@ibm/transistor-js',
+  name: '@ibm/telemetrics-js',
   version: '0.1.0'
 }
 

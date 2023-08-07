@@ -1,3 +1,3 @@
-# transistor-js
+# telemetrics-js
 
 JavaScript telemetry tooling for open/inner source projects

@@ -6,9 +6,9 @@
  */
 
 /**
- * Configuration outline for metrics collection using IBM transistor
- * @title Transistor Config Schema
- * @id https://[HOSTHERE]/schemas/transistor-config.schema.json
+ * Configuration outline for metrics collection using IBM telemetrics
+ * @title Telemetrics Config Schema
+ * @id https://[HOSTHERE]/schemas/telemetrics-config.schema.json
  */
 export interface Schema {
   /**
@@ -20,8 +20,8 @@ export interface Schema {
    */
   projectId: string
   /**
-   * The keys under `collect` represent the various types of data that
-   * Transistor is capable of collecting (i.e. `scopes`).
+   * The keys under `collect` represent the various types of data that Telemetrics is capable of
+   * collecting (i.e. `scopes`).
    * @minProperties 1
    */
   collect: {

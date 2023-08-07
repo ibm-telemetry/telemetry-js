@@ -1,12 +1,12 @@
-# yaml-language-server: $schema=./transistor-config.schema.json
+# yaml-language-server: $schema=./telemetrics-config.schema.json
 version: 1
 collect:
-    npm:
-        dependencies:
-    jsx:
-        elements:
-            allowedAttributeStringValues:
-              - "one"
-              - "two"
+  npm:
+    dependencies:
+  jsx:
+    elements:
+      allowedAttributeStringValues:
+        - 'one'
+        - 'two'
 
-projectId: "1234"
+projectId: '1234'

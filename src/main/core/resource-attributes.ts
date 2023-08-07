@@ -14,8 +14,8 @@ export const PROJECT_ID = 'project.id'
 //
 // Attributes relating to details about the currently-running emitter
 //
-export const EMITTER_NAME = 'transistor.emitter.name'
-export const EMITTER_VERSION = 'transistor.emitter.version'
+export const EMITTER_NAME = 'telemetrics.emitter.name'
+export const EMITTER_VERSION = 'telemetrics.emitter.version'
 
 //
 // Attributes relating to details about the analyzed repository

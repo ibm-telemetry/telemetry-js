@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/transistor-js",
+  "name": "@ibm/telemetrics-js",
   "description": "JavaScript telemetry tooling for open/inner source projects",
   "version": "0.1.1",
   "license": "Apache-2.0",
@@ -12,13 +12,13 @@
     "javascript",
     "typescript"
   ],
-  "homepage": "https://github.com/carbon-design-system/transistor-js#readme",
+  "homepage": "https://github.com/carbon-design-system/telemetrics-js#readme",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/carbon-design-system/transistor-js.git"
+    "url": "git+ssh://git@github.com/carbon-design-system/telemetrics-js.git"
   },
   "bugs": {
-    "url": "https://github.com/carbon-design-system/transistor-js/issues"
+    "url": "https://github.com/carbon-design-system/telemetrics-js/issues"
   },
   "type": "module",
   "engines": {
@@ -26,7 +26,7 @@
     "npm": "9"
   },
   "scripts": {
-    "build:schema": "ts-json-schema-generator --path ./src/schemas/Schema.ts --type Schema > src/schemas/transistor-config.schema.json",
+    "build:schema": "ts-json-schema-generator --path ./src/schemas/Schema.ts --type Schema > src/schemas/telemetrics-config.schema.json",
     "lint": "eslint --max-warnings=0 .",
     "lint:fix": "eslint --fix --max-warnings=0 .",
     "prepare": "husky install",

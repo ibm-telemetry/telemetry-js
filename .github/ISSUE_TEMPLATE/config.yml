@@ -1,11 +1,11 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Transistor roadmap
+  - name: Telemetrics roadmap
     url: https://github.com/orgs/carbon-design-system/projects/69/views/8
     about: Learn what we're working on and what we have planned for the future.
-  - name: Transistor feedback
-    url: https://github.com/carbon-design-system/transistor-internal/discussions
-    about: Share your feedback with the Transistor squad.
+  - name: Telemetrics feedback
+    url: https://github.com/carbon-design-system/telemetrics-internal/discussions
+    about: Share your feedback with the Telemetrics squad.
   - name: Carbon System feedback
     url: https://github.com/carbon-design-system/carbon/discussions
     about: Share your feedback with the Carbon System squad.

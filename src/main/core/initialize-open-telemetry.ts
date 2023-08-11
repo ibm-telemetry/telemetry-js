@@ -15,9 +15,9 @@ interface InitializeOpenTelemetryConfig {
   [ResourceAttributes.EMITTER_VERSION]: string
   [ResourceAttributes.PROJECT_ID]: string
   [ResourceAttributes.ANALYZED_RAW]: string
-  [ResourceAttributes.ANALYZED_HOST]: string
-  [ResourceAttributes.ANALYZED_OWNER]: string
-  [ResourceAttributes.ANALYZED_REPOSITORY]: string
+  [ResourceAttributes.ANALYZED_HOST]: string | undefined
+  [ResourceAttributes.ANALYZED_OWNER]: string | undefined
+  [ResourceAttributes.ANALYZED_REPOSITORY]: string | undefined
   [ResourceAttributes.DATE]: string
 }
 

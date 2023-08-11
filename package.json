@@ -21,12 +21,18 @@
     "url": "https://github.com/carbon-design-system/telemetrics-js/issues"
   },
   "type": "module",
+  "bin": {
+    "ibmtelemetrics": "./dist/index.js"
+  },
   "engines": {
     "node": "18",
     "npm": "9"
   },
   "scripts": {
+    "build": "tsc",
     "build:schema": "ts-json-schema-generator --path ./src/schemas/Schema.ts --type Schema > src/schemas/telemetrics-config.schema.json",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist",
     "lint": "eslint --max-warnings=0 .",
     "lint:fix": "eslint --fix --max-warnings=0 .",
     "prepare": "husky install",
@@ -54,6 +60,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.1",
+    "rimraf": "^5.0.1",
     "ts-json-schema-generator": "^1.2.0",
     "typescript": "^5.1.6"
   }

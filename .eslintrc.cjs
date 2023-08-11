@@ -6,6 +6,8 @@
  */
 const path = require('path')
 
+const noUnusedVarsOptions = { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+
 module.exports = {
   env: {
     browser: true,
@@ -41,6 +43,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', noUnusedVarsOptions],
     '@typescript-eslint/space-before-function-paren': [
       'error',
       {
@@ -68,6 +71,7 @@ module.exports = {
         comments: 100
       }
     ],
+    'n/shebang': 'off',
     'notice/notice': [
       'error',
       {

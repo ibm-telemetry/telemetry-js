@@ -88,6 +88,7 @@ module.exports = {
         comments: 100
       }
     ],
+    'n/no-unpublished-import': ['error', { allowModules: ['vitest'] }],
     'n/shebang': 'off',
     'notice/notice': [
       'warn',

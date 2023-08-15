@@ -6,6 +6,8 @@
  */
 import childProcess from 'node:child_process'
 
+import { guardShell } from './guard-shell.js'
+
 /**
  * Executes a command using childProcess. Throws an exception if the command fails.
  *
@@ -14,7 +16,7 @@ import childProcess from 'node:child_process'
  * @throws An exception if the command timed out or exited with a non-zero code.
  * @returns The standard output from the command.
  */
-function exec(cmd: string, options: childProcess.ExecSyncOptionsWithBufferEncoding = {}) {
+export function exec(cmd: string, options: childProcess.ExecSyncOptionsWithBufferEncoding = {}) {
   guardShell(cmd)
 
   const execOptions = {
@@ -24,13 +26,3 @@ function exec(cmd: string, options: childProcess.ExecSyncOptionsWithBufferEncodi
 
   return childProcess.execSync(cmd, execOptions).toString().trim()
 }
-
-function guardShell(cmd: string) {
-  if (/[\\$;`]/.exec(cmd) != null) {
-    throw new Error(
-      'Shell guard prevented a command from running because it contained special characters: ' + cmd
-    )
-  }
-}
-
-export { exec }

@@ -21,6 +21,12 @@ interface InitializeOpenTelemetryConfig {
   [ResourceAttributes.DATE]: string
 }
 
+/**
+ * Initializes the OpenTelemetry tooling based on the provided config.
+ *
+ * @param config - The configuration options needed to initialize OpenTelemetry.
+ * @returns An object containing a metric reader and a meter provider.
+ */
 function initializeOpenTelemetry(config: InitializeOpenTelemetryConfig) {
   const resource = Resource.default().merge(new Resource({ ...config }))
 

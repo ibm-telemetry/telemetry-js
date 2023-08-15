@@ -6,6 +6,11 @@
  */
 import { exec } from './exec.js'
 
+/**
+ * Parses git remote information and returns raw and tokenized fields for it.
+ *
+ * @returns Object containing tokenized git remote info.
+ */
 function getGitOrigin() {
   let parsed: {
     host: string | undefined
@@ -38,6 +43,12 @@ function getGitOrigin() {
   }
 }
 
+/**
+ * Parses a git remote URL as HTTP.
+ *
+ * @param raw - URL to parse.
+ * @returns Object containing a tokenized git remote.
+ */
 function parseHttp(raw: string) {
   const match = /^https?:\/\/((.*?)\/)?((.*?)\/)?(.*)/.exec(raw) ?? []
 
@@ -50,6 +61,12 @@ function parseHttp(raw: string) {
   }
 }
 
+/**
+ * Parses a git remote URL as SSH.
+ *
+ * @param raw - URL to parse.
+ * @returns Object containing a tokenized git remote.
+ */
 function parseSsh(raw: string) {
   const match = /^(.*?)@(.*?):((.*?)\/)?(.*)/.exec(raw) ?? []
 

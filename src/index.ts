@@ -23,7 +23,7 @@ import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
 
 */
 
-export async function run() {
+async function run() {
   const date = new Date().toISOString()
 
   // parseConfigFile()

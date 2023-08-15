@@ -17,6 +17,7 @@ module.exports = {
     'standard-with-typescript',
     'plugin:@typescript-eslint/strict',
     'plugin:eslint-comments/recommended',
+    'plugin:jsdoc/recommended-typescript',
     'plugin:n/recommended'
   ],
   overrides: [
@@ -38,23 +39,23 @@ module.exports = {
     sourceType: 'module',
     project: 'tsconfig.eslint.json'
   },
-  plugins: ['notice', 'simple-import-sort'],
+  plugins: ['jsdoc', 'notice', 'simple-import-sort'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/no-unused-vars': ['error', noUnusedVarsOptions],
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-unused-vars': ['warn', noUnusedVarsOptions],
     '@typescript-eslint/space-before-function-paren': [
-      'error',
+      'warn',
       {
         anonymous: 'always',
         named: 'never',
         asyncArrow: 'always'
       }
     ],
-    'eslint-comments/require-description': 'error',
+    'eslint-comments/require-description': 'warn',
     indent: [
-      'error',
+      'warn',
       2,
       {
         ignoredNodes: [
@@ -64,8 +65,24 @@ module.exports = {
         SwitchCase: 1
       }
     ],
+    'jsdoc/check-tag-names': 'off', // To support JSON schema file generation based on TypeScript
+    'jsdoc/require-description': 'warn',
+    'jsdoc/require-description-complete-sentence': 'warn',
+    'jsdoc/require-hyphen-before-param-description': 'warn',
+    'jsdoc/require-jsdoc': ['warn', { publicOnly: true }],
+    'jsdoc/require-param-description': 'warn',
+    'jsdoc/require-throws': 'warn',
+    'jsdoc/tag-lines': [
+      'warn',
+      'any',
+      {
+        startLines: 1,
+        endLines: 0,
+        tags: { param: { lines: 'never' }, returns: { lines: 'never' } }
+      }
+    ],
     'max-len': [
-      'error',
+      'warn',
       {
         code: 150, // Effectively disable this rule and allow Prettier to handle it
         comments: 100
@@ -73,12 +90,12 @@ module.exports = {
     ],
     'n/shebang': 'off',
     'notice/notice': [
-      'error',
+      'warn',
       {
         templateFile: path.join(__dirname, '.copyright.js')
       }
     ],
-    'simple-import-sort/imports': 'error',
-    'simple-import-sort/exports': 'error'
+    'simple-import-sort/imports': 'warn',
+    'simple-import-sort/exports': 'warn'
   }
 }

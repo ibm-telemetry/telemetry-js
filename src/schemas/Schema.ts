@@ -6,13 +6,14 @@
  */
 
 /**
- * Configuration outline for metrics collection using IBM telemetrics
+ * Configuration outline for metrics collection using IBM telemetrics.
+ *
  * @title Telemetrics Config Schema
  * @id https://[HOSTHERE]/schemas/telemetrics-config.schema.json
  */
 export interface Schema {
   /**
-   * Current schema version
+   * Current schema version.
    */
   version: 1
   /**
@@ -22,11 +23,13 @@ export interface Schema {
   /**
    * The keys under `collect` represent the various types of data that Telemetrics is capable of
    * collecting (i.e. `scopes`).
+   *
    * @minProperties 1
    */
   collect: {
     /**
      * Configuration for collecting telemetry data from an npm environment.
+     *
      * @minProperties 1
      */
     npm?: {
@@ -37,6 +40,7 @@ export interface Schema {
     }
     /**
      * Configuration for collecting telemetry data from JSX files.
+     *
      * @minProperties 1
      */
     jsx?: {

@@ -8,6 +8,11 @@ import path from 'node:path'
 
 import { exec } from '../../core/exec.js'
 
+/**
+ * Uses the `pkg get` NPM command to get the name from the package.json file closest to this file.
+ *
+ * @returns The result of the get name command.
+ */
 export function getPackageName() {
   const cwd = path.dirname(import.meta.url.substring(7))
 

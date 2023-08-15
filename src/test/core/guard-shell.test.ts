@@ -11,25 +11,31 @@ import { guardShell } from '../../main/core/guard-shell.js'
 describe('guardShell', () => {
   it('does not throw with a safe command', () => {
     expect(() => {
-      guardShell('echo "hello"')
+      guardShell('echo "bla"')
     }).not.toThrow()
   })
 
-  it('throws an error when given a backslash as a command', () => {
+  it('throws an error when given a backslash in a command', () => {
     expect(() => {
-      guardShell('\\')
-    }).toThrowError()
+      guardShell('bla\\wow')
+    }).toThrow(Error)
   })
 
-  it('throws an error when given a dollar sign as a command', () => {
+  it('throws an error when given a dollar sign in a command', () => {
     expect(() => {
       guardShell('test$')
-    }).toThrowError()
+    }).toThrow(Error)
   })
 
-  it('throws an error when given a back tick as a command', () => {
+  it('throws an error when given a back tick in a command', () => {
     expect(() => {
       guardShell('`bla')
-    }).toThrowError()
+    }).toThrow(Error)
+  })
+
+  it('throws an error when given a semicolon in a command', () => {
+    expect(() => {
+      guardShell('`bla')
+    }).toThrow(Error)
   })
 })

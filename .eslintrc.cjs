@@ -18,7 +18,8 @@ module.exports = {
     'plugin:@typescript-eslint/strict',
     'plugin:eslint-comments/recommended',
     'plugin:jsdoc/recommended-typescript',
-    'plugin:n/recommended'
+    'plugin:n/recommended',
+    'plugin:vitest/all'
   ],
   overrides: [
     {
@@ -39,7 +40,7 @@ module.exports = {
     sourceType: 'module',
     project: 'tsconfig.eslint.json'
   },
-  plugins: ['jsdoc', 'notice', 'simple-import-sort'],
+  plugins: ['jsdoc', 'notice', 'simple-import-sort', 'vitest'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',

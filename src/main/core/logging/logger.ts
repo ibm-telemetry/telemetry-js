@@ -4,52 +4,21 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import tmp from 'tmp'
-import { createLogger, format, type Logger as WinstonLogger, transports } from 'winston'
+import { appendFile } from 'fs/promises'
 
-class Logger {
-  private static instance?: Logger
-  private readonly logger: WinstonLogger
+type Level = 'debug' | 'error'
 
-  constructor(tempFilePath: string) {
-    this.logger = createLogger({
-      level: 'info',
-      format: format.combine(format.timestamp(), format.simple()),
-      defaultMeta: { service: 'logger-service' },
-      transports: [new transports.File({ filename: tempFilePath })]
-    })
+export class Logger {
+  private readonly filePath: string
+
+  public constructor(filePath: string) {
+    this.filePath = filePath
   }
 
-  /**
-   * Obtain a singleton instance of a Logger used to send messages.
-   *
-   * @returns The singleton.
-   */
-  public static async getInstance(): Promise<Logger> {
-    if (Logger.instance == null) {
-      const tempFile = await new Promise(function (resolve, reject) {
-        tmp.file(
-          { prefix: 'ibm-telemetry-', postfix: '.txt', discardDescriptor: true },
-          (err: Error | null, path: string) => {
-            if (err != null) reject(err)
-            console.log('File: ', path, typeof path)
-            resolve(path)
-          }
-        )
-      })
-      Logger.instance = new Logger(tempFile as string)
+  public async log(level: Level, msg: string | Error) {
+    if (msg instanceof Error) {
+      msg = msg.stack ?? msg.name + ' ' + msg.message
     }
-
-    return Logger.instance
-  }
-
-  public error(msg: string) {
-    this.logger.log('error', msg)
-  }
-
-  public debug(msg: string) {
-    this.logger.log('debug', msg)
+    await appendFile(this.filePath, `${level} ${new Date().toISOString()} ${msg}\n`)
   }
 }
-
-;(await Logger.getInstance()).debug('heyyy')

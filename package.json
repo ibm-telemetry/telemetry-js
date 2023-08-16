@@ -44,8 +44,7 @@
     "@opentelemetry/resources": "^1.15.2",
     "@opentelemetry/sdk-metrics": "^1.15.2",
     "@opentelemetry/semantic-conventions": "^1.15.2",
-    "tmp": "^0.2.1",
-    "winston": "^3.10.0"
+    "tmp-promise": "^3.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",

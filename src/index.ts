@@ -5,8 +5,11 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { tmpName } from 'tmp-promise'
+
 import { getGitOrigin } from './main/core/get-git-origin.js'
 import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
+import { Logger } from './main/core/logging/logger.js'
 import * as ResourceAttributes from './main/core/resource-attributes.js'
 import { getPackageName } from './main/scopes/npm/get-package-name.js'
 import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
@@ -25,6 +28,15 @@ import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
 
 async function run() {
   const date = new Date().toISOString()
+  const logFilePath = await tmpName({
+    template: `ibmtelemetrics-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
+  })
+
+  console.log(logFilePath)
+  const logger = new Logger(logFilePath)
+
+  await logger.log('debug', 'hello world')
+  await logger.log('error', new Error('wow man cool'))
 
   // parseConfigFile()
   const config = {

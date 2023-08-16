@@ -7,10 +7,11 @@
  */
 import { tmpName } from 'tmp-promise'
 
-import { getGitOrigin } from './main/core/get-git-origin.js'
+import { exec } from './main/core/exec.js'
 import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
 import { Logger } from './main/core/logging/logger.js'
 import * as ResourceAttributes from './main/core/resource-attributes.js'
+import { tokenizeRepository } from './main/core/tokenize-repository.js'
 import { getPackageName } from './main/scopes/npm/get-package-name.js'
 import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
 
@@ -32,11 +33,11 @@ async function run() {
     template: `ibmtelemetrics-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
   })
 
-  console.log(logFilePath)
   const logger = new Logger(logFilePath)
 
+  // TODO: remove this test code
   await logger.log('debug', 'hello world')
-  await logger.log('error', new Error('wow man cool'))
+  await logger.log('error', new Error('wow cool'))
 
   // parseConfigFile()
   const config = {
@@ -48,16 +49,19 @@ async function run() {
     version: getPackageVersion()
   }
 
-  const gitOrigin = getGitOrigin()
+  // TODO: handle non-existant remote
+  // TODO: move this logic elsewhere
+  const gitOrigin = exec('git remote get-url origin')
+  const repository = tokenizeRepository(gitOrigin)
 
   const { metricReader } = initializeOpenTelemetry({
     [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
     [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
     [ResourceAttributes.PROJECT_ID]: config.projectId,
-    [ResourceAttributes.ANALYZED_RAW]: gitOrigin.raw,
-    [ResourceAttributes.ANALYZED_HOST]: gitOrigin.host,
-    [ResourceAttributes.ANALYZED_OWNER]: gitOrigin.owner,
-    [ResourceAttributes.ANALYZED_REPOSITORY]: gitOrigin.repository,
+    [ResourceAttributes.ANALYZED_RAW]: gitOrigin,
+    [ResourceAttributes.ANALYZED_HOST]: repository.host,
+    [ResourceAttributes.ANALYZED_OWNER]: repository.owner,
+    [ResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
     [ResourceAttributes.DATE]: date
   })
 

@@ -4,14 +4,14 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { exec } from './exec.js'
 
 /**
  * Parses git remote information and returns raw and tokenized fields for it.
  *
- * @returns Object containing tokenized git remote info.
+ * @param repositoryUrl - The URL to parse.
+ * @returns A tokenized representation of the URL.
  */
-function getGitOrigin() {
+function tokenizeRepository(repositoryUrl: string) {
   let parsed: {
     host: string | undefined
     owner: string | undefined
@@ -22,25 +22,19 @@ function getGitOrigin() {
     repository: undefined
   }
 
-  // TODO: handle non-existant remote
-  const raw = exec('git remote get-url origin')
-
-  if (raw.startsWith('http')) {
+  if (repositoryUrl.startsWith('http')) {
     // Example: https://github.com/carbon-design-system/telemetrics-js.git
-    parsed = parseHttp(raw)
-  } else if (raw.startsWith('git@')) {
+    parsed = parseHttp(repositoryUrl)
+  } else if (repositoryUrl.startsWith('git@')) {
     // Example: git@github.com:carbon-design-system/telemetrics-js.git
-    parsed = parseSsh(raw)
+    parsed = parseSsh(repositoryUrl)
   }
 
   if (parsed.repository?.endsWith('.git') === true) {
     parsed.repository = parsed.repository.slice(0, -4)
   }
 
-  return {
-    raw,
-    ...parsed
-  }
+  return parsed
 }
 
 /**
@@ -79,4 +73,4 @@ function parseSsh(raw: string) {
   }
 }
 
-export { getGitOrigin }
+export { tokenizeRepository }

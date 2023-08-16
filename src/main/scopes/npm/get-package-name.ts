@@ -16,5 +16,5 @@ import { exec } from '../../core/exec.js'
 export function getPackageName() {
   const cwd = path.dirname(import.meta.url.substring(7))
 
-  return exec('npm pkg get name', { cwd })
+  return exec('npm pkg get name', { cwd }).slice(1, -1)
 }

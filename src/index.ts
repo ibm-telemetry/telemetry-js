@@ -9,7 +9,7 @@ import { tmpName } from 'tmp-promise'
 
 import { exec } from './main/core/exec.js'
 import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
-import { Logger } from './main/core/logging/logger.js'
+import { Logger } from './main/core/logger.js'
 import * as ResourceAttributes from './main/core/resource-attributes.js'
 import { tokenizeRepository } from './main/core/tokenize-repository.js'
 import { getPackageName } from './main/scopes/npm/get-package-name.js'

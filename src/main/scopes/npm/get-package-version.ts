@@ -17,5 +17,5 @@ import { exec } from '../../core/exec.js'
 export function getPackageVersion() {
   const cwd = path.dirname(import.meta.url.substring(7))
 
-  return exec('npm pkg get version', { cwd })
+  return exec('npm pkg get version', { cwd }).slice(1, -1)
 }

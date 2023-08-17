@@ -86,16 +86,11 @@ jobs:
       - name: Test 🧪
         run: npm run test
 
-  # -----------------------------------------------
-  # | TODO: this step is only used by sonarcloud |
-  # | uncomment when sonarcloud is implemented   |
-  # ----------------------------------------------
-
-  # - name: Upload test coverage reports 🛫
-  #   uses: actions/upload-artifact@v3
-  #   with:
-  #     name: test-coverage
-  #     path: '**/.test-coverage/lcov.info'
+      - name: Upload test coverage reports 🛫
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage
+          path: '**/.test-coverage/lcov.info'
 
   # ----------------------------
   # | TODO:sonarcloud |

@@ -61,42 +61,46 @@ jobs:
         # run: npm run all:build
         run: echo TODO build command
 
+  #
+  # Ensure all unit tests pass
+  #
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v3
 
-    # ----------------------------
-    # | TODO: tests & sonarcloud |
-    # ----------------------------
+      - name: Setup Node 🏗
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
 
-#   #
-#   # Ensure all unit tests pass
-#   #
-#   test:
-#     name: Unit tests
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout 🛎
-#         uses: actions/checkout@v3
+      - name: Install Node Modules 🔧
+        run: npm install
 
-#       - name: Setup Node 🏗
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '18'
-#           cache: 'npm'
+      - name: Build 🔨
+        run: npm run build
 
-#       - name: Install Node Modules 🔧
-#         run: npm install
+      - name: Test 🧪
+        run: npm run test
 
-#       - name: Build 🔨
-#         run: npm run build
+  # -----------------------------------------------
+  # | TODO: this step is only used by sonarcloud |
+  # | uncomment when sonarcloud is implemented   |
+  # ----------------------------------------------
 
-#       - name: Test 🧪
-#         run: npm run test
+  # - name: Upload test coverage reports 🛫
+  #   uses: actions/upload-artifact@v3
+  #   with:
+  #     name: test-coverage
+  #     path: '**/.test-coverage/lcov.info'
 
-#       - name: Upload test coverage reports 🛫
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: test-coverage
-#           path: '**/.test-coverage/lcov.info'
-#   #
+  # ----------------------------
+  # | TODO:sonarcloud |
+  # ----------------------------
+  #   #
 #   # Check code quality and test coverage
 #   #
 #   sonarcloud:

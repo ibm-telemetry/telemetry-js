@@ -7,6 +7,7 @@
 import { Resource } from '@opentelemetry/resources'
 import { MeterProvider } from '@opentelemetry/sdk-metrics'
 
+import { type Logger } from './logger.js'
 import { ManualMetricReader } from './manual-metric-reader.js'
 import type * as ResourceAttributes from './resource-attributes.js'
 
@@ -25,12 +26,13 @@ interface InitializeOpenTelemetryConfig {
  * Initializes the OpenTelemetry tooling based on the provided config.
  *
  * @param config - The configuration options needed to initialize OpenTelemetry.
+ * @param logger - TODO.
  * @returns An object containing a metric reader and a meter provider.
  */
-function initializeOpenTelemetry(config: InitializeOpenTelemetryConfig) {
+function initializeOpenTelemetry(config: InitializeOpenTelemetryConfig, logger: Logger) {
   const resource = Resource.default().merge(new Resource({ ...config }))
 
-  const metricReader = new ManualMetricReader()
+  const metricReader = new ManualMetricReader(logger)
 
   const meterProvider = new MeterProvider({ resource })
 

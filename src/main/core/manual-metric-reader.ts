@@ -6,17 +6,14 @@
  */
 import { MetricReader } from '@opentelemetry/sdk-metrics'
 
-import { type Logger } from './logger.js'
-
 /**
  * A metric reader that can be invoked manually with `collect()` to obtain its metrics.
  */
 export class ManualMetricReader extends MetricReader {
-  constructor(protected readonly logger: Logger) {
+  constructor() {
     super()
   }
 
-  @Trace()
   protected async onShutdown(): Promise<void> {
     throw new Error('Method not implemented.')
   }

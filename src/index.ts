@@ -59,8 +59,7 @@ async function run() {
       [ResourceAttributes.ANALYZED_OWNER]: repository.owner,
       [ResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
       [ResourceAttributes.DATE]: date
-    },
-    logger
+    }
   )
 
   const results = await metricReader.collect()

@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Logger, createLogFilePath } from "./main/core/logger.js"
-import { Trace } from "./main/core/utils/trace.js"
+import { createLogFilePath, Logger } from './main/core/logger.js'
+import { Trace } from './main/core/utils/trace.js'
 
 const date = new Date().toISOString()
 const logFilePath = await createLogFilePath(date)
@@ -19,8 +19,8 @@ export class MyTestClass {
 
   @Trace()
   MyTraceableMethod() {
-    console.log("this method does stuff that gets printed on: ", logFilePath)
-    return "this is my return value"
+    console.log('this method does stuff that gets printed on: ', logFilePath)
+    return 'this is my return value'
   }
 }
 

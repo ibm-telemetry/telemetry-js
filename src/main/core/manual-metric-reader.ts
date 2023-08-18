@@ -10,10 +10,6 @@ import { MetricReader } from '@opentelemetry/sdk-metrics'
  * A metric reader that can be invoked manually with `collect()` to obtain its metrics.
  */
 export class ManualMetricReader extends MetricReader {
-  constructor() {
-    super()
-  }
-
   protected async onShutdown(): Promise<void> {
     throw new Error('Method not implemented.')
   }

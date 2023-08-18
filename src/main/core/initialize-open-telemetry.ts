@@ -25,7 +25,6 @@ interface InitializeOpenTelemetryConfig {
  * Initializes the OpenTelemetry tooling based on the provided config.
  *
  * @param config - The configuration options needed to initialize OpenTelemetry.
- * @param logger - TODO.
  * @returns An object containing a metric reader and a meter provider.
  */
 function initializeOpenTelemetry(config: InitializeOpenTelemetryConfig) {

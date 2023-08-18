@@ -8,44 +8,46 @@ import { existsSync, unlinkSync } from 'fs'
 import { readFile } from 'fs/promises'
 import { describe, expect, it } from 'vitest'
 
-import { Logger } from '../../main/core/logger.js'
+import { createLogFilePath, Logger } from '../../main/core/logger.js'
 
 describe('logger', () => {
   it('creates and logs message to file', async () => {
-    const fileName = './ibmtelemetrics-test-file-1.log'
-    const logger = new Logger(fileName)
+    const date = new Date().toISOString()
+    const logFilePath = await createLogFilePath(date)
+    const logger = new Logger(logFilePath)
 
-    expect(existsSync(fileName)).toBeFalsy()
+    expect(existsSync(logFilePath)).toBeFalsy()
 
     await logger.log('debug', 'test log')
 
-    expect(existsSync(fileName)).toBeTruthy()
+    expect(existsSync(logFilePath)).toBeTruthy()
 
-    const content = await readFile(fileName, 'utf8')
+    const content = await readFile(logFilePath, 'utf8')
 
     expect(content.length).toBeGreaterThan(0)
     expect(content.startsWith('debug')).toBeTruthy()
     expect(content.trim().endsWith('test log')).toBeTruthy()
 
-    unlinkSync(fileName)
+    unlinkSync(logFilePath)
   })
   it('logs error message', async () => {
-    const fileName = './ibmtelemetrics-test-file-2.log'
-    const logger = new Logger(fileName)
+    const date = new Date().toISOString()
+    const logFilePath = await createLogFilePath(date)
+    const logger = new Logger(logFilePath)
 
-    expect(existsSync(fileName)).toBeFalsy()
+    expect(existsSync(logFilePath)).toBeFalsy()
 
     const errorLog = new Error('the error message')
 
     await logger.log('debug', errorLog)
 
-    expect(existsSync(fileName)).toBeTruthy()
+    expect(existsSync(logFilePath)).toBeTruthy()
 
-    const content = await readFile(fileName, 'utf8')
+    const content = await readFile(logFilePath, 'utf8')
 
     expect(content.length).toBeGreaterThan(0)
     expect(content.startsWith('debug')).toBeTruthy()
 
-    unlinkSync(fileName)
+    unlinkSync(logFilePath)
   })
 })

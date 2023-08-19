@@ -67,10 +67,42 @@ module.exports = {
       }
     ],
     'jsdoc/check-tag-names': 'off', // To support JSON schema file generation based on TypeScript
-    'jsdoc/require-description': 'warn',
+    'jsdoc/require-description': [
+      'warn',
+      {
+        contexts: [
+          'ClassDeclaration',
+          'FunctionDeclaration',
+          'MethodDefinition',
+          'PropertyDefinition',
+          'TSAbstractMethodDefinition'
+        ]
+      }
+    ],
     'jsdoc/require-description-complete-sentence': 'warn',
     'jsdoc/require-hyphen-before-param-description': 'warn',
-    'jsdoc/require-jsdoc': ['warn', { publicOnly: true }],
+    'jsdoc/require-jsdoc': [
+      'warn',
+      {
+        // publicOnly: true,
+        require: {
+          //   ArrowFunctionExpression: true,
+          // ClassDeclaration: true,
+          //   ClassExpression: false,
+          FunctionDeclaration: false
+          //   FunctionExpression: false,
+          //   MethodDefinition: true
+        },
+        contexts: [
+          'ClassDeclaration',
+          'ExportNamedDeclaration > FunctionDeclaration',
+          'MethodDefinition[accessibility="protected"][override=false]',
+          'MethodDefinition[accessibility="public"][override=false]',
+          'TSAbstractMethodDefinition[accessibility="public"]',
+          'TSAbstractMethodDefinition[accessibility="protected"]'
+        ]
+      }
+    ],
     'jsdoc/require-param-description': 'warn',
     'jsdoc/require-throws': 'warn',
     'jsdoc/tag-lines': [

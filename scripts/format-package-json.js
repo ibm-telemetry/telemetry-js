@@ -28,6 +28,12 @@ const beginningKeys = [
 ]
 const endKeys = ['scripts', 'dependencies', 'peerDependencies', 'devDependencies']
 
+/**
+ * Sorts the top-level keys in an object representing a package.json file.
+ *
+ * @param packageJson - An object representation of a package.json file.
+ * @returns A new object with keys sorted.
+ */
 function sortTopLevelKeys(packageJson) {
   const beginning = {}
   const middle = {}
@@ -54,6 +60,12 @@ function sortTopLevelKeys(packageJson) {
   }
 }
 
+/**
+ * Sorts the scripts map in a package.json object.
+ *
+ * @param packageJson - Object which has a scripts key to be sorted.
+ * @returns A new package.json object with the scripts sorted.
+ */
 function sortScripts(packageJson) {
   if (!('scripts' in packageJson)) {
     return packageJson
@@ -74,6 +86,11 @@ function sortScripts(packageJson) {
   return copy
 }
 
+/**
+ * Formats a package.json file.
+ *
+ * @param packageJsonPath - Path to the package.json file to be formatted.
+ */
 function processFile(packageJsonPath) {
   let packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
 

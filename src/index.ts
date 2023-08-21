@@ -26,6 +26,9 @@ import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
 
 */
 
+/**
+ * Runs data collection.
+ */
 async function run() {
   const date = new Date().toISOString()
   const logFilePath = await createLogFilePath(date)

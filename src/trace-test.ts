@@ -11,8 +11,11 @@ import { Trace } from './main/core/utils/trace.js'
 const date = new Date().toISOString()
 const logFilePath = await createLogFilePath(date)
 
+/**
+ * Throwaway.
+ */
 export class MyTestClass {
-  protected readonly logger: Logger
+  readonly logger: Logger
   constructor() {
     this.logger = new Logger(logFilePath)
   }

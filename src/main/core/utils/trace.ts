@@ -6,6 +6,7 @@
  */
 import 'reflect-metadata'
 
+import { type Loggable } from '../loggable.js'
 import { type Logger } from '../logger.js'
 import { safeStringify } from './safe-stringify.js'
 
@@ -25,65 +26,46 @@ const MAX_ARGS_STRING_LENGTH = 500 // characters
  * @returns A decorated method.
  */
 function Trace(): MethodDecorator {
-  return function methodDecorator(target, _propertyKey, descriptor) {
-    if (descriptor.value !== null && descriptor.value !== undefined) {
+  return function methodDecorator(_target, propertyKey, descriptor) {
+    if (
+      descriptor.value === null ||
+      descriptor.value === undefined ||
+      !(descriptor.value instanceof Function)
+    ) {
       return
     }
 
-    const traceableTarget = target as typeof target & { logger?: Logger, name?: string }
-
-    if (traceableTarget.logger == null) {
-      throw new Error('Attempt to trace method without a defined logger instance')
+    // Adjust type to represent a descriptor that is guaranteed to have a value
+    const descriptorWithValue = descriptor as typeof descriptor & {
+      value: NonNullable<(typeof descriptor)['value']>
     }
 
-    const original = descriptor.value as (...args: unknown[]) => unknown
+    const original = descriptor.value
 
+    descriptor.value = function (this: Loggable, ...args: unknown[]) {
+      const logger = this.logger
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- TODOASKJOE
+      if (logger === undefined) {
+        throw new Error('Attempt to trace method without a defined logger instance')
+      }
 
-    descriptor.value = withTrace(traceableTarget.logger, original) as typeof descriptor.value
+      setImmediate(() => { void traceEnter(logger, String(propertyKey), args) })
+
+      const result = original.apply(this, args)
+
+      setImmediate(() => { void traceExit(logger, String(propertyKey), result) })
+
+      return result
+    } as typeof descriptor.value
 
     // Preserve the original method name
     Object.defineProperty(descriptor.value, 'name', { value: original.name })
 
     // Preserve the original metadata
     Reflect.getMetadataKeys(original).forEach((key) => {
-      Reflect.defineMetadata(key, Reflect.getMetadata(key, original), descriptor.value!)
+      Reflect.defineMetadata(key, Reflect.getMetadata(key, original), descriptorWithValue.value)
     })
   }
-}
-
-/**
- * Returns a wrapped version of a function that uses the provided logger to log a set of debug
- * messages before and after the wrapped functions's execution. The debug messages contain the name
- * of the called function, a stringified version of its arguments, and a stringified version of its
- * return value.
- *
- * @param logger - Instance of Logger extracted from the target.
- * @param functionDef - Original function to trace.
- * @returns A wrapped function.
- */
-function withTrace<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- need to accept any function args
-  T extends (...args: any[]) => unknown
->(logger: Logger, functionDef: T): T {
-  const functionName = functionDef.name || '(anonymous function)'
-
-  return async function traced(this: unknown, ...args: unknown[]) {
-    await traceEnter(logger, functionName, args)
-
-    let result
-
-    try {
-      // Call the original method and capture the result
-      result = functionDef.apply(this, args)
-
-      return result
-    } catch (err) {
-      result = err
-      throw err
-    } finally {
-      await traceExit(logger, functionName, result)
-    }
-  } as T
 }
 
 function truncate(str: string) {

@@ -39,7 +39,7 @@ class Logger {
 }
 
 /**
- * TODO.
+ * Creates a valid filename that can be used in the temp folder of the file system.
  *
  * @param date - Used in the filename. Usually the current date.
  * @returns A string representing an unused filename in the temp directory.

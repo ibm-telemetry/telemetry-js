@@ -102,4 +102,9 @@ async function traceExit(logger: Logger, methodName: string, result: unknown) {
   }
 }
 
-export { Trace }
+// eslint-disable-next-line @typescript-eslint/naming-convention -- TODOASKJOE
+const __test__ = {
+  MAX_ARGS_STRING_LENGTH
+}
+
+export { __test__, Trace }

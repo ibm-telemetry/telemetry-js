@@ -18,11 +18,11 @@ function safeStringify(arg: unknown): string {
     result = JSON.stringify(arg)
   } catch {}
 
-  if (result !== undefined) {
+  if (result === undefined) {
     result = String(arg)
   }
 
-  return result ?? ''
+  return result
 }
 
 export { safeStringify }

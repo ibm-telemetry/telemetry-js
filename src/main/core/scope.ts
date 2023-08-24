@@ -27,9 +27,9 @@ export abstract class Scope extends Loggable {
    *
    * @param metric - The actual metric data.
    */
-  protected capture(metric: ScopeMetric): void {
-    console.log('I captured some data!')
-    console.log(metric.name)
-    console.log(JSON.stringify(metric.attributes))
+  protected async capture(metric: ScopeMetric): Promise<void> {
+    void this.logger.log('debug', 'I captured some data!')
+    void this.logger.log('debug', metric.name)
+    void this.logger.log('debug', JSON.stringify(metric.attributes))
   }
 }

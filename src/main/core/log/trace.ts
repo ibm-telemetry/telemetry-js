@@ -7,8 +7,9 @@
 import 'reflect-metadata'
 
 import { type Loggable } from './loggable.js'
-import { type Logger } from './logger.js'
+import { Logger } from './logger.js'
 import { safeStringify } from './safe-stringify.js'
+import { truncateString } from './truncate-string.js'
 
 const MAX_ARGS_STRING_LENGTH = 500 // characters
 
@@ -43,9 +44,10 @@ function Trace(): MethodDecorator {
     const original = descriptor.value
 
     descriptor.value = function (this: Loggable, ...args: unknown[]) {
-      const logger = this.logger
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- TODOASKJOE
-      if (logger === undefined) {
+      // We treat this as unknown because we can't enforce this decorator is defined on a Loggable
+      const logger: unknown = this.logger
+
+      if (!(logger instanceof Logger)) {
         throw new Error('Attempt to trace method without a defined logger instance')
       }
 
@@ -53,7 +55,16 @@ function Trace(): MethodDecorator {
         void traceEnter(logger, String(propertyKey), args)
       })
 
-      const result = original.apply(this, args)
+      let result: unknown
+      try {
+        result = original.apply(this, args)
+      } catch (err) {
+        setImmediate(() => {
+          void traceExit(logger, String(propertyKey), err)
+        })
+
+        throw err
+      }
 
       setImmediate(() => {
         void traceExit(logger, String(propertyKey), result)
@@ -72,16 +83,8 @@ function Trace(): MethodDecorator {
   }
 }
 
-function truncate(str: string) {
-  if (str.length > MAX_ARGS_STRING_LENGTH) {
-    return str.substring(0, MAX_ARGS_STRING_LENGTH) + '... (truncated)'
-  }
-
-  return str
-}
-
 async function traceEnter(logger: Logger, methodName: string, args: unknown[]) {
-  const stringArgs = truncate(String(args.map(safeStringify)))
+  const stringArgs = truncateString(String(args.map(safeStringify)), MAX_ARGS_STRING_LENGTH)
 
   await logger.log('debug', `-> ${methodName}(${stringArgs})`)
 }
@@ -90,7 +93,10 @@ async function traceExit(logger: Logger, methodName: string, result: unknown) {
   if (result instanceof Promise) {
     result.then(
       async (value: unknown) => {
-        await logger.log('debug', `<- ${methodName} <- ${truncate(safeStringify(value))}`)
+        await logger.log(
+          'debug',
+          `<- ${methodName} <- ${truncateString(safeStringify(value), MAX_ARGS_STRING_LENGTH)}`
+        )
       },
       async (err: unknown) => {
         await logger.log('debug', `-x- ${methodName} <- ${err?.toString() ?? ''}`)
@@ -100,7 +106,9 @@ async function traceExit(logger: Logger, methodName: string, result: unknown) {
     await logger.log(
       'debug',
       `${result instanceof Error ? '-x-' : '<-'} ${methodName} <- ${
-        result instanceof Error ? result.toString() : truncate(safeStringify(result))
+        result instanceof Error
+          ? result.toString()
+          : truncateString(safeStringify(result), MAX_ARGS_STRING_LENGTH)
       }`
     )
   }

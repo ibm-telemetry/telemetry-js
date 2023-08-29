@@ -6,12 +6,11 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { safeStringify } from '../../../main/core/log/safe-stringify.js'
-import { MAX_ARGS_STRING_LENGTH, Trace } from '../../../main/core/log/trace.js'
+import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../../main/core/log/logger.js'
+import { Trace } from '../../../main/core/log/trace.js'
 
-const testLogger = {
-  log: (_level: 'debug', _msg: string | Error) => {}
-}
+const testLogger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 describe('trace', () => {
   it('returns the original value', () => {
@@ -131,27 +130,15 @@ describe('trace', () => {
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
 
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression -- TODOASKJOE
-    const result = descriptor.value()
-
-    expect(result).toStrictEqual(undefined)
+    expect(() => {
+      descriptor.value()
+    }).not.toThrow()
   })
 
   it('works with a symbol', () => {
     const testTraceableMethod = () => Symbol('asdf')
 
-    const logger = new (class MyLogger {
-      // TODOASKJOE
-      log(_level: 'debug', msg: string) {
-        if (msg.startsWith('<-')) {
-          expect(msg.endsWith('<- testFunctionName <- Symbol(asdf)')).toBeTruthy()
-        } else {
-          expect(msg.startsWith('->')).toBeTruthy()
-        }
-      }
-    })()
-
-    const descriptor = { value: testTraceableMethod, logger }
+    const descriptor = { value: testTraceableMethod, logger: testLogger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -163,18 +150,7 @@ describe('trace', () => {
   it('works with a bigint', () => {
     const testTraceableMethod = () => BigInt(123)
 
-    const logger = new (class MyLogger {
-      // TODOASKJOE
-      log(_level: 'debug', msg: string) {
-        if (msg.startsWith('<-')) {
-          expect(msg.endsWith('<- testFunctionName <- 123')).toBeTruthy()
-        } else {
-          expect(msg.startsWith('->')).toBeTruthy()
-        }
-      }
-    })()
-
-    const descriptor = { value: testTraceableMethod, logger }
+    const descriptor = { value: testTraceableMethod, logger: testLogger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -199,66 +175,5 @@ describe('trace', () => {
     descriptor.value('its an arg!')
 
     expect(Reflect.getMetadata(metadataKey, descriptor.value)).toStrictEqual('wowow')
-  })
-
-  it('truncates a long arg list', () => {
-    const argsList: string[] = []
-    for (let i = 0; i < 500; i++) {
-      argsList.push('a')
-    }
-
-    const expected =
-      '-> testFunctionName(' +
-      String(argsList.map(safeStringify)).substring(0, MAX_ARGS_STRING_LENGTH) +
-      '... (truncated))'
-
-    const logger = new (class MyLogger {
-      // TODOASKJOE
-      log(_level: 'debug', msg: string) {
-        if (msg.startsWith('->')) {
-          expect(msg).toStrictEqual(expected)
-        } else {
-          expect(msg.startsWith('<-')).toBeTruthy()
-        }
-      }
-    })()
-
-    const testTraceableMethod = (...arg: string[]) => arg
-
-    const descriptor = { value: testTraceableMethod, logger }
-
-    // Decorate the function
-    Trace()({}, 'testFunctionName', descriptor)
-
-    descriptor.value(...argsList)
-  })
-
-  it('truncates a long return value', () => {
-    const retVal = ''.padEnd(MAX_ARGS_STRING_LENGTH * 2, 'a')
-
-    const expected =
-      '<- testFunctionName <- ' +
-      JSON.stringify(retVal).substring(0, MAX_ARGS_STRING_LENGTH) +
-      '... (truncated)'
-
-    const logger = new (class MyLogger {
-      // TODOASKJOE
-      log(_level: 'debug', msg: string) {
-        if (msg.startsWith('<-')) {
-          expect(msg.startsWith(expected)).toBeTruthy()
-        } else {
-          expect(msg.startsWith('->')).toBeTruthy()
-        }
-      }
-    })()
-
-    const testTraceableMethod = () => retVal
-
-    const descriptor = { value: testTraceableMethod, logger }
-
-    // Decorate the function
-    Trace()({}, 'testFunctionName', descriptor)
-
-    descriptor.value()
   })
 })

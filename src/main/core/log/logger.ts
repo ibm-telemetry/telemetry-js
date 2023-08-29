@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { appendFile } from 'fs/promises'
-import { tmpName } from 'tmp-promise'
 
 type Level = 'debug' | 'error'
 
@@ -38,16 +37,4 @@ class Logger {
   }
 }
 
-/**
- * Creates a valid filename that can be used in the temp folder of the file system.
- *
- * @param date - Used in the filename. Usually the current date.
- * @returns A string representing an unused filename in the temp directory.
- */
-async function createLogFilePath(date: string) {
-  return await tmpName({
-    template: `ibmtelemetrics-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
-  })
-}
-
-export { createLogFilePath, Logger }
+export { Logger }

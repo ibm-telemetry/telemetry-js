@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Loggable } from './main/core/loggable.js'
-import { createLogFilePath, Logger } from './main/core/logger.js'
-import { Trace } from './main/core/utils/trace.js'
+import { createLogFilePath } from './main/core/log/create-log-file-path.js'
+import { Loggable } from './main/core/log/loggable.js'
+import { Logger } from './main/core/log/logger.js'
+import { Trace } from './main/core/log/trace.js'
 
 const date = new Date().toISOString()
 const logFilePath = await createLogFilePath(date)

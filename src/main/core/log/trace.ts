@@ -6,8 +6,8 @@
  */
 import 'reflect-metadata'
 
-import { type Loggable } from '../loggable.js'
-import { type Logger } from '../logger.js'
+import { type Loggable } from './loggable.js'
+import { type Logger } from './logger.js'
 import { safeStringify } from './safe-stringify.js'
 
 const MAX_ARGS_STRING_LENGTH = 500 // characters
@@ -49,11 +49,15 @@ function Trace(): MethodDecorator {
         throw new Error('Attempt to trace method without a defined logger instance')
       }
 
-      setImmediate(() => { void traceEnter(logger, String(propertyKey), args) })
+      setImmediate(() => {
+        void traceEnter(logger, String(propertyKey), args)
+      })
 
       const result = original.apply(this, args)
 
-      setImmediate(() => { void traceExit(logger, String(propertyKey), result) })
+      setImmediate(() => {
+        void traceExit(logger, String(propertyKey), result)
+      })
 
       return result
     } as typeof descriptor.value
@@ -102,9 +106,4 @@ async function traceExit(logger: Logger, methodName: string, result: unknown) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention -- TODOASKJOE
-const __test__ = {
-  MAX_ARGS_STRING_LENGTH
-}
-
-export { __test__, Trace }
+export { MAX_ARGS_STRING_LENGTH, Trace }

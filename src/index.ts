@@ -7,7 +7,8 @@
  */
 import { exec } from './main/core/exec.js'
 import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
-import { createLogFilePath, Logger } from './main/core/logger.js'
+import { createLogFilePath } from './main/core/log/create-log-file-path.js'
+import { Logger } from './main/core/log/logger.js'
 import * as ResourceAttributes from './main/core/resource-attributes.js'
 import { tokenizeRepository } from './main/core/tokenize-repository.js'
 import { getPackageName } from './main/scopes/npm/get-package-name.js'
@@ -52,18 +53,16 @@ async function run() {
   const gitOrigin = exec('git remote get-url origin')
   const repository = tokenizeRepository(gitOrigin)
 
-  const { metricReader } = initializeOpenTelemetry(
-    {
-      [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
-      [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
-      [ResourceAttributes.PROJECT_ID]: config.projectId,
-      [ResourceAttributes.ANALYZED_RAW]: gitOrigin,
-      [ResourceAttributes.ANALYZED_HOST]: repository.host,
-      [ResourceAttributes.ANALYZED_OWNER]: repository.owner,
-      [ResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-      [ResourceAttributes.DATE]: date
-    }
-  )
+  const { metricReader } = initializeOpenTelemetry({
+    [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
+    [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
+    [ResourceAttributes.PROJECT_ID]: config.projectId,
+    [ResourceAttributes.ANALYZED_RAW]: gitOrigin,
+    [ResourceAttributes.ANALYZED_HOST]: repository.host,
+    [ResourceAttributes.ANALYZED_OWNER]: repository.owner,
+    [ResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
+    [ResourceAttributes.DATE]: date
+  })
 
   const results = await metricReader.collect()
 

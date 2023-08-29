@@ -6,8 +6,8 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { safeStringify } from '../../../main/core/utils/safe-stringify.js'
-import { __test__, Trace } from '../../../main/core/utils/trace.js'
+import { safeStringify } from '../../../main/core/log/safe-stringify.js'
+import { MAX_ARGS_STRING_LENGTH, Trace } from '../../../main/core/log/trace.js'
 
 const testLogger = {
   log: (_level: 'debug', _msg: string | Error) => {}
@@ -209,7 +209,7 @@ describe('trace', () => {
 
     const expected =
       '-> testFunctionName(' +
-      String(argsList.map(safeStringify)).substring(0, __test__.MAX_ARGS_STRING_LENGTH) +
+      String(argsList.map(safeStringify)).substring(0, MAX_ARGS_STRING_LENGTH) +
       '... (truncated))'
 
     const logger = new (class MyLogger {
@@ -234,11 +234,11 @@ describe('trace', () => {
   })
 
   it('truncates a long return value', () => {
-    const retVal = ''.padEnd(__test__.MAX_ARGS_STRING_LENGTH * 2, 'a')
+    const retVal = ''.padEnd(MAX_ARGS_STRING_LENGTH * 2, 'a')
 
     const expected =
       '<- testFunctionName <- ' +
-      JSON.stringify(retVal).substring(0, __test__.MAX_ARGS_STRING_LENGTH) +
+      JSON.stringify(retVal).substring(0, MAX_ARGS_STRING_LENGTH) +
       '... (truncated)'
 
     const logger = new (class MyLogger {

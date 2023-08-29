@@ -11,7 +11,7 @@ type Level = 'debug' | 'error'
 /**
  * Logger class to log debug and error statements to a given file.
  */
-class Logger {
+export class Logger {
   private readonly filePath: string
 
   /**
@@ -36,5 +36,3 @@ class Logger {
     await appendFile(this.filePath, `${level} ${new Date().toISOString()} ${msg}\n`)
   }
 }
-
-export { Logger }

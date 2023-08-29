@@ -11,7 +11,7 @@
  * @param arg - The element to stringify.
  * @returns - The string representation of the supplied argument.
  */
-function safeStringify(arg: unknown): string {
+export function safeStringify(arg: unknown): string {
   let result
 
   try {
@@ -24,5 +24,3 @@ function safeStringify(arg: unknown): string {
 
   return result
 }
-
-export { safeStringify }

@@ -5,14 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { appendFile } from 'fs/promises'
-import { tmpName } from 'tmp-promise'
 
 type Level = 'debug' | 'error'
 
 /**
  * Logger class to log debug and error statements to a given file.
  */
-class Logger {
+export class Logger {
   private readonly filePath: string
 
   /**
@@ -37,17 +36,3 @@ class Logger {
     await appendFile(this.filePath, `${level} ${new Date().toISOString()} ${msg}\n`)
   }
 }
-
-/**
- * Creates a valid filename that can be used in the temp folder of the file system.
- *
- * @param date - Used in the filename. Usually the current date.
- * @returns A string representing an unused filename in the temp directory.
- */
-async function createLogFilePath(date: string) {
-  return await tmpName({
-    template: `ibmtelemetrics-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
-  })
-}
-
-export { createLogFilePath, Logger }

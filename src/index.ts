@@ -8,7 +8,8 @@
 
 import { exec } from './main/core/exec.js'
 import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
-import { createLogFilePath, Logger } from './main/core/logger.js'
+import { createLogFilePath } from './main/core/log/create-log-file-path.js'
+import { Logger } from './main/core/log/logger.js'
 import * as ResourceAttributes from './main/core/resource-attributes.js'
 import { tokenizeRepository } from './main/core/tokenize-repository.js'
 import { getPackageName } from './main/scopes/npm/get-package-name.js'

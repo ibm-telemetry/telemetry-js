@@ -44,6 +44,7 @@
     "@opentelemetry/resources": "^1.15.2",
     "@opentelemetry/sdk-metrics": "^1.15.2",
     "@opentelemetry/semantic-conventions": "^1.15.2",
+    "reflect-metadata": "^0.1.13",
     "tmp-promise": "^3.0.3"
   },
   "devDependencies": {

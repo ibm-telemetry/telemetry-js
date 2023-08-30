@@ -6,7 +6,7 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 
-import { type Logger } from '../../../main/core/logger.js'
+import { type Logger } from '../../../main/core/log/logger.js'
 import { type ScopeMetric } from '../../../main/core/scope-metric.js'
 import * as packageDependencies from '../../../main/scopes/npm/get-package-dependencies.js'
 import { DependencyMetric } from '../../../main/scopes/npm/metrics/dependency-metric.js'

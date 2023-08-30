@@ -6,7 +6,7 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 
-import { type Logger } from '../../main/core/logger.js'
+import { type Logger } from '../../main/core/log/logger.js'
 import { Scope } from '../../main/core/scope.js'
 import { ScopeMetric } from '../../main/core/scope-metric.js'
 
@@ -35,7 +35,8 @@ describe('scope', () => {
       protected override logger = testLogger as unknown as Logger
 
       public override async run() {
-        void this.capture(new ExtendedScopeMetric())
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises -- TODOASKJOE
+        this.capture(new ExtendedScopeMetric())
       }
     }
 

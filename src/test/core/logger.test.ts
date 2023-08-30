@@ -8,7 +8,8 @@ import { existsSync, unlinkSync } from 'fs'
 import { readFile } from 'fs/promises'
 import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath, Logger } from '../../main/core/logger.js'
+import { createLogFilePath } from '../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../main/core/log/logger.js'
 
 describe('logger', () => {
   it('creates and logs message to file', async () => {

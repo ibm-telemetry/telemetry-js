@@ -6,7 +6,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-
 #
 # Limit workflow to a single running instance at a time
 #
@@ -80,8 +79,9 @@ jobs:
       - name: Install Node Modules 🔧
         run: npm install
 
-      - name: Build 🔨
-        run: npm run build
+        # TODO: remove this one the schema is in its own package
+      - name: Build schema file 🔨
+        run: npm run build:schema
 
       - name: Test 🧪
         run: npm run test

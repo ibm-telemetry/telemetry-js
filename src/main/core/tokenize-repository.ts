@@ -45,7 +45,6 @@ function tokenizeRepository(repositoryUrl: string) {
  */
 function parseHttp(raw: string) {
   const match = /^https?:\/\/((.*?)\/)?((.*?)\/)?(.*)/.exec(raw) ?? []
-
   const [_raw, _hostGroup, host, _ownerGroup, owner, repository] = match
 
   return {
@@ -63,7 +62,6 @@ function parseHttp(raw: string) {
  */
 function parseSsh(raw: string) {
   const match = /^(.*?)@(.*?):((.*?)\/)?(.*)/.exec(raw) ?? []
-
   const [_raw, _user, host, _ownerGroup, owner, repository] = match
 
   return {

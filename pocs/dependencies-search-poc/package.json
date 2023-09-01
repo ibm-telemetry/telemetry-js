@@ -1,0 +1,23 @@
+{
+  "name": "dependencies-search-poc",
+  "description": "",
+  "version": "1.0.0",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "a": "file:a/a-1.0.0.tgz",
+    "b": "file:b/b-1.0.0.tgz",
+    "c": "file:c/c-1.0.0.tgz",
+    "immer": "^10.0.2",
+    "lodash": "^4.17.21",
+    "object-scan": "^19.0.2"
+  },
+  "devDependencies": {
+    "e": "file:e/e-1.0.0.tgz"
+  }
+}

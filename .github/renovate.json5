@@ -9,7 +9,7 @@
     'schedule:earlyMondays'
   ],
   // Release Please does not consider `deps:` to be releasable units
-  commitMessagePrefix: 'fix:',
+  commitMessagePrefix: 'fix(deps):',
   commitMessageAction: 'upgrade',
   // Tell dependency dashboard to only require PR creation approval for major versions
   major: {

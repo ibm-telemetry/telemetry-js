@@ -5,6 +5,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 import { exec } from './main/core/exec.js'
 import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
 import { createLogFilePath } from './main/core/log/create-log-file-path.js'
@@ -32,6 +33,7 @@ import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
 async function run() {
   const date = new Date().toISOString()
   const logFilePath = await createLogFilePath(date)
+
   const logger = new Logger(logFilePath)
 
   // TODO: remove this test code
@@ -53,7 +55,7 @@ async function run() {
   const gitOrigin = exec('git remote get-url origin')
   const repository = tokenizeRepository(gitOrigin)
 
-  const { metricReader } = initializeOpenTelemetry({
+  const metricReader = initializeOpenTelemetry({
     [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
     [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
     [ResourceAttributes.PROJECT_ID]: config.projectId,

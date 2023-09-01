@@ -46,7 +46,7 @@ const findPkgInProject = (pkgName, pkgVersion) => {
       const pkgJSONContents = JSON.parse(exec('npm ls --all --json', { cwd: currentPath }))
       installingPackages.push(...parsePkgJSONContents(pkgJSONContents, pkgName, pkgVersion))
     }
-    currentPath = path.join(currentPath, '../')
+    currentPath = path.join(currentPath, '..')
   }
   return installingPackages
 }

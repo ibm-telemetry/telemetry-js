@@ -37,7 +37,8 @@ const parsePkgJSONContents = (json, pkgName, pkgVersion) => {
 
 const findPkgInProject = (pkgName, pkgVersion) => {
   const installingPackages = []
-  let currentPath = path.join(process.cwd(), '../../')
+  // Assume we are in a sub-folder of a node_modules folder. Step out of it
+  let currentPath = path.join(process.cwd(), '..', '..')
 
   // what happens if we run out of paths? would that even happen?
   while (installingPackages.length === 0 && currentPath !== '' && currentPath !== '../') {

@@ -19,7 +19,7 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': undefined
+      'version.preRelease': ''
     })
   })
 
@@ -47,7 +47,7 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': undefined
+      'version.preRelease': ''
     })
   })
 

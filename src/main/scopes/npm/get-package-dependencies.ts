@@ -9,25 +9,21 @@ import path from 'node:path'
 import { exec } from '../../core/exec.js'
 
 /**
- * Uses the `pkg get` NPM command to get the dependencies or devDependencies from the
+ * Uses the `pkg get` NPM command to get the dependencies from the
  * package.json file closest to this
  * file.
  *
- * @param type - Determines whether to get base dependencies or dev dependencies.
- * Defaults to 'base'.
  * @returns The result of the get dependencies command parsed to JSON.
  */
-export function getPackageDependencies(type: 'base' | 'dev' = 'base') {
+export function getPackageDependencies() {
   const cwd = path.dirname(import.meta.url.substring(7))
 
-  return Object.entries(
-    JSON.parse(
-      exec(type === 'base' ? 'npm pkg get dependencies' : 'npm pkg get devDependencies', { cwd })
-    )
-  ).map(([key, value]) => {
-    return {
-      name: key,
-      version: value
+  return Object.entries(JSON.parse(exec('npm ls --all --json', { cwd })).dependencies).map(
+    ([key, value]) => {
+      return {
+        name: key,
+        version: (value as { version: string }).version
+      }
     }
-  })
+  )
 }

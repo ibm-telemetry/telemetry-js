@@ -14,6 +14,8 @@ import { type DependencyData, DependencyMetric } from './metrics/dependency-metr
  */
 export class NpmScope extends Scope {
   protected override logger: Logger
+  // TODOASKJOE
+  public name = 'NpmScope'
 
   /**
    * Constructs an NpmScope.
@@ -26,15 +28,8 @@ export class NpmScope extends Scope {
   }
 
   public override async run(): Promise<void> {
-    void this.logger.log('debug', '--------------DEPENDENCIES--------------')
-    getPackageDependencies('base').forEach((dep) => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- TODOASKJOE
-      this.capture(new DependencyMetric(dep as DependencyData))
-    })
-    void this.logger.log('debug', '--------------DEV DEPENDENCIES--------------')
-    getPackageDependencies('dev').forEach((dep) => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- TODOASKJOE
-      this.capture(new DependencyMetric(dep as DependencyData))
+    getPackageDependencies().forEach((dep: DependencyData) => {
+      this.capture(new DependencyMetric(dep))
     })
   }
 }

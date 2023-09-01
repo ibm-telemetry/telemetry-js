@@ -6,9 +6,9 @@
  */
 
 import { type Attributes } from '@opentelemetry/api'
+import { SemVer } from 'semver'
 
 import { ScopeMetric } from '../../../core/scope-metric.js'
-
 export interface DependencyData {
   name: string
   version: string
@@ -39,10 +39,10 @@ export class DependencyMetric extends ScopeMetric {
       owner,
       name,
       'version.raw': this.data.version,
-      'version.major': major,
-      'version.minor': minor,
-      'version.patch': patch,
-      'version.preRelease': preRelease
+      'version.major': major.toString(),
+      'version.minor': minor.toString(),
+      'version.patch': patch.toString(),
+      'version.preRelease': preRelease.join('.')
     }
   }
 
@@ -53,7 +53,7 @@ export class DependencyMetric extends ScopeMetric {
    */
   private getPackageDetails() {
     const fullPackageName = this.data.name
-    let owner, name, patch, preRelease
+    let owner, name
 
     if (fullPackageName.startsWith('@') && fullPackageName.includes('/')) {
       ;[owner, name] = fullPackageName.split('/')
@@ -61,22 +61,7 @@ export class DependencyMetric extends ScopeMetric {
       name = fullPackageName
     }
 
-    const [major, minor, ...rest] = this.data.version.split('.')
-
-    if (rest.join('.').includes('-')) {
-      let additionalInformation
-      ;[patch, ...additionalInformation] = rest.join('.').split('-')
-
-      if (additionalInformation.join('').includes('+')) {
-        ;[preRelease] = additionalInformation.join('').split('+')
-      } else {
-        preRelease = additionalInformation[0]
-      }
-    } else if (rest[0]?.includes('+') ?? false) {
-      ;[patch] = rest[0]?.split('+')
-    } else {
-      patch = rest[0]
-    }
+    const { major, minor, patch, prerelease } = new SemVer(this.data.version)
 
     return {
       owner,
@@ -84,7 +69,7 @@ export class DependencyMetric extends ScopeMetric {
       major,
       minor,
       patch,
-      preRelease
+      preRelease: prerelease
     }
   }
 }

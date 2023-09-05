@@ -55,7 +55,7 @@ async function run() {
   const gitOrigin = exec('git remote get-url origin')
   const repository = tokenizeRepository(gitOrigin)
 
-  const { metricReader } = initializeOpenTelemetry({
+  const metricReader = initializeOpenTelemetry({
     [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
     [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
     [ResourceAttributes.PROJECT_ID]: config.projectId,

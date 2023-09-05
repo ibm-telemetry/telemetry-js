@@ -9,8 +9,5 @@ collect:
   npm:
     dependencies:
   jsx:
-    elements:
-      allowedAttributeStringValues:
-        - 'one'
-        - 'two'
+    elements: {}
 projectId: '123'

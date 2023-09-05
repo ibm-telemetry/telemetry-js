@@ -13,7 +13,7 @@ import { Fixture } from '../__utils/fixture.js'
 
 describe('parseYamlFile', () => {
   it('successfully parses correctly formatted file', async () => {
-    const fixture = new Fixture('config-files/valid-config-all-keys.yml')
+    const fixture = new Fixture('config-files/valid/all-keys.yml')
 
     await expect(parseYamlFile(fixture.path)).resolves.resolves.not.toThrow()
   })

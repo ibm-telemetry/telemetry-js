@@ -9,7 +9,7 @@ import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 
 import { ConfigValidator } from '../../../main/core/config/config-validator.js'
-import { type ConfigValidationError } from '../../../main/exceptions/config-validation-error.js'
+import { ConfigValidationError } from '../../../main/exceptions/config-validation-error.js'
 import { Fixture } from '../../__utils/fixture.js'
 
 // TODO: get this from the external package
@@ -19,7 +19,16 @@ const validator = new ConfigValidator(JSON.parse(schemaFileContents))
 
 describe('configValidator', () => {
   it('returns for a valid configuration', async () => {
-    const fixture = new Fixture('config-files/valid-config-all-keys.yml')
+    const fixture = new Fixture('config-files/valid/all-keys.yml')
+    const config = await fixture.parse()
+
+    expect(() => {
+      validator.validateConfig(config)
+    }).not.toThrow()
+  })
+
+  it('allows for an empty elements object in jsx scope', async () => {
+    const fixture = new Fixture('config-files/valid/empty-jsx-elements.yml')
     const config = await fixture.parse()
 
     expect(() => {
@@ -38,7 +47,7 @@ describe('configValidator', () => {
       err = e
     }
 
-    // expect(err).toBeInstanceOf(ConfigValidationError)
+    expect(err).toBeInstanceOf(ConfigValidationError)
 
     expect((err as ConfigValidationError).errors).toStrictEqual([
       {
@@ -52,168 +61,211 @@ describe('configValidator', () => {
     ])
   })
 
-  // it('does not allow extra properties', () => {
-  //   const testObj = { ...sampleConfig, hey: 'hey' }
-  //   expect(getConfigObjectValidationErrors(testObj)).toStrictEqual([
-  //     {
-  //       instancePath: '',
-  //       keyword: 'additionalProperties',
-  //       message: 'must NOT have additional properties',
-  //       params: {
-  //         additionalProperty: 'hey'
-  //       }
-  //     }
-  //   ])
-  // })
+  it('requires version', async () => {
+    const fixture = new Fixture('config-files/invalid/missing-keys/missing-version.yml')
+    const config = await fixture.parse()
+    let err
 
-  // it('requires version', () => {
-  //   const { version: _version, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(getConfigObjectValidationErrors(rest as any)).toStrictEqual([
-  //     {
-  //       instancePath: '',
-  //       keyword: 'required',
-  //       message: "must have required property 'version'",
-  //       params: {
-  //         missingProperty: 'version'
-  //       }
-  //     }
-  //   ])
-  // })
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
 
-  // it('requires projectId', () => {
-  //   const { projectId: _projectId, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(getConfigObjectValidationErrors(rest as any)).toStrictEqual([
-  //     {
-  //       instancePath: '',
-  //       keyword: 'required',
-  //       message: "must have required property 'projectId'",
-  //       params: {
-  //         missingProperty: 'projectId'
-  //       }
-  //     }
-  //   ])
-  // })
+    expect(err).toBeInstanceOf(ConfigValidationError)
 
-  // it('requires collect', () => {
-  //   const { collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(getConfigObjectValidationErrors(rest as any)).toStrictEqual([
-  //     {
-  //       instancePath: '',
-  //       keyword: 'required',
-  //       message: "must have required property 'collect'",
-  //       params: {
-  //         missingProperty: 'collect'
-  //       }
-  //     }
-  //   ])
-  // })
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '',
+        keyword: 'required',
+        message: "must have required property 'version'",
+        params: {
+          missingProperty: 'version'
+        }
+      }
+    ])
+  })
 
-  // it('requires at least one property in npm scope', () => {
-  //   const { collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(getConfigObjectValidationErrors({ ...rest, collect: { npm: {} } })).toStrictEqual([
-  //     {
-  //       instancePath: '/collect/npm',
-  //       keyword: 'minProperties',
-  //       message: 'must NOT have fewer than 1 properties',
-  //       params: {
-  //         limit: 1
-  //       }
-  //     }
-  //   ])
-  // })
+  it('requires projectId', async () => {
+    const fixture = new Fixture('config-files/invalid/missing-keys/missing-project-id.yml')
+    const config = await fixture.parse()
+    let err
 
-  // it('requires at least one property in jsx scope', () => {
-  //   const { collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(getConfigObjectValidationErrors({ ...rest, collect: { jsx: {} } })).toStrictEqual([
-  //     {
-  //       instancePath: '/collect/jsx',
-  //       keyword: 'minProperties',
-  //       message: 'must NOT have fewer than 1 properties',
-  //       params: {
-  //         limit: 1
-  //       }
-  //     }
-  //   ])
-  // })
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
 
-  // it('allows for an empty elements object in jsx scope', () => {
-  //   const { collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(
-  //     getConfigObjectValidationErrors({ ...rest, collect: { jsx: { elements: {} } } })
-  //   ).toStrictEqual([])
-  // })
+    expect(err).toBeInstanceOf(ConfigValidationError)
 
-  // it('requires at least one name if allowedAttributeNames is defined', () => {
-  //   const { collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(
-  //     getConfigObjectValidationErrors({
-  //       ...rest,
-  //       collect: { jsx: { elements: { allowedAttributeNames: [] } } }
-  //     })
-  //   ).toStrictEqual([
-  //     {
-  //       instancePath: '/collect/jsx/elements/allowedAttributeNames',
-  //       keyword: 'minItems',
-  //       message: 'must NOT have fewer than 1 items',
-  //       params: {
-  //         limit: 1
-  //       }
-  //     }
-  //   ])
-  // })
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '',
+        keyword: 'required',
+        message: "must have required property 'projectId'",
+        params: {
+          missingProperty: 'projectId'
+        }
+      }
+    ])
+  })
 
-  // it('requires at least one value if allowedAttributeStringValues is defined', () => {
-  //   const { collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(
-  //     getConfigObjectValidationErrors({
-  //       ...rest,
-  //       collect: { jsx: { elements: { allowedAttributeStringValues: [] } } }
-  //     })
-  //   ).toStrictEqual([
-  //     {
-  //       instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
-  //       keyword: 'minItems',
-  //       message: 'must NOT have fewer than 1 items',
-  //       params: {
-  //         limit: 1
-  //       }
-  //     }
-  //   ])
-  // })
+  it('requires collect', async () => {
+    const fixture = new Fixture('config-files/invalid/missing-keys/missing-collect.yml')
+    const config = await fixture.parse()
+    let err
 
-  // it('is able to identify more than one error', () => {
-  //   const { version: _version, collect: _collect, ...rest } = sampleConfig
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
-  //   expect(
-  //     getConfigObjectValidationErrors({
-  //       ...rest,
-  //       collect: { jsx: { elements: { allowedAttributeStringValues: [] } } }
-  //     })
-  //   ).toStrictEqual([
-  //     {
-  //       instancePath: '',
-  //       keyword: 'required',
-  //       message: "must have required property 'version'",
-  //       params: {
-  //         missingProperty: 'version'
-  //       }
-  //     },
-  //     {
-  //       instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
-  //       keyword: 'minItems',
-  //       message: 'must NOT have fewer than 1 items',
-  //       params: {
-  //         limit: 1
-  //       }
-  //     }
-  //   ])
-  // })
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '',
+        keyword: 'required',
+        message: "must have required property 'collect'",
+        params: {
+          missingProperty: 'collect'
+        }
+      }
+    ])
+  })
+
+  it('requires at least one property in npm scope', async () => {
+    const fixture = new Fixture('config-files/invalid/missing-keys/missing-npm-keys.yml')
+    const config = await fixture.parse()
+    let err
+
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '/collect/npm',
+        keyword: 'minProperties',
+        message: 'must NOT have fewer than 1 properties',
+        params: {
+          limit: 1
+        }
+      }
+    ])
+  })
+
+  it('requires at least one property in jsx scope', async () => {
+    const fixture = new Fixture('config-files/invalid/missing-keys/missing-jsx-keys.yml')
+    const config = await fixture.parse()
+    let err
+
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '/collect/jsx',
+        keyword: 'minProperties',
+        message: 'must NOT have fewer than 1 properties',
+        params: {
+          limit: 1
+        }
+      }
+    ])
+  })
+
+  it('requires at least one name if allowedAttributeNames is defined', async () => {
+    const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-names.yml')
+    const config = await fixture.parse()
+    let err
+
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '/collect/jsx/elements/allowedAttributeNames',
+        keyword: 'minItems',
+        message: 'must NOT have fewer than 1 items',
+        params: {
+          limit: 1
+        }
+      }
+    ])
+  })
+
+  it('requires at least one value if allowedAttributeStringValues is defined', async () => {
+    const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-string-values.yml')
+    const config = await fixture.parse()
+    let err
+
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
+        keyword: 'minItems',
+        message: 'must NOT have fewer than 1 items',
+        params: {
+          limit: 1
+        }
+      }
+    ])
+  })
+
+  it('is able to identify more than one error', async () => {
+    const fixture = new Fixture('config-files/invalid/multiple-errors.yml')
+    const config = await fixture.parse()
+    let err
+
+    try {
+      validator.validateConfig(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '',
+        keyword: 'required',
+        message: "must have required property 'version'",
+        params: {
+          missingProperty: 'version'
+        }
+      },
+      {
+        instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
+        keyword: 'minItems',
+        message: 'must NOT have fewer than 1 items',
+        params: {
+          limit: 1
+        }
+      }
+    ])
+  })
 })

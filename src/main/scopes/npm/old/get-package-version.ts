@@ -9,12 +9,16 @@ import path from 'node:path'
 import { exec } from '../../core/exec.js'
 
 /**
- * Uses the `pkg get` NPM command to get the name from the package.json file closest to this file.
+ * Uses the `pkg get` NPM command to get the version from the package.json file closest to this
+ * file.
  *
  * @returns The result of the get name command.
  */
-export function getPackageName() {
+export function getPackageVersion() {
+  // Remove leading file://
   const cwd = path.dirname(import.meta.url.substring(7))
 
-  return exec('npm pkg get name', { cwd }).slice(1, -1)
+  return exec('npm pkg get version', { cwd }).slice(1, -1)
 }
+
+console.log(import.meta.url)

@@ -8,9 +8,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { type Logger } from '../../../main/core/log/logger.js'
-import * as packageDependencies from '../../../main/scopes/npm/get-package-dependencies.js'
 import { DependencyMetric } from '../../../main/scopes/npm/metrics/dependency-metric.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
+import * as packageDependencies from '../../../main/scopes/npm/old/get-package-dependencies.js'
 
 const mockedCapture = vi.fn()
 

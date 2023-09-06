@@ -7,7 +7,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import * as exec from '../../../main/core/exec.js'
-import { getPackageDependencies } from '../../../main/scopes/npm/get-package-dependencies.js'
+import { getPackageDependencies } from '../../../main/scopes/npm/old/get-package-dependencies.js'
 
 vi.spyOn(exec, 'exec').mockReturnValue(
   '{"dependencies": {"@test/test": {"version": "0.0.1"}, "test-2":{"version": "1.2.3-rc.0"}}}'

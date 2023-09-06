@@ -34,7 +34,8 @@ export interface Schema {
      */
     npm?: {
       /**
-       * Enable telemetry data collection for package.json `dependencies` and `devDependencies`.
+       * Enable telemetry data collection for `dependencies`, `devDependencies`, and
+       * `peerDependencies` that are siblings of the instrumented package.
        */
       dependencies?: null
     }

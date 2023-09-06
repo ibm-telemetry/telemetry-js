@@ -6,16 +6,15 @@
  */
 import { type Logger } from '../../core/log/logger.js'
 import { Scope } from '../../core/scope.js'
-import { getPackageDependencies } from './get-package-dependencies.js'
 import { type DependencyData, DependencyMetric } from './metrics/dependency-metric.js'
+import { getPackageDependencies } from './old/get-package-dependencies.js'
 
 /**
  * Scope class dedicated to data collection from an npm environment.
  */
 export class NpmScope extends Scope {
   protected override logger: Logger
-  // TODOASKJOE
-  public name = 'NpmScope'
+  public name = 'npm'
 
   /**
    * Constructs an NpmScope.
@@ -28,6 +27,8 @@ export class NpmScope extends Scope {
   }
 
   public override async run(): Promise<void> {
+    // TODO: implement!
+
     getPackageDependencies().forEach((dep: DependencyData) => {
       this.capture(new DependencyMetric(dep))
     })

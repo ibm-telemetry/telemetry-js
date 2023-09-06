@@ -9,9 +9,11 @@ import { type Attributes } from '@opentelemetry/api'
 import { SemVer } from 'semver'
 
 import { ScopeMetric } from '../../../core/scope-metric.js'
+
 export interface DependencyData {
   name: string
   version: string
+  // TODO: does this need "installer"? as well?
 }
 
 /**

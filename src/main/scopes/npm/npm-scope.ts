@@ -6,8 +6,9 @@
  */
 import { type Logger } from '../../core/log/logger.js'
 import { Scope } from '../../core/scope.js'
-import { type DependencyData, DependencyMetric } from './metrics/dependency-metric.js'
-import { getPackageDependencies } from './old/get-package-dependencies.js'
+import { getInstallingPackages } from './get-installing-packages.js'
+import { getInstrumentedPackageData } from './get-instrumented-package-data.js'
+import { DependencyMetric } from './metrics/dependency-metric.js'
 
 /**
  * Scope class dedicated to data collection from an npm environment.
@@ -27,10 +28,24 @@ export class NpmScope extends Scope {
   }
 
   public override async run(): Promise<void> {
-    // TODO: implement!
+    const { name: instrumentedPkgName, version: instrumentedPkgVersion } =
+      getInstrumentedPackageData()
 
-    getPackageDependencies().forEach((dep: DependencyData) => {
-      this.capture(new DependencyMetric(dep))
+    const installingPackages = await getInstallingPackages(
+      instrumentedPkgName,
+      instrumentedPkgVersion
+    )
+
+    installingPackages.forEach((installingPkg) => {
+      installingPkg.dependencies.forEach((dependency) => {
+        this.capture(
+          new DependencyMetric({
+            name: dependency.name,
+            version: dependency.version,
+            installer: installingPkg.name
+          })
+        )
+      })
     })
   }
 }

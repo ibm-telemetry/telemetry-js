@@ -10,7 +10,11 @@ import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency
 
 describe('dependencyMetric', () => {
   it('returns the correct attributes for a standard package', () => {
-    const attributes = new DependencyMetric({ name: 'test-1', version: '0.0.1' }).attributes
+    const attributes = new DependencyMetric({
+      name: 'test-1',
+      version: '0.0.1',
+      installer: 'test-1-installer'
+    }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
@@ -19,12 +23,17 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': ''
+      'version.preRelease': '',
+      installer: 'test-1-installer'
     })
   })
 
   it('returns the correct attributes for a package with a prerelease', () => {
-    const attributes = new DependencyMetric({ name: 'test-1', version: '0.0.1-rc.0' }).attributes
+    const attributes = new DependencyMetric({
+      name: 'test-1',
+      version: '0.0.1-rc.0',
+      installer: 'test-1-installer'
+    }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
@@ -33,12 +42,17 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': 'rc.0'
+      'version.preRelease': 'rc.0',
+      installer: 'test-1-installer'
     })
   })
 
   it('returns the correct attributes for a package with metadata', () => {
-    const attributes = new DependencyMetric({ name: 'test-1', version: '0.0.1+12345' }).attributes
+    const attributes = new DependencyMetric({
+      name: 'test-1',
+      version: '0.0.1+12345',
+      installer: 'test-1-installer'
+    }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
@@ -47,13 +61,17 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': ''
+      'version.preRelease': '',
+      installer: 'test-1-installer'
     })
   })
 
   it('returns the correct attributes for a package with a prerelease and metadata', () => {
-    const attributes = new DependencyMetric({ name: 'test-1', version: '0.0.1-rc.0+12345' })
-      .attributes
+    const attributes = new DependencyMetric({
+      name: 'test-1',
+      version: '0.0.1-rc.0+12345',
+      installer: 'test-1-installer'
+    }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
@@ -62,13 +80,17 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': 'rc.0'
+      'version.preRelease': 'rc.0',
+      installer: 'test-1-installer'
     })
   })
 
   it('returns the correct attributes for a package with an owner', () => {
-    const attributes = new DependencyMetric({ name: '@owner/test-1', version: '0.0.1-rc.0+12345' })
-      .attributes
+    const attributes = new DependencyMetric({
+      name: '@owner/test-1',
+      version: '0.0.1-rc.0+12345',
+      installer: 'test-1-installer'
+    }).attributes
     expect(attributes).toStrictEqual({
       raw: '@owner/test-1',
       owner: '@owner',
@@ -77,7 +99,8 @@ describe('dependencyMetric', () => {
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': 'rc.0'
+      'version.preRelease': 'rc.0',
+      installer: 'test-1-installer'
     })
   })
 })

@@ -13,7 +13,8 @@ import { ScopeMetric } from '../../../core/scope-metric.js'
 export interface DependencyData {
   name: string
   version: string
-  // TODO: does this need "installer"? as well?
+  // TODOASKJOE: do we only need name of installer, not version?
+  installer: string
 }
 
 /**
@@ -40,6 +41,7 @@ export class DependencyMetric extends ScopeMetric {
       raw: this.data.name,
       owner,
       name,
+      installer: this.data.installer,
       'version.raw': this.data.version,
       'version.major': major.toString(),
       'version.minor': minor.toString(),

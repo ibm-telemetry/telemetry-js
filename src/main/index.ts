@@ -12,8 +12,7 @@ import { createLogFilePath } from './core/log/create-log-file-path.js'
 import { Logger } from './core/log/logger.js'
 import * as ResourceAttributes from './core/resource-attributes.js'
 import { tokenizeRepository } from './core/tokenize-repository.js'
-import { getPackageName } from './scopes/npm/old/get-package-name.js'
-import { getPackageVersion } from './scopes/npm/old/get-package-version.js'
+import { getTelemetryPackageData } from './scopes/npm/get-telemetry-package-data.js'
 /*
 
 1. read command line arguments
@@ -44,10 +43,8 @@ async function run() {
     projectId: 'abecafa7681dfd65cc'
   }
 
-  const packageJsonInfo = {
-    name: getPackageName(),
-    version: getPackageVersion()
-  }
+  // TODOASKJOE is this the correct function to call here?
+  const { name: telemetryName, version: telemetryVersion } = getTelemetryPackageData()
 
   // TODO: handle non-existant remote
   // TODO: move this logic elsewhere
@@ -55,8 +52,8 @@ async function run() {
   const repository = tokenizeRepository(gitOrigin)
 
   const metricReader = initializeOpenTelemetry({
-    [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
-    [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
+    [ResourceAttributes.EMITTER_NAME]: telemetryName,
+    [ResourceAttributes.EMITTER_VERSION]: telemetryVersion,
     [ResourceAttributes.PROJECT_ID]: config.projectId,
     [ResourceAttributes.ANALYZED_RAW]: gitOrigin,
     [ResourceAttributes.ANALYZED_HOST]: repository.host,

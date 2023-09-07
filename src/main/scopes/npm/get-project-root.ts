@@ -10,23 +10,37 @@
 import path from 'path'
 
 import { exec } from '../../core/exec.js'
+import { NoProjectRootError } from '../../exceptions/no-project-root-error.js'
 
 /**
  * Finds and returns the root-most directory of the analyzed project's source tree.
  *
+ * @throws An exception if no usable root data was obtained.
  * @returns The path of the analyzed project's root directory or null.
  */
-export function getProjectRoot(): string | null {
-  let prevRoot = null
+export function getProjectRoot(): string {
+  let currentResult
+  let root
   let cwd = process.cwd()
 
-  while (true) {
+  do {
     try {
-      exec('npm pkg get name', { cwd })
-      prevRoot = cwd
-      cwd = path.join(cwd, '..')
-    } catch (_e) {
-      return prevRoot
+      currentResult = exec('npm pkg get name', { cwd })
+    } catch {
+      // Always ignore exceptions thrown by exec here
+      currentResult = undefined
     }
+
+    if (currentResult !== undefined) {
+      root = cwd
+    }
+
+    cwd = path.join(cwd, '..')
+  } while (typeof currentResult === 'string')
+
+  if (root === undefined) {
+    throw new NoProjectRootError()
   }
+
+  return root
 }

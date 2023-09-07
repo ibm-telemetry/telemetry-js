@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { YAMLException } from 'js-yaml'
 import { describe, expect, it } from 'vitest'
 
 import { parseYamlFile } from '../../main/core/parse-yaml-file.js'
-import { YamlParseError } from '../../main/exceptions/yaml-parse-error.js'
 import { Fixture } from '../__utils/fixture.js'
 
 describe('parseYamlFile', () => {
@@ -19,8 +19,8 @@ describe('parseYamlFile', () => {
   })
 
   it('throws error for malformed files', async () => {
-    const fixture = new Fixture('config-files/malformed.yml')
+    const fixture = new Fixture('config-files/invalid/malformed.yml')
 
-    await expect(parseYamlFile(fixture.path)).rejects.toThrow(YamlParseError)
+    await expect(parseYamlFile(fixture.path)).rejects.toThrow(YAMLException)
   })
 })

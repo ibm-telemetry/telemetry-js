@@ -6,6 +6,7 @@ dist/
 
 # Generated stuff
 .test-coverage/
+src/schemas/telemetrics-config.schema.json
 
 # OS stuff
 .DS_Store

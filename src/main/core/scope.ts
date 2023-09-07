@@ -44,20 +44,20 @@ export abstract class Scope extends Loggable {
   /**
    * Captures a data point for a metric.
    *
-   * @param metric - The actual metric data.
+   * @param dataPoint - The actual metric data.
    */
-  protected capture(metric: ScopeMetric): void {
+  protected capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
     if (this.scope === undefined) {
       this.scope = opentelemetry.metrics.getMeter(this.name)
     }
 
     // Ensure a counter exists
-    if (this.metrics[metric.name] === undefined) {
-      this.metrics[metric.name] = this.scope.createCounter(metric.name)
+    if (this.metrics[dataPoint.name] === undefined) {
+      this.metrics[dataPoint.name] = this.scope.createCounter(dataPoint.name)
     }
 
     // Log the metric
-    this.metrics[metric.name]?.add(1, { ...metric.attributes })
+    this.metrics[dataPoint.name]?.add(1, { ...dataPoint.attributes })
   }
 }

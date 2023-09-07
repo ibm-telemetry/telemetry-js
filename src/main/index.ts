@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { exec } from './main/core/exec.js'
-import { initializeOpenTelemetry } from './main/core/initialize-open-telemetry.js'
-import { createLogFilePath } from './main/core/log/create-log-file-path.js'
-import { Logger } from './main/core/log/logger.js'
-import * as ResourceAttributes from './main/core/resource-attributes.js'
-import { tokenizeRepository } from './main/core/tokenize-repository.js'
-import { getPackageName } from './main/scopes/npm/get-package-name.js'
-import { getPackageVersion } from './main/scopes/npm/get-package-version.js'
+import { exec } from './core/exec.js'
+import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
+import { createLogFilePath } from './core/log/create-log-file-path.js'
+import { Logger } from './core/log/logger.js'
+import * as ResourceAttributes from './core/resource-attributes.js'
+import { tokenizeRepository } from './core/tokenize-repository.js'
+import { getPackageName } from './scopes/npm/get-package-name.js'
+import { getPackageVersion } from './scopes/npm/get-package-version.js'
 
 /*
 

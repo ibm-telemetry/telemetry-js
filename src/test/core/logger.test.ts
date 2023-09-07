@@ -4,8 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { existsSync, unlinkSync } from 'fs'
-import { readFile } from 'fs/promises'
+import { access, readFile, unlink } from 'node:fs/promises'
+
 import { describe, expect, it } from 'vitest'
 
 import { createLogFilePath } from '../../main/core/log/create-log-file-path.js'
@@ -17,11 +17,11 @@ describe('logger', () => {
     const logFilePath = await createLogFilePath(date)
     const logger = new Logger(logFilePath)
 
-    expect(existsSync(logFilePath)).toBeFalsy()
+    await expect(access(logFilePath)).rejects.toThrow('ENOENT')
 
     await logger.log('debug', 'test log')
 
-    expect(existsSync(logFilePath)).toBeTruthy()
+    await expect(access(logFilePath)).resolves.toBeUndefined()
 
     const content = await readFile(logFilePath, 'utf8')
 
@@ -29,26 +29,26 @@ describe('logger', () => {
     expect(content.startsWith('debug')).toBeTruthy()
     expect(content.trim().endsWith('test log')).toBeTruthy()
 
-    unlinkSync(logFilePath)
+    await unlink(logFilePath)
   })
   it('logs error message', async () => {
     const date = new Date().toISOString()
     const logFilePath = await createLogFilePath(date)
     const logger = new Logger(logFilePath)
 
-    expect(existsSync(logFilePath)).toBeFalsy()
+    await expect(access(logFilePath)).rejects.toThrow('ENOENT')
 
     const errorLog = new Error('the error message')
 
     await logger.log('debug', errorLog)
 
-    expect(existsSync(logFilePath)).toBeTruthy()
+    await expect(access(logFilePath)).resolves.toBeUndefined()
 
     const content = await readFile(logFilePath, 'utf8')
 
     expect(content.length).toBeGreaterThan(0)
     expect(content.startsWith('debug')).toBeTruthy()
 
-    unlinkSync(logFilePath)
+    await unlink(logFilePath)
   })
 })

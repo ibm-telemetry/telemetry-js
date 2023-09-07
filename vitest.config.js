@@ -20,6 +20,7 @@ export default defineConfig({
       all: true,
       include: ['src/main'],
       exclude: [
+        'src/main/index.ts',
         'src/main/core/exec.ts',
         'src/main/core/initialize-open-telemetry.ts',
         'src/main/core/resource-attributes.ts'

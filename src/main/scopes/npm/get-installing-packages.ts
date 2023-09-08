@@ -7,7 +7,7 @@
 
 import { access } from 'node:fs/promises'
 
-import lodash from 'lodash'
+import getPropertyByPath from 'lodash/get.js'
 import objectScan from 'object-scan'
 import path from 'path'
 
@@ -17,6 +17,25 @@ import { getProjectRoot } from './get-project-root.js'
 
 interface InstallingPackage extends PackageData {
   dependencies: PackageData[]
+}
+
+/**
+ * Given a directory path, determines if a node_modules folder exists directly inside of it.
+ *
+ * @param dirPath - The path to the directory to query.
+ * @returns True if node_modules folder exists, False otherwise.
+ */
+async function hasNodeModulesFolder(dirPath: string) {
+  let err
+
+  try {
+    await access(path.join(dirPath, 'node_modules'))
+  } catch (e) {
+    err = e
+    // TODO: log this for good measure
+  }
+
+  return err === undefined
 }
 
 /**
@@ -44,52 +63,57 @@ export async function getInstallingPackages(
    * node_modules folder), even though it is a dependency of "a" and not of the Root project.
    *
    * This nested dependency is not shown in an `npm ls` command run from the Root folder, even
-   * though "b" is present in the Root node_modules folder.
+   * though "b" is present in the Root node_modules folder../
    *
    * To solve this, we run `npm ls --all` which will show all installed packages, rather than only
    * those directly depended upon by the Root project.
    */
 
-  let prevCwd = null
   let cwd = process.cwd()
   const root = getProjectRoot()
+  const installingPackages: InstallingPackage[] = []
 
-  while (prevCwd !== root) {
-    try {
-      await access(path.join(cwd + '/node_modules'))
-    } catch (_e) {
-      prevCwd = cwd
+  do {
+    if (!(await hasNodeModulesFolder(cwd))) {
       cwd = path.join(cwd, '..')
       continue
     }
-    const dependencies = JSON.parse(exec('npm ls --all --json', { cwd }))
 
+    const dependencyTree = JSON.parse(exec('npm ls --all --json', { cwd }))
+
+    // Matches come back as something like: [... parentPkgName, dependencies, instrumentedPackage]
     const matches = objectScan([`dependencies.**.${packageName}`], {
       filterFn: ({ value }: { value: InstallingPackage }) => value.version === packageVersion
-    })(dependencies)
+    })(dependencyTree)
 
-    if (matches?.length >= 1) {
-      return matches.map((match: string[]) => {
-        // we want to ignore last 2 because: [... parentPkgName, dependencies, pkgName]
-        const parentPkgPath = match.slice(0, -2)
-        const parentPkg =
-          parentPkgPath.length === 0 ? dependencies : lodash.get(dependencies, parentPkgPath)
-        return {
-          name: parentPkgPath.length === 0 ? dependencies.name : match[parentPkgPath.length - 1],
-          version: parentPkg.version,
-          dependencies: Object.entries(parentPkg.dependencies).map(([key, value]) => {
-            return {
-              name: key,
-              version: (value as InstallingPackage).version
-            }
-          })
-        }
-      })
+    if (matches.length >= 1) {
+      installingPackages.push(
+        ...matches.map((match: string[]) => {
+          // We want to ignore last 2 to get the parent's info, not the child's
+          const parentPkgPath = match.slice(0, -2)
+
+          const parentPkg =
+            parentPkgPath.length === 0
+              ? dependencyTree
+              : getPropertyByPath(dependencyTree, parentPkgPath)
+
+          return {
+            name:
+              parentPkgPath.length === 0 ? dependencyTree.name : match[parentPkgPath.length - 1],
+            version: parentPkg.version,
+            dependencies: Object.entries(parentPkg.dependencies).map(([key, value]) => {
+              return {
+                name: key,
+                version: (value as PackageData).version
+              }
+            })
+          }
+        })
+      )
     }
 
-    prevCwd = cwd
     cwd = path.join(cwd, '..')
-  }
+  } while (cwd !== root)
 
-  return []
+  return installingPackages
 }

@@ -5,4 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 // TODOASKJOE
-declare module 'object-scan'
+declare module 'object-scan' {
+  export type ObjectPath = string[]
+
+  export default function objectScan(
+    query: string[],
+    options: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODOASKJOE
+      filterFn: (obj: { value: any }) => boolean
+    }
+  ): (obj: unknown) => ObjectPath[]
+}

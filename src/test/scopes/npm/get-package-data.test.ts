@@ -6,7 +6,6 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { NpmPackageGetError } from '../../../main/exceptions/npm-package-get-error.js'
 import { getPackageData } from '../../../main/scopes/npm/get-package-data.js'
 import { Fixture } from '../../__utils/fixture.js'
 
@@ -16,6 +15,6 @@ describe('getPackageData', () => {
     expect(getPackageData(fixture.path)).toStrictEqual({ name: 'mock-package-1', version: '1.0.0' })
   })
   it('throws error for non existing directory', async () => {
-    expect(() => getPackageData('/made/up/directory')).toThrow(NpmPackageGetError)
+    expect(() => getPackageData('/made/up/directory')).toThrow(Error)
   })
 })

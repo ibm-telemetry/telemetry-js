@@ -6,6 +6,7 @@
  */
 import 'reflect-metadata'
 
+import { LoggerNotFoundError } from '../../exceptions/logger-not-found-error.js'
 import { type Loggable } from './loggable.js'
 import { Logger } from './logger.js'
 import { safeStringify } from './safe-stringify.js'
@@ -48,7 +49,7 @@ function Trace(): MethodDecorator {
       const logger: unknown = this.logger
 
       if (!(logger instanceof Logger)) {
-        throw new Error('Attempt to trace method without a defined logger instance')
+        throw new LoggerNotFoundError()
       }
 
       setImmediate(() => {
@@ -58,12 +59,12 @@ function Trace(): MethodDecorator {
       let result: unknown
       try {
         result = original.apply(this, args)
-      } catch (err) {
+      } catch (e) {
         setImmediate(() => {
-          void traceExit(logger, String(propertyKey), err)
+          void traceExit(logger, String(propertyKey), e)
         })
 
-        throw err
+        throw e
       }
 
       setImmediate(() => {

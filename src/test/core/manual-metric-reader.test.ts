@@ -15,8 +15,8 @@ describe('manualMetricReader', () => {
 
     try {
       await metricReader.shutdown()
-    } catch (err) {
-      error = err
+    } catch (e) {
+      error = e
     }
 
     expect(error).toBeInstanceOf(Error)
@@ -29,8 +29,8 @@ describe('manualMetricReader', () => {
 
     try {
       await metricReader.forceFlush()
-    } catch (err) {
-      error = err
+    } catch (e) {
+      error = e
     }
 
     expect(error).toBeInstanceOf(Error)

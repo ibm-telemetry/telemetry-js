@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest'
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
 import { Trace } from '../../../main/core/log/trace.js'
+import { LoggerNotFoundError } from '../../../main/exceptions/logger-not-found-error.js'
 
 const testLogger = new Logger(await createLogFilePath(new Date().toISOString()))
 
@@ -33,18 +34,10 @@ describe('trace', () => {
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
 
-    // Invoke the function
-    let result: unknown
-    try {
+    expect(() => {
+      // Invoke the function
       descriptor.value('its an arg!')
-    } catch (err) {
-      result = err
-    }
-
-    expect(result instanceof Error).toBeTruthy()
-    expect((result as Error).message).toStrictEqual(
-      'Attempt to trace method without a defined logger instance'
-    )
+    }).toThrow(LoggerNotFoundError)
   })
 
   it('returns early if descriptor does not have a value', () => {
@@ -84,8 +77,8 @@ describe('trace', () => {
     let result: unknown
     try {
       descriptor.value('its an arg!')
-    } catch (err) {
-      result = err
+    } catch (e) {
+      result = e
     }
 
     expect(result instanceof Error).toBeTruthy()
@@ -116,8 +109,8 @@ describe('trace', () => {
     let result: unknown
     try {
       await descriptor.value('its an arg!')
-    } catch (err) {
-      result = err
+    } catch (e) {
+      result = e
     }
 
     expect(result instanceof Error).toBeTruthy()

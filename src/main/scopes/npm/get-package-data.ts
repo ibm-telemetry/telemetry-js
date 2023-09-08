@@ -1,5 +1,4 @@
 import { exec } from '../../core/exec.js'
-import { NpmPackageGetError } from '../../exceptions/npm-package-get-error.js'
 
 /*
  * Copyright IBM Corp. 2023, 2023
@@ -21,13 +20,5 @@ export interface PackageData {
  * @returns An object containing details about the package.
  */
 export function getPackageData(packagePath: string): PackageData {
-  try {
-    const { name, version } = JSON.parse(exec('npm pkg get name version', { cwd: packagePath }))
-    return { name, version }
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      throw new NpmPackageGetError(e.message)
-    }
-    throw e
-  }
+  return JSON.parse(exec('npm pkg get name version', { cwd: packagePath }))
 }

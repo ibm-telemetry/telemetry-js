@@ -15,8 +15,81 @@ import { exec } from '../../core/exec.js'
 import { type PackageData } from './get-package-data.js'
 import { getProjectRoot } from './get-project-root.js'
 
+/*
+ * Nested dependency considerations:
+ *
+ * Given the following hierarchy (assume "b" is an instrumented package):
+ *
+ * "Root"
+ *  └── "a"
+ *       └── "b".
+ *
+ * When "b" gets installed for the first time in the project (as a part of "a"), it will be
+ * installed into the same node_modules folder into which "a" was installed (the Root's
+ * node_modules folder), even though it is a dependency of "a" and not of the Root project.
+ *
+ * This nested dependency is not shown in an `npm ls` command run from the Root folder, even
+ * though "b" is present in the Root node_modules folder../
+ *
+ * To solve this, we run `npm ls --all` which will show all installed packages, rather than only
+ * those directly depended upon by the Root project.
+ */
+
 interface InstallingPackage extends PackageData {
   dependencies: PackageData[]
+}
+
+/**
+ *
+ * @param packageName
+ * @param packageVersion
+ */
+export async function getInstallingPackages(
+  packageName: string,
+  packageVersion: string
+): Promise<InstallingPackage[]> {
+  return await scan(process.cwd(), getProjectRoot(), (dependencyTree) => {
+    // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
+    const matches = findNestedDeps(dependencyTree, packageName, packageVersion)
+
+    if (matches.length >= 1) {
+      // We want to ignore last 2 pieces to get the parent's info, not the child's
+      return matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
+    }
+
+    return []
+  })
+}
+
+async function scan(
+  cwd: string,
+  root: string,
+  // TODO: executor: () => string, ????? maybe??
+  callback: (dependencyTree: Record<string, unknown>) => InstallingPackage[]
+) {
+  let prev: string | undefined
+
+  while (prev !== root) {
+    // `npm ls` will fail in a directory without a node_modules folder
+    if (!(await hasNodeModulesFolder(cwd))) {
+      prev = cwd
+      cwd = path.join(cwd, '..')
+      continue
+    }
+
+    const dependencyTree = JSON.parse(exec('npm ls --all --json', { cwd }))
+
+    const results = callback(dependencyTree)
+
+    if (results.length > 0) {
+      return results
+    }
+
+    prev = cwd
+    cwd = path.join(cwd, '..')
+  }
+
+  return []
 }
 
 /**
@@ -38,82 +111,34 @@ async function hasNodeModulesFolder(dirPath: string) {
   return err === undefined
 }
 
-/**
- * Given a package name and version, finds the package(s) that installed it.
- *
- * @param packageName - The name of the package to query.
- * @param packageVersion - The exact semantic version string of the package to query.
- * @returns A list of dependent package objects.
- */
-export async function getInstallingPackages(
+function findNestedDeps(
+  dependencyTree: Record<string, unknown>,
   packageName: string,
   packageVersion: string
-): Promise<InstallingPackage[]> {
-  /*
-   * Nested dependency considerations:
-   *
-   * Given the following hierarchy (assume "b" is an instrumented package):
-   *
-   * "Root"
-   *  └── "a"
-   *       └── "b".
-   *
-   * When "b" gets installed for the first time in the project (as a part of "a"), it will be
-   * installed into the same node_modules folder into which "a" was installed (the Root's
-   * node_modules folder), even though it is a dependency of "a" and not of the Root project.
-   *
-   * This nested dependency is not shown in an `npm ls` command run from the Root folder, even
-   * though "b" is present in the Root node_modules folder../
-   *
-   * To solve this, we run `npm ls --all` which will show all installed packages, rather than only
-   * those directly depended upon by the Root project.
-   */
+) {
+  return objectScan([`dependencies.**.${packageName}`], {
+    // could this instead be something like **.dependencies.${packageName}?
+    filterFn: ({ value }: { value: InstallingPackage }) => value.version === packageVersion
+  })(dependencyTree)
+}
 
-  let cwd = process.cwd()
-  const root = getProjectRoot()
-  const installingPackages: InstallingPackage[] = []
+function getPackageSubTree(
+  dependencyTree: Record<string, unknown>,
+  objectPath: string[]
+): InstallingPackage {
+  const tree = {
+    name: objectPath[objectPath.length - 1], // This might be undefined and that's ok
+    ...getPropertyByPath(dependencyTree, objectPath, dependencyTree)
+  }
 
-  do {
-    if (!(await hasNodeModulesFolder(cwd))) {
-      cwd = path.join(cwd, '..')
-      continue
-    }
-
-    const dependencyTree = JSON.parse(exec('npm ls --all --json', { cwd }))
-
-    // Matches come back as something like: [... parentPkgName, dependencies, instrumentedPackage]
-    const matches = objectScan([`dependencies.**.${packageName}`], {
-      filterFn: ({ value }: { value: InstallingPackage }) => value.version === packageVersion
-    })(dependencyTree)
-
-    if (matches.length >= 1) {
-      installingPackages.push(
-        ...matches.map((match: string[]) => {
-          // We want to ignore last 2 to get the parent's info, not the child's
-          const parentPkgPath = match.slice(0, -2)
-
-          const parentPkg =
-            parentPkgPath.length === 0
-              ? dependencyTree
-              : getPropertyByPath(dependencyTree, parentPkgPath)
-
-          return {
-            name:
-              parentPkgPath.length === 0 ? dependencyTree.name : match[parentPkgPath.length - 1],
-            version: parentPkg.version,
-            dependencies: Object.entries(parentPkg.dependencies).map(([key, value]) => {
-              return {
-                name: key,
-                version: (value as PackageData).version
-              }
-            })
-          }
-        })
-      )
-    }
-
-    cwd = path.join(cwd, '..')
-  } while (cwd !== root)
-
-  return installingPackages
+  return {
+    name: tree.name,
+    version: tree.version,
+    dependencies: Object.entries(tree.dependencies).map(([key, value]) => {
+      return {
+        name: key,
+        version: (value as PackageData).version
+      }
+    })
+  }
 }

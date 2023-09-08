@@ -6,6 +6,6 @@
  */
 
 /**
- * Error indicating that there was a problem getting package data.
+ * Exception thrown when protecting exec commands from forbidden characters.
  */
-export class NpmPackageGetError extends Error {}
+export class GuardShellError extends Error {}

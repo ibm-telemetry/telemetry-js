@@ -13,7 +13,7 @@ import { guardShell } from './guard-shell.js'
  *
  * @param cmd - The command to invoke.
  * @param options - Options to include along with the command.
- * @throws An exception if the command timed out or exited with a non-zero code.
+ * @throws An error if the command timed out or exited with a non-zero code.
  * @returns The standard output from the command.
  */
 export function exec(cmd: string, options: childProcess.ExecSyncOptionsWithBufferEncoding = {}) {

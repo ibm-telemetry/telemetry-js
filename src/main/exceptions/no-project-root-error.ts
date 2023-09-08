@@ -8,4 +8,11 @@
 /**
  * Error indicating that it was not possible to find a root.
  */
-export class NoProjectRootError extends Error {}
+export class NoProjectRootError extends Error {
+  /**
+   * Default constructor for this Error.
+   */
+  public constructor() {
+    super("Unable to find project's root directory")
+  }
+}

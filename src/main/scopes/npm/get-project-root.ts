@@ -27,7 +27,6 @@ export function getProjectRoot(): string {
     try {
       currentResult = exec('npm pkg get name', { cwd })
     } catch {
-      // Always ignore exceptions thrown by exec here
       currentResult = undefined
     }
 

@@ -17,7 +17,7 @@ const Ajv = ajv.default
  * to analyze more than one config file. Instead, create new instances for separate validations.
  */
 export class ConfigValidator {
-  private readonly validate: ValidateFunction<ConfigFileSchema>
+  private readonly ajvValidate: ValidateFunction<ConfigFileSchema>
 
   /**
    * Constructs a new config file validator based on the provided config file schema.
@@ -25,7 +25,7 @@ export class ConfigValidator {
    * @param schema - Config file schema object.
    */
   public constructor(schema: JSONSchemaType<ConfigFileSchema>) {
-    this.validate = new Ajv({ allErrors: true, verbose: true }).compile(schema)
+    this.ajvValidate = new Ajv({ allErrors: true, verbose: true }).compile(schema)
   }
 
   /**
@@ -37,11 +37,11 @@ export class ConfigValidator {
    * @throws `ConfigValidationError` if the file did not pass schema validation.
    * @returns True if the config file passed validation; does not return otherwise.
    */
-  public validateConfig(content: unknown): content is ConfigFileSchema {
-    if (!this.validate(content)) {
+  public validate(content: unknown): content is ConfigFileSchema {
+    if (!this.ajvValidate(content)) {
       throw new ConfigValidationError(
         // Construct an array of partial error objects to cut down on log/output noise
-        this.validate.errors?.map((err) => {
+        this.ajvValidate.errors?.map((err) => {
           const { instancePath, keyword, message, params } = err
           return {
             instancePath,

@@ -11,7 +11,7 @@ import { getInstrumentedPackageData } from '../../../main/scopes/npm/get-instrum
 describe('getInstrumentedPackageData', () => {
   it('correctly reads name and version', async () => {
     // TODOASKJOE: we'd have to change the version here everytime
-    expect(getInstrumentedPackageData()).toStrictEqual({
+    await expect(getInstrumentedPackageData()).resolves.toStrictEqual({
       name: '@ibm/telemetrics-js',
       version: '0.1.1'
     })

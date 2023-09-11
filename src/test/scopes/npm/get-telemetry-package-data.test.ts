@@ -11,7 +11,7 @@ import { getTelemetryPackageData } from '../../../main/scopes/npm/get-telemetry-
 describe('getTelemetryPackageData', () => {
   it('correctly reads name and version', async () => {
     // TODOASKJOE: we'd have to change the version here everytime
-    expect(getTelemetryPackageData()).toStrictEqual({
+    await expect(getTelemetryPackageData()).resolves.toStrictEqual({
       name: '@ibm/telemetrics-js',
       version: '0.1.1'
     })

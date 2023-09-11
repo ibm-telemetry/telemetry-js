@@ -40,56 +40,75 @@ interface InstallingPackage extends PackageData {
 }
 
 /**
+ * Finds all packages within the project that installed the specified package at the specified
+ * version. This is done by starting at the current directory and traversing up the directory
+ * structure until an `npm ls` command on one of those directories returns a non-empty list of
+ * installers.
  *
- * @param packageName
- * @param packageVersion
+ * If no installers were found after the root-post project directory was searched, an empty array is
+ * returned.
+ *
+ * @param packageName - The name of the package to search for.
+ * @param packageVersion - The exact version of the package to search for.
+ * @returns A possibly empty array of installing packages.
  */
-export async function getInstallingPackages(
+export async function findInstallingPackages(
   packageName: string,
   packageVersion: string
 ): Promise<InstallingPackage[]> {
-  return await scan(process.cwd(), getProjectRoot(), (dependencyTree) => {
-    // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
-    const matches = findNestedDeps(dependencyTree, packageName, packageVersion)
+  const cwd = process.cwd()
+  const root = getProjectRoot()
+  const dirs = await findScannableDirectories(cwd, root)
 
-    if (matches.length >= 1) {
-      // We want to ignore last 2 pieces to get the parent's info, not the child's
-      return matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
+  let installers: InstallingPackage[] = []
+
+  for (const d of dirs) {
+    const dependencyTree = JSON.parse(await exec('npm ls --all --json', { cwd: d }))
+
+    installers = findInstallers(dependencyTree, packageName, packageVersion)
+
+    if (installers.length > 0) {
+      break
     }
+  }
 
-    return []
-  })
+  return installers
 }
 
-async function scan(
-  cwd: string,
-  root: string,
-  // TODO: executor: () => string, ????? maybe??
-  callback: (dependencyTree: Record<string, unknown>) => InstallingPackage[]
+function findInstallers(
+  dependencyTree: Record<string, unknown>,
+  packageName: string,
+  packageVersion: string
 ) {
-  let prev: string | undefined
+  // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
+  const matches = findNestedDeps(dependencyTree, packageName, packageVersion)
 
-  while (prev !== root) {
-    // `npm ls` will fail in a directory without a node_modules folder
-    if (!(await hasNodeModulesFolder(cwd))) {
-      prev = cwd
-      cwd = path.join(cwd, '..')
-      continue
-    }
-
-    const dependencyTree = JSON.parse(exec('npm ls --all --json', { cwd }))
-
-    const results = callback(dependencyTree)
-
-    if (results.length > 0) {
-      return results
-    }
-
-    prev = cwd
-    cwd = path.join(cwd, '..')
+  if (matches.length >= 1) {
+    // We want to ignore last 2 pieces to get the parent's info, not the child's
+    return matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
   }
 
   return []
+}
+
+async function findScannableDirectories(cwd: string, root: string) {
+  const dirs = []
+
+  // Ensure the format is normalized
+  root = path.join(root)
+  cwd = path.join(cwd)
+
+  // TODO: ensure we can actually resolve one path from the other
+
+  do {
+    if (await hasNodeModulesFolder(cwd)) {
+      dirs.push(cwd)
+    }
+
+    cwd = path.join(cwd, '..')
+  } while (cwd !== root)
+
+  return dirs
 }
 
 /**
@@ -126,8 +145,10 @@ function getPackageSubTree(
   dependencyTree: Record<string, unknown>,
   objectPath: string[]
 ): InstallingPackage {
+  // Name is specified before the spread to allow the object path lookup to provide the default
+  // value. This can be overridden if the object being spread has its own name within it.
   const tree = {
-    name: objectPath[objectPath.length - 1], // This might be undefined and that's ok
+    name: objectPath[objectPath.length - 1],
     ...getPropertyByPath(dependencyTree, objectPath, dependencyTree)
   }
 

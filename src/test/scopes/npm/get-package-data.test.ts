@@ -12,9 +12,12 @@ import { Fixture } from '../../__utils/fixture.js'
 describe('getPackageData', () => {
   it('correctly reads name and version', async () => {
     const fixture = new Fixture('mock-packages/mock-package-1')
-    expect(getPackageData(fixture.path)).toStrictEqual({ name: 'mock-package-1', version: '1.0.0' })
+    await expect(getPackageData(fixture.path)).resolves.toStrictEqual({
+      name: 'mock-package-1',
+      version: '1.0.0'
+    })
   })
   it('throws error for non existing directory', async () => {
-    expect(() => getPackageData('/made/up/directory')).toThrow(Error)
+    await expect(getPackageData('/made/up/directory')).rejects.toThrow(Error)
   })
 })

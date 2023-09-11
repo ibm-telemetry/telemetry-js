@@ -44,11 +44,11 @@ async function run() {
   }
 
   // TODOASKJOE is this the correct function to call here?
-  const { name: telemetryName, version: telemetryVersion } = getTelemetryPackageData()
+  const { name: telemetryName, version: telemetryVersion } = await getTelemetryPackageData()
 
   // TODO: handle non-existant remote
   // TODO: move this logic elsewhere
-  const gitOrigin = exec('git remote get-url origin')
+  const gitOrigin = await exec('git remote get-url origin')
   const repository = tokenizeRepository(gitOrigin)
 
   const metricReader = initializeOpenTelemetry({

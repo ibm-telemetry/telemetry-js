@@ -14,9 +14,9 @@ import { getPackageData } from './get-package-data.js'
  *
  * @returns An object with details about the currently running telemetry package.
  */
-export function getTelemetryPackageData() {
+export async function getTelemetryPackageData() {
   // Remove leading file://
   const cwd = path.dirname(import.meta.url.substring(7))
 
-  return getPackageData(cwd)
+  return await getPackageData(cwd)
 }

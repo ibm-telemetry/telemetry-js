@@ -19,6 +19,6 @@ export interface PackageData {
  * @throws If no package details could be obtained or the directory didn't point to a valid package.
  * @returns An object containing details about the package.
  */
-export function getPackageData(packagePath: string): PackageData {
-  return JSON.parse(exec('npm pkg get name version', { cwd: packagePath }))
+export async function getPackageData(packagePath: string): Promise<PackageData> {
+  return JSON.parse(await exec('npm pkg get name version', { cwd: packagePath }))
 }

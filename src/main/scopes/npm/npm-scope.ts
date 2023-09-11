@@ -6,7 +6,7 @@
  */
 import { type Logger } from '../../core/log/logger.js'
 import { Scope } from '../../core/scope.js'
-import { getInstallingPackages } from './get-installing-packages.js'
+import { findInstallingPackages } from './find-installing-packages.js'
 import { getInstrumentedPackageData } from './get-instrumented-package-data.js'
 import { DependencyMetric } from './metrics/dependency-metric.js'
 
@@ -29,9 +29,9 @@ export class NpmScope extends Scope {
 
   public override async run(): Promise<void> {
     const { name: instrumentedPkgName, version: instrumentedPkgVersion } =
-      getInstrumentedPackageData()
+      await getInstrumentedPackageData()
 
-    const installingPackages = await getInstallingPackages(
+    const installingPackages = await findInstallingPackages(
       instrumentedPkgName,
       instrumentedPkgVersion
     )

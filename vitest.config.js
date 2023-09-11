@@ -24,7 +24,8 @@ export default defineConfig({
         'src/main/core/exec.ts',
         'src/main/core/initialize-open-telemetry.ts',
         'src/main/core/log/loggable.ts',
-        'src/main/core/resource-attributes.ts'
+        'src/main/core/resource-attributes.ts',
+        'src/main/**/interfaces.ts'
       ]
     }
   }

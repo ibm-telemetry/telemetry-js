@@ -13,7 +13,8 @@ describe('dependencyMetric', () => {
     const attributes = new DependencyMetric({
       name: 'test-1',
       version: '0.0.1',
-      installer: 'test-1-installer'
+      installerName: 'test-1-installer',
+      installerVersion: '1.0.0'
     }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
@@ -24,7 +25,8 @@ describe('dependencyMetric', () => {
       'version.minor': '0',
       'version.patch': '1',
       'version.preRelease': '',
-      installer: 'test-1-installer'
+      'installer.name': 'test-1-installer',
+      'installer.version': '1.0.0'
     })
   })
 
@@ -32,18 +34,20 @@ describe('dependencyMetric', () => {
     const attributes = new DependencyMetric({
       name: 'test-1',
       version: '0.0.1-rc.0',
-      installer: 'test-1-installer'
+      installerName: 'test-1-installer',
+      installerVersion: '1.0.0'
     }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
       name: 'test-1',
+      'installer.name': 'test-1-installer',
+      'installer.version': '1.0.0',
       'version.raw': '0.0.1-rc.0',
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': 'rc.0',
-      installer: 'test-1-installer'
+      'version.preRelease': 'rc.0'
     })
   })
 
@@ -51,18 +55,20 @@ describe('dependencyMetric', () => {
     const attributes = new DependencyMetric({
       name: 'test-1',
       version: '0.0.1+12345',
-      installer: 'test-1-installer'
+      installerName: 'test-1-installer',
+      installerVersion: '1.0.0'
     }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
       name: 'test-1',
+      'installer.name': 'test-1-installer',
+      'installer.version': '1.0.0',
       'version.raw': '0.0.1+12345',
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': '',
-      installer: 'test-1-installer'
+      'version.preRelease': ''
     })
   })
 
@@ -70,18 +76,20 @@ describe('dependencyMetric', () => {
     const attributes = new DependencyMetric({
       name: 'test-1',
       version: '0.0.1-rc.0+12345',
-      installer: 'test-1-installer'
+      installerName: 'test-1-installer',
+      installerVersion: '1.0.0'
     }).attributes
     expect(attributes).toStrictEqual({
       raw: 'test-1',
       owner: undefined,
       name: 'test-1',
+      'installer.name': 'test-1-installer',
+      'installer.version': '1.0.0',
       'version.raw': '0.0.1-rc.0+12345',
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': 'rc.0',
-      installer: 'test-1-installer'
+      'version.preRelease': 'rc.0'
     })
   })
 
@@ -89,18 +97,20 @@ describe('dependencyMetric', () => {
     const attributes = new DependencyMetric({
       name: '@owner/test-1',
       version: '0.0.1-rc.0+12345',
-      installer: 'test-1-installer'
+      installerName: 'test-1-installer',
+      installerVersion: '1.0.0'
     }).attributes
     expect(attributes).toStrictEqual({
       raw: '@owner/test-1',
       owner: '@owner',
       name: 'test-1',
+      'installer.name': 'test-1-installer',
+      'installer.version': '1.0.0',
       'version.raw': '0.0.1-rc.0+12345',
       'version.major': '0',
       'version.minor': '0',
       'version.patch': '1',
-      'version.preRelease': 'rc.0',
-      installer: 'test-1-installer'
+      'version.preRelease': 'rc.0'
     })
   })
 })

@@ -18,14 +18,14 @@ import { NoProjectRootError } from '../../exceptions/no-project-root-error.js'
  * @throws An exception if no usable root data was obtained.
  * @returns The path of the analyzed project's root directory or null.
  */
-export function getProjectRoot(): string {
+export async function getProjectRoot(): Promise<string> {
   let currentResult
   let root
   let cwd = process.cwd()
 
   do {
     try {
-      currentResult = exec('npm pkg get name', { cwd })
+      currentResult = await exec('npm pkg get name', { cwd })
     } catch {
       currentResult = undefined
     }

@@ -12,6 +12,6 @@ import { getPackageData } from './get-package-data.js'
  *
  * @returns An object with details about the instrumented package.
  */
-export function getInstrumentedPackageData() {
-  return getPackageData(process.cwd())
+export async function getInstrumentedPackageData() {
+  return await getPackageData(process.cwd())
 }

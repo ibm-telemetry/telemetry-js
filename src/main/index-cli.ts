@@ -9,6 +9,7 @@ import { Command } from 'commander'
 import { createLogFilePath } from './core/log/create-log-file-path.js'
 import { Logger } from './core/log/logger.js'
 import { TelemetryCollector } from './telemetry-collector.js'
+import { Scope, ScopeName } from './core/scope.js'
 
 interface CommandLineOptions {
   config: string
@@ -28,6 +29,14 @@ async function run() {
   }
 }
 
+class MyScope extends Scope {
+  public override name: ScopeName = 'npm'
+  public override run(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+}
+
 /**
  * This is the main entrypoint for telemetry collection.
  *
@@ -37,8 +46,12 @@ async function collect(opts: CommandLineOptions) {
   const date = new Date().toISOString()
   const logFilePath = await createLogFilePath(date)
   const logger = new Logger(logFilePath)
+  // TODO: this should come from an external package or be bundled
+  const configSchemaPath = '../schemas/telemetrics-config.schema.json'
 
-  const telemetryCollector = new TelemetryCollector(opts.config, logger)
+  const telemetryCollector = new TelemetryCollector(opts.config, configSchemaPath, logger)
+
+  telemetryCollector.registerScope(new )
 
   try {
     await telemetryCollector.run()

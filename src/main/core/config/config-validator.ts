@@ -9,6 +9,7 @@ import ajv, { type JSONSchemaType, type ValidateFunction } from 'ajv'
 // TODO: this should come from a separate published package
 import { type Schema as ConfigFileSchema } from '../../../schemas/Schema.js'
 import { ConfigValidationError } from '../../exceptions/config-validation-error.js'
+import { Trace } from '../log/trace.js'
 
 const Ajv = ajv.default
 
@@ -37,6 +38,7 @@ export class ConfigValidator {
    * @throws `ConfigValidationError` if the file did not pass schema validation.
    * @returns True if the config file passed validation; does not return otherwise.
    */
+  @Trace()
   public validate(content: unknown): content is ConfigFileSchema {
     if (!this.ajvValidate(content)) {
       throw new ConfigValidationError(

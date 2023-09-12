@@ -6,8 +6,13 @@
  */
 import opentelemetry, { type Counter, type Meter } from '@opentelemetry/api'
 
+// TODO: this should come from a separate published package
+import { type Schema as Config } from '../../schemas/Schema.js'
 import { Loggable } from './log/loggable.js'
+import { type Logger } from './log/logger.js'
 import { type ScopeMetric } from './scope-metric.js'
+
+export type ScopeName = keyof Config['collect']
 
 /**
  * The base class for all metric scopes. Subclasses provide a type indicating the format of each
@@ -22,26 +27,27 @@ export abstract class Scope extends Loggable {
   /**
    * The OpenTelemetry-style name of this scope to be used in data transfer and storage.
    */
-  public abstract readonly name: string
+  public abstract readonly name: ScopeName
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
    */
   public abstract run(): Promise<void>
 
-  /**
-   * The metrics captured by this scope.
-   */
-  public readonly metrics: Record<string, Counter>
-
-  private scope?: Meter
+  private scopeMeter?: Meter
+  private readonly metrics: Record<string, Counter>
+  protected readonly config: Config
 
   /**
    * Instantiates a new scope.
+   *
+   * @param config - An object representation of the config file.
+   * @param logger - Logger instance to use during logging.
    */
-  protected constructor() {
-    super()
+  public constructor(config: Scope['config'], logger: Logger) {
+    super(logger)
     this.metrics = {}
+    this.config = config
   }
 
   /**
@@ -51,13 +57,13 @@ export abstract class Scope extends Loggable {
    */
   public capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
-    if (this.scope === undefined) {
-      this.scope = opentelemetry.metrics.getMeter(this.name)
+    if (this.scopeMeter === undefined) {
+      this.scopeMeter = opentelemetry.metrics.getMeter(this.name)
     }
 
     // Ensure a counter exists
     if (this.metrics[dataPoint.name] === undefined) {
-      this.metrics[dataPoint.name] = this.scope.createCounter(dataPoint.name)
+      this.metrics[dataPoint.name] = this.scopeMeter.createCounter(dataPoint.name)
     }
 
     // Log the metric

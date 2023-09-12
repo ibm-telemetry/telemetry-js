@@ -1,0 +1,112 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`npmScope > correctly captures dependency data 1`] = `
+{
+  "errors": [],
+  "resourceMetrics": {
+    "resource": Resource {
+      "_asyncAttributesPromise": undefined,
+      "_attributes": {
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.raw": "gitOrigin",
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": undefined,
+        "telemetrics.emitter.name": "telemetryName",
+        "telemetrics.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.15.2",
+      },
+      "_syncAttributes": {
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.raw": "gitOrigin",
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": undefined,
+        "telemetrics.emitter.name": "telemetryName",
+        "telemetrics.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.15.2",
+      },
+      "asyncAttributesPending": false,
+    },
+    "scopeMetrics": [
+      {
+        "metrics": [
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "installer.name": "basic-project",
+                  "installer.version": "1.0.0",
+                  "name": "foo",
+                  "owner": undefined,
+                  "raw": "foo",
+                  "version.major": "1",
+                  "version.minor": "0",
+                  "version.patch": "0",
+                  "version.preRelease": "",
+                  "version.raw": "1.0.0",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "installer.name": "basic-project",
+                  "installer.version": "1.0.0",
+                  "name": "instrumented",
+                  "owner": undefined,
+                  "raw": "instrumented",
+                  "version.major": "0",
+                  "version.minor": "1",
+                  "version.patch": "0",
+                  "version.preRelease": "",
+                  "version.raw": "0.1.0",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+            ],
+            "descriptor": {
+              "description": "",
+              "name": "dependency.count",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 1,
+            },
+            "isMonotonic": true,
+          },
+        ],
+        "scope": {
+          "name": "npm",
+          "schemaUrl": undefined,
+          "version": "",
+        },
+      },
+    ],
+  },
+}
+`;

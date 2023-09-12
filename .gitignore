@@ -17,3 +17,6 @@ src/schemas/telemetrics-config.schema.json
 
 # Dotenv stuff
 .env
+
+# Allow node_modules folders in test fixtures
+!src/test/__fixtures/projects/**/node_modules

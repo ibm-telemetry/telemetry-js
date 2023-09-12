@@ -18,10 +18,10 @@ module.exports = {
     'plugin:@typescript-eslint/strict',
     'plugin:eslint-comments/recommended',
     'plugin:jsdoc/recommended-typescript',
-    'plugin:n/recommended',
-    'plugin:vitest/all'
+    'plugin:n/recommended'
   ],
   overrides: [
+    // Special rules for config files
     {
       env: {
         node: true
@@ -33,6 +33,12 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-var-requires': 'off'
       }
+    },
+    // Special rules for test files
+    {
+      files: ['**/*.test.ts'],
+      plugins: ['vitest'],
+      extends: ['plugin:vitest/all']
     }
   ],
   parserOptions: {
@@ -40,7 +46,7 @@ module.exports = {
     sourceType: 'module',
     project: 'tsconfig.eslint.json'
   },
-  plugins: ['jsdoc', 'notice', 'simple-import-sort', 'vitest'],
+  plugins: ['jsdoc', 'notice', 'simple-import-sort'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',

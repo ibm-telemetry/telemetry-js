@@ -17,7 +17,7 @@ import yaml from 'js-yaml'
  * @throws A YAMLException exception if there is an error parsing the file, or an ENOENT Error if
  * the config file could not be found.
  */
-export async function parseYamlFile(filePath: string) {
+export async function parseYamlFile(filePath: string): Promise<Record<string, unknown>> {
   const contents = await readFile(filePath, 'utf8')
-  return yaml.load(contents)
+  return yaml.load(contents) as Record<string, unknown>
 }

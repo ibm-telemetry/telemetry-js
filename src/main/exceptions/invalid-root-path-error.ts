@@ -9,7 +9,7 @@
  * Exception thrown when protecting exec commands from forbidden characters.
  */
 export class InvalidRootPathError extends Error {
-  constructor(cwd: string, root: string) {
+  constructor(root: string, cwd: string) {
     super(`${cwd} is not a subpath of ${root}`)
   }
 }

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import path from 'node:path'
+
 import { describe, expect, it } from 'vitest'
 
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
@@ -18,7 +20,7 @@ const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 describe('npmScope', () => {
   it('correctly captures dependency data', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
-    const scope = new NpmScope(fixture.path, logger)
+    const scope = new NpmScope(fixture.path, path.join(fixture.path, '..', '..'), logger)
 
     const metricReader = initializeOtelForTest()
 

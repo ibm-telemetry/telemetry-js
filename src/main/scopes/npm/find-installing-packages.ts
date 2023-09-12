@@ -5,8 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { exec } from '../../core/exec.js'
-import { getProjectRoot } from '../../core/get-project-root.js'
+import { runCommand } from '../../core/run-command.js'
 import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { findScannableDirectories } from './find-scannable-directories.js'
 import { type InstallingPackage } from './interfaces.js'
@@ -21,22 +20,26 @@ import { type InstallingPackage } from './interfaces.js'
  * returned.
  *
  * @param cwd - Current working directory to use when finding installing packages.
+ * @param root - The root-most directory to consider when searching for installers.
  * @param packageName - The name of the package to search for.
  * @param packageVersion - The exact version of the package to search for.
  * @returns A possibly empty array of installing packages.
  */
 export async function findInstallingPackages(
   cwd: string,
+  root: string,
   packageName: string,
   packageVersion: string
 ): Promise<InstallingPackage[]> {
-  const root = await getProjectRoot(cwd)
   const dirs = await findScannableDirectories(cwd, root)
 
   let installers: InstallingPackage[] = []
 
   for (const d of dirs) {
-    const dependencyTree = JSON.parse(await exec('npm ls --all --json', { cwd: d }))
+    // Allow this command to try and obtain results even if it exited with a total or partial error
+    const result = await runCommand('npm ls --all --json', { cwd: d }, false)
+
+    const dependencyTree = JSON.parse(result.stdout)
 
     installers = findInstallersFromTree(dependencyTree, packageName, packageVersion)
 

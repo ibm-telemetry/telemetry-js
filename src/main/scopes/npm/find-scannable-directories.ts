@@ -28,7 +28,7 @@ export async function findScannableDirectories(cwd: string, root: string) {
 
   // (if cwd is not a subpath of root, throw an exception)
   if (path.relative(root, cwd).startsWith('..')) {
-    throw new InvalidRootPathError(cwd, root)
+    throw new InvalidRootPathError(root, cwd)
   }
 
   do {

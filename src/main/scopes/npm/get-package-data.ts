@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { exec } from '../../core/exec.js'
+import { runCommand } from '../../core/run-command.js'
 import { type PackageData } from './interfaces.js'
 
 /**
@@ -16,5 +16,6 @@ import { type PackageData } from './interfaces.js'
  * @returns An object containing details about the package.
  */
 export async function getPackageData(packagePath: string): Promise<PackageData> {
-  return JSON.parse(await exec('npm pkg get name version', { cwd: packagePath }))
+  const result = await runCommand('npm pkg get name version', { cwd: packagePath })
+  return JSON.parse(result.stdout)
 }

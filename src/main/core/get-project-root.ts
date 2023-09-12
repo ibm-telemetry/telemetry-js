@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { exec } from './exec.js'
+import { runCommand } from './run-command.js'
 
 /**
  * Finds and returns the root-most directory of the analyzed project's source tree.
@@ -14,5 +14,7 @@ import { exec } from './exec.js'
  * @returns The path of the analyzed project's root directory or null.
  */
 export async function getProjectRoot(cwd: string): Promise<string> {
-  return await exec('git rev-parse --show-toplevel', { cwd })
+  const result = await runCommand('git rev-parse --show-toplevel', { cwd })
+
+  return result.stdout
 }

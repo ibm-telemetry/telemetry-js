@@ -6,16 +6,20 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 
-import * as exec from '../../../main/core/exec.js'
+import * as exec from '../../../main/core/run-command.js'
 import * as getPackageData from '../../../main/scopes/npm/get-package-data.js'
 import { getTelemetryPackageData } from '../../../main/scopes/npm/get-telemetry-package-data.js'
 
 const spy = vi.spyOn(getPackageData, 'getPackageData')
 
-vi.spyOn(exec, 'exec').mockResolvedValue(JSON.stringify({
-  name: 'test-1',
-  version: '1.0.0'
-}))
+vi.spyOn(exec, 'runCommand').mockResolvedValue({
+  exitCode: 0,
+  stdout: JSON.stringify({
+    name: 'test-1',
+    version: '1.0.0'
+  }),
+  stderr: ''
+})
 
 describe('getTelemetryPackageData', () => {
   it('correctly reads name and version', async () => {

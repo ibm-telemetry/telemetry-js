@@ -43,7 +43,6 @@ async function run() {
     projectId: 'abecafa7681dfd65cc'
   }
 
-  // TODOASKJOE is this the correct function to call here?
   const { name: telemetryName, version: telemetryVersion } = await getTelemetryPackageData()
 
   // TODO: handle non-existant remote

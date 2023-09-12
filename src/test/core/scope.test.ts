@@ -4,11 +4,47 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { type Attributes } from '@opentelemetry/api'
 import { describe, expect, it } from 'vitest'
 
+import { createLogFilePath } from '../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../main/core/log/logger.js'
+import { Scope } from '../../main/core/scope.js'
+import { ScopeMetric } from '../../main/core/scope-metric.js'
+
 describe('scope', () => {
-  it('correctly captures dependency data', async () => {
-    // TODO: write this assertion when scope is finished being implemented
-    expect(true).toBeTruthy()
+  it('correctly captures a data point', async () => {
+    const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+
+    const myScope = new (class MyScope extends Scope {
+      public override name: string = 'my-scope'
+      protected override logger: Logger
+
+      /**
+       * Default constructor.
+       */
+      public constructor() {
+        super()
+        this.logger = logger
+      }
+
+      public override async run(): Promise<void> {
+        throw new Error('Method not implemented.')
+      }
+    })()
+
+    const myMetric = new (class MyMetric extends ScopeMetric {
+      public override name: string = 'my-metric'
+
+      public override get attributes(): Attributes {
+        return { hello: 'hi' }
+      }
+    })()
+
+    expect(myScope.metrics['my-metric']).not.toBeDefined()
+
+    myScope.capture(myMetric)
+
+    expect(myScope.metrics['my-metric']).toBeDefined()
   })
 })

@@ -29,11 +29,14 @@ import { getPackageSubTree } from './get-package-sub-tree.js'
  */
 
 /**
- * TODO.
+ * Given a dependency tree, package name, and package version, finds all packages which install the
+ * specified package name/version combo. Returns an array of results; or an empty array if no
+ * installers were found.
  *
- * @param dependencyTree
- * @param packageName
- * @param packageVersion
+ * @param dependencyTree - The tree to search.
+ * @param packageName - The name of the package for which to search.
+ * @param packageVersion - The specific version of the package for which to search.
+ * @returns An array of results.
  */
 export function findInstallers(
   dependencyTree: Record<string, unknown>,

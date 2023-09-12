@@ -4,13 +4,11 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-// TODO: should this live in some other place since it might be useful to have for other scopes?
-// until we have a second scope, it might not be worth trying to centralize it
 
-import path from 'path'
+import path from 'node:path'
 
-import { exec } from '../../core/exec.js'
-import { NoProjectRootError } from '../../exceptions/no-project-root-error.js'
+import { NoProjectRootError } from '../exceptions/no-project-root-error.js'
+import { exec } from './exec.js'
 
 /**
  * Finds and returns the root-most directory of the analyzed project's source tree.

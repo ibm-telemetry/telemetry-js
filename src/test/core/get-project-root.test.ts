@@ -6,9 +6,9 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 
-import * as exec from '../../../main/core/exec.js'
-import { NoProjectRootError } from '../../../main/exceptions/no-project-root-error.js'
-import { getProjectRoot } from '../../../main/scopes/npm/get-project-root.js'
+import * as exec from '../../main/core/exec.js'
+import { getProjectRoot } from '../../main/core/get-project-root.js'
+import { NoProjectRootError } from '../../main/exceptions/no-project-root-error.js'
 
 describe('getProjectRoot', () => {
   it('correctly gets project root', async () => {

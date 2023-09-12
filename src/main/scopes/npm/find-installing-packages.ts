@@ -6,9 +6,9 @@
  */
 
 import { exec } from '../../core/exec.js'
+import { getProjectRoot } from '../../core/get-project-root.js'
 import { findInstallers } from './find-installers.js'
 import { findScannableDirectories } from './find-scannable-directories.js'
-import { getProjectRoot } from './get-project-root.js'
 import { type InstallingPackage } from './interfaces.js'
 
 /**

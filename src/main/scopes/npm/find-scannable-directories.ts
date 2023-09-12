@@ -5,16 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path'
+import path from 'node:path'
 
 import { InvalidRootPathError } from '../../exceptions/invalid-root-path-error.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
 
 /**
- * TODO.
+ * Given a root directory and a current directory, finds all directories between the root and
+ * current which contain a node_modules folder. This indicates that they can be scanned for
+ * dependency information via an `npm ls` command.
  *
- * @param cwd
- * @param root
+ * @param cwd - The current/starting directory.
+ * @param root - The root-most directory to consider.
+ * @throws If the cwd is not a sub-path of the root.
+ * @returns A (possibly empty) array of directory path strings.
  */
 export async function findScannableDirectories(cwd: string, root: string) {
   const dirs = []

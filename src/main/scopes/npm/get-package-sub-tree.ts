@@ -11,16 +11,20 @@ import { InvalidObjectPathError } from '../../exceptions/invalid-object-path-err
 import { type InstallingPackage, type PackageData } from './interfaces.js'
 
 /**
- * TODO.
+ * Given a dependency tree and an object path within that tree, return an object containing name,
+ * version, and dependency information for the package found at the object path.
  *
- * @param dependencyTree
- * @param objectPath
+ * @param dependencyTree - The tree from which to pull information.
+ * @param objectPath - The path to an object within the dependency tree.
+ * @throws If the object path did not exist in the dependency tree.
+ * @returns An object containing package information.
  */
 export function getPackageSubTree(
   dependencyTree: Record<string, unknown>,
   objectPath: string[]
 ): InstallingPackage {
-  const tree = objectPath.length === 0 ? dependencyTree : getPropertyByPath(dependencyTree, objectPath)
+  const tree =
+    objectPath.length === 0 ? dependencyTree : getPropertyByPath(dependencyTree, objectPath)
 
   if (tree === undefined) {
     throw new InvalidObjectPathError()

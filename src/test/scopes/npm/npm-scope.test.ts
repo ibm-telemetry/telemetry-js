@@ -8,6 +8,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { type Logger } from '../../../main/core/log/logger.js'
+import * as findInstallingPackages from '../../../main/scopes/npm/find-installing-packages.js'
+import * as getInstrumentedPackageData from '../../../main/scopes/npm/get-instrumented-package-data.js'
 import { DependencyMetric } from '../../../main/scopes/npm/metrics/dependency-metric.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
 
@@ -21,23 +23,69 @@ vi.mock('../../../main/core/scope.js', () => {
   }
 })
 
-vi.spyOn(DependencyMetric.prototype, 'attributes', 'get').mockReturnValue({ name: 'test' })
+const findInstallingPackagesSpy = vi
+  .spyOn(findInstallingPackages, 'findInstallingPackages')
+  .mockResolvedValue([
+    {
+      name: 'installer-1',
+      version: '1.0.0',
+      dependencies: [
+        {
+          name: 'test-dep-11',
+          version: '1.0.1'
+        },
+        {
+          name: 'test-dep-12',
+          version: '1.0.2'
+        }
+      ]
+    },
+    {
+      name: 'installer-2',
+      version: '1.0.0',
+      dependencies: [
+        {
+          name: 'test-dep-21',
+          version: '1.0.3'
+        },
+        {
+          name: 'test-dep-22',
+          version: '1.0.4'
+        }
+      ]
+    }
+  ])
+
+const getInstrumentedPackageDataSpy = vi
+  .spyOn(getInstrumentedPackageData, 'getInstrumentedPackageData')
+  .mockResolvedValue({ name: 'test', version: '1.0.0' })
 
 const testLogger = {
   log: vi.fn()
 }
 
 describe('npmScope', () => {
-  // eslint-disable-next-line vitest/no-disabled-tests --  TODO: rewrite test
-  it.skip('correctly captures dependency data', async () => {
+  it('correctly captures dependency data', async () => {
     const scope = new NpmScope(testLogger as unknown as Logger)
     await scope.run()
-    expect(mockedCapture).toHaveBeenCalledTimes(2)
+    expect(getInstrumentedPackageDataSpy).toHaveBeenCalledTimes(1)
+    expect(findInstallingPackagesSpy).toHaveBeenCalledWith('test', '1.0.0')
+    expect(mockedCapture).toHaveBeenCalledTimes(4)
     expect(mockedCapture).toHaveBeenCalledWith(
-      new DependencyMetric({ name: 'test', version: '0.0.2', installer: 'test-parent' })
+      new DependencyMetric({
+        name: 'test-dep-11',
+        version: '1.0.1',
+        installerName: 'installer-1',
+        installerVersion: '1.0.0'
+      })
     )
     expect(mockedCapture).toHaveBeenCalledWith(
-      new DependencyMetric({ name: 'test-2', version: '0.0.1', installer: 'test-parent' })
+      new DependencyMetric({
+        name: 'test-dep-22',
+        version: '1.0.4',
+        installerName: 'installer-2',
+        installerVersion: '1.0.0'
+      })
     )
   })
 })

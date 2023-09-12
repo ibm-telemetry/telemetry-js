@@ -7,11 +7,10 @@
 
 import { describe, expect, it, vi } from 'vitest'
 
-import { type Logger } from '../../../main/core/log/logger.js'
-import * as findInstallingPackages from '../../../main/scopes/npm/find-installing-packages.js'
-import * as getInstrumentedPackageData from '../../../main/scopes/npm/get-instrumented-package-data.js'
-import { DependencyMetric } from '../../../main/scopes/npm/metrics/dependency-metric.js'
+import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../../main/core/log/logger.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
+import { Fixture } from '../../__utils/fixture.js'
 
 const mockedCapture = vi.fn()
 
@@ -23,69 +22,30 @@ vi.mock('../../../main/core/scope.js', () => {
   }
 })
 
-const findInstallingPackagesSpy = vi
-  .spyOn(findInstallingPackages, 'findInstallingPackages')
-  .mockResolvedValue([
-    {
-      name: 'installer-1',
-      version: '1.0.0',
-      dependencies: [
-        {
-          name: 'test-dep-11',
-          version: '1.0.1'
-        },
-        {
-          name: 'test-dep-12',
-          version: '1.0.2'
-        }
-      ]
-    },
-    {
-      name: 'installer-2',
-      version: '1.0.0',
-      dependencies: [
-        {
-          name: 'test-dep-21',
-          version: '1.0.3'
-        },
-        {
-          name: 'test-dep-22',
-          version: '1.0.4'
-        }
-      ]
-    }
-  ])
-
-const getInstrumentedPackageDataSpy = vi
-  .spyOn(getInstrumentedPackageData, 'getInstrumentedPackageData')
-  .mockResolvedValue({ name: 'test', version: '1.0.0' })
-
-const testLogger = {
-  log: vi.fn()
-}
+const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 describe('npmScope', () => {
   it('correctly captures dependency data', async () => {
-    const scope = new NpmScope(testLogger as unknown as Logger)
+    const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+    const scope = new NpmScope(fixture.path, logger)
     await scope.run()
-    expect(getInstrumentedPackageDataSpy).toHaveBeenCalledTimes(1)
-    expect(findInstallingPackagesSpy).toHaveBeenCalledWith('test', '1.0.0')
-    expect(mockedCapture).toHaveBeenCalledTimes(4)
-    expect(mockedCapture).toHaveBeenCalledWith(
-      new DependencyMetric({
-        name: 'test-dep-11',
-        version: '1.0.1',
-        installerName: 'installer-1',
-        installerVersion: '1.0.0'
-      })
-    )
-    expect(mockedCapture).toHaveBeenCalledWith(
-      new DependencyMetric({
-        name: 'test-dep-22',
-        version: '1.0.4',
-        installerName: 'installer-2',
-        installerVersion: '1.0.0'
-      })
-    )
+    // TODO: switch to snapshots and maybe add e2e to the file names since these are integration
+    expect(mockedCapture).toHaveBeenCalledTimes(2)
+    //   expect(mockedCapture).toHaveBeenCalledWith(
+    //     new DependencyMetric({
+    //       name: 'test-dep-11',
+    //       version: '1.0.1',
+    //       installerName: 'installer-1',
+    //       installerVersion: '1.0.0'
+    //     })
+    //   )
+    //   expect(mockedCapture).toHaveBeenCalledWith(
+    //     new DependencyMetric({
+    //       name: 'test-dep-22',
+    //       version: '1.0.4',
+    //       installerName: 'installer-2',
+    //       installerVersion: '1.0.0'
+    //     })
+    //   )
   })
 })

@@ -20,16 +20,17 @@ import { type InstallingPackage } from './interfaces.js'
  * If no installers were found after the root-post project directory was searched, an empty array is
  * returned.
  *
+ * @param cwd - Current working directory to use when finding installing packages.
  * @param packageName - The name of the package to search for.
  * @param packageVersion - The exact version of the package to search for.
  * @returns A possibly empty array of installing packages.
  */
 export async function findInstallingPackages(
+  cwd: string,
   packageName: string,
   packageVersion: string
 ): Promise<InstallingPackage[]> {
-  const cwd = process.cwd()
-  const root = await getProjectRoot()
+  const root = await getProjectRoot(cwd)
   const dirs = await findScannableDirectories(cwd, root)
 
   let installers: InstallingPackage[] = []

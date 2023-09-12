@@ -23,8 +23,8 @@ import { hasNodeModulesFolder } from './has-node-modules-folder.js'
 export async function findScannableDirectories(cwd: string, root: string) {
   const dirs = []
   // Ensure the format is normalized
-  root = path.join(root)
-  cwd = path.join(cwd)
+  root = path.resolve(root)
+  cwd = path.resolve(cwd)
 
   // (if cwd is not a subpath of root, throw an exception)
   if (path.relative(root, cwd).startsWith('..')) {
@@ -36,7 +36,7 @@ export async function findScannableDirectories(cwd: string, root: string) {
       dirs.push(cwd)
     }
 
-    cwd = path.join(cwd, '..')
+    cwd = path.resolve(cwd, '..')
   } while (cwd !== root)
 
   if (await hasNodeModulesFolder(root)) {

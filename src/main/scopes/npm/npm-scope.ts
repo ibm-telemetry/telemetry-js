@@ -7,31 +7,36 @@
 import { type Logger } from '../../core/log/logger.js'
 import { Scope } from '../../core/scope.js'
 import { findInstallingPackages } from './find-installing-packages.js'
-import { getInstrumentedPackageData } from './get-instrumented-package-data.js'
+import { getPackageData } from './get-package-data.js'
 import { DependencyMetric } from './metrics/dependency-metric.js'
 
 /**
  * Scope class dedicated to data collection from an npm environment.
  */
 export class NpmScope extends Scope {
+  private readonly cwd: string
   protected override logger: Logger
   public name = 'npm'
 
   /**
    * Constructs an NpmScope.
    *
+   * @param cwd - The directory representing the instrumented package.
    * @param logger - Injected logger dependency.
    */
-  public constructor(logger: Logger) {
+  public constructor(cwd: string, logger: Logger) {
     super()
+    this.cwd = cwd
     this.logger = logger
   }
 
   public override async run(): Promise<void> {
-    const { name: instrumentedPkgName, version: instrumentedPkgVersion } =
-      await getInstrumentedPackageData()
+    const { name: instrumentedPkgName, version: instrumentedPkgVersion } = await getPackageData(
+      this.cwd
+    )
 
     const installingPackages = await findInstallingPackages(
+      this.cwd,
       instrumentedPkgName,
       instrumentedPkgVersion
     )

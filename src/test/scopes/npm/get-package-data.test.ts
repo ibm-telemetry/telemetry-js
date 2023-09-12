@@ -11,13 +11,13 @@ import { Fixture } from '../../__utils/fixture.js'
 
 describe('getPackageData', () => {
   it('correctly reads name and version', async () => {
-    const fixture = new Fixture('mock-packages/mock-package-1')
+    const fixture = new Fixture('projects/basic-project')
     await expect(getPackageData(fixture.path)).resolves.toStrictEqual({
-      name: 'mock-package-1',
+      name: 'basic-project',
       version: '1.0.0'
     })
   })
-  it('throws error for non existing directory', async () => {
+  it('throws error for non-existant directory', async () => {
     await expect(getPackageData('/made/up/directory')).rejects.toThrow(Error)
   })
 })

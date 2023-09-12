@@ -38,7 +38,7 @@ import { getPackageSubTree } from './get-package-sub-tree.js'
  * @param packageVersion - The specific version of the package for which to search.
  * @returns An array of results.
  */
-export function findInstallers(
+export function findInstallersFromTree(
   dependencyTree: Record<string, unknown>,
   packageName: string,
   packageVersion: string

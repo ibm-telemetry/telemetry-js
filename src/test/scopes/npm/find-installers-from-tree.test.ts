@@ -6,17 +6,17 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { findInstallers } from '../../../main/scopes/npm/find-installers.js'
+import { findInstallersFromTree } from '../../../main/scopes/npm/find-installers-from-tree.js'
 import { Fixture } from '../../__utils/fixture.js'
 
 const testDependencyTree = await new Fixture('dependency-trees/basic-dependency-tree.json').parse()
 
-describe('findInstallers', () => {
+describe('findInstallersFromTree', () => {
   it('returns empty array if dependency does not exist', () => {
-    expect(findInstallers(testDependencyTree, 'not-there', '1.0.0')).toStrictEqual([])
+    expect(findInstallersFromTree(testDependencyTree, 'not-there', '1.0.0')).toStrictEqual([])
   })
   it('returns for a single installer', () => {
-    expect(findInstallers(testDependencyTree, 'two', '1.0.0')).toStrictEqual([
+    expect(findInstallersFromTree(testDependencyTree, 'two', '1.0.0')).toStrictEqual([
       {
         version: '1.0.0',
         name: 'one',
@@ -38,7 +38,7 @@ describe('findInstallers', () => {
     ])
   })
   it('returns for multiple installers', () => {
-    expect(findInstallers(testDependencyTree, 'three', '1.0.0')).toStrictEqual([
+    expect(findInstallersFromTree(testDependencyTree, 'three', '1.0.0')).toStrictEqual([
       {
         version: '1.0.0',
         name: 'one',
@@ -70,7 +70,7 @@ describe('findInstallers', () => {
     ])
   })
   it('only picks up correct version', () => {
-    expect(findInstallers(testDependencyTree, 'four', '1.0.1')).toStrictEqual([
+    expect(findInstallersFromTree(testDependencyTree, 'four', '1.0.1')).toStrictEqual([
       {
         name: 'three',
         version: '1.0.0',
@@ -84,6 +84,6 @@ describe('findInstallers', () => {
     ])
   })
   it('disregards other versions', () => {
-    expect(findInstallers(testDependencyTree, 'four', 'not-there')).toStrictEqual([])
+    expect(findInstallersFromTree(testDependencyTree, 'four', 'not-there')).toStrictEqual([])
   })
 })

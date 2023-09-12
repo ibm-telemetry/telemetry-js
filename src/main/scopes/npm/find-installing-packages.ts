@@ -7,7 +7,7 @@
 
 import { exec } from '../../core/exec.js'
 import { getProjectRoot } from '../../core/get-project-root.js'
-import { findInstallers } from './find-installers.js'
+import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { findScannableDirectories } from './find-scannable-directories.js'
 import { type InstallingPackage } from './interfaces.js'
 
@@ -37,7 +37,7 @@ export async function findInstallingPackages(
   for (const d of dirs) {
     const dependencyTree = JSON.parse(await exec('npm ls --all --json', { cwd: d }))
 
-    installers = findInstallers(dependencyTree, packageName, packageVersion)
+    installers = findInstallersFromTree(dependencyTree, packageName, packageVersion)
 
     if (installers.length > 0) {
       break

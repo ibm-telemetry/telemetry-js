@@ -1,0 +1,28 @@
+{
+    "version": "1.0.0",
+    "name": "one",
+    "dependencies": {
+      "two": {
+        "version": "1.0.0",
+        "dependencies": {
+          "three": {
+            "version": "1.0.0",
+            "dependencies": {
+              "four": {
+                "version": "1.0.1",
+                "dependencies": {}
+              }
+            }
+          }
+        }
+      },
+      "four": {
+        "version": "1.0.0",
+        "dependencies": {}
+      },
+      "three": {
+        "version": "1.0.0",
+        "dependencies": {}
+      }
+    }
+  }

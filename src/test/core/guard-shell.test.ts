@@ -7,6 +7,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { guardShell } from '../../main/core/guard-shell.js'
+import { GuardShellError } from '../../main/exceptions/guard-shell-error.js'
 
 describe('guardShell', () => {
   it('does not throw with a safe command', () => {
@@ -18,24 +19,24 @@ describe('guardShell', () => {
   it('throws an error when given a backslash in a command', () => {
     expect(() => {
       guardShell('bla\\wow')
-    }).toThrow(Error)
+    }).toThrow(GuardShellError)
   })
 
   it('throws an error when given a dollar sign in a command', () => {
     expect(() => {
       guardShell('test$')
-    }).toThrow(Error)
+    }).toThrow(GuardShellError)
   })
 
   it('throws an error when given a back tick in a command', () => {
     expect(() => {
       guardShell('`bla')
-    }).toThrow(Error)
+    }).toThrow(GuardShellError)
   })
 
   it('throws an error when given a semicolon in a command', () => {
     expect(() => {
       guardShell('`bla')
-    }).toThrow(Error)
+    }).toThrow(GuardShellError)
   })
 })

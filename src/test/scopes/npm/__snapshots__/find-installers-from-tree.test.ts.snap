@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`findInstallersFromTree > only picks up correct version 1`] = `
+[
+  {
+    "dependencies": [
+      {
+        "name": "four",
+        "version": "1.0.1",
+      },
+    ],
+    "name": "three",
+    "version": "1.0.0",
+  },
+]
+`;
+
+exports[`findInstallersFromTree > returns for a single installer 1`] = `
+[
+  {
+    "dependencies": [
+      {
+        "name": "two",
+        "version": "1.0.0",
+      },
+      {
+        "name": "four",
+        "version": "1.0.0",
+      },
+      {
+        "name": "three",
+        "version": "1.0.0",
+      },
+    ],
+    "name": "one",
+    "version": "1.0.0",
+  },
+]
+`;
+
+exports[`findInstallersFromTree > returns for multiple installers 1`] = `
+[
+  {
+    "dependencies": [
+      {
+        "name": "two",
+        "version": "1.0.0",
+      },
+      {
+        "name": "four",
+        "version": "1.0.0",
+      },
+      {
+        "name": "three",
+        "version": "1.0.0",
+      },
+    ],
+    "name": "one",
+    "version": "1.0.0",
+  },
+  {
+    "dependencies": [
+      {
+        "name": "three",
+        "version": "1.0.0",
+      },
+    ],
+    "name": "two",
+    "version": "1.0.0",
+  },
+]
+`;

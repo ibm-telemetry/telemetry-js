@@ -34,8 +34,12 @@ export abstract class Scope extends Loggable {
    */
   public abstract run(): Promise<void>
 
+  /**
+   * The metrics captured by this scope.
+   */
+  public readonly metrics: Record<string, Counter>
+
   private scopeMeter?: Meter
-  private readonly metrics: Record<string, Counter>
   protected readonly config: Config
 
   /**
@@ -55,7 +59,7 @@ export abstract class Scope extends Loggable {
    *
    * @param dataPoint - The actual metric data.
    */
-  protected capture(dataPoint: ScopeMetric): void {
+  public capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
     if (this.scopeMeter === undefined) {
       this.scopeMeter = opentelemetry.metrics.getMeter(this.name)

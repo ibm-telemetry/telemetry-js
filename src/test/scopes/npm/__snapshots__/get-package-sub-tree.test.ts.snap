@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getPackageSubTree > correctly parses nested dependency 1`] = `
+{
+  "dependencies": [
+    {
+      "name": "three",
+      "version": "1.0.0",
+    },
+  ],
+  "name": "two",
+  "version": "1.0.0",
+}
+`;
+
+exports[`getPackageSubTree > correctly parses top-level-dependency 1`] = `
+{
+  "dependencies": [
+    {
+      "name": "two",
+      "version": "1.0.0",
+    },
+    {
+      "name": "four",
+      "version": "1.0.0",
+    },
+    {
+      "name": "three",
+      "version": "1.0.0",
+    },
+  ],
+  "name": "one",
+  "version": "1.0.0",
+}
+`;

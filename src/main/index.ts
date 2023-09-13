@@ -6,14 +6,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { exec } from './core/exec.js'
 import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
 import { createLogFilePath } from './core/log/create-log-file-path.js'
 import { Logger } from './core/log/logger.js'
 import * as ResourceAttributes from './core/resource-attributes.js'
+import { runCommand } from './core/run-command.js'
 import { tokenizeRepository } from './core/tokenize-repository.js'
-import { getPackageName } from './scopes/npm/get-package-name.js'
-import { getPackageVersion } from './scopes/npm/get-package-version.js'
+import { getTelemetryPackageData } from './scopes/npm/get-telemetry-package-data.js'
 
 /*
 
@@ -45,21 +44,18 @@ async function run() {
     projectId: 'abecafa7681dfd65cc'
   }
 
-  const packageJsonInfo = {
-    name: getPackageName(),
-    version: getPackageVersion()
-  }
+  const { name: telemetryName, version: telemetryVersion } = await getTelemetryPackageData()
 
   // TODO: handle non-existant remote
   // TODO: move this logic elsewhere
-  const gitOrigin = exec('git remote get-url origin')
-  const repository = tokenizeRepository(gitOrigin)
+  const gitOrigin = await runCommand('git remote get-url origin')
+  const repository = tokenizeRepository(gitOrigin.stdout)
 
   const metricReader = initializeOpenTelemetry({
-    [ResourceAttributes.EMITTER_NAME]: packageJsonInfo.name,
-    [ResourceAttributes.EMITTER_VERSION]: packageJsonInfo.version,
+    [ResourceAttributes.EMITTER_NAME]: telemetryName,
+    [ResourceAttributes.EMITTER_VERSION]: telemetryVersion,
     [ResourceAttributes.PROJECT_ID]: config.projectId,
-    [ResourceAttributes.ANALYZED_RAW]: gitOrigin,
+    [ResourceAttributes.ANALYZED_RAW]: gitOrigin.stdout,
     [ResourceAttributes.ANALYZED_HOST]: repository.host,
     [ResourceAttributes.ANALYZED_OWNER]: repository.owner,
     [ResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,

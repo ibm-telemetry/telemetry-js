@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { GuardShellError } from '../exceptions/guard-shell-error.js'
+
 /**
  *  Checks a command for certain disallowed characters and throws an exception if they are found.
  *
@@ -13,8 +15,6 @@
  */
 export function guardShell(cmd: string) {
   if (/[\\$;`]/.exec(cmd) != null) {
-    throw new Error(
-      'Shell guard prevented a command from running because it contained special characters: ' + cmd
-    )
+    throw new GuardShellError('Command contained forbidden characters: ' + cmd)
   }
 }

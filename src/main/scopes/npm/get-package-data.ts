@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { type Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 import { type PackageData } from './interfaces.js'
 
@@ -12,10 +13,11 @@ import { type PackageData } from './interfaces.js'
  *
  * @param packagePath - A directory to be treated as a package. It may or may not include a
  * package.json file directly in it.
+ * @param logger - Logger instance.
  * @throws If no package details could be obtained or the directory didn't point to a valid package.
  * @returns An object containing details about the package.
  */
-export async function getPackageData(packagePath: string): Promise<PackageData> {
-  const result = await runCommand('npm pkg get name version', { cwd: packagePath })
+export async function getPackageData(packagePath: string, logger: Logger): Promise<PackageData> {
+  const result = await runCommand('npm pkg get name version', logger, { cwd: packagePath })
   return JSON.parse(result.stdout)
 }

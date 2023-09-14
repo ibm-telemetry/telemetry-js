@@ -5,10 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-interface RunCommandErrorReason {
-  exitCode: number
-  stderr: string
-  stdout: string
+import { type SpawnOptions } from 'child_process'
+
+import { type RunCommandResult } from '../core/run-command.js'
+
+export interface RunCommandErrorReason extends RunCommandResult {
+  exception?: unknown
+  spawnOptions: SpawnOptions
 }
 
 /**
@@ -16,6 +19,6 @@ interface RunCommandErrorReason {
  */
 export class RunCommandError extends Error {
   constructor(reason: RunCommandErrorReason) {
-    super(JSON.stringify(reason))
+    super(JSON.stringify(reason, undefined, 2))
   }
 }

@@ -8,6 +8,7 @@
 import { type Attributes } from '@opentelemetry/api'
 import { SemVer } from 'semver'
 
+import { anonymize } from '../../../core/anonymize.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 
 export interface DependencyData {
@@ -37,18 +38,31 @@ export class DependencyMetric extends ScopeMetric {
 
   public override get attributes(): Attributes {
     const { owner, name, major, minor, patch, preRelease } = this.getPackageDetails()
-    return {
-      raw: this.data.name,
-      owner,
-      name,
-      'installer.name': this.data.installerName,
-      'installer.version': this.data.installerVersion,
-      'version.raw': this.data.version,
-      'version.major': major.toString(),
-      'version.minor': minor.toString(),
-      'version.patch': patch.toString(),
-      'version.preRelease': preRelease.join('.')
-    }
+    return anonymize(
+      {
+        raw: this.data.name,
+        owner,
+        name,
+        'installer.name': this.data.installerName,
+        'installer.version': this.data.installerVersion,
+        'version.raw': this.data.version,
+        'version.major': major.toString(),
+        'version.minor': minor.toString(),
+        'version.patch': patch.toString(),
+        'version.preRelease': preRelease.length > 0 ? preRelease.join('.') : undefined
+      },
+      {
+        hash: [
+          'raw',
+          'owner',
+          'name',
+          'installer.name',
+          'installer.version',
+          'version.raw',
+          'version.preRelease'
+        ]
+      }
+    )
   }
 
   /**

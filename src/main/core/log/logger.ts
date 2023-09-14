@@ -24,15 +24,46 @@ export class Logger {
   }
 
   /**
-   * Logs a given message to the log file.
+   * Debug logs a given log message.
    *
-   * @param level - 'debug' or 'error'.
-   * @param msg - Message to log, can be a string or instance of Error class.
+   * @param msg - The message to log.
    */
-  public async log(level: Level, msg: string | Error) {
+  public async debug(msg: string) {
+    await this.log('debug', msg)
+  }
+
+  /**
+   * Error logs a given message/error.
+   *
+   * @param msg - The message/error to log.
+   */
+  public async error(msg: string | Error) {
     if (msg instanceof Error) {
       msg = msg.stack ?? msg.name + ' ' + msg.message
     }
-    await appendFile(this.filePath, `${level} ${new Date().toISOString()} ${msg}\n`)
+
+    await this.log('error', msg)
+  }
+
+  /**
+   * Logs a given message to the log file.
+   *
+   * @param level - 'debug' or 'error'.
+   * @param msg - Message to log.
+   */
+  private async log(level: Level, msg: string) {
+    const date = new Date().toISOString()
+
+    if (process.env['NODE_ENV'] !== 'production') {
+      switch (level) {
+        case 'debug':
+          console.debug(level, date, msg)
+          break
+        case 'error':
+          console.error(level, date, msg)
+      }
+    }
+
+    await appendFile(this.filePath, level + ' ' + date + ' ' + msg + '\n')
   }
 }

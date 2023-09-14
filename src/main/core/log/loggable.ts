@@ -17,7 +17,7 @@ export class Loggable {
    *
    * @param logger - The logger to use during logging.
    */
-  protected constructor(logger: Logger) {
+  public constructor(logger: Logger) {
     this.logger = logger
   }
 }

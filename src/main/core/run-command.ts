@@ -8,8 +8,9 @@ import childProcess from 'node:child_process'
 
 import { RunCommandError } from '../exceptions/run-command-error.js'
 import { guardShell } from './guard-shell.js'
+import { type Logger } from './log/logger.js'
 
-interface Result {
+export interface RunCommandResult {
   stdout: string
   stderr: string
   exitCode: number
@@ -20,6 +21,7 @@ interface Result {
  * non-zero exit code.
  *
  * @param cmd - The command to invoke.
+ * @param logger - Instance to use for logging.
  * @param options - Options to include along with the command.
  * @param rejectOnError - Whether or not to reject the resulting promise when a non-zero exit code
  * is encountered.
@@ -27,58 +29,75 @@ interface Result {
  */
 export async function runCommand(
   cmd: string,
+  logger: Logger,
   options: childProcess.SpawnOptions = {},
   rejectOnError: boolean = true
 ) {
+  await logger.debug('Running command: ' + cmd)
+
   guardShell(cmd)
 
-  const execOptions = {
+  let resolveFn: (value: RunCommandResult) => void
+  let rejectFn: (reason: unknown) => void
+  let outData = ''
+  let errorData = ''
+
+  const spawnOptions = {
     env: process.env,
     shell: true,
     ...options
   }
+  const promise = new Promise<RunCommandResult>((resolve, reject) => {
+    resolveFn = resolve
+    rejectFn = reject
+  })
+  const proc = childProcess.spawn(cmd, spawnOptions)
 
-  return await new Promise<Result>((resolve, reject) => {
-    let outData = ''
-    let errorData = ''
+  proc.stdout?.on('data', (data) => {
+    outData += data.toString()
+  })
 
-    const proc = childProcess.spawn(cmd, execOptions)
+  proc.stderr?.on('data', (data) => {
+    errorData += data.toString()
+  })
 
-    proc.stdout?.on('data', (data) => {
-      outData += data.toString()
-    })
-
-    proc.stderr?.on('data', (data) => {
-      errorData += data.toString()
-    })
-
-    proc.on('error', (err) => {
-      if (rejectOnError) {
-        reject(err)
-      } else {
-        resolve({
+  proc.on('error', (err) => {
+    if (rejectOnError) {
+      rejectFn(
+        new RunCommandError({
           exitCode: 'errno' in err && typeof err.errno === 'number' ? err.errno : -1,
-          stderr: errorData,
-          stdout: outData
+          stderr: errorData.trim(),
+          stdout: outData.trim(),
+          exception: err,
+          spawnOptions
         })
-      }
-    })
-
-    proc.on('close', (exitCode) => {
-      if (exitCode !== 0 && rejectOnError) {
-        reject(
-          new RunCommandError({
-            exitCode: exitCode ?? 999,
-            stderr: errorData.trim(),
-            stdout: outData.trim()
-          })
-        )
-      }
-      resolve({
-        exitCode: exitCode ?? 999,
-        stderr: errorData.trim(),
-        stdout: outData.trim()
+      )
+    } else {
+      resolveFn({
+        exitCode: 'errno' in err && typeof err.errno === 'number' ? err.errno : -1,
+        stderr: errorData,
+        stdout: outData
       })
+    }
+  })
+
+  proc.on('close', (exitCode) => {
+    if (exitCode !== 0 && rejectOnError) {
+      rejectFn(
+        new RunCommandError({
+          exitCode: exitCode ?? 999,
+          stderr: errorData.trim(),
+          stdout: outData.trim(),
+          spawnOptions
+        })
+      )
+    }
+    resolveFn({
+      exitCode: exitCode ?? 999,
+      stderr: errorData.trim(),
+      stdout: outData.trim()
     })
   })
+
+  return await promise
 }

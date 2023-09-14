@@ -9,6 +9,8 @@ import ajv, { type JSONSchemaType, type ValidateFunction } from 'ajv'
 // TODO: this should come from a separate published package
 import { type Schema as ConfigFileSchema } from '../../../schemas/Schema.js'
 import { ConfigValidationError } from '../../exceptions/config-validation-error.js'
+import { Loggable } from '../log/loggable.js'
+import { type Logger } from '../log/logger.js'
 import { Trace } from '../log/trace.js'
 
 const Ajv = ajv.default
@@ -17,15 +19,17 @@ const Ajv = ajv.default
  * Class that validates a telemetrics configuration file. Instances of this class should not be used
  * to analyze more than one config file. Instead, create new instances for separate validations.
  */
-export class ConfigValidator {
+export class ConfigValidator extends Loggable {
   private readonly ajvValidate: ValidateFunction<ConfigFileSchema>
 
   /**
    * Constructs a new config file validator based on the provided config file schema.
    *
    * @param schema - Config file schema object.
+   * @param logger - A logger instance.
    */
-  public constructor(schema: JSONSchemaType<ConfigFileSchema>) {
+  public constructor(schema: JSONSchemaType<ConfigFileSchema>, logger: Logger) {
+    super(logger)
     this.ajvValidate = new Ajv({ allErrors: true, verbose: true }).compile(schema)
   }
 

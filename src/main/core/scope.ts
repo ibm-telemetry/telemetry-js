@@ -12,8 +12,6 @@ import { Loggable } from './log/loggable.js'
 import { type Logger } from './log/logger.js'
 import { type ScopeMetric } from './scope-metric.js'
 
-export type ScopeName = keyof Config['collect']
-
 /**
  * The base class for all metric scopes. Subclasses provide a type indicating the format of each
  * metric type captured by this scope.
@@ -27,7 +25,7 @@ export abstract class Scope extends Loggable {
   /**
    * The OpenTelemetry-style name of this scope to be used in data transfer and storage.
    */
-  public abstract readonly name: ScopeName
+  public abstract readonly name: keyof Config['collect']
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -39,19 +37,27 @@ export abstract class Scope extends Loggable {
    */
   public readonly metrics: Record<string, Counter>
 
-  private scopeMeter?: Meter
   protected readonly config: Config
+  protected readonly cwd: string
+  protected readonly root: string
+
+  private scopeMeter?: Meter
 
   /**
    * Instantiates a new scope.
    *
+   * @param cwd - Current working directory to use when running this scope.
+   * @param root - The root-most directory to consider when running this scope.
    * @param config - An object representation of the config file.
    * @param logger - Logger instance to use during logging.
    */
-  public constructor(config: Scope['config'], logger: Logger) {
+  public constructor(cwd: string, root: string, config: Scope['config'], logger: Logger) {
     super(logger)
-    this.metrics = {}
+
+    this.cwd = cwd
+    this.root = root
     this.config = config
+    this.metrics = {}
   }
 
   /**

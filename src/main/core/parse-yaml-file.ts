@@ -14,10 +14,17 @@ import yaml from 'js-yaml'
  *
  * @param filePath - Path to the yaml file.
  * @returns Object containing parsed content.
- * @throws A YAMLException exception if there is an error parsing the file, or an ENOENT Error if
- * the config file could not be found.
+ * @throws A YAMLException exception if there is an error parsing the file, or an ENOENT wrapped in
+ * an Error if the config file could not be found.
  */
 export async function parseYamlFile(filePath: string): Promise<Record<string, unknown>> {
-  const contents = await readFile(filePath, 'utf8')
+  let contents
+
+  try {
+    contents = await readFile(filePath, 'utf8')
+  } catch (e) {
+    throw new Error(String(e))
+  }
+
   return yaml.load(contents) as Record<string, unknown>
 }

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`findInstallingPackages > correctly finds installing package data 1`] = `
+exports[`installingPackagesProvider > correctly finds installing package data 1`] = `
 [
   {
     "dependencies": [
@@ -19,6 +19,6 @@ exports[`findInstallingPackages > correctly finds installing package data 1`] = 
 ]
 `;
 
-exports[`findInstallingPackages > finds no results for an known package at an unknown version 1`] = `[]`;
+exports[`installingPackagesProvider > finds no results for an known package at an unknown version 1`] = `[]`;
 
-exports[`findInstallingPackages > finds no results for an unknown package 1`] = `[]`;
+exports[`installingPackagesProvider > finds no results for an unknown package 1`] = `[]`;

@@ -12,22 +12,69 @@ import { describe, expect, it } from 'vitest'
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
+import { type Schema as Config } from '../../../schemas/Schema.js'
 import { Fixture } from '../../__utils/fixture.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
 
 const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+const config: Config = { projectId: 'abc123', version: 1, collect: { npm: { dependencies: null } } }
 
-describe('npmScope', () => {
-  it('correctly captures dependency data', async () => {
-    const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
-    const scope = new NpmScope(fixture.path, path.join(fixture.path, '..', '..'), logger)
+describe('class: NpmScope', () => {
+  describe('run', () => {
+    it('correctly captures dependency data', async () => {
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const scope = new NpmScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        { collect: {}, projectId: '123', version: 1 },
+        logger
+      )
 
-    const metricReader = initializeOtelForTest()
+      const metricReader = initializeOtelForTest()
 
-    await scope.run()
+      await scope.run()
 
-    const results = await metricReader.collect()
+      const results = await metricReader.collect()
 
-    expect(results).toMatchSnapshot()
+      expect(results).toMatchSnapshot()
+    })
+  })
+
+  describe('findInstallingPackages', () => {
+    it('correctly finds installing package data', async () => {
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const pkgs = await new NpmScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        config,
+        logger
+      ).findInstallingPackages('instrumented', '0.1.0')
+
+      expect(pkgs).toMatchSnapshot()
+    })
+
+    it('finds no results for an unknown package', async () => {
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const pkgs = await new NpmScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        config,
+        logger
+      ).findInstallingPackages('not-here', '0.1.0')
+
+      expect(pkgs).toMatchSnapshot()
+    })
+
+    it('finds no results for an known package at an unknown version', async () => {
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const pkgs = await new NpmScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        config,
+        logger
+      ).findInstallingPackages('instrumented', '0.3.0')
+
+      expect(pkgs).toMatchSnapshot()
+    })
   })
 })

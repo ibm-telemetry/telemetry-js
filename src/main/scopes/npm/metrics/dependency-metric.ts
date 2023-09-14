@@ -6,9 +6,9 @@
  */
 
 import { type Attributes } from '@opentelemetry/api'
-import { SemVer } from 'semver'
 
 import { ScopeMetric } from '../../../core/scope-metric.js'
+import getPackageDetails from '../get-package-details.js'
 
 export interface DependencyData {
   name: string
@@ -36,45 +36,36 @@ export class DependencyMetric extends ScopeMetric {
   }
 
   public override get attributes(): Attributes {
-    const { owner, name, major, minor, patch, preRelease } = this.getPackageDetails()
+    const { owner, name, major, minor, patch, preRelease } = getPackageDetails(
+      this.data.name,
+      this.data.version
+    )
+    const {
+      owner: installerOwner,
+      name: installerName,
+      major: installerMajor,
+      minor: installerMinor,
+      patch: installerPatch,
+      preRelease: installerPreRelease
+    } = getPackageDetails(this.data.installerName, this.data.installerVersion)
+
     return {
       raw: this.data.name,
       owner,
       name,
-      'installer.name': this.data.installerName,
-      'installer.version': this.data.installerVersion,
       'version.raw': this.data.version,
       'version.major': major.toString(),
       'version.minor': minor.toString(),
       'version.patch': patch.toString(),
-      'version.preRelease': preRelease.join('.')
-    }
-  }
-
-  /**
-   * Extracts atomic attributes from the given package name and version.
-   *
-   * @returns Object containing package owner, name, major, minor, patch and preRelease versions.
-   */
-  private getPackageDetails() {
-    const fullPackageName = this.data.name
-    let owner, name
-
-    if (fullPackageName.startsWith('@') && fullPackageName.includes('/')) {
-      ;[owner, name] = fullPackageName.split('/')
-    } else {
-      name = fullPackageName
-    }
-
-    const { major, minor, patch, prerelease } = new SemVer(this.data.version)
-
-    return {
-      owner,
-      name,
-      major,
-      minor,
-      patch,
-      preRelease: prerelease
+      'version.preRelease': preRelease.join('.'),
+      'installer.raw': this.data.installerName,
+      'installer.owner': installerOwner,
+      'installer.name': installerName,
+      'installer.version.raw': this.data.installerVersion,
+      'installer.version.major': installerMajor.toString(),
+      'installer.version.minor': installerMinor.toString(),
+      'installer.version.patch': installerPatch.toString(),
+      'installer.version.preRelease': installerPreRelease.join('.')
     }
   }
 }

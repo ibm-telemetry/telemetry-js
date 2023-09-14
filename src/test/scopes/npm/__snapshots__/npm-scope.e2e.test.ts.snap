@@ -46,7 +46,13 @@ exports[`npmScope > correctly captures dependency data 1`] = `
               {
                 "attributes": {
                   "installer.name": "basic-project",
-                  "installer.version": "1.0.0",
+                  "installer.owner": undefined,
+                  "installer.raw": "basic-project",
+                  "installer.version.major": "1",
+                  "installer.version.minor": "0",
+                  "installer.version.patch": "0",
+                  "installer.version.preRelease": "",
+                  "installer.version.raw": "1.0.0",
                   "name": "foo",
                   "owner": undefined,
                   "raw": "foo",
@@ -69,7 +75,13 @@ exports[`npmScope > correctly captures dependency data 1`] = `
               {
                 "attributes": {
                   "installer.name": "basic-project",
-                  "installer.version": "1.0.0",
+                  "installer.owner": undefined,
+                  "installer.raw": "basic-project",
+                  "installer.version.major": "1",
+                  "installer.version.minor": "0",
+                  "installer.version.patch": "0",
+                  "installer.version.preRelease": "",
+                  "installer.version.raw": "1.0.0",
                   "name": "instrumented",
                   "owner": undefined,
                   "raw": "instrumented",

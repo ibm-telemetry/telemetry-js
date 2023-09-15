@@ -6,6 +6,6 @@
  */
 
 /**
- * Exception thrown when protecting exec commands from forbidden characters.
+ * Exception thrown when an invalid path is supplied as a parameter to a function.
  */
 export class InvalidObjectPathError extends Error {}

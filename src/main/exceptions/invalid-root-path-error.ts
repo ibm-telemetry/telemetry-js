@@ -6,7 +6,7 @@
  */
 
 /**
- * Exception thrown when protecting exec commands from forbidden characters.
+ * Exception thrown when an invalid root is supplied for a given directory.
  */
 export class InvalidRootPathError extends Error {
   constructor(root: string, cwd: string) {

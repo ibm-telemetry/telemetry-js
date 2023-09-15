@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest'
 
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
+import { EmptyCollectorError } from '../../../main/exceptions/empty-collector.error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
 import { type Schema as Config } from '../../../schemas/Schema.js'
 import { Fixture } from '../../__utils/fixture.js'
@@ -26,7 +27,7 @@ describe('class: NpmScope', () => {
       const scope = new NpmScope(
         fixture.path,
         path.join(fixture.path, '..', '..'),
-        { collect: {}, projectId: '123', version: 1 },
+        { collect: { npm: { dependencies: null } }, projectId: '123', version: 1 },
         logger
       )
 
@@ -37,6 +38,18 @@ describe('class: NpmScope', () => {
       const results = await metricReader.collect()
 
       expect(results).toMatchSnapshot()
+    })
+
+    it('throws EmptyCollectorError if no collector has been defined', async () => {
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const scope = new NpmScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        { collect: { npm: {} }, projectId: '123', version: 1 },
+        logger
+      )
+
+      await expect(scope.run()).rejects.toThrow(EmptyCollectorError)
     })
   })
 

@@ -12,13 +12,13 @@
     "javascript",
     "typescript"
   ],
-  "homepage": "https://github.com/carbon-design-system/telemetrics-js#readme",
+  "homepage": "https://github.com/ibm-telemetrics/telemetrics-js#readme",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/carbon-design-system/telemetrics-js.git"
+    "url": "git+ssh://git@github.com/ibm-telemetrics/telemetrics-js.git"
   },
   "bugs": {
-    "url": "https://github.com/carbon-design-system/telemetrics-js/issues"
+    "url": "https://github.com/ibm-telemetrics/telemetrics-js/issues"
   },
   "type": "module",
   "bin": {

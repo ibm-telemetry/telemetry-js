@@ -17,15 +17,13 @@ describe('scope', () => {
     const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
     const myScope = new (class MyScope extends Scope {
-      public override name: string = 'my-scope'
-      protected override logger: Logger
+      public override name = 'npm' as const
 
       /**
        * Default constructor.
        */
       public constructor() {
-        super()
-        this.logger = logger
+        super('', '', { collect: {}, projectId: '1234', version: 1 }, logger)
       }
 
       public override async run(): Promise<void> {

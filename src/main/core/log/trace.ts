@@ -28,7 +28,7 @@ const MAX_ARGS_STRING_LENGTH = 500 // characters
  * @returns A decorated method.
  */
 function Trace(): MethodDecorator {
-  return function methodDecorator(_target, propertyKey, descriptor) {
+  return function methodDecorator(target, propertyKey, descriptor) {
     if (
       descriptor.value === null ||
       descriptor.value === undefined ||
@@ -36,6 +36,8 @@ function Trace(): MethodDecorator {
     ) {
       return
     }
+
+    const targetName = target.constructor.name
 
     // Adjust type to represent a descriptor that is guaranteed to have a value
     const descriptorWithValue = descriptor as typeof descriptor & {
@@ -53,7 +55,7 @@ function Trace(): MethodDecorator {
       }
 
       setImmediate(() => {
-        void traceEnter(logger, String(propertyKey), args)
+        void traceEnter(logger, targetName, String(propertyKey), args)
       })
 
       let result: unknown
@@ -61,14 +63,14 @@ function Trace(): MethodDecorator {
         result = original.apply(this, args)
       } catch (e) {
         setImmediate(() => {
-          void traceExit(logger, String(propertyKey), e)
+          void traceExit(logger, targetName, String(propertyKey), e)
         })
 
         throw e
       }
 
       setImmediate(() => {
-        void traceExit(logger, String(propertyKey), result)
+        void traceExit(logger, targetName, String(propertyKey), result)
       })
 
       return result
@@ -84,29 +86,30 @@ function Trace(): MethodDecorator {
   }
 }
 
-async function traceEnter(logger: Logger, methodName: string, args: unknown[]) {
+async function traceEnter(logger: Logger, targetName: string, methodName: string, args: unknown[]) {
   const stringArgs = truncateString(String(args.map(safeStringify)), MAX_ARGS_STRING_LENGTH)
 
-  await logger.log('debug', `-> ${methodName}(${stringArgs})`)
+  await logger.debug(`-> ${targetName}::${methodName}(${stringArgs})`)
 }
 
-async function traceExit(logger: Logger, methodName: string, result: unknown) {
+async function traceExit(logger: Logger, targetName: string, methodName: string, result: unknown) {
   if (result instanceof Promise) {
     result.then(
       async (value: unknown) => {
-        await logger.log(
-          'debug',
-          `<- ${methodName} <- ${truncateString(safeStringify(value), MAX_ARGS_STRING_LENGTH)}`
+        await logger.debug(
+          `<- ${targetName}::${methodName} <- ${truncateString(
+            safeStringify(value),
+            MAX_ARGS_STRING_LENGTH
+          )}`
         )
       },
       async (err: unknown) => {
-        await logger.log('debug', `-x- ${methodName} <- ${err?.toString() ?? ''}`)
+        await logger.debug(`-x- ${targetName}::${methodName} <- ${err?.toString() ?? ''}`)
       }
     )
   } else {
-    await logger.log(
-      'debug',
-      `${result instanceof Error ? '-x-' : '<-'} ${methodName} <- ${
+    await logger.debug(
+      `${result instanceof Error ? '-x-' : '<-'} ${targetName}::${methodName} <- ${
         result instanceof Error
           ? result.toString()
           : truncateString(safeStringify(result), MAX_ARGS_STRING_LENGTH)

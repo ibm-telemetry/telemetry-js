@@ -8,15 +8,22 @@ import path from 'path'
 import { describe, expect, it } from 'vitest'
 
 import { getProjectRoot } from '../../main/core/get-project-root.js'
+import { createLogFilePath } from '../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../main/core/log/logger.js'
+import { RunCommandError } from '../../main/exceptions/run-command-error.js'
 import { Fixture } from '../__utils/fixture.js'
+
+const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 describe('getProjectRoot', () => {
   it('correctly gets project root', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules')
-    await expect(getProjectRoot(path.resolve(fixture.path))).resolves.toMatch(/.*\/telemetrics-js/)
+    await expect(getProjectRoot(path.resolve(fixture.path), logger)).resolves.toMatch(
+      /.*\/telemetrics-js/
+    )
   })
 
   it('throws error if no root exists', async () => {
-    await expect(getProjectRoot('does-not-exist')).rejects.toThrow('ENOENT')
+    await expect(getProjectRoot('does-not-exist', logger)).rejects.toThrow(RunCommandError)
   })
 })

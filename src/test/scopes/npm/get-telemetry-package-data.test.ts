@@ -6,6 +6,8 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 
+import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../../main/core/log/logger.js'
 import * as exec from '../../../main/core/run-command.js'
 import * as getPackageData from '../../../main/scopes/npm/get-package-data.js'
 import { getTelemetryPackageData } from '../../../main/scopes/npm/get-telemetry-package-data.js'
@@ -21,9 +23,11 @@ vi.spyOn(exec, 'runCommand').mockResolvedValue({
   stderr: ''
 })
 
+const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+
 describe('getTelemetryPackageData', () => {
   it('correctly reads name and version', async () => {
-    await expect(getTelemetryPackageData()).resolves.toStrictEqual({
+    await expect(getTelemetryPackageData(logger)).resolves.toStrictEqual({
       name: 'test-1',
       version: '1.0.0'
     })

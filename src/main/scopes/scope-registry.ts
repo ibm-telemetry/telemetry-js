@@ -7,9 +7,10 @@
 
 import { type Schema as Config } from '../../schemas/Schema.js'
 import { type Scope } from '../core/scope.js'
+import { JsxScope } from './jsx/jsx-scope.js'
 import { NpmScope } from './npm/npm-scope.js'
 
 export const scopeRegistry: Record<keyof Config['collect'], typeof Scope | undefined> = {
-  jsx: undefined,
+  jsx: JsxScope,
   npm: NpmScope
 }

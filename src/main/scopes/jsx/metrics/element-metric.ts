@@ -9,13 +9,7 @@ import { type Attributes } from '@opentelemetry/api'
 
 import { anonymize } from '../../../core/anonymize.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-
-interface ElementData {
-  name: string
-  raw: string
-  attributeNames: string[]
-  attributeValues: string[]
-}
+import { type ElementData } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates an element.count individual metric for a given elements.
@@ -36,6 +30,7 @@ export class ElementMetric extends ScopeMetric {
   }
 
   public override get attributes(): Attributes {
+    // TODO: this needs to do the substitutions
     // TODOASKJOE
     return anonymize(this.data,
       {

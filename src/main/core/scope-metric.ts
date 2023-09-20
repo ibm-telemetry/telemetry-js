@@ -20,24 +20,4 @@ export abstract class ScopeMetric {
    * Get all OpenTelemetry Attributes for this metric data point.
    */
   public abstract get attributes(): Attributes
-
-  /**
-   * TODO.
-   *
-   * @param _val - The value to hash.
-   * @throws Error because not yet implemented.
-   */
-  protected hash(_val: string): string {
-    throw new Error('Method not yet implemented.')
-  }
-
-  /**
-   * TODO.
-   *
-   * @param _val - The value to hash.
-   * @throws Error because not yet implemented.
-   */
-  protected substitute(_val: string): string {
-    throw new Error('Method not yet implemented')
-  }
 }

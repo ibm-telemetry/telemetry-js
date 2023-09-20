@@ -9,21 +9,25 @@ import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 
 import { ConfigValidator } from '../../../main/core/config/config-validator.js'
+import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../../main/core/log/logger.js'
 import { ConfigValidationError } from '../../../main/exceptions/config-validation-error.js'
 import { Fixture } from '../../__utils/fixture.js'
+
+const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 // TODO: get this from the external package
 const schemaFile = 'src/schemas/telemetrics-config.schema.json'
 const schemaFileContents = (await readFile(schemaFile)).toString()
-const validator = new ConfigValidator(JSON.parse(schemaFileContents))
+const validator = new ConfigValidator(JSON.parse(schemaFileContents), logger)
 
-describe('configValidator', () => {
+describe('class: ConfigValidator', () => {
   it('returns for a valid configuration', async () => {
     const fixture = new Fixture('config-files/valid/all-keys.yml')
     const config = await fixture.parse()
 
     expect(() => {
-      validator.validateConfig(config)
+      validator.validate(config)
     }).not.toThrow()
   })
 
@@ -32,7 +36,7 @@ describe('configValidator', () => {
     const config = await fixture.parse()
 
     expect(() => {
-      validator.validateConfig(config)
+      validator.validate(config)
     }).not.toThrow()
   })
 
@@ -42,7 +46,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -67,7 +71,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -92,7 +96,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -117,7 +121,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -142,7 +146,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -167,7 +171,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -192,7 +196,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -217,7 +221,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }
@@ -242,7 +246,7 @@ describe('configValidator', () => {
     let err
 
     try {
-      validator.validateConfig(config)
+      validator.validate(config)
     } catch (e) {
       err = e
     }

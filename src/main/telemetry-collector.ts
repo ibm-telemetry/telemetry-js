@@ -66,7 +66,7 @@ export class TelemetryCollector {
     await this.logger.debug('projectRoot: ' + projectRoot)
 
     if (!configValidator.validate(config)) {
-      // This will never be hit, but it allows code after this block to see the configData as the
+      // This will never be hit, but it allows code after this block to see the configData as
       // being of type "Schema"
       return
     }

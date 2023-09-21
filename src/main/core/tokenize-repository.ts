@@ -23,10 +23,10 @@ function tokenizeRepository(repositoryUrl: string) {
   }
 
   if (repositoryUrl.startsWith('http')) {
-    // Example: https://github.com/carbon-design-system/telemetrics-js.git
+    // Example: https://github.com/ibm-telemetrics/telemetrics-js.git
     parsed = parseHttp(repositoryUrl)
   } else if (repositoryUrl.startsWith('git@')) {
-    // Example: git@github.com:carbon-design-system/telemetrics-js.git
+    // Example: git@github.com:ibm-telemetrics/telemetrics-js.git
     parsed = parseSsh(repositoryUrl)
   }
 

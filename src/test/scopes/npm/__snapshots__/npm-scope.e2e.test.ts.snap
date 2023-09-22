@@ -41,7 +41,7 @@ exports[`class: NpmScope > run > correctly captures dependency data 1`] = `
         "telemetrics.emitter.version": "telemetryVersion",
         "telemetry.sdk.language": "nodejs",
         "telemetry.sdk.name": "opentelemetry",
-        "telemetry.sdk.version": "1.15.2",
+        "telemetry.sdk.version": "1.17.0",
       },
       "_syncAttributes": {
         "analyzed.host": "host",
@@ -55,7 +55,7 @@ exports[`class: NpmScope > run > correctly captures dependency data 1`] = `
         "telemetrics.emitter.version": "telemetryVersion",
         "telemetry.sdk.language": "nodejs",
         "telemetry.sdk.name": "opentelemetry",
-        "telemetry.sdk.version": "1.15.2",
+        "telemetry.sdk.version": "1.17.0",
       },
       "asyncAttributesPending": false,
     },

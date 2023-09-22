@@ -6,10 +6,10 @@
  */
 
 import { type Attributes } from '@opentelemetry/api'
+import { SemVer } from 'semver'
 
 import { anonymize } from '../../../core/anonymize.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import getPackageDetails from '../get-package-details.js'
 
 export interface DependencyData {
   name: string
@@ -37,7 +37,7 @@ export class DependencyMetric extends ScopeMetric {
   }
 
   public override get attributes(): Attributes {
-    const { owner, name, major, minor, patch, preRelease } = getPackageDetails(
+    const { owner, name, major, minor, patch, preRelease } = this.getPackageDetails(
       this.data.name,
       this.data.version
     )
@@ -48,7 +48,7 @@ export class DependencyMetric extends ScopeMetric {
       minor: installerMinor,
       patch: installerPatch,
       preRelease: installerPreRelease
-    } = getPackageDetails(this.data.installerName, this.data.installerVersion)
+    } = this.getPackageDetails(this.data.installerName, this.data.installerVersion)
 
     return anonymize(
       {
@@ -84,5 +84,33 @@ export class DependencyMetric extends ScopeMetric {
         ]
       }
     )
+  }
+
+  /**
+   * Extracts atomic attributes from the given package name and version.
+   *
+   * @param rawPackageName - Raw name of package.
+   * @param rawPackageVersion - Raw version of package.
+   * @returns Object containing package owner, name, major, minor, patch and preRelease versions.
+   */
+  private getPackageDetails(rawPackageName: string, rawPackageVersion: string) {
+    let owner, name
+
+    if (rawPackageName.startsWith('@') && rawPackageName.includes('/')) {
+      ;[owner, name] = rawPackageName.split('/')
+    } else {
+      name = rawPackageName
+    }
+
+    const { major, minor, patch, prerelease } = new SemVer(rawPackageVersion)
+
+    return {
+      owner,
+      name,
+      major,
+      minor,
+      patch,
+      preRelease: prerelease
+    }
   }
 }

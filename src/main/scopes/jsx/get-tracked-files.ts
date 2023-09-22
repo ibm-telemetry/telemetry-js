@@ -9,12 +9,17 @@ import { type Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 
 /**
- * TODO.
+ * Finds all files tracked by git in the supplied cwd.
  *
- * @param cwd
- * @param logger
+ * @param cwd - Current working directory to find tracked files for.
+ * @param logger - Logger instance.
+ * @param extensions - Array of extensions to filter by.
+ * @returns Array of string containing tracked files.
  */
-export async function getTrackedFiles(cwd: string, logger: Logger): Promise<string[]> {
-  const result = await runCommand('git ls-tree --full-tree --name-only -r HEAD', logger, { cwd })
-  console.log(result)
+export async function getTrackedFiles(cwd: string, logger: Logger, extensions: string[] = []): Promise<string[]> {
+  const results = (await runCommand('git ls-tree --full-tree --name-only -r HEAD', logger, { cwd })).stdout.replace(/\r/g, '').split(/\n/)
+  if (extensions.length > 0) {
+    return results.filter(file => extensions.some(extension => file.endsWith(extension)))
+  }
+  return results
 }

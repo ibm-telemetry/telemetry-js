@@ -6,33 +6,32 @@
  */
 
 import { type Logger } from '../../core/log/logger.js'
+import { getFileElements } from './get-file-elements.js'
 import { getTrackedFiles } from './get-tracked-files.js'
 import { type JsxElement } from './interfaces.js'
 
+// TODOASKJOE
+interface PromiseFulfilledResult<T> {
+  status: 'fulfilled'
+  value: T
+}
+
 /**
- * TODO.
+ * Finds all JSX elements in cwd's repository and computes prop values.
  *
- * @param cwd
- * @param logger
+ * @param cwd - Current working directory to find tracked files for.
+ * @param logger - Logger instance.
+ * @returns All JSX elements found in current repository.
  */
 export async function getElements(cwd: string, logger: Logger): Promise<JsxElement[]> {
-  // TODO: find elements in these files
-  const trackedFiles = await getTrackedFiles(cwd, logger)
+  // TODOASKJOE: is it correct to filter just by these file extensions?
+  const trackedFiles = await getTrackedFiles(cwd, logger, ['jsx', 'js', 'tsx', 'ts'])
 
-  return [
-    {
-      raw: '<ExampleElement knownAttribute1="topSecretValue" knownAttribute2="topSecrectValue">',
-      name: 'ExampleElement',
-      attributes: [
-        {
-          name: 'knownAttribute1',
-          value: 'topSecretValue'
-        },
-        {
-          name: 'knownAttribute2',
-          value: 'topSecretValue'
-        }
-      ]
-    }
-  ]
+  const promises: Array<Promise<JsxElement[]>> = []
+  trackedFiles.forEach(file => promises.push(getFileElements(file, logger)))
+
+  // TODO: do we need to catch errors here?
+  const results = await Promise.allSettled(promises).then(results => results.filter(result => result.status === 'fulfilled')
+    .map(result => (result as PromiseFulfilledResult<JsxElement[]>).value))
+  return results.flat()
 }

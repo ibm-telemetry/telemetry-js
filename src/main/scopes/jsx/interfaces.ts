@@ -4,10 +4,13 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+export interface Attribute { name: string, value: unknown }
+
 export interface JsxElement {
   name: string
   raw: string
-  attributes: Array<{ name: string, value: unknown }>
+  attributes: Attribute[]
 }
 
 export interface ElementData {

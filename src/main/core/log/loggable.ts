@@ -9,6 +9,15 @@ import { type Logger } from './logger.js'
 /**
  *  Abstract class which enforces that all child classes define a logger instance.
  */
-export abstract class Loggable {
-  protected abstract logger: Logger
+export class Loggable {
+  protected logger: Logger
+
+  /**
+   * Constructs a loggable class.
+   *
+   * @param logger - The logger to use during logging.
+   */
+  public constructor(logger: Logger) {
+    this.logger = logger
+  }
 }

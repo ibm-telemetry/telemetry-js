@@ -21,7 +21,7 @@ export default defineConfig({
       include: ['src/main'],
       exclude: [
         'src/main/index.ts',
-        'src/main/core/exec.ts',
+        'src/main/core/run-command.ts',
         'src/main/core/initialize-open-telemetry.ts',
         'src/main/core/log/loggable.ts',
         'src/main/core/resource-attributes.ts',

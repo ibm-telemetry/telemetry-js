@@ -7,6 +7,7 @@
 
 import { type Attributes } from '@opentelemetry/api'
 
+import { anonymize } from '../../../core/anonymize.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import getPackageDetails from '../get-package-details.js'
 
@@ -49,23 +50,39 @@ export class DependencyMetric extends ScopeMetric {
       preRelease: installerPreRelease
     } = getPackageDetails(this.data.installerName, this.data.installerVersion)
 
-    return {
-      raw: this.data.name,
-      owner,
-      name,
-      'version.raw': this.data.version,
-      'version.major': major.toString(),
-      'version.minor': minor.toString(),
-      'version.patch': patch.toString(),
-      'version.preRelease': preRelease.join('.'),
-      'installer.raw': this.data.installerName,
-      'installer.owner': installerOwner,
-      'installer.name': installerName,
-      'installer.version.raw': this.data.installerVersion,
-      'installer.version.major': installerMajor.toString(),
-      'installer.version.minor': installerMinor.toString(),
-      'installer.version.patch': installerPatch.toString(),
-      'installer.version.preRelease': installerPreRelease.join('.')
-    }
+    return anonymize(
+      {
+        raw: this.data.name,
+        owner,
+        name,
+        'version.raw': this.data.version,
+        'version.major': major.toString(),
+        'version.minor': minor.toString(),
+        'version.patch': patch.toString(),
+        'version.preRelease': preRelease.join('.'),
+        'installer.raw': this.data.installerName,
+        'installer.owner': installerOwner,
+        'installer.name': installerName,
+        'installer.version.raw': this.data.installerVersion,
+        'installer.version.major': installerMajor.toString(),
+        'installer.version.minor': installerMinor.toString(),
+        'installer.version.patch': installerPatch.toString(),
+        'installer.version.preRelease': installerPreRelease.join('.')
+      },
+      {
+        hash: [
+          'raw',
+          'owner',
+          'name',
+          'version.raw',
+          'version.preRelease',
+          'installer.raw',
+          'installer.owner',
+          'installer.name',
+          'installer.version.raw',
+          'installer.version.preRelease'
+        ]
+      }
+    )
   }
 }

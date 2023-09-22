@@ -19,7 +19,7 @@ describe('logger', () => {
 
     await expect(access(logFilePath)).rejects.toThrow('ENOENT')
 
-    await logger.log('debug', 'test log')
+    await logger.debug('test log')
 
     await expect(access(logFilePath)).resolves.toBeUndefined()
 
@@ -40,14 +40,14 @@ describe('logger', () => {
 
     const errorLog = new Error('the error message')
 
-    await logger.log('debug', errorLog)
+    await logger.error(errorLog)
 
     await expect(access(logFilePath)).resolves.toBeUndefined()
 
     const content = await readFile(logFilePath, 'utf8')
 
     expect(content.length).toBeGreaterThan(0)
-    expect(content.startsWith('debug')).toBeTruthy()
+    expect(content.startsWith('error')).toBeTruthy()
 
     await unlink(logFilePath)
   })

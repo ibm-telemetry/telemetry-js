@@ -1,10 +1,10 @@
 blank_issues_enabled: true
 contact_links:
   - name: Telemetrics roadmap
-    url: https://github.com/orgs/carbon-design-system/projects/69/views/8
+    url: https://github.com/orgs/ibm-telemetrics/projects/1/views/7
     about: Learn what we're working on and what we have planned for the future.
   - name: Telemetrics feedback
-    url: https://github.com/carbon-design-system/telemetrics-internal/discussions
+    url: https://github.com/ibm-telemetrics/telemetrics-internal/discussions
     about: Share your feedback with the Telemetrics squad.
   - name: Carbon System feedback
     url: https://github.com/carbon-design-system/carbon/discussions

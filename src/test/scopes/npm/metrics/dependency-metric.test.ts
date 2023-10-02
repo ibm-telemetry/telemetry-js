@@ -27,19 +27,28 @@ describe('dependencyMetric', () => {
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': undefined,
+          'version.preRelease': '',
           'installer.name': 'test-1-installer',
-          'installer.version': '1.0.0'
+          'installer.owner': undefined,
+          'installer.raw': 'test-1-installer',
+          'installer.version.major': '1',
+          'installer.version.minor': '0',
+          'installer.version.patch': '0',
+          'installer.version.preRelease': '',
+          'installer.version.raw': '1.0.0'
         },
         {
           hash: [
             'raw',
             'owner',
             'name',
-            'installer.name',
-            'installer.version',
             'version.raw',
-            'version.preRelease'
+            'version.preRelease',
+            'installer.raw',
+            'installer.owner',
+            'installer.name',
+            'installer.version.raw',
+            'installer.version.preRelease'
           ]
         }
       )
@@ -51,7 +60,7 @@ describe('dependencyMetric', () => {
       name: 'test-1',
       version: '0.0.1-rc.0',
       installerName: 'test-1-installer',
-      installerVersion: '1.0.0'
+      installerVersion: '1.0.0-rc.4'
     }).attributes
     expect(attributes).toStrictEqual(
       anonymize(
@@ -60,22 +69,31 @@ describe('dependencyMetric', () => {
           owner: undefined,
           name: 'test-1',
           'installer.name': 'test-1-installer',
-          'installer.version': '1.0.0',
           'version.raw': '0.0.1-rc.0',
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': 'rc.0'
+          'version.preRelease': 'rc.0',
+          'installer.owner': undefined,
+          'installer.raw': 'test-1-installer',
+          'installer.version.major': '1',
+          'installer.version.minor': '0',
+          'installer.version.patch': '0',
+          'installer.version.preRelease': 'rc.4',
+          'installer.version.raw': '1.0.0-rc.4'
         },
         {
           hash: [
             'raw',
             'owner',
             'name',
-            'installer.name',
-            'installer.version',
             'version.raw',
-            'version.preRelease'
+            'version.preRelease',
+            'installer.raw',
+            'installer.owner',
+            'installer.name',
+            'installer.version.raw',
+            'installer.version.preRelease'
           ]
         }
       )
@@ -87,7 +105,7 @@ describe('dependencyMetric', () => {
       name: 'test-1',
       version: '0.0.1+12345',
       installerName: 'test-1-installer',
-      installerVersion: '1.0.0'
+      installerVersion: '1.0.0+9999'
     }).attributes
     expect(attributes).toStrictEqual(
       anonymize(
@@ -96,22 +114,31 @@ describe('dependencyMetric', () => {
           owner: undefined,
           name: 'test-1',
           'installer.name': 'test-1-installer',
-          'installer.version': '1.0.0',
+          'installer.owner': undefined,
+          'installer.raw': 'test-1-installer',
+          'installer.version.major': '1',
+          'installer.version.minor': '0',
+          'installer.version.patch': '0',
+          'installer.version.preRelease': '',
+          'installer.version.raw': '1.0.0+9999',
           'version.raw': '0.0.1+12345',
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': undefined
+          'version.preRelease': ''
         },
         {
           hash: [
             'raw',
             'owner',
             'name',
-            'installer.name',
-            'installer.version',
             'version.raw',
-            'version.preRelease'
+            'version.preRelease',
+            'installer.raw',
+            'installer.owner',
+            'installer.name',
+            'installer.version.raw',
+            'installer.version.preRelease'
           ]
         }
       )
@@ -121,10 +148,11 @@ describe('dependencyMetric', () => {
   it('returns the correct attributes for a package with a prerelease and metadata', () => {
     const attributes = new DependencyMetric({
       name: 'test-1',
-      version: '0.0.1-rc.0+12345',
+      version: '0.0.1-rc.1+12345',
       installerName: 'test-1-installer',
-      installerVersion: '1.0.0'
+      installerVersion: '1.0.0-rc.0+99999'
     }).attributes
+
     expect(attributes).toStrictEqual(
       anonymize(
         {
@@ -132,22 +160,31 @@ describe('dependencyMetric', () => {
           owner: undefined,
           name: 'test-1',
           'installer.name': 'test-1-installer',
-          'installer.version': '1.0.0',
-          'version.raw': '0.0.1-rc.0+12345',
+          'version.raw': '0.0.1-rc.1+12345',
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': 'rc.0'
+          'version.preRelease': 'rc.1',
+          'installer.owner': undefined,
+          'installer.raw': 'test-1-installer',
+          'installer.version.major': '1',
+          'installer.version.minor': '0',
+          'installer.version.patch': '0',
+          'installer.version.preRelease': 'rc.0',
+          'installer.version.raw': '1.0.0-rc.0+99999'
         },
         {
           hash: [
             'raw',
             'owner',
             'name',
-            'installer.name',
-            'installer.version',
             'version.raw',
-            'version.preRelease'
+            'version.preRelease',
+            'installer.raw',
+            'installer.owner',
+            'installer.name',
+            'installer.version.raw',
+            'installer.version.preRelease'
           ]
         }
       )
@@ -158,7 +195,7 @@ describe('dependencyMetric', () => {
     const attributes = new DependencyMetric({
       name: '@owner/test-1',
       version: '0.0.1-rc.0+12345',
-      installerName: 'test-1-installer',
+      installerName: '@installer/test-1-installer',
       installerVersion: '1.0.0'
     }).attributes
     expect(attributes).toStrictEqual(
@@ -168,7 +205,13 @@ describe('dependencyMetric', () => {
           owner: '@owner',
           name: 'test-1',
           'installer.name': 'test-1-installer',
-          'installer.version': '1.0.0',
+          'installer.owner': '@installer',
+          'installer.raw': '@installer/test-1-installer',
+          'installer.version.major': '1',
+          'installer.version.minor': '0',
+          'installer.version.patch': '0',
+          'installer.version.preRelease': '',
+          'installer.version.raw': '1.0.0',
           'version.raw': '0.0.1-rc.0+12345',
           'version.major': '0',
           'version.minor': '0',
@@ -180,10 +223,13 @@ describe('dependencyMetric', () => {
             'raw',
             'owner',
             'name',
-            'installer.name',
-            'installer.version',
             'version.raw',
-            'version.preRelease'
+            'version.preRelease',
+            'installer.raw',
+            'installer.owner',
+            'installer.name',
+            'installer.version.raw',
+            'installer.version.preRelease'
           ]
         }
       )

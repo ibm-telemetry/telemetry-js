@@ -15,6 +15,18 @@
   major: {
     dependencyDashboardApproval: true
   },
+  packageRules: [
+    {
+      matchDepTypes: ['dependencies'],
+      matchUpdateTypes: ['minor', 'patch'],
+      groupName: 'dependencies (minor)'
+    },
+    {
+      matchDepTypes: ['devDependencies'],
+      matchUpdateTypes: ['minor', 'patch'],
+      groupName: 'devDependencies (minor)'
+    }
+  ],
   // Move package.json forward along with package-lock.json
   rangeStrategy: 'bump'
 }

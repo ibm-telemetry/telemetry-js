@@ -1,5 +1,5 @@
 # Default global
-* @carbon-design-system/telemetrics-devs
+* @ibm-telemetrics/telemetrics-devs
 
 package-lock.json @jdharvey-ibm
 package.json @jdharvey-ibm

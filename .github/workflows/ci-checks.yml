@@ -57,8 +57,9 @@ jobs:
         run: npm install
 
       - name: Build 🔨
-        # run: npm run all:build
-        run: echo TODO build command
+        run: |
+          npm run build:schema
+          npm run build
 
   #
   # Ensure all unit tests pass

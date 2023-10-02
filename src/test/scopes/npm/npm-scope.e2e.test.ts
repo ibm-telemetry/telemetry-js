@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest'
 
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
-import { EmptyCollectorError } from '../../../main/exceptions/empty-collector.error.js'
+import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
 import { type Schema as Config } from '../../../schemas/Schema.js'
 import { Fixture } from '../../__utils/fixture.js'
@@ -49,7 +49,7 @@ describe('class: NpmScope', () => {
         logger
       )
 
-      await expect(scope.run()).rejects.toThrow(EmptyCollectorError)
+      await expect(scope.run()).rejects.toThrow(EmptyScopeError)
     })
   })
 

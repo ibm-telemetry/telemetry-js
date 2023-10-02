@@ -8,7 +8,7 @@ import { DirectoryEnumerator } from '../../core/directory-enumerator.js'
 import { Trace } from '../../core/log/trace.js'
 import { runCommand } from '../../core/run-command.js'
 import { Scope } from '../../core/scope.js'
-import { EmptyCollectorError } from '../../exceptions/empty-collector.error.js'
+import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { getPackageData } from './get-package-data.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
@@ -50,7 +50,7 @@ export class NpmScope extends Scope {
   public override async run(): Promise<void> {
     const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
-      throw new EmptyCollectorError(this.name)
+      throw new EmptyScopeError(this.name)
     }
 
     const promises: Array<Promise<void>> = []

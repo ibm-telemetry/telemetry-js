@@ -8,8 +8,8 @@
 /**
  * Exception thrown when a scope is defined without any collectors.
  */
-export class EmptyCollectorError extends Error {
+export class EmptyScopeError extends Error {
   constructor(scopeName: string) {
-    super(`No collector defined for ${scopeName}`)
+    super(`No collection settings defined for ${scopeName} scope`)
   }
 }

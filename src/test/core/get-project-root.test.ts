@@ -23,6 +23,11 @@ describe('getProjectRoot', () => {
     )
   })
 
+  it('can handle edge case when root is the cwd', async () => {
+    const rootCwd = path.join(path.dirname(import.meta.url.substring(7)), '../../../')
+    await expect(getProjectRoot(rootCwd, logger)).resolves.toMatch(/.*\/telemetrics-js/)
+  })
+
   it('throws error if no root exists', async () => {
     await expect(getProjectRoot('does-not-exist', logger)).rejects.toThrow(RunCommandError)
   })

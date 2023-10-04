@@ -10,6 +10,6 @@
  */
 export class EmptyScopeError extends Error {
   constructor(scopeName: string) {
-    super(`No collection settings defined for ${scopeName} scope`)
+    super(`No configuration defined for ${scopeName} scope`)
   }
 }

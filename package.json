@@ -48,7 +48,7 @@
     "commander": "^11.0.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
-    "object-scan": "^19.0.2",
+    "object-scan": "^19.0.5",
     "reflect-metadata": "^0.1.13",
     "semver": "^7.5.4",
     "tmp-promise": "^3.0.3"

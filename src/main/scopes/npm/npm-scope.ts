@@ -8,6 +8,7 @@ import { DirectoryEnumerator } from '../../core/directory-enumerator.js'
 import { Trace } from '../../core/log/trace.js'
 import { runCommand } from '../../core/run-command.js'
 import { Scope } from '../../core/scope.js'
+import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { getPackageData } from './get-package-data.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
@@ -21,7 +22,7 @@ export class NpmScope extends Scope {
   public override name = 'npm' as const
 
   @Trace()
-  public override async run(): Promise<void> {
+  private async collectDependencies(): Promise<void> {
     const { name: instrumentedPkgName, version: instrumentedPkgVersion } = await getPackageData(
       this.cwd,
       this.logger
@@ -43,6 +44,26 @@ export class NpmScope extends Scope {
         )
       })
     })
+  }
+
+  @Trace()
+  public override async run(): Promise<void> {
+    const collectorKeys = this.config.collect[this.name]
+    if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
+      throw new EmptyScopeError(this.name)
+    }
+
+    const promises: Array<Promise<void>> = []
+
+    Object.keys(collectorKeys).forEach((key) => {
+      switch (key) {
+        case 'dependencies':
+          promises.push(this.collectDependencies())
+          break
+      }
+    })
+
+    await Promise.allSettled(promises)
   }
 
   /**

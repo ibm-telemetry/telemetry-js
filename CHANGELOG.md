@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](https://github.com/ibm-telemetrics/telemetrics-js/compare/v0.2.0...v0.3.0) (2023-10-10)
+
+
+### Features
+
+* add more details for installer to DependencyMetric ([#82](https://github.com/ibm-telemetrics/telemetrics-js/issues/82)) ([3a06462](https://github.com/ibm-telemetrics/telemetrics-js/commit/3a06462d7a4a72d6f83ceb9e094982f33445dfee))
+
+
+### Bug Fixes
+
+* **deps:** update node module minor versions ([1e785ca](https://github.com/ibm-telemetrics/telemetrics-js/commit/1e785ca5edcebb00a7133a18140ee2e701fcada0))
+* **deps:** upgrade actions/checkout action to v4 ([#93](https://github.com/ibm-telemetrics/telemetrics-js/issues/93)) ([800d804](https://github.com/ibm-telemetrics/telemetrics-js/commit/800d804d27298230ba617a2c798cae802454c4e2))
+* **deps:** upgrade dependencies (minor) to ^1.17.0 ([#94](https://github.com/ibm-telemetrics/telemetrics-js/issues/94)) ([1ec3ba7](https://github.com/ibm-telemetrics/telemetrics-js/commit/1ec3ba710a8575d39ac02ba1fbabaf46bed28a51))
+* **deps:** upgrade dependency eslint-plugin-vitest to ^0.3.1 ([#79](https://github.com/ibm-telemetrics/telemetrics-js/issues/79)) ([675dc5a](https://github.com/ibm-telemetrics/telemetrics-js/commit/675dc5a3215ae6fa7cadf56c6d01122f469888e0))
+* **deps:** upgrade dependency object-scan to ^19.0.5 ([#103](https://github.com/ibm-telemetrics/telemetrics-js/issues/103)) ([6ba3627](https://github.com/ibm-telemetrics/telemetrics-js/commit/6ba3627d99a850c0aa9686740a7973bc5eecc68d))
+* **deps:** upgrade devDependencies (minor) ([#104](https://github.com/ibm-telemetrics/telemetrics-js/issues/104)) ([7c43cbc](https://github.com/ibm-telemetrics/telemetrics-js/commit/7c43cbc72188de28b2039805fa6d975ed68054d2))
+* **deps:** upgrade devDependencies (minor) ([#95](https://github.com/ibm-telemetrics/telemetrics-js/issues/95)) ([37c1acf](https://github.com/ibm-telemetrics/telemetrics-js/commit/37c1acfd909eaab633ac4c21c3eb235e8dc770d0))
+* validate presence of dependency key in npm scope ([#83](https://github.com/ibm-telemetrics/telemetrics-js/issues/83)) ([89c9a7c](https://github.com/ibm-telemetrics/telemetrics-js/commit/89c9a7c9f53ff9fdeae4b21d26311202488348f4))
+
 ## [0.2.0](https://github.com/ibm-telemetrics/telemetrics-js/compare/v0.1.1...v0.2.0) (2023-09-21)
 
 

@@ -16,7 +16,7 @@ import { runCommand } from '../../core/run-command.js'
  * @param extensions - Array of extensions to filter by.
  * @returns Array of string containing tracked files.
  */
-export async function getTrackedFiles(cwd: string, logger: Logger, extensions: string[] = []): Promise<string[]> {
+export async function getProjectFiles(cwd: string, logger: Logger, extensions: string[] = []): Promise<string[]> {
   const results = (await runCommand('git ls-tree --full-tree --name-only -r HEAD', logger, { cwd })).stdout.replace(/\r/g, '').split(/\n/)
   if (extensions.length > 0) {
     return results.filter(file => extensions.some(extension => file.endsWith(extension)))

@@ -5,19 +5,36 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import type * as ts from 'typescript'
+
+import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
+
 export interface Attribute { name: string, value: unknown }
 
 export interface JsxElement {
   name: string
+  prefix: string
   raw: string
-  attributes: Attribute[]
+  attributes: JsxElementAttribute[]
 }
 
-export interface ElementData {
+export interface JsxElementAttribute {
   name: string
-  raw: string
-  attributeNames: string[]
-  attributeValues: string[]
-  nameSubstitutions: Record<string, string>
-  valueSubstitutions: Record<string, string>
+  value: unknown
+}
+
+export interface JsxImport {
+  importPath: string
+  elements: JsxImportElement[]
+}
+
+export interface JsxImportElement {
+  name: string
+  isDefault: boolean
+  rename?: string
+  isAll: boolean
+}
+
+export interface ASTNodeHandler {
+  handle: (node: ts.Node, accumulator: JsxScopeAccumulator) => void
 }

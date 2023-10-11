@@ -36,6 +36,11 @@ export class DependencyMetric extends ScopeMetric {
     this.data = data
   }
 
+  /**
+   * Get all OpenTelemetry Attributes for this metric data point.
+   *
+   * @returns OpenTelemetry compliant attributes, anonymized where necessary.
+   */
   public override get attributes(): Attributes {
     const { owner, name, major, minor, patch, preRelease } = this.getPackageDetails(
       this.data.name,

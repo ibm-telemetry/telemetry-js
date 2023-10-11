@@ -60,6 +60,19 @@ module.exports = {
         asyncArrow: 'always'
       }
     ],
+    '@typescript-eslint/strict-boolean-expressions': [
+      'warn',
+      {
+        allowString: true,
+        allowNumber: true,
+        allowNullableObject: true,
+        allowNullableBoolean: true,
+        allowNullableString: false,
+        allowNullableNumber: false,
+        allowNullableEnum: false,
+        allowAny: false
+      }
+    ],
     'eslint-comments/require-description': 'warn',
     indent: [
       'warn',

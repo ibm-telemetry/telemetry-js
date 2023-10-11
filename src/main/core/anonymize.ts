@@ -34,13 +34,13 @@ export function anonymize<T extends Attributes>(
       return { key, value }
     }
 
-    if (config.hash?.includes(key) ?? false) {
+    if (config.hash?.includes(key)) {
       const hash = createHash('sha256')
       hash.update(value)
       return { key, value: hash.digest('hex') }
     }
 
-    if (config.substitute?.includes(key) ?? false) {
+    if (config.substitute?.includes(key)) {
       // TODO: implement this logic
       return { key, value: 'substituted!' }
     }

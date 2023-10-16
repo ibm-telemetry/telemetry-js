@@ -14,13 +14,17 @@ export interface Attribute { name: string, value: unknown }
 export interface JsxElement {
   name: string
   prefix: string
-  raw: string
+  raw?: string
   attributes: JsxElementAttribute[]
+  pos: number
+  end: number
 }
 
 export interface JsxElementAttribute {
   name: string
   value: unknown
+  isVarReference: boolean
+  isSpread: boolean
 }
 
 export interface JsxImport {

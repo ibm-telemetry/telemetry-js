@@ -21,7 +21,7 @@ export class ImportNodeHandler implements ASTNodeHandler {
    * @param accumulator - JsxAccumulator instance that holds the aggregated imports state.
    */
   public handle(node: ts.Node, accumulator: JsxScopeAccumulator) {
-    accumulator.storeImport(this.getImportData(node))
+    accumulator.storeImport(this.getImportData(node as ts.ImportDeclaration))
   }
 
   /**
@@ -30,10 +30,63 @@ export class ImportNodeHandler implements ASTNodeHandler {
    * @param node - Node element to process.
    * @returns Constructed JsxImport object.
    */
-  private getImportData(node: ts.Node): JsxImport {
-    // TODO
-    return {
-
+  private getImportData(node: ts.ImportDeclaration): JsxImport {
+    const jsxImport: JsxImport = {
+      importPath: (node.moduleSpecifier as ts.StringLiteral).text,
+      elements: []
     }
+    const importClause = node.importClause
+    // named import of isAll
+    if (importClause?.namedBindings) {
+      const namedBindings = importClause.namedBindings
+      // TODOASKJOE
+      if ((namedBindings as any).elements?.length > 0) {
+        // TODOASKJOE
+        (namedBindings as any).elements.forEach((element: any) => {
+          if (element.propertyName !== null && element.propertyName !== undefined) {
+            if (element.propertyName.escapedText === 'default') {
+              // TODOASKJOE
+              (jsxImport.elements as any).push({
+                name: element.name.escapedText,
+                isDefault: true,
+                isAll: false
+              })
+            } else {
+              // TODOASKJOE
+              (jsxImport.elements as any).push({
+                name: element.propertyName.escapedText,
+                rename: element.name.escapedText,
+                isDefault: false,
+                isAll: false
+              })
+            }
+          } else {
+            (jsxImport.elements as any).push({
+              name: element.name.escapedText,
+              isDefault: false,
+              isAll: false
+            })
+          }
+        })
+      } else {
+        // TODOASKJOE
+        (jsxImport.elements as any).push({
+          // TODOASKJOE
+          name: (namedBindings as any).name.escapedText,
+          isDefault: false,
+          isAll: true
+        })
+      }
+    }
+    // default import
+    if (importClause?.name) {
+      (jsxImport.elements).push({
+        // TODOASKJOE
+        name: (importClause.name as any).escapedText,
+        isDefault: true,
+        isAll: false
+      })
+    }
+    return jsxImport
   }
 }

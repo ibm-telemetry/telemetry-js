@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type Node } from 'typescript'
+import type * as ts from 'typescript'
 
 import { JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 import { JsxNodeHandlerMap } from './node-handler-map.js'
@@ -18,12 +18,16 @@ import { NodeParser } from './node-parser.js'
  * @param fileNode -  root AST node to start Jsx explorations from.
  * @returns JsxAccumulator instance containing imports and elements state.
  */
-export function findAllJsxElements(fileNode: Node): JsxScopeAccumulator {
+export function findAllJsxElements(fileNode: ts.SourceFile): JsxScopeAccumulator {
   const accumulator = new JsxScopeAccumulator()
 
   const parser = new NodeParser(accumulator, JsxNodeHandlerMap)
 
   parser.visit(fileNode)
+
+  accumulator.elements.forEach(element => {
+    element.raw = fileNode.text.substring(element.pos, element.end).trim()
+  })
 
   return accumulator
 }

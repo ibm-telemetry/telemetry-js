@@ -9,6 +9,7 @@ import { type Attributes } from '@opentelemetry/api'
 
 import { type JsxElementsConfig } from '../../../../schemas/Schema.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
+import { getPackageDetails } from '../../utils/get-package-details.js'
 import { type JsxElement } from '../interfaces.js'
 
 /**
@@ -40,14 +41,27 @@ export class JsxElementMetric extends ScopeMetric {
   public override get attributes(): Attributes {
     const allowedAttributeNames: string[] = this.config.allowedAttributeNames ?? []
     const allowedAttributeStringValues: string[] = this.config.allowedAttributeStringValues ?? []
-    // TODO: pull in these functions when available
+    // TODO: pull in the correct functions when available
     this.data = hash(this.data, ['raw'])
     this.data.attributes = substitute(this.data.attributes, allowedAttributeNames, allowedAttributeStringValues)
+    const { owner, name } = getPackageDetails(this.data.importedBy)
     return {
       raw: this.data.raw,
       name: this.data.name,
       attributeNames: this.data.attributes.map(attr => attr.name),
-      attributeValues: this.data.attributes.map(attr => attr.value as string)
+      attributeValues: this.data.attributes.map(attr => attr.value as string),
+      'invoker.package.raw': this.data.importedBy,
+      'invoker.package.owner': owner,
+      'invoker.package.name': name
     }
   }
+}
+
+// TODO: REMOVE
+function hash(data: any, _hashes: any) {
+  return data
+}
+// TODO: REMOVE
+function substitute(data: any, _keys: any, _values: any) {
+  return data
 }

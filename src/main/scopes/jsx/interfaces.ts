@@ -18,6 +18,7 @@ export interface JsxElement {
   attributes: JsxElementAttribute[]
   pos: number
   end: number
+  importedBy: string
 }
 
 export interface JsxElementAttribute {
@@ -41,4 +42,9 @@ export interface JsxImportElement {
 
 export interface ASTNodeHandler {
   handle: (node: ts.Node, accumulator: JsxScopeAccumulator) => void
+}
+
+export interface FileTree {
+  root: string
+  children: FileTree[]
 }

@@ -80,7 +80,7 @@ jobs:
       - name: Install Node Modules 🔧
         run: npm install
 
-        # TODO: remove this one the schema is in its own package
+        # TODO: remove this once the schema is in its own package
       - name: Build schema file 🔨
         run: npm run build:schema
 

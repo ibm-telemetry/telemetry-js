@@ -8,7 +8,7 @@
 import { JsxElementsConfig } from '../../../schemas/Schema.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
-import { EmptyCollectorError } from '../../exceptions/empty-collector-error.js'
+import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js'
 import { getFileRootPackage } from './get-file-root-package.js'
@@ -29,7 +29,7 @@ export class JsxScope extends Scope {
   public override async run(): Promise<void> {
     const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
-      throw new EmptyCollectorError(this.name)
+      throw new EmptyScopeError(this.name)
     }
 
     const promises: Array<Promise<void>> = []
@@ -54,19 +54,15 @@ export class JsxScope extends Scope {
   @Trace()
   private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
     const fileNames = await getProjectFiles(this.cwd, this.logger)
-    const instrumentedPkg = await getPackageData(
-      this.cwd,
-      this.logger
-    )
+    const instrumentedPkg = await getPackageData(this.cwd, this.logger)
     const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name)
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
 
     for (const fileName of Object.keys(elements)) {
       const filePackage = await getFileRootPackage(fileName, packageJsonTree, this.logger)
-      elements[fileName]?.forEach(element => {
+      elements[fileName]?.forEach((element) => {
         element.importedBy = filePackage
-        this.capture(
-          new JsxElementMetric(element, config))
+        this.capture(new JsxElementMetric(element, config))
       })
     }
   }

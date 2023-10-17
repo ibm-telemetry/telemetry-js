@@ -40,7 +40,7 @@ describe('class: NpmScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    it('throws EmptyCollectorError if no collector has been defined', async () => {
+    it('throws EmptyScopeError if no collector has been defined', async () => {
       const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
       const scope = new NpmScope(
         fixture.path,

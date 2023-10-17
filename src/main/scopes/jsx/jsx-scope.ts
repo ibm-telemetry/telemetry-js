@@ -11,6 +11,8 @@ import { Scope } from '../../core/scope.js'
 import { EmptyCollectorError } from '../../exceptions/empty-collector-error.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js'
+import { getFileRootPackage } from './get-file-root-package.js'
+import { getPackageJsonTree } from './get-package-json-tree.js'
 import { getProjectFiles } from './get-project-files.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
 
@@ -57,10 +59,15 @@ export class JsxScope extends Scope {
       this.logger
     )
     const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name)
+    const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
 
-    elements.forEach(element => {
-      this.capture(
-        new JsxElementMetric(element, config))
-    })
+    for (const fileName of Object.keys(elements)) {
+      const filePackage = await getFileRootPackage(fileName, packageJsonTree, this.logger)
+      elements[fileName]?.forEach(element => {
+        element.importedBy = filePackage
+        this.capture(
+          new JsxElementMetric(element, config))
+      })
+    }
   }
 }

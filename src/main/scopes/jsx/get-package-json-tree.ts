@@ -17,7 +17,7 @@ import { type FileTree } from './interfaces.js'
  * @param logger - Logger instance.
  * @returns Array of trees of package.json files.
  */
-export async function getFileTrees(cwd: string, logger: Logger): Promise<FileTree[]> {
+export async function getPackageJsonTree(cwd: string, logger: Logger): Promise<FileTree[]> {
   const packageJsonFiles = await findNamedFiles(cwd, logger, 'package.json')
 
   // remove fileName to obtain directories, sort by level of nesting

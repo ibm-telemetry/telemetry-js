@@ -17,30 +17,33 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  * @param instrumentedPkg - Name of the instrumented package to find JsxElements for.
  * @returns All JSX elements found in current repository.
  */
-export function findInstrumentedJsxElements(fileNames: string[], instrumentedPkg: string): JsxElement[] {
-  const accumulators: JsxScopeAccumulator[] = []
-  const elements: JsxElement[] = []
+export function findInstrumentedJsxElements(fileNames: string[], instrumentedPkg: string): Record<string, JsxElement[]> {
+  const fileData: Record<string, JsxScopeAccumulator> = {}
+  const elements: Record<string, JsxElement[]> = {}
   const program = ts.createProgram(fileNames, {})
   for (const sourceFile of program.getSourceFiles()) {
     // TODOASKJOE: do we care about declaration files?
     if (!sourceFile.isDeclarationFile) {
-      accumulators.push(findAllJsxElements(sourceFile))
+      fileData[sourceFile.fileName] = findAllJsxElements(sourceFile)
     }
   }
-  accumulators.forEach(acc => {
+  Object.entries(fileData).forEach(([fileName, accumulator]) => {
     // TODOASKJOE: check this logic
-    const importedElements = acc.imports.filter(i => i.importPath.startsWith(instrumentedPkg)).map(i => i.elements).flat()
-    acc.elements.forEach(el => {
+    const importedElements = accumulator.imports.filter(i => i.importPath.startsWith(instrumentedPkg)).map(i => i.elements).flat()
+    elements[fileName] = []
+    accumulator.elements.forEach(el => {
       if (typeof el.prefix === 'string' && importedElements.some(
         // In order:
         // import {something as somethingElse} from 'package
         // import something from 'package'
         // import * as something from 'package'
         i => i.rename === el.prefix || (i.isDefault && i.name === el.prefix) || (i.isAll && i.name === el.prefix))) {
-        elements.push(el)
+        // this is never undefined (line 33)
+        elements[fileName]?.push(el)
       }
       if (typeof el.prefix !== 'string' && importedElements.some(imp => imp.name === el.name)) {
-        elements.push(el)
+        // this is never undefined (line 33)
+        elements[fileName]?.push(el)
       }
     })
   })

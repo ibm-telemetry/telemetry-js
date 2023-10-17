@@ -42,7 +42,7 @@ export class JsxElementMetric extends ScopeMetric {
     const allowedAttributeNames: string[] = this.config.allowedAttributeNames ?? []
     const allowedAttributeStringValues: string[] = this.config.allowedAttributeStringValues ?? []
     // TODO: pull in the correct functions when available
-    this.data = hash(this.data, ['raw'])
+    this.data = hash(this.data, ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name'])
     this.data.attributes = substitute(this.data.attributes, allowedAttributeNames, allowedAttributeStringValues)
     const { owner, name } = getPackageDetails(this.data.importedBy)
     return {

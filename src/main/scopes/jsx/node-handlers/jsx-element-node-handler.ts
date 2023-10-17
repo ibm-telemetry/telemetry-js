@@ -6,7 +6,7 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler, type JsxElement } from '../interfaces.js'
+import { type ASTNodeHandler, type PartialJsxElement } from '../interfaces.js'
 import { type JsxScopeAccumulator } from '../jsx-scope-accumulator.js'
 import { JsxNodeHandler } from './jsx-node-handler.js'
 
@@ -31,7 +31,7 @@ export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHand
    * @param node - Node element to process.
    * @returns Constructed JsxElement object.
    */
-  private getJsxElementData(node: ts.JsxElement): JsxElement {
+  private getJsxElementData(node: ts.JsxElement): PartialJsxElement {
     const { name, prefix } = this.getElementNameAndPrefix(node.openingElement.tagName)
     return {
       name,

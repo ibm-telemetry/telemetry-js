@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type JsxElement, type JsxImport } from './interfaces.js'
+import { type JsxImport, type PartialJsxElement } from './interfaces.js'
 
 /**
  * Responsible for maintaining an aggregated state of imports and elements.
@@ -13,7 +13,7 @@ import { type JsxElement, type JsxImport } from './interfaces.js'
  */
 export class JsxScopeAccumulator {
   public readonly imports: JsxImport[]
-  public readonly elements: JsxElement[]
+  public readonly elements: PartialJsxElement[]
 
   constructor() {
     this.imports = []
@@ -34,7 +34,7 @@ export class JsxScopeAccumulator {
    *
    * @param element - JsxElement object to add to the state.
    */
-  public storeElement(element: JsxElement) {
+  public storeElement(element: PartialJsxElement) {
     this.elements.push(element)
   }
 }

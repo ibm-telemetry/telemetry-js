@@ -9,12 +9,15 @@ import type * as ts from 'typescript'
 
 import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 
-export interface Attribute { name: string, value: unknown }
+export interface Attribute {
+  name: string
+  value: unknown
+}
 
 export interface JsxElement {
   name: string
   prefix: string
-  raw?: string
+  raw: string
   attributes: JsxElementAttribute[]
   pos: number
   end: number
@@ -48,3 +51,5 @@ export interface FileTree {
   root: string
   children: FileTree[]
 }
+
+export type PartialJsxElement = Omit<JsxElement, 'raw' | 'importedBy'> & Partial<JsxElement>

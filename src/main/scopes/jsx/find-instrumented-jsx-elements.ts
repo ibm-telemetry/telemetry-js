@@ -24,11 +24,9 @@ export function findInstrumentedJsxElements(
   const fileData: Record<string, JsxScopeAccumulator> = {}
   const elements: Record<string, PartialJsxElement[]> = {}
   const program = ts.createProgram(fileNames, {})
-  for (const sourceFile of program.getSourceFiles()) {
-    // TODOASKJOE: do we care about declaration files?
-    if (!sourceFile.isDeclarationFile) {
-      fileData[sourceFile.fileName] = findAllJsxElements(sourceFile)
-    }
+  const sourceFiles = program.getSourceFiles().filter(file => !file.isDeclarationFile)
+  for (const sourceFile of sourceFiles) {
+    fileData[sourceFile.fileName] = findAllJsxElements(sourceFile)
   }
   Object.entries(fileData).forEach(([fileName, accumulator]) => {
     // TODOASKJOE: check this logic

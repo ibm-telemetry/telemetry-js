@@ -20,25 +20,26 @@ export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHand
    *
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated elements state.
+   * @param rootNode - Root Node of node tree.
    */
-  public handle(node: ts.Node, accumulator: JsxScopeAccumulator) {
-    accumulator.storeElement(this.getJsxElementData(node as ts.JsxElement))
+  public handle(node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) {
+    accumulator.storeElement(this.getJsxElementData(node as ts.JsxElement, rootNode as ts.SourceFile))
   }
 
   /**
    * Constructs a JsxElement object from a given JsxElement type AST node.
    *
    * @param node - Node element to process.
+   * @param rootNode - Root Node of node tree.
    * @returns Constructed JsxElement object.
    */
-  private getJsxElementData(node: ts.JsxElement): PartialJsxElement {
+  private getJsxElementData(node: ts.JsxElement, rootNode: ts.SourceFile): PartialJsxElement {
     const { name, prefix } = this.getElementNameAndPrefix(node.openingElement.tagName)
     return {
       name,
       prefix,
       attributes: this.getElementAttributes(node.openingElement.attributes),
-      pos: node.pos,
-      end: node.end
+      raw: rootNode.text.substring(node.pos, node.end).trim()
     }
   }
 }

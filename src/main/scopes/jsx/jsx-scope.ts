@@ -11,9 +11,9 @@ import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js'
+import { findProjectFiles } from './find-project-files.js'
 import { getFileRootPackage } from './get-file-root-package.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
-import { getProjectFiles } from './get-project-files.js'
 import { type JsxElement } from './interfaces.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
 
@@ -54,7 +54,7 @@ export class JsxScope extends Scope {
    */
   @Trace()
   private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
-    const fileNames = await getProjectFiles(this.cwd, this.logger)
+    const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
     const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name)
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)

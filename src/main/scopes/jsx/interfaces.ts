@@ -19,8 +19,6 @@ export interface JsxElement {
   prefix: string
   raw: string
   attributes: JsxElementAttribute[]
-  pos: number
-  end: number
   importedBy: string
 }
 
@@ -44,7 +42,7 @@ export interface JsxImportElement {
 }
 
 export interface ASTNodeHandler {
-  handle: (node: ts.Node, accumulator: JsxScopeAccumulator) => void
+  handle: (node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) => void
 }
 
 export interface FileTree {
@@ -52,4 +50,4 @@ export interface FileTree {
   children: FileTree[]
 }
 
-export type PartialJsxElement = Omit<JsxElement, 'raw' | 'importedBy'> & Partial<JsxElement>
+export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>

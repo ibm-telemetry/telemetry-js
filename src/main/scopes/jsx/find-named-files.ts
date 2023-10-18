@@ -17,8 +17,5 @@ import { runCommand } from '../../core/run-command.js'
  * @returns Array of string containing all found files with supplied name.
  */
 export async function findNamedFiles(cwd: string, logger: Logger, fileName: string): Promise<string[]> {
-  const results = (await runCommand(`git ls-tree -r --name-only HEAD | grep "${fileName}"`, logger, { cwd })).stdout.replace(/\r/g, '').split(/\n/)
-
-  // filter out fileNames that aren't an exact match (e.g.: something/something-[fileName])
-  return results.filter(path => path === fileName || path.endsWith(`/${fileName}`))
+  return (await runCommand(`git ls-tree -r --name-only HEAD | egrep "(/|^)${fileName}$"`, logger, { cwd })).stdout.replace(/\r/g, '').split(/\n/)
 }

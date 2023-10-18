@@ -35,15 +35,16 @@ export class NodeParser {
    * Visits each children (recursively) of the supplied node and
    * calls out to the appropriate node handlers.
    *
-   * @param node - Root node to traverse through (usually a file node).
+   * @param node - Node to traverse through (usually a file node).
+   * @param rootNode - Root Node of node tree.
    */
-  public visit(node: ts.Node) {
+  public visit(node: ts.Node, rootNode: ts.Node = node) {
     const handler = this.nodeHandlerMap[node.kind]
 
     if (handler !== undefined) {
-      handler.handle(node, this.accumulator)
+      handler.handle(node, this.accumulator, rootNode)
     }
 
-    ts.forEachChild(node, (node) => { this.visit(node) })
+    ts.forEachChild(node, (node) => { this.visit(node, rootNode) })
   }
 }

@@ -20,26 +20,27 @@ export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler implements 
    *
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated elements state.
+   * @param rootNode - Root Node of node tree.
    */
-  public handle(node: ts.Node, accumulator: JsxScopeAccumulator) {
-    accumulator.storeElement(this.getJsxElementData(node as ts.JsxSelfClosingElement))
+  public handle(node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) {
+    accumulator.storeElement(this.getJsxElementData(node as ts.JsxSelfClosingElement, rootNode as ts.SourceFile))
   }
 
   /**
    * Constructs a JsxElement object from a given JsxSelfClosingElement type AST node.
    *
    * @param node - Node element to process.
+   * @param rootNode - Root Node of node tree.
    * @returns Constructed JsxElement object.
    */
-  private getJsxElementData(node: ts.JsxSelfClosingElement): PartialJsxElement {
+  private getJsxElementData(node: ts.JsxSelfClosingElement, rootNode: ts.SourceFile): PartialJsxElement {
     const { name, prefix } = this.getElementNameAndPrefix(node.tagName)
 
     return {
       name,
       prefix,
       attributes: this.getElementAttributes(node.attributes),
-      pos: node.pos,
-      end: node.end
+      raw: rootNode.text.substring(node.pos, node.end).trim()
     }
   }
 }

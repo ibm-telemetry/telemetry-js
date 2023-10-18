@@ -25,9 +25,5 @@ export function findAllJsxElements(fileNode: ts.SourceFile): JsxScopeAccumulator
 
   parser.visit(fileNode)
 
-  accumulator.elements.forEach(element => {
-    element.raw = fileNode.text.substring(element.pos, element.end).trim()
-  })
-
   return accumulator
 }

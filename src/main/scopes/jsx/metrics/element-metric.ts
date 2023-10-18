@@ -18,7 +18,7 @@ import { type JsxElement } from '../interfaces.js'
 export class JsxElementMetric extends ScopeMetric {
   public override name: string
   private readonly config: JsxElementsConfig
-  private data: JsxElement
+  private readonly data: JsxElement
 
   /**
    * Constructs a JsxElementMetric.
@@ -41,18 +41,25 @@ export class JsxElementMetric extends ScopeMetric {
   public override get attributes(): Attributes {
     const allowedAttributeNames: string[] = this.config.allowedAttributeNames ?? []
     const allowedAttributeStringValues: string[] = this.config.allowedAttributeStringValues ?? []
-    // TODO: pull in the correct functions when available
-    this.data = hash(this.data, ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name'])
-    this.data.attributes = substitute(this.data.attributes, allowedAttributeNames, allowedAttributeStringValues)
-    const { owner, name } = getPackageDetails(this.data.importedBy)
-    return {
-      raw: this.data.raw,
-      name: this.data.name,
-      attributeNames: this.data.attributes.map(attr => attr.name),
-      attributeValues: this.data.attributes.map(attr => attr.value as string),
+    const { owner, name: invokerName } = getPackageDetails(this.data.importedBy)
+    let metricData = {
+      ...this.data,
       'invoker.package.raw': this.data.importedBy,
       'invoker.package.owner': owner,
-      'invoker.package.name': name
+      'invoker.package.name': invokerName
+    }
+    // TODO: pull in the correct functions when available
+    metricData = hash(this.data, ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name'])
+    metricData.attributes = substitute(this.data.attributes, allowedAttributeNames, allowedAttributeStringValues)
+
+    return {
+      raw: metricData.raw,
+      name: metricData.name,
+      attributeNames: metricData.attributes.map(attr => attr.name),
+      attributeValues: metricData.attributes.map(attr => attr.value as string),
+      'invoker.package.raw': metricData['invoker.package.raw'],
+      'invoker.package.owner': metricData['invoker.package.owner'],
+      'invoker.package.name': metricData['invoker.package.name']
     }
   }
 }

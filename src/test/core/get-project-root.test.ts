@@ -19,13 +19,13 @@ describe('getProjectRoot', () => {
   it('correctly gets project root', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules')
     await expect(getProjectRoot(path.resolve(fixture.path), logger)).resolves.toMatch(
-      /.*\/telemetrics-js/
+      /.*\/telemetry-js/
     )
   })
 
   it('can handle edge case when root is the cwd', async () => {
     const rootCwd = path.join(path.dirname(import.meta.url.substring(7)), '../../../')
-    await expect(getProjectRoot(rootCwd, logger)).resolves.toMatch(/.*\/telemetrics-js/)
+    await expect(getProjectRoot(rootCwd, logger)).resolves.toMatch(/.*\/telemetry-js/)
   })
 
   it('throws error if no root exists', async () => {

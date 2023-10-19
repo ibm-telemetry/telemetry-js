@@ -6,10 +6,10 @@
  */
 
 /**
- * Configuration outline for metrics collection using IBM telemetrics.
+ * Configuration outline for metrics collection using IBM telemetry.
  *
- * @title Telemetrics Config Schema
- * @id https://[HOSTHERE]/schemas/telemetrics-config.schema.json
+ * @title Telemetry Config Schema
+ * @id https://[HOSTHERE]/schemas/telemetry-config.schema.json
  */
 export interface Schema {
   /**
@@ -21,7 +21,7 @@ export interface Schema {
    */
   projectId: string
   /**
-   * The keys under `collect` represent the various types of data that Telemetrics is capable of
+   * The keys under `collect` represent the various types of data that Telemetry is capable of
    * collecting (i.e. `scopes`).
    *
    * @minProperties 1

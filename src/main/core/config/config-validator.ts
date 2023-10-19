@@ -16,7 +16,7 @@ import { Trace } from '../log/trace.js'
 const Ajv = ajv.default
 
 /**
- * Class that validates a telemetrics configuration file. Instances of this class should not be used
+ * Class that validates a telemetry configuration file. Instances of this class should not be used
  * to analyze more than one config file. Instead, create new instances for separate validations.
  */
 export class ConfigValidator extends Loggable {

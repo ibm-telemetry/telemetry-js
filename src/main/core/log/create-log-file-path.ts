@@ -14,6 +14,6 @@ import { tmpName } from 'tmp-promise'
  */
 export async function createLogFilePath(date: string) {
   return await tmpName({
-    template: `ibmtelemetrics-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
+    template: `ibmtelemetry-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
   })
 }

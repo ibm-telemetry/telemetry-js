@@ -17,8 +17,7 @@ jobs:
         with:
           release-type: node
           draft-pull-request: true
-          # TODO: correct name
-          package-name: '@ibm/telemetrics-js'
+          package-name: '@ibm/telemetry-js'
           pull-request-title-pattern: 'release${scope}: release${component} ${version}'
 
     # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm

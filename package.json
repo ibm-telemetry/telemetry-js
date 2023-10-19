@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/telemetrics-js",
+  "name": "@ibm/telemetry-js",
   "description": "JavaScript telemetry tooling for open/inner source projects",
   "version": "0.2.0",
   "license": "Apache-2.0",
@@ -12,17 +12,17 @@
     "javascript",
     "typescript"
   ],
-  "homepage": "https://github.com/ibm-telemetrics/telemetrics-js#readme",
+  "homepage": "https://github.com/ibm-telemetry/telemetry-js#readme",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ibm-telemetrics/telemetrics-js.git"
+    "url": "git+ssh://git@github.com/ibm-telemetry/telemetry-js.git"
   },
   "bugs": {
-    "url": "https://github.com/ibm-telemetrics/telemetrics-js/issues"
+    "url": "https://github.com/ibm-telemetry/telemetry-js/issues"
   },
   "type": "module",
   "bin": {
-    "ibmtelemetrics": "./dist/main/index.js"
+    "ibmtelemetry": "./dist/main/index.js"
   },
   "engines": {
     "node": "18",
@@ -30,7 +30,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "build:schema": "ts-json-schema-generator --path ./src/schemas/Schema.ts --type Schema > src/schemas/telemetrics-config.schema.json",
+    "build:schema": "ts-json-schema-generator --path ./src/schemas/Schema.ts --type Schema > src/schemas/telemetry-config.schema.json",
     "build:watch": "tsc --watch",
     "clean": "rimraf dist",
     "lint": "eslint --max-warnings=0 .",

@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=./telemetrics-config.schema.json
+# yaml-language-server: $schema=./telemetry-config.schema.json
 version: 1
 collect:
   npm:

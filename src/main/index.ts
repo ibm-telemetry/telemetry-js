@@ -22,7 +22,7 @@ interface CommandLineOptions {
 async function run() {
   const program = new Command()
     .description('Collect telemetry data for a package.')
-    .requiredOption('--config <config-path>', 'Path to a telemetrics configuration file')
+    .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
     .action(collect)
 
   try {
@@ -46,7 +46,7 @@ async function collect(opts: CommandLineOptions) {
   // TODO: this should come from an external package or be bundled
   const configSchemaPath = path.join(
     path.dirname(import.meta.url.substring(7)),
-    '../../src/schemas/telemetrics-config.schema.json'
+    '../../src/schemas/telemetry-config.schema.json'
   )
 
   const telemetryCollector = new TelemetryCollector(opts.config, configSchemaPath, logger)

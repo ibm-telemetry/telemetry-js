@@ -17,7 +17,7 @@ import { Fixture } from '../../__utils/fixture.js'
 const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 // TODO: get this from the external package
-const schemaFile = 'src/schemas/telemetrics-config.schema.json'
+const schemaFile = 'src/schemas/telemetry-config.schema.json'
 const schemaFileContents = (await readFile(schemaFile)).toString()
 const validator = new ConfigValidator(JSON.parse(schemaFileContents), logger)
 

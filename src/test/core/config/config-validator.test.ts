@@ -6,7 +6,7 @@
  */
 import { readFile } from 'node:fs/promises'
 
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 
 import { ConfigValidator } from '../../../main/core/config/config-validator.js'
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
@@ -22,6 +22,10 @@ const schemaFileContents = (await readFile(schemaFile)).toString()
 const validator = new ConfigValidator(JSON.parse(schemaFileContents), logger)
 
 describe('class: ConfigValidator', () => {
+  afterAll(async () => {
+    await logger.close()
+  })
+
   it('returns for a valid configuration', async () => {
     const fixture = new Fixture('config-files/valid/all-keys.yml')
     const config = await fixture.parse()

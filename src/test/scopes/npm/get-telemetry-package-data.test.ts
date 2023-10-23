@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest'
 
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
@@ -26,6 +26,10 @@ vi.spyOn(exec, 'runCommand').mockResolvedValue({
 const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 describe('getTelemetryPackageData', () => {
+  afterAll(async () => {
+    await logger.close()
+  })
+
   it('correctly reads name and version', async () => {
     await expect(getTelemetryPackageData(logger)).resolves.toStrictEqual({
       name: 'test-1',

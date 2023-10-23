@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 
 import { createLogFilePath } from '../main/core/log/create-log-file-path.js'
 import { Logger } from '../main/core/log/logger.js'
@@ -15,6 +15,10 @@ import { type Schema } from '../schemas/Schema.js'
 const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 
 describe('telemetryCollector', () => {
+  afterAll(async () => {
+    await logger.close()
+  })
+
   describe('runScopes', () => {
     it('does not throw when existing scopes are specified in the config', async () => {
       const telemetryCollector = new TelemetryCollector('', '', logger)

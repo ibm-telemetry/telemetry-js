@@ -10,6 +10,7 @@ import opentelemetry, { type Counter, type Meter } from '@opentelemetry/api'
 import { type Schema as Config } from '../../schemas/Schema.js'
 import { Loggable } from './log/loggable.js'
 import { type Logger } from './log/logger.js'
+import { Trace } from './log/trace.js'
 import { type ScopeMetric } from './scope-metric.js'
 
 /**
@@ -65,6 +66,7 @@ export abstract class Scope extends Loggable {
    *
    * @param dataPoint - The actual metric data.
    */
+  @Trace()
   public capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
     if (this.scopeMeter === undefined) {

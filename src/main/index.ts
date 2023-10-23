@@ -56,11 +56,13 @@ async function collect(opts: CommandLineOptions) {
   } catch (err) {
     // Catch any exception thrown, log it, and quietly exit
     if (err instanceof Error) {
-      await logger.error(err)
+      logger.error(err)
     } else {
-      await logger.error(String(err))
+      logger.error(String(err))
     }
   }
+
+  await logger.close()
 }
 
 await run()

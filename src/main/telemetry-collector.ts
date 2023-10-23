@@ -50,20 +50,20 @@ export class TelemetryCollector {
   @Trace()
   public async run() {
     const date = new Date().toISOString()
-    await this.logger.debug('Date: ' + date)
+    this.logger.debug('Date: ' + date)
 
     const schemaFileContents = (await readFile(this.configSchemaPath)).toString()
-    await this.logger.debug('Schema: ' + schemaFileContents)
+    this.logger.debug('Schema: ' + schemaFileContents)
     const configValidator = new ConfigValidator(JSON.parse(schemaFileContents), this.logger)
 
     const config = await parseYamlFile(this.configPath)
-    await this.logger.debug('Config: ' + JSON.stringify(config, undefined, 2))
+    this.logger.debug('Config: ' + JSON.stringify(config, undefined, 2))
 
     const cwd = process.cwd()
-    await this.logger.debug('cwd: ' + cwd)
+    this.logger.debug('cwd: ' + cwd)
 
     const projectRoot = await getProjectRoot(cwd, this.logger)
-    await this.logger.debug('projectRoot: ' + projectRoot)
+    this.logger.debug('projectRoot: ' + projectRoot)
 
     if (!configValidator.validate(config)) {
       // This will never be hit, but it allows code after this block to see the configData as
@@ -113,6 +113,9 @@ export class TelemetryCollector {
 
     // TODO: remove this test line
     console.log(JSON.stringify(results, undefined, 2))
+
+    this.logger.debug('Collection results:')
+    this.logger.debug(JSON.stringify(results, undefined, 2))
   }
 
   /**
@@ -142,16 +145,16 @@ export class TelemetryCollector {
       promises.push(
         scopeInstance
           .run()
-          .then(async () => {
-            await this.logger.debug('Scope succeeded: ' + scopeName)
+          .then(() => {
+            this.logger.debug('Scope succeeded: ' + scopeName)
           })
-          .catch(async (reason) => {
-            await this.logger.error('Scope failed: ' + scopeName)
+          .catch((reason) => {
+            this.logger.error('Scope failed: ' + scopeName)
 
             if (reason instanceof Error) {
-              await this.logger.error(reason)
+              this.logger.error(reason)
             } else {
-              await this.logger.error(String(reason))
+              this.logger.error(String(reason))
             }
           })
       )

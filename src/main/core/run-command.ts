@@ -33,7 +33,7 @@ export async function runCommand(
   options: childProcess.SpawnOptions = {},
   rejectOnError: boolean = true
 ) {
-  await logger.debug('Running command: ' + cmd)
+  logger.traceEnter('run-command', 'runCommand', [cmd, logger, options, rejectOnError])
 
   guardShell(cmd)
 
@@ -41,6 +41,7 @@ export async function runCommand(
   let rejectFn: (reason: unknown) => void
   let outData = ''
   let errorData = ''
+  let hasCallbackBeenTriggered = false
 
   const spawnOptions = {
     env: process.env,
@@ -62,41 +63,60 @@ export async function runCommand(
   })
 
   proc.on('error', (err) => {
+    if (hasCallbackBeenTriggered) {
+      return
+    }
+
+    let result
+
     if (rejectOnError) {
-      rejectFn(
-        new RunCommandError({
-          exitCode: 'errno' in err && typeof err.errno === 'number' ? err.errno : -1,
-          stderr: errorData.trim(),
-          stdout: outData.trim(),
-          exception: err,
-          spawnOptions
-        })
-      )
+      result = new RunCommandError({
+        exitCode: 'errno' in err && typeof err.errno === 'number' ? err.errno : -1,
+        stderr: errorData.trim(),
+        stdout: outData.trim(),
+        exception: err,
+        spawnOptions
+      })
+      rejectFn(result)
     } else {
-      resolveFn({
+      result = {
         exitCode: 'errno' in err && typeof err.errno === 'number' ? err.errno : -1,
         stderr: errorData,
         stdout: outData
-      })
+      }
+      resolveFn(result)
     }
+
+    hasCallbackBeenTriggered = true
+    logger.traceExit('run-command', 'runCommand', result)
   })
 
   proc.on('close', (exitCode) => {
-    if (exitCode !== 0 && rejectOnError) {
-      rejectFn(
-        new RunCommandError({
-          exitCode: exitCode ?? 999,
-          stderr: errorData.trim(),
-          stdout: outData.trim(),
-          spawnOptions
-        })
-      )
+    if (hasCallbackBeenTriggered) {
+      return
     }
-    resolveFn({
-      exitCode: exitCode ?? 999,
-      stderr: errorData.trim(),
-      stdout: outData.trim()
-    })
+
+    let result
+
+    if (exitCode !== 0 && rejectOnError) {
+      result = new RunCommandError({
+        exitCode: exitCode ?? 999,
+        stderr: errorData.trim(),
+        stdout: outData.trim(),
+        spawnOptions
+      })
+      rejectFn(result)
+    } else {
+      result = {
+        exitCode: exitCode ?? 999,
+        stderr: errorData.trim(),
+        stdout: outData.trim()
+      }
+      resolveFn(result)
+    }
+
+    hasCallbackBeenTriggered = true
+    logger.traceExit('run-command', 'runCommand', result)
   })
 
   return await promise

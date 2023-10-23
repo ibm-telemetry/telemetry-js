@@ -7,7 +7,7 @@
 
 import path from 'node:path'
 
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
@@ -21,6 +21,10 @@ const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 const config: Config = { projectId: 'abc123', version: 1, collect: { npm: { dependencies: null } } }
 
 describe('class: NpmScope', () => {
+  afterAll(async () => {
+    await logger.close()
+  })
+
   describe('run', () => {
     it('correctly captures dependency data', async () => {
       const fixture = new Fixture('projects/basic-project/node_modules/instrumented')

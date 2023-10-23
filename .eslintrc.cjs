@@ -38,7 +38,10 @@ module.exports = {
     {
       files: ['**/*.test.ts'],
       plugins: ['vitest'],
-      extends: ['plugin:vitest/all']
+      extends: ['plugin:vitest/all'],
+      rules: {
+        'vitest/no-hooks': 'off'
+      }
     }
   ],
   parserOptions: {

@@ -28,6 +28,9 @@
     "node": "18",
     "npm": "9"
   },
+  "files": [
+    "dist/main"
+  ],
   "scripts": {
     "build": "tsc",
     "build:schema": "ts-json-schema-generator --path ./src/schemas/Schema.ts --type Schema > src/schemas/telemetry-config.schema.json",

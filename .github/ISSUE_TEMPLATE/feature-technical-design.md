@@ -52,9 +52,9 @@ assignees: ''
 
 **Programmatic APIs**
 
-> List any APIs that will be developed and made available,
-> including function/class/method names, parameters, and return values. If this tech design
-> describes a new monorepo package, detail the APIs and exports of that package.
+> List any APIs that will be developed and made available, including function/class/method names,
+> parameters, and return values. If this tech design describes a new monorepo package, detail the
+> APIs and exports of that package.
 
 **Data graph**
 

@@ -5,6 +5,7 @@
 .history/
 dist/
 node_modules/
+__fixtures/
 
 #
 # Files

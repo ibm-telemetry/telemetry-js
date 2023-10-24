@@ -5,8 +5,8 @@
 [![IBM Telemetry JS is released under the Apache-2.0 license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/ibm-telemetry/telemetry-js/blob/main/LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/carbon-design-system/carbon/blob/master/CONTRIBUTING.md)
 
-[![NPM version](https://img.shields.io/npm/v/ibm/telemetry-js.svg)](https://npmjs.org/package/ibm/telemetry-js)
-[![NPM downloads](https://img.shields.io/npm/dm/ibm/telemetry-js.svg)](https://npmjs.org/package/ibm/telemetry-js)
+[![NPM version](https://img.shields.io/npm/v/%40ibm/telemetry-js.svg)](https://npmjs.org/package/ibm/telemetry-js)
+[![NPM downloads](https://img.shields.io/npm/dm/%40ibm/telemetry-js.svg)](https://npmjs.org/package/ibm/telemetry-js)
 
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=ibm-telemetry_telemetry-js&metric=alert_status)](https://sonarcloud.io/dashboard?id=ibm-telemetry_telemetry-js)
 [![Continuous integration checks status](https://github.com/ibm-telemetry/telemetry-js/actions/workflows/ci-checks.yml/badge.svg)](https://github.com/ibm-telemetry/telemetry-js/actions/workflows/ci-checks.yml)

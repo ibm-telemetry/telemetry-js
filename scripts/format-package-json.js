@@ -36,20 +36,24 @@ const endKeys = ['scripts', 'dependencies', 'peerDependencies', 'devDependencies
  */
 function sortTopLevelKeys(packageJson) {
   const beginning = {}
-  const middle = {}
+  const middle = { ...packageJson }
   const end = {}
 
   for (const key of beginningKeys) {
     if (key in packageJson) {
       beginning[key] = packageJson[key]
-    } else if (!endKeys.includes(key)) {
-      middle[key] = packageJson[key]
+      // Maintains original package.json structure
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- see above
+      delete middle[key]
     }
   }
 
   for (const key of endKeys) {
     if (key in packageJson) {
       end[key] = packageJson[key]
+      // Maintains original package.json structure
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- see above
+      delete middle[key]
     }
   }
 
@@ -90,20 +94,37 @@ function sortScripts(packageJson) {
  * Formats a package.json file.
  *
  * @param packageJsonPath - Path to the package.json file to be formatted.
+ * @throws Error if the file being processed has formatting issues.
  */
 function processFile(packageJsonPath) {
-  let packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath))
+  let newPackageJson = sortTopLevelKeys(packageJson)
+  newPackageJson = sortScripts(newPackageJson)
 
-  packageJson = sortTopLevelKeys(packageJson)
-  packageJson = sortScripts(packageJson)
+  if (JSON.stringify(packageJson) === JSON.stringify(newPackageJson)) {
+    // no change
+    return
+  }
 
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, undefined, '  ') + '\n')
+  if (fix) {
+    fs.writeFileSync(packageJsonPath, JSON.stringify(newPackageJson, undefined, '  ') + '\n')
+  } else {
+    throw new Error('Formatting issues found')
+  }
 }
 
 //
 // Start of script
 //
 const args = process.argv.slice(2)
+const fixArgIndex = args.indexOf('--fix')
+let fix = false
+let hasError = false
+
+if (fixArgIndex >= 0) {
+  fix = true
+  args.splice(fixArgIndex, 1)
+}
 
 if (args.length <= 0) {
   throw new Error('Must specify at least one package.json path')
@@ -111,5 +132,15 @@ if (args.length <= 0) {
 
 for (const arg of args) {
   const packageJsonPath = path.resolve(arg)
-  processFile(packageJsonPath)
+  try {
+    processFile(packageJsonPath)
+  } catch (err) {
+    console.error(path.relative('.', packageJsonPath) + ': ' + err.message)
+    hasError = true
+  }
+}
+
+if (hasError) {
+  // eslint-disable-next-line n/no-process-exit -- An explicit exit code indicates format issues
+  process.exit(1)
 }

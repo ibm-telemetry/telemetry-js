@@ -19,7 +19,8 @@ describe('logger', () => {
 
     await expect(access(logFilePath)).rejects.toThrow('ENOENT')
 
-    await logger.debug('test log')
+    logger.debug('test log')
+    await logger.close()
 
     await expect(access(logFilePath)).resolves.toBeUndefined()
 
@@ -40,7 +41,8 @@ describe('logger', () => {
 
     const errorLog = new Error('the error message')
 
-    await logger.error(errorLog)
+    logger.error(errorLog)
+    await logger.close()
 
     await expect(access(logFilePath)).resolves.toBeUndefined()
 

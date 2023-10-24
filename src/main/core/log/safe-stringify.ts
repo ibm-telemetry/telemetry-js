@@ -14,9 +14,15 @@
 export function safeStringify(arg: unknown): string {
   let result
 
-  try {
-    result = JSON.stringify(arg)
-  } catch {}
+  if (arg instanceof Function) {
+    return arg.name + '(...)'
+  }
+
+  if (result === undefined) {
+    try {
+      result = JSON.stringify(arg)
+    } catch {}
+  }
 
   if (result === undefined) {
     result = String(arg)

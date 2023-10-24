@@ -20,9 +20,7 @@ export async function getTelemetryPackageData(logger: Logger) {
   // Remove leading file://
   const currentFileDir = path.dirname(import.meta.url.substring(7))
 
-  await logger.debug(
-    'getTelemetryPackageData: Current file directory discovered as: ' + currentFileDir
-  )
+  logger.debug('getTelemetryPackageData: Current file directory discovered as: ' + currentFileDir)
 
   return await getPackageData(currentFileDir, logger)
 }

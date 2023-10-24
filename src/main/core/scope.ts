@@ -4,12 +4,12 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import opentelemetry, { type Counter, type Meter } from '@opentelemetry/api'
 
-// TODO: this should come from a separate published package
-import { type Schema as Config } from '../../schemas/Schema.js'
 import { Loggable } from './log/loggable.js'
 import { type Logger } from './log/logger.js'
+import { Trace } from './log/trace.js'
 import { type ScopeMetric } from './scope-metric.js'
 
 /**
@@ -25,7 +25,7 @@ export abstract class Scope extends Loggable {
   /**
    * The OpenTelemetry-style name of this scope to be used in data transfer and storage.
    */
-  public abstract readonly name: keyof Config['collect']
+  public abstract readonly name: keyof ConfigSchema['collect']
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -37,7 +37,7 @@ export abstract class Scope extends Loggable {
    */
   public readonly metrics: Record<string, Counter>
 
-  protected readonly config: Config
+  protected readonly config: ConfigSchema
   protected readonly cwd: string
   protected readonly root: string
 
@@ -65,6 +65,7 @@ export abstract class Scope extends Loggable {
    *
    * @param dataPoint - The actual metric data.
    */
+  @Trace()
   public capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
     if (this.scopeMeter === undefined) {

@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { readFile } from 'node:fs/promises'
+import { type ConfigSchema } from '@ibm/telemetry-config-schema'
+import { type Schema } from 'ajv'
 
-import { type Schema as Config } from '../schemas/Schema.js'
 import { anonymize } from './core/anonymize.js'
 import { ConfigValidator } from './core/config/config-validator.js'
 import { getProjectRoot } from './core/get-project-root.js'
@@ -28,19 +28,19 @@ import { scopeRegistry } from './scopes/scope-registry.js'
  */
 export class TelemetryCollector {
   private readonly configPath: string
-  private readonly configSchemaPath: string
+  private readonly configSchemaJson: Schema
   private readonly logger: Logger
 
   /**
    * Constructs a new telemetry collector.
    *
    * @param configPath - Path to a config file.
-   * @param configSchemaPath - Path to a schema against which to validate the config file.
+   * @param configSchemaJson - Path to a schema against which to validate the config file.
    * @param logger - A logger instance.
    */
-  public constructor(configPath: string, configSchemaPath: string, logger: Logger) {
+  public constructor(configPath: string, configSchemaJson: Schema, logger: Logger) {
     this.configPath = configPath
-    this.configSchemaPath = configSchemaPath
+    this.configSchemaJson = configSchemaJson
     this.logger = logger
   }
 
@@ -50,26 +50,22 @@ export class TelemetryCollector {
   @Trace()
   public async run() {
     const date = new Date().toISOString()
-    await this.logger.debug('Date: ' + date)
+    this.logger.debug('Date: ' + date)
 
-    const schemaFileContents = (await readFile(this.configSchemaPath)).toString()
-    await this.logger.debug('Schema: ' + schemaFileContents)
-    const configValidator = new ConfigValidator(JSON.parse(schemaFileContents), this.logger)
+    this.logger.debug('Schema: ' + JSON.stringify(this.configSchemaJson))
+    const configValidator: ConfigValidator = new ConfigValidator(this.configSchemaJson, this.logger)
 
     const config = await parseYamlFile(this.configPath)
-    await this.logger.debug('Config: ' + JSON.stringify(config, undefined, 2))
+    this.logger.debug('Config: ' + JSON.stringify(config, undefined, 2))
 
     const cwd = process.cwd()
-    await this.logger.debug('cwd: ' + cwd)
+    this.logger.debug('cwd: ' + cwd)
 
     const projectRoot = await getProjectRoot(cwd, this.logger)
-    await this.logger.debug('projectRoot: ' + projectRoot)
+    this.logger.debug('projectRoot: ' + projectRoot)
 
-    if (!configValidator.validate(config)) {
-      // This will never be hit, but it allows code after this block to see the configData as
-      // being of type "Schema"
-      return
-    }
+    // This will throw if config does not conform to ConfigSchema
+    configValidator.validate(config)
 
     // TODO: move this logic elsewhere
     // TODO: handle non-existant remote
@@ -113,6 +109,9 @@ export class TelemetryCollector {
 
     // TODO: remove this test line
     console.log(JSON.stringify(results, undefined, 2))
+
+    this.logger.debug('Collection results:')
+    this.logger.debug(JSON.stringify(results, undefined, 2))
   }
 
   /**
@@ -126,10 +125,10 @@ export class TelemetryCollector {
    * @returns A set of promises. One per executing scope.
    */
   @Trace()
-  public runScopes(cwd: string, root: string, config: Config) {
+  public runScopes(cwd: string, root: string, config: ConfigSchema) {
     const promises = []
 
-    for (const scopeName of Object.keys(config.collect) as Array<keyof Config['collect']>) {
+    for (const scopeName of Object.keys(config.collect) as Array<keyof ConfigSchema['collect']>) {
       const ScopeClass = scopeRegistry[scopeName]
 
       if (ScopeClass === undefined) {
@@ -142,16 +141,16 @@ export class TelemetryCollector {
       promises.push(
         scopeInstance
           .run()
-          .then(async () => {
-            await this.logger.debug('Scope succeeded: ' + scopeName)
+          .then(() => {
+            this.logger.debug('Scope succeeded: ' + scopeName)
           })
-          .catch(async (reason) => {
-            await this.logger.error('Scope failed: ' + scopeName)
+          .catch((reason) => {
+            this.logger.error('Scope failed: ' + scopeName)
 
             if (reason instanceof Error) {
-              await this.logger.error(reason)
+              this.logger.error(reason)
             } else {
-              await this.logger.error(String(reason))
+              this.logger.error(String(reason))
             }
           })
       )

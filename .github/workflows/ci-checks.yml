@@ -58,8 +58,8 @@ jobs:
 
       - name: Build 🔨
         run: |
-          npm run build:schema
           npm run build
+          npm run bundle
 
   #
   # Ensure all unit tests pass
@@ -80,10 +80,6 @@ jobs:
       - name: Install Node Modules 🔧
         run: npm install
 
-        # TODO: remove this once the schema is in its own package
-      - name: Build schema file 🔨
-        run: npm run build:schema
-
       - name: Test 🧪
         run: npm run test
 
@@ -93,29 +89,26 @@ jobs:
           name: test-coverage
           path: '**/.test-coverage/lcov.info'
 
-  # ----------------------------
-  # | TODO:sonarcloud |
-  # ----------------------------
-  #   #
-#   # Check code quality and test coverage
-#   #
-#   sonarcloud:
-#     name: SonarCloud
-#     runs-on: ubuntu-latest
-#     needs: test
-#     steps:
-#       - name: Checkout 🛎
-#         uses: actions/checkout@v3
-#         with:
-#           fetch-depth: 0 # Disable shallow clones for better relevancy of analysis
+  #
+  # Check code quality and test coverage
+  #
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Disable shallow clones for better relevancy of analysis
 
-#       - name: Download test coverage reports 🛬
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: test-coverage
+      - name: Download test coverage reports 🛬
+        uses: actions/download-artifact@v3
+        with:
+          name: test-coverage
 
-#       - name: SonarCloud scan 🔎
-#         uses: SonarSource/sonarcloud-github-action@master
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud scan 🔎
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

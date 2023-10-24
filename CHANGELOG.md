@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.0...v0.3.1) (2023-10-24)
+
+
+### Bug Fixes
+
+* adjust pathing of bin file in package.json ([507d766](https://github.com/ibm-telemetry/telemetry-js/commit/507d7664413c758efe95cdb9bbe45a7ade89b0e4))
+
 ## [0.3.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.2.0...v0.3.0) (2023-10-24)
 
 

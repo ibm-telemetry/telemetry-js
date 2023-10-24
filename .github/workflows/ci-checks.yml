@@ -58,8 +58,8 @@ jobs:
 
       - name: Build 🔨
         run: |
-          npm run build:schema
           npm run build
+          npm run bundle
 
   #
   # Ensure all unit tests pass
@@ -79,10 +79,6 @@ jobs:
 
       - name: Install Node Modules 🔧
         run: npm install
-
-        # TODO: remove this one the schema is in its own package
-      - name: Build schema file 🔨
-        run: npm run build:schema
 
       - name: Test 🧪
         run: npm run test

@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.3.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.2.0...v0.3.0) (2023-10-24)
+
+
+### Features
+
+* add esbuild bundling ([e757e36](https://github.com/ibm-telemetry/telemetry-js/commit/e757e360d76ed4f66a8c5ce8664c4538d94474c4))
+* add more details for installer to DependencyMetric ([#82](https://github.com/ibm-telemetry/telemetry-js/issues/82)) ([3a06462](https://github.com/ibm-telemetry/telemetry-js/commit/3a06462d7a4a72d6f83ceb9e094982f33445dfee))
+
+
+### Bug Fixes
+
+* correct package output files ([47d1b14](https://github.com/ibm-telemetry/telemetry-js/commit/47d1b14e1681ba72ac25b9f896721e369ce31546))
+* **deps:** update node module minor versions ([1e785ca](https://github.com/ibm-telemetry/telemetry-js/commit/1e785ca5edcebb00a7133a18140ee2e701fcada0))
+* **deps:** upgrade actions/checkout action to v4 ([#93](https://github.com/ibm-telemetry/telemetry-js/issues/93)) ([800d804](https://github.com/ibm-telemetry/telemetry-js/commit/800d804d27298230ba617a2c798cae802454c4e2))
+* **deps:** upgrade contributor-assistant/github-action action to v2.3.1 ([#114](https://github.com/ibm-telemetry/telemetry-js/issues/114)) ([69023f4](https://github.com/ibm-telemetry/telemetry-js/commit/69023f45d6945825198e3f5044d0a1d86dd03a4d))
+* **deps:** upgrade dependencies (minor) ([#108](https://github.com/ibm-telemetry/telemetry-js/issues/108)) ([eb3e4eb](https://github.com/ibm-telemetry/telemetry-js/commit/eb3e4ebc15420a7fbb8e880ebec97f7c36941551))
+* **deps:** upgrade dependencies (minor) to ^1.17.0 ([#94](https://github.com/ibm-telemetry/telemetry-js/issues/94)) ([1ec3ba7](https://github.com/ibm-telemetry/telemetry-js/commit/1ec3ba710a8575d39ac02ba1fbabaf46bed28a51))
+* **deps:** upgrade dependency eslint-plugin-vitest to ^0.3.1 ([#79](https://github.com/ibm-telemetry/telemetry-js/issues/79)) ([675dc5a](https://github.com/ibm-telemetry/telemetry-js/commit/675dc5a3215ae6fa7cadf56c6d01122f469888e0))
+* **deps:** upgrade dependency object-scan to ^19.0.5 ([#103](https://github.com/ibm-telemetry/telemetry-js/issues/103)) ([6ba3627](https://github.com/ibm-telemetry/telemetry-js/commit/6ba3627d99a850c0aa9686740a7973bc5eecc68d))
+* **deps:** upgrade devDependencies (minor) ([#104](https://github.com/ibm-telemetry/telemetry-js/issues/104)) ([7c43cbc](https://github.com/ibm-telemetry/telemetry-js/commit/7c43cbc72188de28b2039805fa6d975ed68054d2))
+* **deps:** upgrade devDependencies (minor) ([#109](https://github.com/ibm-telemetry/telemetry-js/issues/109)) ([e69e4c7](https://github.com/ibm-telemetry/telemetry-js/commit/e69e4c75340cedf25728dc606362b72bed82e39c))
+* **deps:** upgrade devDependencies (minor) ([#95](https://github.com/ibm-telemetry/telemetry-js/issues/95)) ([37c1acf](https://github.com/ibm-telemetry/telemetry-js/commit/37c1acfd909eaab633ac4c21c3eb235e8dc770d0))
+* **logger:** consolidate trace functions and fix bugs ([aa395fe](https://github.com/ibm-telemetry/telemetry-js/commit/aa395fe7611c98a8246fc988d2640ef3e2bb88e0))
+* move deps to dev deps, update ci scripts ([a3bc47c](https://github.com/ibm-telemetry/telemetry-js/commit/a3bc47c5e2caecd14de1f779ad1071725842bae1))
+* update naming from telemetrics to telemetry ([cc2dbaf](https://github.com/ibm-telemetry/telemetry-js/commit/cc2dbafb4ab8b25ba747136b6ae4c4427971c4ef))
+* validate presence of dependency key in npm scope ([#83](https://github.com/ibm-telemetry/telemetry-js/issues/83)) ([89c9a7c](https://github.com/ibm-telemetry/telemetry-js/commit/89c9a7c9f53ff9fdeae4b21d26311202488348f4))
+
 ## [0.2.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.1.1...v0.2.0) (2023-09-21)
 
 

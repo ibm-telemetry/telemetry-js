@@ -36,16 +36,24 @@ const endKeys = ['scripts', 'dependencies', 'peerDependencies', 'devDependencies
  */
 function sortTopLevelKeys(packageJson) {
   const beginning = {}
-  const middle = {}
+  const middle = { ...packageJson }
   const end = {}
 
-  for (const key of Object.keys(packageJson)) {
-    if (beginningKeys.includes(key)) {
+  for (const key of beginningKeys) {
+    if (key in packageJson) {
       beginning[key] = packageJson[key]
-    } else if (endKeys.includes(key)) {
+      // Maintains original package.json structure
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- see above
+      delete middle[key]
+    }
+  }
+
+  for (const key of endKeys) {
+    if (key in packageJson) {
       end[key] = packageJson[key]
-    } else {
-      middle[key] = packageJson[key]
+      // Maintains original package.json structure
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- see above
+      delete middle[key]
     }
   }
 

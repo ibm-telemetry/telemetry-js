@@ -4,7 +4,7 @@ contact_links:
     url: https://github.com/orgs/ibm-telemetry/projects/1/views/7
     about: Learn what we're working on and what we have planned for the future.
   - name: Telemetry feedback
-    url: https://github.com/ibm-telemetry/telemetry-internal/discussions
+    url: https://github.com/ibm-telemetry/telemetry-js/discussions
     about: Share your feedback with the Telemetry squad.
   - name: Carbon System feedback
     url: https://github.com/carbon-design-system/carbon/discussions

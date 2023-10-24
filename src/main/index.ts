@@ -4,8 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'node:path'
-
+import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import { Command } from 'commander'
 
 import { createLogFilePath } from './core/log/create-log-file-path.js'
@@ -19,18 +18,16 @@ interface CommandLineOptions {
 /**
  * Sets up Commander, registers the command action, and invokes the action.
  */
-async function run() {
+function run() {
   const program = new Command()
     .description('Collect telemetry data for a package.')
     .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
     .action(collect)
 
-  try {
-    await program.parseAsync()
-  } catch (err) {
+  program.parseAsync().catch((err) => {
     // As a failsafe, this catches any uncaught exception, prints it to stderr, and silently exits
     console.error(err)
-  }
+  })
 }
 
 /**
@@ -43,13 +40,11 @@ async function collect(opts: CommandLineOptions) {
   const logFilePath = await createLogFilePath(date)
   const logger = new Logger(logFilePath)
 
-  // TODO: this should come from an external package or be bundled
-  const configSchemaPath = path.join(
-    path.dirname(import.meta.url.substring(7)),
-    '../../src/schemas/telemetry-config.schema.json'
+  const telemetryCollector = new TelemetryCollector(
+    opts.config,
+    { ...configSchemaJson, type: undefined, oneOf: [] },
+    logger
   )
-
-  const telemetryCollector = new TelemetryCollector(opts.config, configSchemaPath, logger)
 
   try {
     await telemetryCollector.run()
@@ -65,4 +60,4 @@ async function collect(opts: CommandLineOptions) {
   await logger.close()
 }
 
-await run()
+run()

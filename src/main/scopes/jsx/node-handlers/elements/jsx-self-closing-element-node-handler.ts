@@ -6,15 +6,15 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler, type PartialJsxElement } from '../interfaces.js'
-import { type JsxScopeAccumulator } from '../jsx-scope-accumulator.js'
+import { type ASTNodeHandler, type PartialJsxElement } from '../../interfaces.js'
+import { type JsxScopeAccumulator } from '../../jsx-scope-accumulator.js'
 import { JsxNodeHandler } from './jsx-node-handler.js'
 
 /**
  * Holds logic to construct a JsxElement object given a JsxSelfClosingElement node.
  *
  */
-export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler implements ASTNodeHandler {
+export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler implements ASTNodeHandler<ts.SyntaxKind.JsxSelfClosingElement> {
   /**
    * Processes a JsxElement node data and adds it to the given accumulator.
    *
@@ -23,7 +23,7 @@ export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler implements 
    * @param rootNode - Root Node of node tree.
    */
   public handle(node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) {
-    accumulator.storeElement(this.getJsxElementData(node as ts.JsxSelfClosingElement, rootNode as ts.SourceFile))
+    accumulator.storeElement(this.getData(node, rootNode as ts.SourceFile))
   }
 
   /**
@@ -33,14 +33,16 @@ export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler implements 
    * @param rootNode - Root Node of node tree.
    * @returns Constructed JsxElement object.
    */
-  private getJsxElementData(node: ts.JsxSelfClosingElement, rootNode: ts.SourceFile): PartialJsxElement {
-    const { name, prefix } = this.getElementNameAndPrefix(node.tagName)
+  getData(node: ts.Node, rootNode: ts.SourceFile): PartialJsxElement {
+    const nodeAsJsxSelfClosingElement = node as ts.JsxSelfClosingElement
+    const { name, prefix } = this.getElementNameAndPrefix(nodeAsJsxSelfClosingElement.tagName)
 
     return {
       name,
       prefix,
-      attributes: this.getElementAttributes(node.attributes),
-      raw: rootNode.text.substring(node.pos, node.end).trim()
+      attributes: this.getElementAttributes(nodeAsJsxSelfClosingElement.attributes, rootNode),
+      raw: rootNode.text.substring(node.pos, node.end).trim(),
+      importPath: rootNode.fileName
     }
   }
 }

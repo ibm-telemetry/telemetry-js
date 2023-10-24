@@ -6,9 +6,9 @@
  */
 import * as ts from 'typescript'
 
-import { ImportNodeHandler } from './node-handlers/import-node-handler.js'
-import { JsxElementNodeHandler } from './node-handlers/jsx-element-node-handler.js'
-import { JsxSelfClosingElementNodeHandler } from './node-handlers/jsx-self-closing-element-node-handler.js'
+import { ImportNodeHandler } from './node-handlers/elements/import-node-handler.js'
+import { JsxElementNodeHandler } from './node-handlers/elements/jsx-element-node-handler.js'
+import { JsxSelfClosingElementNodeHandler } from './node-handlers/elements/jsx-self-closing-element-node-handler.js'
 // Maps node kinds to handlers that know how to process them
 // to generate JsxElement metrics for the JsxScope
 export const JsxNodeHandlerMap = {

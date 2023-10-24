@@ -59,7 +59,8 @@ export class JsxElementMetric extends ScopeMetric {
       attributeValues: metricData.attributes.map(attr => attr.value as string),
       'invoker.package.raw': metricData['invoker.package.raw'],
       'invoker.package.owner': metricData['invoker.package.owner'],
-      'invoker.package.name': metricData['invoker.package.name']
+      'invoker.package.name': metricData['invoker.package.name'],
+      'module.specifier': metricData.importPath
     }
   }
 }

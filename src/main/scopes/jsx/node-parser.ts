@@ -17,7 +17,7 @@ export class NodeParser {
   private readonly accumulator: JsxScopeAccumulator
   // TODOASKJOE
   // private readonly nodeHandlerMap: Record<Partial<ts.SyntaxKind>, ASTNodeHandler>
-  private readonly nodeHandlerMap: Record<number, ASTNodeHandler>
+  private readonly nodeHandlerMap: Record<number, Required<ASTNodeHandler<any>>>
 
   /**
    * Instantiates a new NodeParser.
@@ -26,7 +26,7 @@ export class NodeParser {
    * @param nodeHandlerMap - Determines what handlers (instances) are called given
    * the found node types.
    */
-  constructor(accumulator: JsxScopeAccumulator, nodeHandlerMap: Record<number, ASTNodeHandler>) {
+  constructor(accumulator: JsxScopeAccumulator, nodeHandlerMap: Record<number, Required<ASTNodeHandler<any>>>) {
     this.accumulator = accumulator
     this.nodeHandlerMap = nodeHandlerMap
   }
@@ -38,7 +38,7 @@ export class NodeParser {
    * @param node - Node to traverse through (usually a file node).
    * @param rootNode - Root Node of node tree.
    */
-  public visit(node: ts.Node, rootNode: ts.Node = node) {
+  public visit(node: ts.Node, rootNode: ts.SourceFile) {
     const handler = this.nodeHandlerMap[node.kind]
 
     if (handler !== undefined) {

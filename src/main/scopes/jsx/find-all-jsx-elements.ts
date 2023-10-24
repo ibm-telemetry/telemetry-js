@@ -7,8 +7,8 @@
 
 import type * as ts from 'typescript'
 
+import { JsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { JsxScopeAccumulator } from './jsx-scope-accumulator.js'
-import { JsxNodeHandlerMap } from './node-handler-map.js'
 import { NodeParser } from './node-parser.js'
 
 /**
@@ -23,7 +23,7 @@ export function findAllJsxElements(fileNode: ts.SourceFile): JsxScopeAccumulator
 
   const parser = new NodeParser(accumulator, JsxNodeHandlerMap)
 
-  parser.visit(fileNode)
+  parser.visit(fileNode, fileNode)
 
   return accumulator
 }

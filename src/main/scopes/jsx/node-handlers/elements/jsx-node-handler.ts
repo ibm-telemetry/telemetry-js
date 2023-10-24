@@ -6,7 +6,8 @@
  */
 import * as ts from 'typescript'
 
-import { type JsxElementAttribute } from '../interfaces.js'
+import { AttributesNodeHandlerMap, getNodeHandler } from '../../attributes-node-handler-map.js'
+import { type JsxElementAttribute } from '../../interfaces.js'
 
 /**
  * Holds node handling logic to be inherited by Jsx node handlers.
@@ -33,13 +34,14 @@ export abstract class JsxNodeHandler {
     return { name, prefix }
   }
 
+  // TODO: remove this function
   /**
    * Parses JsxAttribute nodes into an array of JsxElementAttribute.
    *
    * @param attributes - JsxAttributes node to parse attributes for.
    * @returns Array of parsed attributes.
    */
-  protected getElementAttributes(attributes: ts.JsxAttributes) {
+  protected getElementAttributes2(attributes: ts.JsxAttributes) {
     const attrs: JsxElementAttribute[] = []
     if (attributes.properties.length) {
       attributes.properties.forEach(attr => {
@@ -92,6 +94,29 @@ export abstract class JsxNodeHandler {
           }
         }
         attrs.push({ name, value, isVarReference, isSpread })
+      })
+    }
+    return attrs
+  }
+
+  /**
+   * Parses JsxAttribute nodes into an array of JsxElementAttribute.
+   *
+   * @param attributes - JsxAttributes node to parse attributes for.
+   * @param sourceNode - Top-level root node containing raw text data (usually source file node).
+   * @returns Array of parsed attributes.
+   */
+  protected getElementAttributes(attributes: ts.JsxAttributes, sourceNode: ts.SourceFile) {
+    const attrs: JsxElementAttribute[] = []
+    if (attributes.properties.length) {
+      attributes.properties.forEach(attr => {
+        let name
+        if ('name' in attr && 'escapedText' in attr.name) {
+          name = (attr.name.escapedText)
+        }
+        const value = getNodeHandler(attr.kind).getData(attr, sourceNode)
+        // TODOASKJOE
+        attrs.push({ name, value })
       })
     }
     return attrs

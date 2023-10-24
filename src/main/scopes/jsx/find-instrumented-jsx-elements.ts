@@ -7,19 +7,23 @@
 import * as ts from 'typescript'
 
 import { findAllJsxElements } from './find-all-jsx-elements.js'
-import { type PartialJsxElement } from './interfaces.js'
+import { type Matcher, type PartialJsxElement } from './interfaces.js'
 import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
+import { DefaultImportMatcher } from './matchers/elements/default-import-matcher.js'
 
 /**
  * Finds all JSX elements in cwd's repository and computes prop values.
  *
  * @param fileNames - List of filepaths to process when looking for JsxElements.
  * @param instrumentedPkg - Name of the instrumented package to find JsxElements for.
+ * @param elementMatchers - Array of matchers to determine whether a given element has been imported
+ *  by the instrumentedPkg.
  * @returns All JSX elements found in current repository.
  */
 export function findInstrumentedJsxElements(
   fileNames: string[],
-  instrumentedPkg: string
+  instrumentedPkg: string,
+  elementMatchers: Array<Matcher<PartialJsxElement>>
 ): Record<string, PartialJsxElement[]> {
   const fileData: Record<string, JsxScopeAccumulator> = {}
   const elements: Record<string, PartialJsxElement[]> = {}
@@ -29,32 +33,19 @@ export function findInstrumentedJsxElements(
     fileData[sourceFile.fileName] = findAllJsxElements(sourceFile)
   }
   Object.entries(fileData).forEach(([fileName, accumulator]) => {
-    // TODOASKJOE: check this logic
-    const importedElements = accumulator.imports
+    const importedIdentifiers = accumulator.imports
       .filter((i) => i.importPath.startsWith(instrumentedPkg))
       .map((i) => i.elements)
       .flat()
     elements[fileName] = []
     accumulator.elements.forEach((el) => {
-      if (
-        typeof el.prefix === 'string' &&
-        importedElements.some(
-          // In order:
-          // import {something as somethingElse} from 'package
-          // import something from 'package'
-          // import * as something from 'package'
-          (i) =>
-            i.rename === el.prefix ||
-            (i.isDefault && i.name === el.prefix) ||
-            (i.isAll && i.name === el.prefix)
-        )
-      ) {
-        // this is never undefined (line 33)
-        elements[fileName]?.push(el)
-      }
-      if (typeof el.prefix !== 'string' && importedElements.some((imp) => imp.name === el.name)) {
-        // this is never undefined (line 33)
-        elements[fileName]?.push(el)
+      const matcher = elementMatchers.find(c => c.isMatch(el, { imports: importedIdentifiers }))
+      if (matcher) {
+        if (matcher === DefaultImportMatcher && !el.prefix) {
+          // rewrite name to Default as this info might be sensitive (element has been renamed)
+          el.name = '[Default]'
+          elements[fileName]?.push(el)
+        }
       }
     })
   })

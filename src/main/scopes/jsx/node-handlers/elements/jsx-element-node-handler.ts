@@ -6,15 +6,15 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler, type PartialJsxElement } from '../interfaces.js'
-import { type JsxScopeAccumulator } from '../jsx-scope-accumulator.js'
+import { type ASTNodeHandler, type PartialJsxElement } from '../../interfaces.js'
+import { type JsxScopeAccumulator } from '../../jsx-scope-accumulator.js'
 import { JsxNodeHandler } from './jsx-node-handler.js'
 
 /**
  * Holds logic to construct a JsxElement object given a node of said kind.
  *
  */
-export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHandler {
+export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHandler<ts.SyntaxKind.JsxElement> {
   /**
    * Processes a JsxElement node data and adds it to the given accumulator.
    *
@@ -23,7 +23,7 @@ export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHand
    * @param rootNode - Root Node of node tree.
    */
   public handle(node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) {
-    accumulator.storeElement(this.getJsxElementData(node as ts.JsxElement, rootNode as ts.SourceFile))
+    accumulator.storeElement(this.getData(node, rootNode as ts.SourceFile))
   }
 
   /**
@@ -33,13 +33,16 @@ export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHand
    * @param rootNode - Root Node of node tree.
    * @returns Constructed JsxElement object.
    */
-  private getJsxElementData(node: ts.JsxElement, rootNode: ts.SourceFile): PartialJsxElement {
-    const { name, prefix } = this.getElementNameAndPrefix(node.openingElement.tagName)
+  getData(node: ts.Node, rootNode: ts.SourceFile): PartialJsxElement {
+    const nodeAsJsxElement = node as ts.JsxElement
+    const { name, prefix } = this.getElementNameAndPrefix(nodeAsJsxElement.openingElement.tagName)
+    const attributes = nodeAsJsxElement.openingElement.attributes
     return {
       name,
       prefix,
-      attributes: this.getElementAttributes(node.openingElement.attributes),
-      raw: rootNode.text.substring(node.pos, node.end).trim()
+      attributes: this.getElementAttributes(attributes, rootNode),
+      raw: rootNode.text.substring(node.pos, node.end).trim(),
+      importPath: rootNode.fileName
     }
   }
 }

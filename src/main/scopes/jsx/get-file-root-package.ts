@@ -27,7 +27,7 @@ export async function getFileRootPackage(fileName: string, packageJsonTrees: Fil
     curr = next
     next = curr.children.find(tree => fileName.includes(tree.root))
   }
-  if (curr === undefined || curr === null) {
+  if (!curr) {
     throw new UnknownFilePackageError()
   }
   return (await getPackageData(curr.root, logger)).name

@@ -15,6 +15,10 @@ import { findProjectFiles } from './find-project-files.js'
 import { getFileRootPackage } from './get-file-root-package.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
 import { type JsxElement } from './interfaces.js'
+import { AllImportMatcher } from './matchers/elements/all-import-matcher.js'
+import { DefaultImportMatcher } from './matchers/elements/default-import-matcher.js'
+import { NamedImportMatcher } from './matchers/elements/named-import-matcher.js'
+import { RenamedImportMatcher } from './matchers/elements/renamed-import-matcher.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
 
 /**
@@ -56,7 +60,8 @@ export class JsxScope extends Scope {
   private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
     const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
-    const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name)
+    const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name,
+      [AllImportMatcher, RenamedImportMatcher, DefaultImportMatcher, NamedImportMatcher])
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
 
     for (const fileName of Object.keys(elements)) {

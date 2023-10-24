@@ -20,13 +20,12 @@ export interface JsxElement {
   raw: string
   attributes: JsxElementAttribute[]
   importedBy: string
+  importPath: string
 }
 
 export interface JsxElementAttribute {
-  name: string
+  name: string | undefined
   value: unknown
-  isVarReference: boolean
-  isSpread: boolean
 }
 
 export interface JsxImport {
@@ -41,13 +40,23 @@ export interface JsxImportElement {
   isAll: boolean
 }
 
-export interface ASTNodeHandler {
-  handle: (node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) => void
+export interface ASTNodeHandler<T extends ts.SyntaxKind> {
+  handle?: (node: ts.Node & { kind: T }, accumulator: JsxScopeAccumulator, rootNode: ts.SourceFile) => void
+  getData: (node: ts.Node & { kind: T }, rootNode: ts.SourceFile) => any
 }
 
 export interface FileTree {
   root: string
   children: FileTree[]
+}
+
+export interface Matcher<T> {
+  // TODOASKJOE
+  isMatch: (element: T, extraData: Record<string, any>) => boolean
+}
+
+export interface JsxImportMatcher<T> extends Matcher<T> {
+  getJsxImport: (element: T) => JsxImportElement
 }
 
 export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>

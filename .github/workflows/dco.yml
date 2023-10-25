@@ -9,14 +9,21 @@ jobs:
   DCO:
     runs-on: ubuntu-latest
     steps:
-      - name: 'DCO Assistant'
+      - name: 'Generate token 🔐'
+        uses: tibdex/github-app-token@v2
+        id: generate_token
+        with:
+          app_id: ${{ secrets.TELEMETRY_APP_ID }}
+          private_key: ${{ secrets.TELEMETRY_APP_PRIVATE_KEY }}
+
+      - name: 'DCO Assistant 📝'
         if:
           (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the
           DCO document and I hereby sign the DCO.') || github.event_name == 'pull_request_target'
         uses: contributor-assistant/github-action@v2.3.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.DCO_PAT }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          PERSONAL_ACCESS_TOKEN: ${{ steps.generate_token.outputs.token }}
         with:
           path-to-signatures: 'dco-signatures.json'
           path-to-document: 'https://github.com/ibm-telemetry/telemetry-dco/blob/main/dco.md'

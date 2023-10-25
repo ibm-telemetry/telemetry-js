@@ -12,6 +12,13 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+      - name: 'Generate token 🔐'
+        uses: tibdex/github-app-token@v2
+        id: generate_token
+        with:
+          app_id: ${{ secrets.TELEMETRY_APP_ID }}
+          private_key: ${{ secrets.TELEMETRY_APP_PRIVATE_KEY }}
+
       - name: Update release PR 🔄
         uses: google-github-actions/release-please-action@v3
         with:
@@ -19,5 +26,6 @@ jobs:
           draft-pull-request: true
           package-name: '@ibm/telemetry-js'
           pull-request-title-pattern: 'release${scope}: release${component} ${version}'
+          token: ${{ steps.generate_token.outputs.token }}
 
     # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm

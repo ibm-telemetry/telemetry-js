@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.1...v0.3.2) (2023-10-25)
+
+
+### Bug Fixes
+
+* experiment with app token in workflow ([7967583](https://github.com/ibm-telemetry/telemetry-js/commit/7967583a351e2be963e9053d60f1551f6b6e1955))
+* ibmtelemetry bin hashbang ([18e3abb](https://github.com/ibm-telemetry/telemetry-js/commit/18e3abbb60af1acee1f6059217b3d0de477c06a1))
+
 ## [0.3.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.0...v0.3.1) (2023-10-24)
 
 

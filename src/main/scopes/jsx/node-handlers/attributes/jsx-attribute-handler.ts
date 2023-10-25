@@ -24,10 +24,13 @@ export class JsxAttributeHandler implements ASTNodeHandler<ts.SyntaxKind.JsxAttr
    */
   public getData(node: ts.Node, rootNode: ts.SourceFile): string {
     const nodeAsJsxAttribute = node as ts.JsxAttribute
-    if ('initializer' in nodeAsJsxAttribute) {
-      return getNodeHandler(nodeAsJsxAttribute.initializer.kind).getData(nodeAsJsxAttribute.initializer, rootNode)
+    if (nodeAsJsxAttribute.initializer) {
+      return getNodeHandler(nodeAsJsxAttribute.initializer.kind).getData(
+        nodeAsJsxAttribute.initializer,
+        rootNode
+      )
     }
     // return raw data
-    return (new DefaultHandler()).getData(node, rootNode)
+    return new DefaultHandler().getData(node, rootNode)
   }
 }

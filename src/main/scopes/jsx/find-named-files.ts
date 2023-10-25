@@ -16,6 +16,14 @@ import { runCommand } from '../../core/run-command.js'
  * @param fileName - Name to look for in tracked files.
  * @returns Array of string containing all found files with supplied name.
  */
-export async function findNamedFiles(cwd: string, logger: Logger, fileName: string): Promise<string[]> {
-  return (await runCommand(`git ls-tree -r --name-only HEAD | egrep "(/|^)${fileName}$"`, logger, { cwd })).stdout.replace(/\r/g, '').split(/\n/)
+export async function findNamedFiles(
+  cwd: string,
+  logger: Logger,
+  fileName: string
+): Promise<string[]> {
+  return (
+    await runCommand(`git ls-tree -r --name-only HEAD | egrep "(/|^)${fileName}$"`, logger, { cwd })
+  ).stdout
+    .replace(/\r/g, '')
+    .split(/\n/)
 }

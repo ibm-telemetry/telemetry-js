@@ -18,7 +18,11 @@ import { type JsxImportMatcher } from '../../interfaces.js'
 // TODOASKJOE
 export const DefaultImportElementMatcher: JsxImportMatcher<ts.ImportSpecifier | ts.ImportClause> = {
   isMatch: (element: ts.ImportSpecifier | ts.ImportClause) => {
-    if (element.kind === ts.SyntaxKind.ImportSpecifier && element.propertyName && element.propertyName.escapedText === 'default') {
+    if (
+      element.kind === ts.SyntaxKind.ImportSpecifier &&
+      element.propertyName &&
+      element.propertyName.escapedText === 'default'
+    ) {
       return true
     }
     if (element.kind === ts.SyntaxKind.ImportClause && !element.namedBindings && element.name) {

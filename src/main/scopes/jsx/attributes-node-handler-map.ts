@@ -28,7 +28,11 @@ export const AttributesNodeHandlerMap = {
   [ts.SyntaxKind.UndefinedKeyword]: new UndefinedKeywordHandler()
 }
 
-export const getNodeHandler = <T extends ts.SyntaxKind>(nodeKind: ts.SyntaxKind): ASTNodeHandler<T> => {
+export const getNodeHandler = <T extends ts.SyntaxKind>(
+  nodeKind: ts.SyntaxKind
+): ASTNodeHandler<T> => {
   // TODOASKJOE
-  return nodeKind in AttributesNodeHandlerMap ? AttributesNodeHandlerMap[nodeKind] : new DefaultHandler()
+  return nodeKind in AttributesNodeHandlerMap
+    ? AttributesNodeHandlerMap[nodeKind]
+    : new DefaultHandler()
 }

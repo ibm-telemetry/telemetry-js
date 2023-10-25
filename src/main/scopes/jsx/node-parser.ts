@@ -26,7 +26,10 @@ export class NodeParser {
    * @param nodeHandlerMap - Determines what handlers (instances) are called given
    * the found node types.
    */
-  constructor(accumulator: JsxScopeAccumulator, nodeHandlerMap: Record<number, Required<ASTNodeHandler<any>>>) {
+  constructor(
+    accumulator: JsxScopeAccumulator,
+    nodeHandlerMap: Record<number, Required<ASTNodeHandler<any>>>
+  ) {
     this.accumulator = accumulator
     this.nodeHandlerMap = nodeHandlerMap
   }
@@ -45,6 +48,8 @@ export class NodeParser {
       handler.handle(node, this.accumulator, rootNode)
     }
 
-    ts.forEachChild(node, (node) => { this.visit(node, rootNode) })
+    ts.forEachChild(node, (node) => {
+      this.visit(node, rootNode)
+    })
   }
 }

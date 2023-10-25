@@ -4,8 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-import { JsxElementsConfig } from '../../../schemas/Schema.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -55,13 +53,19 @@ export class JsxScope extends Scope {
    * in the current working directory's project.
    *
    * @param config - Determines which attributes name and values to collect for.
+   * @param config.allowedAttributeNames - TODOASKJOE.
+   * @param config.allowedAttributeStringValues - TODOASKJOE.
    */
   @Trace()
-  private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
+  private async collectJsxElements(config: { allowedAttributeNames: string[], allowedAttributeStringValues: string[] }): Promise<void> {
     const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
-    const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name,
-      [AllImportMatcher, RenamedImportMatcher, DefaultImportMatcher, NamedImportMatcher])
+    const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name, [
+      AllImportMatcher,
+      RenamedImportMatcher,
+      DefaultImportMatcher,
+      NamedImportMatcher
+    ])
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
 
     for (const fileName of Object.keys(elements)) {

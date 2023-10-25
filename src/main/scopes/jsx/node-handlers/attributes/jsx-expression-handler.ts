@@ -25,10 +25,13 @@ export class JsxExpressionHandler implements ASTNodeHandler<ts.SyntaxKind.JsxExp
   public getData(node: ts.Node, rootNode: ts.SourceFile) {
     const nodeAsJsxExpression = node as ts.JsxExpression
     if (nodeAsJsxExpression.expression !== null && nodeAsJsxExpression.expression !== undefined) {
-      return getNodeHandler(nodeAsJsxExpression.expression.kind).getData(nodeAsJsxExpression.expression, rootNode)
+      return getNodeHandler(nodeAsJsxExpression.expression.kind).getData(
+        nodeAsJsxExpression.expression,
+        rootNode
+      )
     } else {
       // return raw data of node
-      return (new DefaultHandler()).getData(node, rootNode)
+      return new DefaultHandler().getData(node, rootNode)
     }
   }
 }

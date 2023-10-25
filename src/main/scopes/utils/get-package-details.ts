@@ -29,6 +29,7 @@ export function getPackageDetails(rawPackageName: string, rawPackageVersion?: st
   }
 
   return {
-    owner, name
+    owner,
+    name
   }
 }

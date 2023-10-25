@@ -20,12 +20,16 @@ import { type FileTree } from './interfaces.js'
  * @returns Name of package file belongs to.
  * @throws UnknownFilePackageError if package could not be determined.
  */
-export async function getFileRootPackage(fileName: string, packageJsonTrees: FileTree[], logger: Logger): Promise<string> {
-  let next = packageJsonTrees.find(tree => fileName.includes(tree.root))
+export async function getFileRootPackage(
+  fileName: string,
+  packageJsonTrees: FileTree[],
+  logger: Logger
+): Promise<string> {
+  let next = packageJsonTrees.find((tree) => fileName.includes(tree.root))
   let curr
   while (next !== undefined && next !== null) {
     curr = next
-    next = curr.children.find(tree => fileName.includes(tree.root))
+    next = curr.children.find((tree) => fileName.includes(tree.root))
   }
   if (!curr) {
     throw new UnknownFilePackageError()

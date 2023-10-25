@@ -28,7 +28,7 @@ export function findInstrumentedJsxElements(
   const fileData: Record<string, JsxScopeAccumulator> = {}
   const elements: Record<string, PartialJsxElement[]> = {}
   const program = ts.createProgram(fileNames, {})
-  const sourceFiles = program.getSourceFiles().filter(file => !file.isDeclarationFile)
+  const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
   for (const sourceFile of sourceFiles) {
     fileData[sourceFile.fileName] = findAllJsxElements(sourceFile)
   }
@@ -39,8 +39,9 @@ export function findInstrumentedJsxElements(
       .flat()
     elements[fileName] = []
     accumulator.elements.forEach((el) => {
-      const matcher = elementMatchers.find(c => c.isMatch(el, { imports: importedIdentifiers }))
+      const matcher = elementMatchers.find((c) => c.isMatch(el, { imports: importedIdentifiers }))
       if (matcher) {
+        // TODOASKJOE
         if (matcher === DefaultImportMatcher && !el.prefix) {
           // rewrite name to Default as this info might be sensitive (element has been renamed)
           el.name = '[Default]'

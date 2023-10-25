@@ -7,7 +7,6 @@
 
 import { type Attributes } from '@opentelemetry/api'
 
-import { type JsxElementsConfig } from '../../../../schemas/Schema.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import { getPackageDetails } from '../../utils/get-package-details.js'
 import { type JsxElement } from '../interfaces.js'
@@ -17,7 +16,7 @@ import { type JsxElement } from '../interfaces.js'
  */
 export class JsxElementMetric extends ScopeMetric {
   public override name: string
-  private readonly config: JsxElementsConfig
+  private readonly config: { allowedAttributeNames: string[], allowedAttributeStringValues: string[] }
   private readonly data: JsxElement
 
   /**
@@ -25,8 +24,10 @@ export class JsxElementMetric extends ScopeMetric {
    *
    * @param data - Object containing name and version to extract data to generate metric from.
    * @param config - Determines which attributes name and values to collect for.
+   * @param config.allowedAttributeNames - TODOASKJOE.
+   * @param config.allowedAttributeStringValues - TODOASKJOE.
    */
-  public constructor(data: JsxElement, config: JsxElementsConfig) {
+  public constructor(data: JsxElement, config: { allowedAttributeNames: string[], allowedAttributeStringValues: string[] }) {
     super()
     this.name = 'element.count'
     this.data = data
@@ -49,14 +50,23 @@ export class JsxElementMetric extends ScopeMetric {
       'invoker.package.name': invokerName
     }
     // TODO: pull in the correct functions when available
-    metricData = hash(this.data, ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name'])
-    metricData.attributes = substitute(this.data.attributes, allowedAttributeNames, allowedAttributeStringValues)
+    metricData = hash(this.data, [
+      'raw',
+      'invoker.package.raw',
+      'invoker.package.owner',
+      'invoker.package.name'
+    ])
+    metricData.attributes = substitute(
+      this.data.attributes,
+      allowedAttributeNames,
+      allowedAttributeStringValues
+    )
 
     return {
       raw: metricData.raw,
       name: metricData.name,
-      attributeNames: metricData.attributes.map(attr => attr.name),
-      attributeValues: metricData.attributes.map(attr => attr.value as string),
+      attributeNames: metricData.attributes.map((attr) => attr.name),
+      attributeValues: metricData.attributes.map((attr) => attr.value as string),
       'invoker.package.raw': metricData['invoker.package.raw'],
       'invoker.package.owner': metricData['invoker.package.owner'],
       'invoker.package.name': metricData['invoker.package.name'],

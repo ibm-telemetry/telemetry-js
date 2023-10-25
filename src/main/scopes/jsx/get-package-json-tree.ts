@@ -21,17 +21,22 @@ export async function getPackageJsonTree(cwd: string, logger: Logger): Promise<F
   const packageJsonFiles = await findNamedFiles(cwd, logger, 'package.json')
 
   // remove fileName to obtain directories, sort by level of nesting
-  const directories = packageJsonFiles.map(path => { const chunks = path.split('/'); chunks.pop(); return chunks.join('/') })
+  const directories = packageJsonFiles
+    .map((path) => {
+      const chunks = path.split('/')
+      chunks.pop()
+      return chunks.join('/')
+    })
     .sort((a, b) => a.split('/').length - b.split('/').length)
 
   const tree: FileTree[] = []
 
-  directories.forEach(path => {
+  directories.forEach((path) => {
     let currNode = tree
-    let nextNode = tree.find(root => path.includes(root.root))
+    let nextNode = tree.find((root) => path.includes(root.root))
     while (nextNode !== null && nextNode !== undefined) {
       currNode = nextNode.children
-      nextNode = currNode.find(node => path.includes(node.root))
+      nextNode = currNode.find((node) => path.includes(node.root))
     }
     currNode.push({ root: path, children: [] })
   })

@@ -16,7 +16,7 @@ export interface Attribute {
 
 export interface JsxElement {
   name: string
-  prefix: string
+  prefix?: string
   raw: string
   attributes: JsxElementAttribute[]
   importedBy: string
@@ -41,7 +41,11 @@ export interface JsxImportElement {
 }
 
 export interface ASTNodeHandler<T extends ts.SyntaxKind> {
-  handle?: (node: ts.Node & { kind: T }, accumulator: JsxScopeAccumulator, rootNode: ts.SourceFile) => void
+  handle?: (
+    node: ts.Node & { kind: T },
+    accumulator: JsxScopeAccumulator,
+    rootNode: ts.SourceFile
+  ) => void
   getData: (node: ts.Node & { kind: T }, rootNode: ts.SourceFile) => any
 }
 

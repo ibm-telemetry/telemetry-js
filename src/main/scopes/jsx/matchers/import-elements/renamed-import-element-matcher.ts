@@ -11,7 +11,7 @@ import { type JsxImportMatcher } from '../../interfaces.js'
 
 /**
  * Determines if a given ImportSpecifier ts node is a named import
- * (I.e. import {Something} from 'the-library').................................
+ * (I.e. import {Something} from 'the-library')...........................................
  *
  * @param element - node to evaluate.
  */

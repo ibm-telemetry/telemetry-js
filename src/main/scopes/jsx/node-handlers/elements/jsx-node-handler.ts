@@ -4,9 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
-import { AttributesNodeHandlerMap, getNodeHandler } from '../../attributes-node-handler-map.js'
+import { getNodeHandler } from '../../attributes-node-handler-map.js'
 import { type JsxElementAttribute } from '../../interfaces.js'
 
 /**
@@ -24,7 +24,7 @@ export abstract class JsxNodeHandler {
     // TODOASKJOE
     const tagNameAsAny = tagName as any
     let name = ''
-    let prefix = null
+    let prefix
     if (typeof tagNameAsAny.escapedText === 'string') {
       name = tagNameAsAny.escapedText
     } else {
@@ -32,71 +32,6 @@ export abstract class JsxNodeHandler {
       name = tagNameAsAny.name.escapedText
     }
     return { name, prefix }
-  }
-
-  // TODO: remove this function
-  /**
-   * Parses JsxAttribute nodes into an array of JsxElementAttribute.
-   *
-   * @param attributes - JsxAttributes node to parse attributes for.
-   * @returns Array of parsed attributes.
-   */
-  protected getElementAttributes2(attributes: ts.JsxAttributes) {
-    const attrs: JsxElementAttribute[] = []
-    if (attributes.properties.length) {
-      attributes.properties.forEach(attr => {
-        let name, value
-        let isVarReference = false
-        let isSpread = false
-        if ('name' in attr && 'escapedText' in attr.name) {
-          // TODOASKJOE
-          name = (attr.name.escapedText as any)
-        }
-        if (ts.isJsxSpreadAttribute(attr)) {
-          // TODOASKJOE
-          value = `...${(attr.expression as any).escapedText}`
-          isSpread = true
-        } else {
-          if (!('initializer' in attr)) {
-            isVarReference = true
-            value = name ?? null
-          } else {
-            const initializer = attr.initializer
-            if (ts.isStringLiteral(initializer)) {
-              value = initializer.text
-            } else if (ts.isJsxExpression(initializer)) {
-              if (initializer.expression) {
-                if (ts.isStringLiteral(initializer.expression)) {
-                  value = initializer.expression.text
-                } else if (ts.isNumericLiteral(initializer.expression)) {
-                  value = Number(initializer.expression.text)
-                } else if (ts.isIdentifier(initializer.expression)) {
-                  isVarReference = true
-                  value = (initializer.expression).escapedText
-                } else if (initializer.expression.kind === ts.SyntaxKind.TrueKeyword) {
-                  value = true
-                } else if (initializer.expression.kind === ts.SyntaxKind.FalseKeyword) {
-                  value = false
-                } else if (initializer.expression.kind === ts.SyntaxKind.UndefinedKeyword) {
-                  value = undefined
-                } else if (initializer.expression.kind === ts.SyntaxKind.NullKeyword) {
-                  value = null
-                } else if (ts.isElementAccessExpression(initializer.expression)) {
-                  isVarReference = true
-                  // TODOASKJOE , is ts.Identifier
-                  value =
-                  `${(initializer.expression.expression as any).escapedText}[${(initializer.expression.argumentExpression as ts.StringLiteral).text}]`
-                } else {
-                  value = '[COMPLEX]'
-                }
-              }
-            } else value = '[COMPLEX]'
-          }
-        }
-        attrs.push({ name, value, isVarReference, isSpread })
-      })
-    }
-    return attrs
   }
 
   /**
@@ -109,13 +44,12 @@ export abstract class JsxNodeHandler {
   protected getElementAttributes(attributes: ts.JsxAttributes, sourceNode: ts.SourceFile) {
     const attrs: JsxElementAttribute[] = []
     if (attributes.properties.length) {
-      attributes.properties.forEach(attr => {
+      attributes.properties.forEach((attr) => {
         let name
-        if ('name' in attr && 'escapedText' in attr.name) {
-          name = (attr.name.escapedText)
+        if (attr.name && 'escapedText' in attr.name) {
+          name = attr.name.escapedText
         }
         const value = getNodeHandler(attr.kind).getData(attr, sourceNode)
-        // TODOASKJOE
         attrs.push({ name, value })
       })
     }

@@ -8,6 +8,10 @@ import * as ts from 'typescript'
 
 import { type ASTNodeHandler, type JsxImport } from '../../interfaces.js'
 import { type JsxScopeAccumulator } from '../../jsx-scope-accumulator.js'
+import { AllImportElementMatcher } from '../../matchers/import-elements/all-import-element-matcher.js'
+import { DefaultImportElementMatcher } from '../../matchers/import-elements/default-import-element-matcher.js'
+import { NamedImportElementMatcher } from '../../matchers/import-elements/named-import-element-matcher.js'
+import { RenamedImportElementMatcher } from '../../matchers/import-elements/renamed-import-element-matcher.js'
 
 /**
  * Holds logic to construct a JsxImport object given an ImportDeclaration node.
@@ -19,78 +23,49 @@ export class ImportNodeHandler implements ASTNodeHandler<ts.SyntaxKind.ImportDec
    *
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated imports state.
+   * @param rootNode - FileSource root node that contains the supplied node.
    */
-  public handle(node: ts.Node, accumulator: JsxScopeAccumulator) {
-    accumulator.storeImport(this.getData(node))
+  public handle(node: ts.Node, accumulator: JsxScopeAccumulator, rootNode: ts.Node) {
+    accumulator.storeImport(this.getData(node, rootNode))
   }
 
   /**
    * Constructs a JsxImport object from a given ImportDeclaration type AST node.
    *
    * @param node - Node element to process.
+   * @param rootNode - FileSource root node that contains the supplied node.
    * @returns Constructed JsxImport object.
    */
-  getData(node: ts.Node): JsxImport {
+  getData(node: ts.Node, rootNode: ts.Node): JsxImport {
+    const matchers = [
+      DefaultImportElementMatcher,
+      NamedImportElementMatcher,
+      RenamedImportElementMatcher
+    ]
     const nodeAsImport = node as ts.ImportDeclaration
     const jsxImport: JsxImport = {
       importPath: (nodeAsImport.moduleSpecifier as ts.StringLiteral).text,
       elements: []
     }
     const importClause = nodeAsImport.importClause
-    // named import of isAll
+
+    if (importClause && DefaultImportElementMatcher.isMatch(importClause, rootNode)) {
+      jsxImport.elements.push(DefaultImportElementMatcher.getJsxImport(importClause))
+    }
     if (importClause?.namedBindings) {
       const namedBindings = importClause.namedBindings
-      // TODOASKJOE
       if (namedBindings.kind === ts.SyntaxKind.NamedImports) {
-        // TODOASKJOE
         namedBindings.elements.forEach((element) => {
-          if (element.propertyName) {
-            // import {default as Hey} from 'lol'
-            if (element.propertyName.escapedText === 'default') {
-              // TODOASKJOE
-              (jsxImport.elements as any).push({
-                name: element.name.escapedText,
-                isDefault: true,
-                isAll: false
-              })
-              // import {named as nameddd} from 'lil'
-            } else {
-              // TODOASKJOE
-              (jsxImport.elements as any).push({
-                name: element.propertyName.escapedText,
-                rename: element.name.escapedText,
-                isDefault: false,
-                isAll: false
-              })
-            }
-            // import {Button} from '@carbon/react'
-          } else {
-            (jsxImport.elements as any).push({
-              name: element.name.escapedText,
-              isDefault: false,
-              isAll: false
-            })
+          const matcher = matchers.find((m) => m.isMatch(element, rootNode))
+          if (matcher) {
+            jsxImport.elements.push(matcher.getJsxImport(element))
           }
         })
       } else {
-        // TODOASKJOE
-        (jsxImport.elements as any).push({
-          // TODOASKJOE
-          name: (namedBindings).name.escapedText,
-          isDefault: false,
-          isAll: true
-        })
+        if (AllImportElementMatcher.isMatch(namedBindings, rootNode)) {
+          jsxImport.elements.push(AllImportElementMatcher.getJsxImport(namedBindings))
+        }
       }
-    }
-    // default import
-    // import Button from 'button'
-    if (importClause?.name) {
-      (jsxImport.elements).push({
-        // TODOASKJOE
-        name: (importClause.name).escapedText,
-        isDefault: true,
-        isAll: false
-      })
     }
     return jsxImport
   }

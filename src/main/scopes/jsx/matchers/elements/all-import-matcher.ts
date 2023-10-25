@@ -19,6 +19,6 @@ import { type JsxImportElement, type Matcher, type PartialJsxElement } from '../
 export const AllImportMatcher: Matcher<PartialJsxElement> = {
   // TODOASKJOE
   isMatch: (element: PartialJsxElement, extraData: { imports: JsxImportElement[] }) => {
-    return !!element.prefix && extraData.imports.some(i => i.isAll && i.name === element.prefix)
+    return !!element.prefix && extraData.imports.some((i) => i.isAll && i.name === element.prefix)
   }
 }

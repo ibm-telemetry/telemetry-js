@@ -14,7 +14,9 @@ import { JsxNodeHandler } from './jsx-node-handler.js'
  * Holds logic to construct a JsxElement object given a JsxSelfClosingElement node.
  *
  */
-export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler implements ASTNodeHandler<ts.SyntaxKind.JsxSelfClosingElement> {
+export class JsxSelfClosingElementNodeHandler
+  extends JsxNodeHandler
+  implements ASTNodeHandler<ts.SyntaxKind.JsxSelfClosingElement> {
   /**
    * Processes a JsxElement node data and adds it to the given accumulator.
    *

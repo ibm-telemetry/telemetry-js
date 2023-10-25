@@ -14,7 +14,9 @@ import { JsxNodeHandler } from './jsx-node-handler.js'
  * Holds logic to construct a JsxElement object given a node of said kind.
  *
  */
-export class JsxElementNodeHandler extends JsxNodeHandler implements ASTNodeHandler<ts.SyntaxKind.JsxElement> {
+export class JsxElementNodeHandler
+  extends JsxNodeHandler
+  implements ASTNodeHandler<ts.SyntaxKind.JsxElement> {
   /**
    * Processes a JsxElement node data and adds it to the given accumulator.
    *

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.2...v0.3.3) (2023-10-25)
+
+
+### Bug Fixes
+
+* **index:** pass correct schema to telemetry collector ([8608b35](https://github.com/ibm-telemetry/telemetry-js/commit/8608b3534232b06b4639477c6a3c3df4865993dd))
+
 ## [0.3.2](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.1...v0.3.2) (2023-10-25)
 
 

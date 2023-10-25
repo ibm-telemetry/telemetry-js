@@ -28,11 +28,12 @@ jobs:
           path-to-signatures: 'dco-signatures.json'
           path-to-document: 'https://github.com/ibm-telemetry/telemetry-dco/blob/main/dco.md'
           branch: 'main'
-          allowlist: renovate[bot],github-actions[bot]
+          allowlist: renovate[bot],github-actions[bot],telemmy[bot],sonarcloud[bot]
           remote-organization-name: ibm-telemetry
           remote-repository-name: telemetry-dco
           create-file-commit-message: 'chore: create file to store dco signatures'
-          signed-commit-message: 'chore: $contributorName has signed the dco in #$pullRequestNo'
+          signed-commit-message:
+            'chore: $contributorName has signed the DCO in $owner/$repo#$pullRequestNo'
           custom-notsigned-prcomment:
             'Thanks for your submission! We ask that $you sign our [Developer Certificate of
             Origin](https://github.com/ibm-telemetry/telemetry-dco/blob/main/dco.md) before we can

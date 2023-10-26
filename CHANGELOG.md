@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.5...v0.3.6) (2023-10-26)
+
+
+### Bug Fixes
+
+* improve logging ([38178ad](https://github.com/ibm-telemetry/telemetry-js/commit/38178ad27196b49c0f0b56e0deac8d8f77f683c5))
+
 ## [0.3.5](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.4...v0.3.5) (2023-10-26)
 
 

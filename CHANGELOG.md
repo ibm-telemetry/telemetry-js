@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.5](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.4...v0.3.5) (2023-10-26)
+
+
+### Bug Fixes
+
+* improve logging stability for complex objects ([2646d66](https://github.com/ibm-telemetry/telemetry-js/commit/2646d6640c63c83578d310f279af966d22d99304))
+* remove truncateString ([df495d2](https://github.com/ibm-telemetry/telemetry-js/commit/df495d28ebe62a05f01530b811880c32f599fe21))
+
 ## [0.3.4](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.3...v0.3.4) (2023-10-26)
 
 

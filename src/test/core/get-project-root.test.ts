@@ -4,7 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'path'
+import path from 'node:path'
+import url from 'node:url'
+
 import { afterAll, describe, expect, it } from 'vitest'
 
 import { getProjectRoot } from '../../main/core/get-project-root.js'
@@ -28,7 +30,7 @@ describe('getProjectRoot', () => {
   })
 
   it('can handle edge case when root is the cwd', async () => {
-    const rootCwd = path.join(path.dirname(import.meta.url.substring(7)), '../../../')
+    const rootCwd = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..', '..', '..')
     await expect(getProjectRoot(rootCwd, logger)).resolves.toMatch(/.*\/telemetry-js/)
   })
 

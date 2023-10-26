@@ -107,9 +107,6 @@ export class TelemetryCollector {
     - transmit the data to the remote server
     */
 
-    // TODO: remove this test line
-    console.log(JSON.stringify(results, undefined, 2))
-
     this.logger.debug('Collection results:')
     this.logger.debug(JSON.stringify(results, undefined, 2))
   }

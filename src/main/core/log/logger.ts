@@ -7,11 +7,9 @@
 import { appendFile } from 'node:fs/promises'
 
 import { safeStringify } from './safe-stringify.js'
-import { truncateString } from './truncate-string.js'
 
 type Level = 'debug' | 'error'
 
-const MAX_ARGS_STRING_LENGTH = 500 // characters
 const DRAIN_INTERVAL = 250 // ms
 
 /**
@@ -104,12 +102,7 @@ export class Logger {
     if (result instanceof Promise) {
       result.then(
         (value: unknown) => {
-          this.debug(
-            `<- ${targetName}::${methodName}(...): ${truncateString(
-              safeStringify(value),
-              MAX_ARGS_STRING_LENGTH
-            )}`
-          )
+          this.debug(`<- ${targetName}::${methodName}(...): ${safeStringify(value)}`)
         },
         (err: unknown) => {
           this.error(`-x- ${targetName}::${methodName}(...): ${safeStringify(err)}`)

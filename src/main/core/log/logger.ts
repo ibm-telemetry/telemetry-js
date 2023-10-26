@@ -16,10 +16,9 @@ const DRAIN_INTERVAL = 250 // ms
  * Logger class to log debug and error statements to a given file.
  */
 export class Logger {
-  private readonly filePath: string
-  private readonly buffer: string[]
-
   // JS-private notation is used to make this field non-enumerable
+  readonly #filePath: string
+  readonly #buffer: string[]
   readonly #drainer: NodeJS.Timeout
 
   /**
@@ -28,8 +27,8 @@ export class Logger {
    * @param filePath - Determines were the logs are stored in the filesystem.
    */
   public constructor(filePath: string) {
-    this.filePath = filePath
-    this.buffer = []
+    this.#filePath = filePath
+    this.#buffer = []
     this.#drainer = setInterval(() => {
       void this.flush()
     }, DRAIN_INTERVAL)
@@ -41,9 +40,9 @@ export class Logger {
    * Flushes the current contents of the log buffer to the log file.
    */
   public async flush() {
-    const logBlock = this.buffer.join('')
-    await appendFile(this.filePath, logBlock)
-    this.buffer.splice(0)
+    const logBlock = this.#buffer.join('')
+    await appendFile(this.#filePath, logBlock)
+    this.#buffer.splice(0)
   }
 
   /**
@@ -130,6 +129,6 @@ export class Logger {
   private log(level: Level, msg: string) {
     const date = new Date().toISOString()
 
-    this.buffer.push(level + ' ' + process.pid + ' ' + date + ' ' + msg + '\n')
+    this.#buffer.push(level + ' ' + process.pid + ' ' + date + ' ' + msg + '\n')
   }
 }

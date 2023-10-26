@@ -9,6 +9,8 @@ import { type Attributes } from '@opentelemetry/api'
 import { SemVer } from 'semver'
 
 import { anonymize } from '../../../core/anonymize.js'
+import { type Logger } from '../../../core/log/logger.js'
+import { Trace } from '../../../core/log/trace.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 
 export interface DependencyData {
@@ -29,9 +31,10 @@ export class DependencyMetric extends ScopeMetric {
    * Constructs a DependencyMetric.
    *
    * @param data - Object containing name and version to extract data to generate metric from.
+   * @param logger - The logger instance to use.
    */
-  public constructor(data: DependencyData) {
-    super()
+  public constructor(data: DependencyData, logger: Logger) {
+    super(logger)
     this.name = 'dependency.count'
     this.data = data
   }
@@ -93,6 +96,7 @@ export class DependencyMetric extends ScopeMetric {
    * @param rawPackageVersion - Raw version of package.
    * @returns Object containing package owner, name, major, minor, patch and preRelease versions.
    */
+  @Trace()
   private getPackageDetails(rawPackageName: string, rawPackageVersion: string) {
     let owner, name
 

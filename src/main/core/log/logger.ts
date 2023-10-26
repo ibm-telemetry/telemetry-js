@@ -88,7 +88,7 @@ export class Logger {
    * @param args - The arguments passed to the method/function.
    */
   public traceEnter(targetName: string, methodName: string, args: unknown[]) {
-    const stringArgs = truncateString(String(args.map(safeStringify)), MAX_ARGS_STRING_LENGTH)
+    const stringArgs = String(args.map(safeStringify))
 
     this.debug(`-> ${targetName}::${methodName}(${stringArgs})`)
   }
@@ -122,12 +122,7 @@ export class Logger {
       this.error(`-x- ${targetName}::${methodName}(...): ${safeStringify(result)}`)
       this.error(result)
     } else {
-      this.debug(
-        `<- ${targetName}::${methodName}(...): ${truncateString(
-          safeStringify(result),
-          MAX_ARGS_STRING_LENGTH
-        )}`
-      )
+      this.debug(`<- ${targetName}::${methodName}(...): ${safeStringify(result)}`)
     }
   }
 

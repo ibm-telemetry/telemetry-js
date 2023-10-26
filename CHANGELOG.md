@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.3.7](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.6...v0.3.7) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dependency-metric:** output undefined for missing attributes ([7f32468](https://github.com/ibm-telemetry/telemetry-js/commit/7f32468451fe3d7ac49065516c6dd6e241e464b6))
+
+## [0.3.6](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.5...v0.3.6) (2023-10-26)
+
+
+### Bug Fixes
+
+* improve logging ([38178ad](https://github.com/ibm-telemetry/telemetry-js/commit/38178ad27196b49c0f0b56e0deac8d8f77f683c5))
+
+## [0.3.5](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.4...v0.3.5) (2023-10-26)
+
+
+### Bug Fixes
+
+* improve logging stability for complex objects ([2646d66](https://github.com/ibm-telemetry/telemetry-js/commit/2646d6640c63c83578d310f279af966d22d99304))
+* remove truncateString ([df495d2](https://github.com/ibm-telemetry/telemetry-js/commit/df495d28ebe62a05f01530b811880c32f599fe21))
+
+## [0.3.4](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.3...v0.3.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* add additional logging ([cd20350](https://github.com/ibm-telemetry/telemetry-js/commit/cd203508b39acfc64ef4583684ca2470e5cfa67a))
+
+## [0.3.3](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.2...v0.3.3) (2023-10-25)
+
+
+### Bug Fixes
+
+* **index:** pass correct schema to telemetry collector ([8608b35](https://github.com/ibm-telemetry/telemetry-js/commit/8608b3534232b06b4639477c6a3c3df4865993dd))
+
+## [0.3.2](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.1...v0.3.2) (2023-10-25)
+
+
+### Bug Fixes
+
+* experiment with app token in workflow ([7967583](https://github.com/ibm-telemetry/telemetry-js/commit/7967583a351e2be963e9053d60f1551f6b6e1955))
+* ibmtelemetry bin hashbang ([18e3abb](https://github.com/ibm-telemetry/telemetry-js/commit/18e3abbb60af1acee1f6059217b3d0de477c06a1))
+
 ## [0.3.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.0...v0.3.1) (2023-10-24)
 
 

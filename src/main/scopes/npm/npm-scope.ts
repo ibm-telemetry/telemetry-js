@@ -39,12 +39,15 @@ export class NpmScope extends Scope {
     installingPackages.forEach((installingPkg) => {
       installingPkg.dependencies.forEach((dependency) => {
         this.capture(
-          new DependencyMetric({
-            name: dependency.name,
-            version: dependency.version,
-            installerName: installingPkg.name,
-            installerVersion: installingPkg.version
-          })
+          new DependencyMetric(
+            {
+              name: dependency.name,
+              version: dependency.version,
+              installerName: installingPkg.name,
+              installerVersion: installingPkg.version
+            },
+            this.logger
+          )
         )
       })
     })
@@ -106,7 +109,7 @@ export class NpmScope extends Scope {
 
       const dependencyTree = JSON.parse(result.stdout)
 
-      installers = findInstallersFromTree(dependencyTree, packageName, packageVersion)
+      installers = findInstallersFromTree(dependencyTree, packageName, packageVersion, this.logger)
 
       if (installers.length > 0) {
         break

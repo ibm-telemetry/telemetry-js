@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { type Logger } from '../../core/log/logger.js'
 import { findNestedDeps } from './find-nested-deps.js'
 import { getPackageSubTree } from './get-package-sub-tree.js'
+import { type InstallingPackage } from './interfaces.js'
 
 /*
  * Nested dependency considerations:
@@ -36,20 +38,30 @@ import { getPackageSubTree } from './get-package-sub-tree.js'
  * @param dependencyTree - The tree to search.
  * @param packageName - The name of the package for which to search.
  * @param packageVersion - The specific version of the package for which to search.
+ * @param logger - A logger instance.
  * @returns An array of results.
  */
 export function findInstallersFromTree(
   dependencyTree: Record<string, unknown>,
   packageName: string,
-  packageVersion: string
+  packageVersion: string,
+  logger: Logger
 ) {
+  logger.traceEnter('find-installers-from-tree', 'findInstallersFromTree', [
+    dependencyTree,
+    packageName,
+    packageVersion
+  ])
+  let results: InstallingPackage[] = []
+
   // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
   const matches = findNestedDeps(dependencyTree, packageName, packageVersion)
 
   if (matches.length >= 1) {
     // We want to ignore last 2 pieces to get the parent's info, not the child's
-    return matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
+    results = matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
   }
 
-  return []
+  logger.traceExit('find-installers-from-tree', 'findInstallersFromTree', results)
+  return results
 }

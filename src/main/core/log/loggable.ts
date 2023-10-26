@@ -10,7 +10,17 @@ import { type Logger } from './logger.js'
  *  Abstract class which enforces that all child classes define a logger instance.
  */
 export class Loggable {
-  protected logger: Logger
+  // JS-private notation is used to make this field non-enumerable
+  readonly #logger: Logger
+
+  /**
+   * Gets the logger instance associated with this Loggable.
+   *
+   * @returns The logger instance.
+   */
+  protected get logger() {
+    return this.#logger
+  }
 
   /**
    * Constructs a loggable class.
@@ -18,6 +28,6 @@ export class Loggable {
    * @param logger - The logger to use during logging.
    */
   public constructor(logger: Logger) {
-    this.logger = logger
+    this.#logger = logger
   }
 }

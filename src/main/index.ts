@@ -40,11 +40,7 @@ async function collect(opts: CommandLineOptions) {
   const logFilePath = await createLogFilePath(date)
   const logger = new Logger(logFilePath)
 
-  const telemetryCollector = new TelemetryCollector(
-    opts.config,
-    { ...configSchemaJson, type: undefined, oneOf: [] },
-    logger
-  )
+  const telemetryCollector = new TelemetryCollector(opts.config, configSchemaJson, logger)
 
   try {
     await telemetryCollector.run()

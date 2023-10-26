@@ -41,7 +41,7 @@ describe('scope', () => {
       public override get attributes(): Attributes {
         return { hello: 'hi' }
       }
-    })()
+    })(logger)
 
     expect(myScope.metrics['my-metric']).not.toBeDefined()
 

@@ -6,11 +6,13 @@
  */
 import { type Attributes } from '@opentelemetry/api'
 
+import { Loggable } from './log/loggable.js'
+
 /**
  * An extendable base class for all scope metrics. Scope metrics are required to define a name and
  * a method which returns an OpenTelemetry-compatible Attributes object.
  */
-export abstract class ScopeMetric {
+export abstract class ScopeMetric extends Loggable {
   /**
    * The OpenTelemetry-style name of this metric to be used in data transfer and storage.
    */

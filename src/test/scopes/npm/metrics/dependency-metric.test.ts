@@ -4,19 +4,29 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 
 import { anonymize } from '../../../../main/core/anonymize.js'
+import { createLogFilePath } from '../../../../main/core/log/create-log-file-path.js'
+import { Logger } from '../../../../main/core/log/logger.js'
 import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency-metric.js'
 
+const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+
 describe('dependencyMetric', () => {
+  afterAll(async () => {
+    await logger.close()
+  })
   it('returns the correct attributes for a standard package', () => {
-    const attributes = new DependencyMetric({
-      name: 'test-1',
-      version: '0.0.1',
-      installerName: 'test-1-installer',
-      installerVersion: '1.0.0'
-    }).attributes
+    const attributes = new DependencyMetric(
+      {
+        name: 'test-1',
+        version: '0.0.1',
+        installerName: 'test-1-installer',
+        installerVersion: '1.0.0'
+      },
+      logger
+    ).attributes
     expect(attributes).toStrictEqual(
       anonymize(
         {
@@ -27,14 +37,14 @@ describe('dependencyMetric', () => {
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': '',
+          'version.preRelease': undefined,
           'installer.name': 'test-1-installer',
           'installer.owner': undefined,
           'installer.raw': 'test-1-installer',
           'installer.version.major': '1',
           'installer.version.minor': '0',
           'installer.version.patch': '0',
-          'installer.version.preRelease': '',
+          'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0'
         },
         {
@@ -56,12 +66,15 @@ describe('dependencyMetric', () => {
   })
 
   it('returns the correct attributes for a package with a prerelease', () => {
-    const attributes = new DependencyMetric({
-      name: 'test-1',
-      version: '0.0.1-rc.0',
-      installerName: 'test-1-installer',
-      installerVersion: '1.0.0-rc.4'
-    }).attributes
+    const attributes = new DependencyMetric(
+      {
+        name: 'test-1',
+        version: '0.0.1-rc.0',
+        installerName: 'test-1-installer',
+        installerVersion: '1.0.0-rc.4'
+      },
+      logger
+    ).attributes
     expect(attributes).toStrictEqual(
       anonymize(
         {
@@ -101,12 +114,15 @@ describe('dependencyMetric', () => {
   })
 
   it('returns the correct attributes for a package with metadata', () => {
-    const attributes = new DependencyMetric({
-      name: 'test-1',
-      version: '0.0.1+12345',
-      installerName: 'test-1-installer',
-      installerVersion: '1.0.0+9999'
-    }).attributes
+    const attributes = new DependencyMetric(
+      {
+        name: 'test-1',
+        version: '0.0.1+12345',
+        installerName: 'test-1-installer',
+        installerVersion: '1.0.0+9999'
+      },
+      logger
+    ).attributes
     expect(attributes).toStrictEqual(
       anonymize(
         {
@@ -119,13 +135,13 @@ describe('dependencyMetric', () => {
           'installer.version.major': '1',
           'installer.version.minor': '0',
           'installer.version.patch': '0',
-          'installer.version.preRelease': '',
+          'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0+9999',
           'version.raw': '0.0.1+12345',
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': ''
+          'version.preRelease': undefined
         },
         {
           hash: [
@@ -146,12 +162,15 @@ describe('dependencyMetric', () => {
   })
 
   it('returns the correct attributes for a package with a prerelease and metadata', () => {
-    const attributes = new DependencyMetric({
-      name: 'test-1',
-      version: '0.0.1-rc.1+12345',
-      installerName: 'test-1-installer',
-      installerVersion: '1.0.0-rc.0+99999'
-    }).attributes
+    const attributes = new DependencyMetric(
+      {
+        name: 'test-1',
+        version: '0.0.1-rc.1+12345',
+        installerName: 'test-1-installer',
+        installerVersion: '1.0.0-rc.0+99999'
+      },
+      logger
+    ).attributes
 
     expect(attributes).toStrictEqual(
       anonymize(
@@ -192,12 +211,15 @@ describe('dependencyMetric', () => {
   })
 
   it('returns the correct attributes for a package with an owner', () => {
-    const attributes = new DependencyMetric({
-      name: '@owner/test-1',
-      version: '0.0.1-rc.0+12345',
-      installerName: '@installer/test-1-installer',
-      installerVersion: '1.0.0'
-    }).attributes
+    const attributes = new DependencyMetric(
+      {
+        name: '@owner/test-1',
+        version: '0.0.1-rc.0+12345',
+        installerName: '@installer/test-1-installer',
+        installerVersion: '1.0.0'
+      },
+      logger
+    ).attributes
     expect(attributes).toStrictEqual(
       anonymize(
         {
@@ -210,7 +232,7 @@ describe('dependencyMetric', () => {
           'installer.version.major': '1',
           'installer.version.minor': '0',
           'installer.version.patch': '0',
-          'installer.version.preRelease': '',
+          'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0',
           'version.raw': '0.0.1-rc.0+12345',
           'version.major': '0',

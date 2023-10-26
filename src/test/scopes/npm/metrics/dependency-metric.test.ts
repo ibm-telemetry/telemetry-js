@@ -37,14 +37,14 @@ describe('dependencyMetric', () => {
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': '',
+          'version.preRelease': undefined,
           'installer.name': 'test-1-installer',
           'installer.owner': undefined,
           'installer.raw': 'test-1-installer',
           'installer.version.major': '1',
           'installer.version.minor': '0',
           'installer.version.patch': '0',
-          'installer.version.preRelease': '',
+          'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0'
         },
         {
@@ -135,13 +135,13 @@ describe('dependencyMetric', () => {
           'installer.version.major': '1',
           'installer.version.minor': '0',
           'installer.version.patch': '0',
-          'installer.version.preRelease': '',
+          'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0+9999',
           'version.raw': '0.0.1+12345',
           'version.major': '0',
           'version.minor': '0',
           'version.patch': '1',
-          'version.preRelease': ''
+          'version.preRelease': undefined
         },
         {
           hash: [
@@ -232,7 +232,7 @@ describe('dependencyMetric', () => {
           'installer.version.major': '1',
           'installer.version.minor': '0',
           'installer.version.patch': '0',
-          'installer.version.preRelease': '',
+          'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0',
           'version.raw': '0.0.1-rc.0+12345',
           'version.major': '0',

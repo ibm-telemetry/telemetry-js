@@ -52,15 +52,16 @@ export function findInstallersFromTree(
     packageName,
     packageVersion
   ])
+  let results: InstallingPackage[] = []
+
   // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
   const matches = findNestedDeps(dependencyTree, packageName, packageVersion)
-  let result: InstallingPackage[] = []
 
   if (matches.length >= 1) {
     // We want to ignore last 2 pieces to get the parent's info, not the child's
-    result = matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
+    results = matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
   }
 
-  logger.traceExit('find-installers-from-tree', 'findInstallersFromTree', result)
-  return result
+  logger.traceExit('find-installers-from-tree', 'findInstallersFromTree', results)
+  return results
 }

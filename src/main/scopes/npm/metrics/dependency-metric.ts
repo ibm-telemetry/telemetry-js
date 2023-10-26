@@ -62,7 +62,7 @@ export class DependencyMetric extends ScopeMetric {
         'version.major': major.toString(),
         'version.minor': minor.toString(),
         'version.patch': patch.toString(),
-        'version.preRelease': preRelease.join('.'),
+        'version.preRelease': preRelease?.join('.'),
         'installer.raw': this.data.installerName,
         'installer.owner': installerOwner,
         'installer.name': installerName,
@@ -70,7 +70,7 @@ export class DependencyMetric extends ScopeMetric {
         'installer.version.major': installerMajor.toString(),
         'installer.version.minor': installerMinor.toString(),
         'installer.version.patch': installerPatch.toString(),
-        'installer.version.preRelease': installerPreRelease.join('.')
+        'installer.version.preRelease': installerPreRelease?.join('.')
       },
       {
         hash: [
@@ -109,12 +109,12 @@ export class DependencyMetric extends ScopeMetric {
     const { major, minor, patch, prerelease } = new SemVer(rawPackageVersion)
 
     return {
-      owner,
-      name,
+      owner: owner === '' ? undefined : owner,
+      name: name === '' ? undefined : name,
       major,
       minor,
       patch,
-      preRelease: prerelease
+      preRelease: prerelease.length === 0 ? undefined : prerelease
     }
   }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.7](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.6...v0.3.7) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dependency-metric:** output undefined for missing attributes ([7f32468](https://github.com/ibm-telemetry/telemetry-js/commit/7f32468451fe3d7ac49065516c6dd6e241e464b6))
+
 ## [0.3.6](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.5...v0.3.6) (2023-10-26)
 
 

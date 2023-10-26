@@ -18,7 +18,9 @@ const DRAIN_INTERVAL = 250 // ms
 export class Logger {
   private readonly filePath: string
   private readonly buffer: string[]
-  private readonly drainer: NodeJS.Timeout
+
+  // JS-private notation is used to make this field non-enumerable
+  readonly #drainer: NodeJS.Timeout
 
   /**
    * Constructs a Logger instance.
@@ -28,7 +30,7 @@ export class Logger {
   public constructor(filePath: string) {
     this.filePath = filePath
     this.buffer = []
-    this.drainer = setInterval(() => {
+    this.#drainer = setInterval(() => {
       void this.flush()
     }, DRAIN_INTERVAL)
 
@@ -48,7 +50,7 @@ export class Logger {
    * Flushes the logger and clears the log draining interval.
    */
   public async close() {
-    clearInterval(this.drainer)
+    clearInterval(this.#drainer)
     await this.flush()
   }
 

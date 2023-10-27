@@ -33,6 +33,14 @@ describe('tokenizeRepository', () => {
     })
   })
 
+  it('handles an ssh url with no .git suffix', () => {
+    expect(tokenizeRepository('git@example.com:example-owner/example-repo')).toMatchObject({
+      host: 'example.com',
+      owner: 'example-owner',
+      repository: 'example-repo'
+    })
+  })
+
   it('handles a malformed url', () => {
     expect(tokenizeRepository('oops')).toMatchObject({
       host: undefined,
@@ -41,11 +49,19 @@ describe('tokenizeRepository', () => {
     })
   })
 
-  it('handles a url with no .git suffix', () => {
-    expect(tokenizeRepository('git@example.com:example-owner/example-repo')).toMatchObject({
-      host: 'example.com',
-      owner: 'example-owner',
-      repository: 'example-repo'
+  it('handles an http url with no repo', () => {
+    expect(tokenizeRepository('http://example.com/example-owner')).toMatchObject({
+      host: undefined,
+      owner: undefined,
+      repository: undefined
+    })
+  })
+
+  it('handles an ssh url with no repo', () => {
+    expect(tokenizeRepository('git@example.com:heh')).toMatchObject({
+      host: undefined,
+      owner: undefined,
+      repository: undefined
     })
   })
 })

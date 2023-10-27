@@ -23,10 +23,8 @@ function tokenizeRepository(repositoryUrl: string) {
   }
 
   if (repositoryUrl.startsWith('http')) {
-    // Example: https://github.com/ibm-telemetry/telemetry-js.git
     parsed = parseHttp(repositoryUrl)
   } else if (repositoryUrl.startsWith('git@')) {
-    // Example: git@github.com:ibm-telemetry/telemetry-js.git
     parsed = parseSsh(repositoryUrl)
   }
 
@@ -39,13 +37,14 @@ function tokenizeRepository(repositoryUrl: string) {
 
 /**
  * Parses a git remote URL as HTTP.
+ * Example: "https://github.com/ibm-telemetry/telemetry-js.git".
  *
  * @param raw - URL to parse.
  * @returns Object containing a tokenized git remote.
  */
 function parseHttp(raw: string) {
-  const match = /^https?:\/\/((.*?)\/)?((.*?)\/)?(.*)/.exec(raw) ?? []
-  const [_raw, _hostGroup, host, _ownerGroup, owner, repository] = match
+  const match = /^https?:\/\/([^/]+)\/([^/]+)\/([^/]+)/.exec(raw) ?? []
+  const [_raw, host, owner, repository] = match
 
   return {
     host,
@@ -56,13 +55,14 @@ function parseHttp(raw: string) {
 
 /**
  * Parses a git remote URL as SSH.
+ * Example: "git@github.com:ibm-telemetry/telemetry-js.git".
  *
  * @param raw - URL to parse.
  * @returns Object containing a tokenized git remote.
  */
 function parseSsh(raw: string) {
-  const match = /^(.*?)@(.*?):((.*?)\/)?(.*)/.exec(raw) ?? []
-  const [_raw, _user, host, _ownerGroup, owner, repository] = match
+  const match = /^([^@]+)@([^:]+):([^/]+)\/([^/]+)/.exec(raw) ?? []
+  const [_raw, _user, host, owner, repository] = match
 
   return {
     host,

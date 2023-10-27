@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import path from 'node:path'
+import url from 'node:url'
 
 import { type Logger } from '../../core/log/logger.js'
 import { getPackageData } from './get-package-data.js'
@@ -17,8 +18,7 @@ import { getPackageData } from './get-package-data.js'
  * @returns An object with details about the currently running telemetry package.
  */
 export async function getTelemetryPackageData(logger: Logger) {
-  // Remove leading file://
-  const currentFileDir = path.dirname(import.meta.url.substring(7))
+  const currentFileDir = path.dirname(url.fileURLToPath(import.meta.url))
 
   logger.debug('getTelemetryPackageData: Current file directory discovered as: ' + currentFileDir)
 

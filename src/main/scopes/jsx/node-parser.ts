@@ -15,9 +15,9 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  */
 export class NodeParser {
   private readonly accumulator: JsxScopeAccumulator
-  // TODOASKJOE
-  // private readonly nodeHandlerMap: Record<Partial<ts.SyntaxKind>, ASTNodeHandler>
-  private readonly nodeHandlerMap: Record<number, Required<ASTNodeHandler<any>>>
+  private readonly nodeHandlerMap: Partial<
+  Record<ts.SyntaxKind, Required<ASTNodeHandler<ts.SyntaxKind>>>
+  >
 
   /**
    * Instantiates a new NodeParser.
@@ -26,10 +26,7 @@ export class NodeParser {
    * @param nodeHandlerMap - Determines what handlers (instances) are called given
    * the found node types.
    */
-  constructor(
-    accumulator: JsxScopeAccumulator,
-    nodeHandlerMap: Record<number, Required<ASTNodeHandler<any>>>
-  ) {
+  constructor(accumulator: JsxScopeAccumulator, nodeHandlerMap: NodeParser['nodeHandlerMap']) {
     this.accumulator = accumulator
     this.nodeHandlerMap = nodeHandlerMap
   }

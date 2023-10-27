@@ -12,7 +12,7 @@ import { JsxSelfClosingElementNodeHandler } from './node-handlers/elements/jsx-s
 // Maps node kinds to handlers that know how to process them
 // to generate JsxElement metrics for the JsxScope
 export const JsxNodeHandlerMap = {
-  [ts.SyntaxKind.ImportDeclaration]: new ImportNodeHandler(),
-  [ts.SyntaxKind.JsxElement]: new JsxElementNodeHandler(),
-  [ts.SyntaxKind.JsxSelfClosingElement]: new JsxSelfClosingElementNodeHandler()
+  [ts.SyntaxKind.ImportDeclaration]: ImportNodeHandler,
+  [ts.SyntaxKind.JsxElement]: JsxElementNodeHandler,
+  [ts.SyntaxKind.JsxSelfClosingElement]: JsxSelfClosingElementNodeHandler
 }

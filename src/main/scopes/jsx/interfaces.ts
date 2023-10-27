@@ -54,13 +54,19 @@ export interface FileTree {
   children: FileTree[]
 }
 
-export interface Matcher<T> {
-  // TODOASKJOE
-  isMatch: (element: T, extraData: Record<string, any>) => boolean
+export interface JsxElementImportHandler {
+  isMatch: (element: PartialJsxElement, imports: JsxImportElement[]) => boolean
+  getSanitizedElement: (element: PartialJsxElement) => PartialJsxElement
 }
 
-export interface JsxImportMatcher<T> extends Matcher<T> {
-  getJsxImport: (element: T) => JsxImportElement
+export interface JsxImportElementHandler<T extends ts.Node> {
+  isMatch: (importNode: T) => boolean
+  getJsxImport: (importNode: T) => JsxImportElement
 }
 
 export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>
+
+export interface JsxElementsConfig {
+  allowedAttributeNames?: [string, ...string[]]
+  allowedAttributeStringValues?: [string, ...string[]]
+}

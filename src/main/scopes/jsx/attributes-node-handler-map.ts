@@ -18,21 +18,19 @@ import { TrueKeywordHandler } from './node-handlers/attributes/true-keyword-hand
 import { UndefinedKeywordHandler } from './node-handlers/attributes/undefined-keyword-handler.js'
 
 // Maps node kinds to handlers that know how to extract string representations of their value
-export const AttributesNodeHandlerMap = {
-  [ts.SyntaxKind.StringLiteral]: new StringLiteralHandler(),
-  [ts.SyntaxKind.FalseKeyword]: new FalseKeywordHandler(),
-  [ts.SyntaxKind.JsxExpression]: new JsxExpressionHandler(),
-  [ts.SyntaxKind.NullKeyword]: new NullKeywordHandler(),
-  [ts.SyntaxKind.NumericLiteral]: new NumericLiteralHandler(),
-  [ts.SyntaxKind.TrueKeyword]: new TrueKeywordHandler(),
-  [ts.SyntaxKind.UndefinedKeyword]: new UndefinedKeywordHandler()
+// TODOASKJOE
+export const AttributesNodeHandlerMap: Partial<
+Record<ts.SyntaxKind, ASTNodeHandler<ts.SyntaxKind>>
+> = {
+  [ts.SyntaxKind.StringLiteral]: StringLiteralHandler,
+  [ts.SyntaxKind.FalseKeyword]: FalseKeywordHandler,
+  [ts.SyntaxKind.JsxExpression]: JsxExpressionHandler,
+  [ts.SyntaxKind.NullKeyword]: NullKeywordHandler,
+  [ts.SyntaxKind.NumericLiteral]: NumericLiteralHandler,
+  [ts.SyntaxKind.TrueKeyword]: TrueKeywordHandler,
+  [ts.SyntaxKind.UndefinedKeyword]: UndefinedKeywordHandler
 }
 
-export const getNodeHandler = <T extends ts.SyntaxKind>(
-  nodeKind: ts.SyntaxKind
-): ASTNodeHandler<T> => {
-  // TODOASKJOE
-  return nodeKind in AttributesNodeHandlerMap
-    ? AttributesNodeHandlerMap[nodeKind]
-    : new DefaultHandler()
+export const getNodeHandler = (nodeKind: ts.SyntaxKind): ASTNodeHandler<ts.SyntaxKind> => {
+  return AttributesNodeHandlerMap[nodeKind] ?? new DefaultHandler()
 }

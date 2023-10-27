@@ -50,6 +50,7 @@ export abstract class JsxNodeHandler {
           name = attr.name.escapedText
         }
         const value = getNodeHandler(attr.kind).getData(attr, sourceNode)
+        // TODOASKJOE
         attrs.push({ name, value })
       })
     }

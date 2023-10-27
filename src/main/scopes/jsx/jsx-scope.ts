@@ -12,12 +12,13 @@ import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js
 import { findProjectFiles } from './find-project-files.js'
 import { getFileRootPackage } from './get-file-root-package.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
-import { type JsxElement } from './interfaces.js'
-import { AllImportMatcher } from './matchers/elements/all-import-matcher.js'
-import { DefaultImportMatcher } from './matchers/elements/default-import-matcher.js'
-import { NamedImportMatcher } from './matchers/elements/named-import-matcher.js'
-import { RenamedImportMatcher } from './matchers/elements/renamed-import-matcher.js'
+import { type JsxElement, JsxElementsConfig } from './interfaces.js'
+import { JsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
+import { AllImportElementImportHandler } from './node-handlers/element-imports/all-import-element-import-handler.js'
+import { DefaultImportElementImportHandler } from './node-handlers/element-imports/default-import-element-import-handler.js'
+import { NamedImportElementImportHandler } from './node-handlers/element-imports/named-import-element-import-handler.js'
+import { RenamedImportElementImportHandler } from './node-handlers/element-imports/renamed-import-element-import-handler.js'
 
 /**
  * Scope class dedicated to data collection from a jsx environment.
@@ -53,26 +54,30 @@ export class JsxScope extends Scope {
    * in the current working directory's project.
    *
    * @param config - Determines which attributes name and values to collect for.
-   * @param config.allowedAttributeNames - TODOASKJOE.
-   * @param config.allowedAttributeStringValues - TODOASKJOE.
    */
   @Trace()
-  private async collectJsxElements(config: { allowedAttributeNames: string[], allowedAttributeStringValues: string[] }): Promise<void> {
+  private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
     const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
-    const elements = findInstrumentedJsxElements(fileNames, instrumentedPkg.name, [
-      AllImportMatcher,
-      RenamedImportMatcher,
-      DefaultImportMatcher,
-      NamedImportMatcher
-    ])
+    // TODOASKJOE
+    const elements = findInstrumentedJsxElements(
+      fileNames,
+      instrumentedPkg.name,
+      [
+        AllImportElementImportHandler,
+        DefaultImportElementImportHandler,
+        NamedImportElementImportHandler,
+        RenamedImportElementImportHandler
+      ],
+      JsxNodeHandlerMap
+    )
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
 
     for (const fileName of Object.keys(elements)) {
       const filePackage = await getFileRootPackage(fileName, packageJsonTree, this.logger)
       elements[fileName]?.forEach((element) => {
         element.importedBy = filePackage
-        this.capture(new JsxElementMetric(element as JsxElement, config))
+        this.capture(new JsxElementMetric(element as JsxElement, config, this.logger))
       })
     }
   }

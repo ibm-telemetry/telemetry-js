@@ -7,17 +7,22 @@
 
 import * as ts from 'typescript'
 
-import { type JsxImportMatcher } from '../../interfaces.js'
+import { type JsxImportElementHandler } from '../../interfaces.js'
 
 /**
- * Determines if a given ImportSpecifier or ImportClause ts node is a named import
- * (i.e. Import Something from 'the-library')...................................
- *
- * @param element - Node to evaluate.
+ * Identifies Import nodes that have been imported as default and
+ * converts into a JsxImportElement object.
  */
-// TODOASKJOE
-export const DefaultImportElementMatcher: JsxImportMatcher<ts.ImportSpecifier | ts.ImportClause> = {
-  isMatch: (element: ts.ImportSpecifier | ts.ImportClause) => {
+export class DefaultImportElementHandler
+implements JsxImportElementHandler<ts.ImportSpecifier | ts.ImportClause> {
+  /**
+   * Determines if a given ImportSpecifier or ImportClause ts node is a named import
+   * (i.e. Import Something from 'the-library').
+   *
+   * @param element - Node to evaluate.
+   * @returns True if supplied node is a default import, false otherwise.
+   */
+  isMatch(element: ts.ImportSpecifier | ts.ImportClause) {
     if (
       element.kind === ts.SyntaxKind.ImportSpecifier &&
       element.propertyName &&
@@ -29,7 +34,7 @@ export const DefaultImportElementMatcher: JsxImportMatcher<ts.ImportSpecifier | 
       return true
     }
     return false
-  },
+  }
 
   /**
    * Constructs a JsxImportElement object from a given ImportClause or ImportSpecifier node.
@@ -38,7 +43,7 @@ export const DefaultImportElementMatcher: JsxImportMatcher<ts.ImportSpecifier | 
    * @returns JsxImportElement object.
    */
   // TODOASKJOE
-  getJsxImport: (element: ts.ImportSpecifier | ts.ImportClause) => {
+  getJsxImport(element: ts.ImportSpecifier | ts.ImportClause) {
     return {
       name: element.name?.escapedText,
       isDefault: true,

@@ -7,16 +7,17 @@
 
 import { type Attributes } from '@opentelemetry/api'
 
+import { type Logger } from '../../../core/log/logger.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import { getPackageDetails } from '../../utils/get-package-details.js'
-import { type JsxElement } from '../interfaces.js'
+import { type JsxElement, type JsxElementsConfig } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates an element.count individual metric for a given element.
  */
 export class JsxElementMetric extends ScopeMetric {
   public override name: string
-  private readonly config: { allowedAttributeNames: string[], allowedAttributeStringValues: string[] }
+  private readonly config: JsxElementsConfig
   private readonly data: JsxElement
 
   /**
@@ -24,11 +25,10 @@ export class JsxElementMetric extends ScopeMetric {
    *
    * @param data - Object containing name and version to extract data to generate metric from.
    * @param config - Determines which attributes name and values to collect for.
-   * @param config.allowedAttributeNames - TODOASKJOE.
-   * @param config.allowedAttributeStringValues - TODOASKJOE.
+   * @param logger - TODO
    */
-  public constructor(data: JsxElement, config: { allowedAttributeNames: string[], allowedAttributeStringValues: string[] }) {
-    super()
+  public constructor(data: JsxElement, config: JsxElementsConfig, logger: Logger) {
+    super(logger)
     this.name = 'element.count'
     this.data = data
     this.config = config

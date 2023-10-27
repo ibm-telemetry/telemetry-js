@@ -7,22 +7,27 @@
 
 import type * as ts from 'typescript'
 
-import { type JsxImportMatcher } from '../../interfaces.js'
+import { type JsxImportElementHandler } from '../../interfaces.js'
 
 /**
- * Determines if a given ImportSpecifier ts node is a named import
- * (i.e. import {Something} from 'the-library')...........
- *
- * @param element - node to evaluate.
+ * Identifies Import nodes that have been imported as a named import and
+ * converts into a JsxImportElement object.
  */
-// TODOASKJOE
-export const NamedImportElementMatcher: JsxImportMatcher<ts.ImportSpecifier> = {
-  isMatch: (element: ts.ImportSpecifier) => {
+export class NamedImportElementHandler implements JsxImportElementHandler<ts.ImportSpecifier> {
+  // TODOASKJOE - linter
+  /**
+   * Determines if a given ImportSpecifier ts node is a named import
+   * (i.e. import {Something} from 'the-library')......................
+   *
+   * @param element - node to evaluate.
+   * @returns true if supplied node is a named import, false otherwise.
+   */
+  isMatch(element: ts.ImportSpecifier) {
     if (element.propertyName && element.propertyName.escapedText !== 'default') {
       return true
     }
     return false
-  },
+  }
 
   /**
    * Constructs a JsxImportElement object from a given ImportSpecifier node.
@@ -31,7 +36,7 @@ export const NamedImportElementMatcher: JsxImportMatcher<ts.ImportSpecifier> = {
    * @returns JsxImportElement object.
    */
   // TODOASKJOE
-  getJsxImport: (element: ts.ImportSpecifier) => {
+  getJsxImport(element: ts.ImportSpecifier) {
     return {
       name: element.propertyName?.escapedText,
       rename: element.name.escapedText,

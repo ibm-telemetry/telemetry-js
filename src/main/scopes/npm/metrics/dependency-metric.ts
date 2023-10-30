@@ -9,6 +9,7 @@ import { type Attributes } from '@opentelemetry/api'
 import { SemVer } from 'semver'
 
 import { anonymize } from '../../../core/anonymize.js'
+import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { Trace } from '../../../core/log/trace.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
@@ -16,8 +17,8 @@ import { ScopeMetric } from '../../../core/scope-metric.js'
 export interface DependencyData {
   name: string
   version: string
-  installerName: string
-  installerVersion: string
+  installerRawName: string
+  installerRawVersion: string
 }
 
 /**
@@ -51,39 +52,39 @@ export class DependencyMetric extends ScopeMetric {
       minor: installerMinor,
       patch: installerPatch,
       preRelease: installerPreRelease
-    } = this.getPackageDetails(this.data.installerName, this.data.installerVersion)
+    } = this.getPackageDetails(this.data.installerRawName, this.data.installerRawVersion)
 
     return anonymize(
       {
-        raw: this.data.name,
-        owner,
-        name,
-        'version.raw': this.data.version,
-        'version.major': major.toString(),
-        'version.minor': minor.toString(),
-        'version.patch': patch.toString(),
-        'version.preRelease': preRelease?.join('.'),
-        'installer.raw': this.data.installerName,
-        'installer.owner': installerOwner,
-        'installer.name': installerName,
-        'installer.version.raw': this.data.installerVersion,
-        'installer.version.major': installerMajor.toString(),
-        'installer.version.minor': installerMinor.toString(),
-        'installer.version.patch': installerPatch.toString(),
-        'installer.version.preRelease': installerPreRelease?.join('.')
+        [CustomResourceAttributes.RAW]: this.data.name,
+        [CustomResourceAttributes.OWNER]: owner,
+        [CustomResourceAttributes.NAME]: name,
+        [CustomResourceAttributes.VERSION_RAW]: this.data.version,
+        [CustomResourceAttributes.VERSION_MAJOR]: major.toString(),
+        [CustomResourceAttributes.VERSION_MINOR]: minor.toString(),
+        [CustomResourceAttributes.VERSION_PATCH]: patch.toString(),
+        [CustomResourceAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
+        [CustomResourceAttributes.INSTALLER_RAW]: this.data.installerRawName,
+        [CustomResourceAttributes.INSTALLER_OWNER]: installerOwner,
+        [CustomResourceAttributes.INSTALLER_NAME]: installerName,
+        [CustomResourceAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
+        [CustomResourceAttributes.INSTALLER_VERSION_MAJOR]: installerMajor.toString(),
+        [CustomResourceAttributes.INSTALLER_VERSION_MINOR]: installerMinor.toString(),
+        [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch.toString(),
+        [CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
       },
       {
         hash: [
-          'raw',
-          'owner',
-          'name',
-          'version.raw',
-          'version.preRelease',
-          'installer.raw',
-          'installer.owner',
-          'installer.name',
-          'installer.version.raw',
-          'installer.version.preRelease'
+          CustomResourceAttributes.RAW,
+          CustomResourceAttributes.OWNER,
+          CustomResourceAttributes.NAME,
+          CustomResourceAttributes.VERSION_RAW,
+          CustomResourceAttributes.VERSION_PRE_RELEASE,
+          CustomResourceAttributes.INSTALLER_RAW,
+          CustomResourceAttributes.INSTALLER_OWNER,
+          CustomResourceAttributes.INSTALLER_NAME,
+          CustomResourceAttributes.INSTALLER_VERSION_RAW,
+          CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
         ]
       }
     )

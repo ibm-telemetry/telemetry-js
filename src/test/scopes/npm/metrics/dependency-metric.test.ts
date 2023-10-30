@@ -7,6 +7,7 @@
 import { afterAll, describe, expect, it } from 'vitest'
 
 import { anonymize } from '../../../../main/core/anonymize.js'
+import { CustomResourceAttributes } from '../../../../main/core/custom-resource-attributes.js'
 import { createLogFilePath } from '../../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../../main/core/log/logger.js'
 import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency-metric.js'
@@ -22,8 +23,8 @@ describe('dependencyMetric', () => {
       {
         name: 'test-1',
         version: '0.0.1',
-        installerName: 'test-1-installer',
-        installerVersion: '1.0.0'
+        installerRawName: 'test-1-installer',
+        installerRawVersion: '1.0.0'
       },
       logger
     ).attributes
@@ -70,8 +71,8 @@ describe('dependencyMetric', () => {
       {
         name: 'test-1',
         version: '0.0.1-rc.0',
-        installerName: 'test-1-installer',
-        installerVersion: '1.0.0-rc.4'
+        installerRawName: 'test-1-installer',
+        installerRawVersion: '1.0.0-rc.4'
       },
       logger
     ).attributes
@@ -118,8 +119,8 @@ describe('dependencyMetric', () => {
       {
         name: 'test-1',
         version: '0.0.1+12345',
-        installerName: 'test-1-installer',
-        installerVersion: '1.0.0+9999'
+        installerRawName: 'test-1-installer',
+        installerRawVersion: '1.0.0+9999'
       },
       logger
     ).attributes
@@ -166,8 +167,8 @@ describe('dependencyMetric', () => {
       {
         name: 'test-1',
         version: '0.0.1-rc.1+12345',
-        installerName: 'test-1-installer',
-        installerVersion: '1.0.0-rc.0+99999'
+        installerRawName: 'test-1-installer',
+        installerRawVersion: '1.0.0-rc.0+99999'
       },
       logger
     ).attributes
@@ -215,8 +216,8 @@ describe('dependencyMetric', () => {
       {
         name: '@owner/test-1',
         version: '0.0.1-rc.0+12345',
-        installerName: '@installer/test-1-installer',
-        installerVersion: '1.0.0'
+        installerRawName: '@installer/test-1-installer',
+        installerRawVersion: '1.0.0'
       },
       logger
     ).attributes
@@ -256,5 +257,20 @@ describe('dependencyMetric', () => {
         }
       )
     )
+  })
+
+  it('returns undefined prerelease when prerelease is not available in the versions', () => {
+    const attributes = new DependencyMetric(
+      {
+        name: '@owner/test-1',
+        version: '0.0.1+12345',
+        installerRawName: '@installer/test-1-installer',
+        installerRawVersion: '1.0.0+123456'
+      },
+      logger
+    ).attributes
+
+    expect(attributes[CustomResourceAttributes.VERSION_PRE_RELEASE]).toBeUndefined()
+    expect(attributes[CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]).toBeUndefined()
   })
 })

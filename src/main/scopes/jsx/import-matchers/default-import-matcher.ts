@@ -6,15 +6,15 @@
  */
 
 import {
-  type JsxElementImportHandler,
+  type JsxElementImportMatcher,
   type JsxImportElement,
   type PartialJsxElement
-} from '../../interfaces.js'
+} from '../interfaces.js'
 
 /**
  * Identifies JsxElements that have been imported as default imports.
  */
-export class DefaultImportElementImportHandler implements JsxElementImportHandler {
+export class DefaultImportMatcher implements JsxElementImportMatcher {
   /**
    * Determines if a given JsxElement is a default import (e.g.: import something from 'package')
    * that matches the supplied list of import elements.
@@ -28,15 +28,5 @@ export class DefaultImportElementImportHandler implements JsxElementImportHandle
       element.prefix !== undefined &&
       imports.some((i) => i.isDefault && (i.name === element.prefix || i.name === element.name))
     )
-  }
-
-  /**
-   * Sanitizes the contents of a given JsxElement.
-   *
-   * @param element - JsxElement to sanitize.
-   * @returns Sanitized version of element where the name has been concealed to `[Default]`.
-   */
-  getSanitizedElement(element: PartialJsxElement) {
-    return { ...element, name: '[Default]' }
   }
 }

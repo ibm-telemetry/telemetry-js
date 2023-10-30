@@ -53,3 +53,24 @@ export function anonymize<T extends Attributes>(
     return prev
   }, {})
 }
+
+// TODO: implement
+/**
+ *
+ * @param data
+ * @param _hashes
+ */
+export function hash<T>(data: T, _hashes: unknown) {
+  return data
+}
+
+// TODO: implement
+/**
+ *
+ * @param data
+ * @param _keys
+ * @param _values
+ */
+export function substitute<T>(data: T, _keys: unknown, _values: unknown) {
+  return data
+}

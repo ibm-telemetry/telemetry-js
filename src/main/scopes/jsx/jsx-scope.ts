@@ -12,13 +12,13 @@ import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js
 import { findProjectFiles } from './find-project-files.js'
 import { getFileRootPackage } from './get-file-root-package.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
+import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
+import { DefaultImportMatcher } from './import-matchers/default-import-matcher.js'
+import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
+import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
 import { type JsxElement, JsxElementsConfig } from './interfaces.js'
 import { JsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
-import { AllImportElementImportHandler } from './node-handlers/element-imports/all-import-element-import-handler.js'
-import { DefaultImportElementImportHandler } from './node-handlers/element-imports/default-import-element-import-handler.js'
-import { NamedImportElementImportHandler } from './node-handlers/element-imports/named-import-element-import-handler.js'
-import { RenamedImportElementImportHandler } from './node-handlers/element-imports/renamed-import-element-import-handler.js'
 
 /**
  * Scope class dedicated to data collection from a jsx environment.
@@ -59,15 +59,14 @@ export class JsxScope extends Scope {
   private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
     const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
-    // TODOASKJOE
     const elements = findInstrumentedJsxElements(
       fileNames,
       instrumentedPkg.name,
       [
-        AllImportElementImportHandler,
-        DefaultImportElementImportHandler,
-        NamedImportElementImportHandler,
-        RenamedImportElementImportHandler
+        new AllImportMatcher(),
+        new DefaultImportMatcher(),
+        new NamedImportMatcher(),
+        new RenamedImportMatcher()
       ],
       JsxNodeHandlerMap
     )

@@ -7,7 +7,11 @@
 import * as ts from 'typescript'
 
 import { findAllJsxElements } from './find-all-jsx-elements.js'
-import { type JsxElementImportHandler, type PartialJsxElement } from './interfaces.js'
+import {
+  type AstNodeHandlerMap,
+  type JsxElementImportMatcher,
+  type PartialJsxElement
+} from './interfaces.js'
 import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 
 /**
@@ -15,7 +19,7 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  *
  * @param fileNames - List of filepaths to process when looking for JsxElements.
  * @param instrumentedPkg - Name of the instrumented package to find JsxElements for.
- * @param elementMatchers - Array of matchers to determine whether a given element has been imported
+ * @param elementHandlers - Array of matchers to determine whether a given element has been imported
  *  by the instrumentedPkg.
  * @param jsxNodeHandlerMap - Determines what handlers (instances) are called given
  * the found node types.
@@ -24,9 +28,8 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 export function findInstrumentedJsxElements(
   fileNames: string[],
   instrumentedPkg: string,
-  elementMatchers: JsxElementImportHandler[],
-  // TODOASKJOE
-  jsxNodeHandlerMap: any
+  elementHandlers: JsxElementImportMatcher[],
+  jsxNodeHandlerMap: AstNodeHandlerMap
 ): Record<string, PartialJsxElement[]> {
   const fileData: Record<string, JsxScopeAccumulator> = {}
   const elements: Record<string, PartialJsxElement[]> = {}
@@ -42,9 +45,9 @@ export function findInstrumentedJsxElements(
       .flat()
     elements[fileName] = []
     accumulator.elements.forEach((el) => {
-      const matcher = elementMatchers.find((c) => c.isMatch(el, importedIdentifiers))
+      const matcher = elementHandlers.find((c) => c.isMatch(el, importedIdentifiers))
       if (matcher !== undefined) {
-        elements[fileName]?.push(matcher.getSanitizedElement(el))
+        elements[fileName]?.push(el)
       }
     })
   })

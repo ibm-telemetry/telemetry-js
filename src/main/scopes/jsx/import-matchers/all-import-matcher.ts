@@ -6,15 +6,15 @@
  */
 
 import {
-  type JsxElementImportHandler,
+  type JsxElementImportMatcher,
   type JsxImportElement,
   type PartialJsxElement
-} from '../../interfaces.js'
+} from '../interfaces.js'
 
 /**
  * Identifies JsxElements that have been imported as all imports.
  */
-export class AllImportElementImportHandler implements JsxElementImportHandler {
+export class AllImportMatcher implements JsxElementImportMatcher {
   /**
    * Determines if a given JsxElement is an all(*) import
    * (.e.g: import * as something from 'package')
@@ -26,15 +26,5 @@ export class AllImportElementImportHandler implements JsxElementImportHandler {
    */
   isMatch(element: PartialJsxElement, imports: JsxImportElement[]) {
     return element.prefix !== undefined && imports.some((i) => i.isAll && i.name === element.prefix)
-  }
-
-  /**
-   * Sanitizes the contents of a given JsxElement.
-   *
-   * @param element - JsxElement to sanitize.
-   * @returns Sanitized version of element (in this case, the element itself).
-   */
-  getSanitizedElement(element: PartialJsxElement) {
-    return element
   }
 }

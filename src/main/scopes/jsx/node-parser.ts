@@ -6,7 +6,7 @@
  */
 import * as ts from 'typescript'
 
-import { type ASTNodeHandler } from './interfaces.js'
+import { type AstNodeHandlerMap } from './interfaces.js'
 import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 
 /**
@@ -15,9 +15,7 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  */
 export class NodeParser {
   private readonly accumulator: JsxScopeAccumulator
-  private readonly nodeHandlerMap: Partial<
-  Record<ts.SyntaxKind, Required<ASTNodeHandler<ts.SyntaxKind>>>
-  >
+  private readonly nodeHandlerMap: AstNodeHandlerMap
 
   /**
    * Instantiates a new NodeParser.
@@ -26,7 +24,7 @@ export class NodeParser {
    * @param nodeHandlerMap - Determines what handlers (instances) are called given
    * the found node types.
    */
-  constructor(accumulator: JsxScopeAccumulator, nodeHandlerMap: NodeParser['nodeHandlerMap']) {
+  constructor(accumulator: JsxScopeAccumulator, nodeHandlerMap: AstNodeHandlerMap) {
     this.accumulator = accumulator
     this.nodeHandlerMap = nodeHandlerMap
   }
@@ -39,10 +37,11 @@ export class NodeParser {
    * @param rootNode - Root Node of node tree.
    */
   public visit(node: ts.Node, rootNode: ts.SourceFile) {
-    const handler = this.nodeHandlerMap[node.kind]
+    const Handler = this.nodeHandlerMap[node.kind]
 
-    if (handler !== undefined) {
-      handler.handle(node, this.accumulator, rootNode)
+    if (Handler !== undefined) {
+      const thing = new Handler(rootNode)
+      thing.handle(node, this.accumulator)
     }
 
     ts.forEachChild(node, (node) => {

@@ -6,32 +6,27 @@
  */
 import type * as ts from 'typescript'
 
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 import { getNodeHandler } from '../../attributes-node-handler-map.js'
-import { type ASTNodeHandler } from '../../interfaces.js'
 import { DefaultHandler } from './default-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a JsxExpression kind.
  *
  */
-export class JsxExpressionHandler implements ASTNodeHandler<ts.SyntaxKind.JsxExpression> {
+export class JsxExpressionHandler extends ASTNodeHandler {
   /**
    * Extracts string value of node.
    *
    * @param node - JsxExpression node to extract data from.
-   * @param rootNode - FileSource root node that contains the supplied node.
    * @returns Text value of node.
    */
-  public getData(node: ts.Node, rootNode: ts.SourceFile) {
-    const nodeAsJsxExpression = node as ts.JsxExpression
-    if (nodeAsJsxExpression.expression !== null && nodeAsJsxExpression.expression !== undefined) {
-      return getNodeHandler(nodeAsJsxExpression.expression.kind).getData(
-        nodeAsJsxExpression.expression,
-        rootNode
-      )
+  public getData(node: ts.JsxExpression) {
+    if (node.expression !== null && node.expression !== undefined) {
+      return getNodeHandler(node.expression.kind, this.sourceNode).getData(node.expression)
     } else {
       // return raw data of node
-      return new DefaultHandler().getData(node, rootNode)
+      return new DefaultHandler(this.sourceNode).getData(node)
     }
   }
 }

@@ -7,6 +7,7 @@
 
 import type * as ts from 'typescript'
 
+import { type AstNodeHandlerMap } from './interfaces.js'
 import { JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 import { NodeParser } from './node-parser.js'
 
@@ -19,10 +20,9 @@ import { NodeParser } from './node-parser.js'
  * the found node types.
  * @returns JsxAccumulator instance containing imports and elements state.
  */
-// TODOASKJOE
 export function findAllJsxElements(
   fileNode: ts.SourceFile,
-  JsxNodeHandlerMap: any
+  JsxNodeHandlerMap: AstNodeHandlerMap
 ): JsxScopeAccumulator {
   const accumulator = new JsxScopeAccumulator()
 

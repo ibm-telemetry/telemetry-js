@@ -6,22 +6,20 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler } from '../../interfaces.js'
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a Identifier kind.
  *
  */
-export class IdentifierHandler implements ASTNodeHandler<ts.SyntaxKind.Identifier> {
+export class IdentifierHandler extends ASTNodeHandler {
   /**
    * Extracts string value of node.
    *
    * @param node - Identifier node to extract data from.
-   * @param _rootNode - FileSource root node that contains the supplied node.
    * @returns Text value of node.
    */
-  public getData(node: ts.Node, _rootNode: ts.SourceFile): string {
-    // TODOASKJOE
-    return (node as ts.Identifier).escapedText as string
+  public getData(node: ts.Identifier): string {
+    return node.escapedText.toString()
   }
 }

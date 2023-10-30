@@ -6,21 +6,20 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler } from '../../interfaces.js'
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a NullKeyword kind.
  *
  */
-export class NullKeywordHandler implements ASTNodeHandler<ts.SyntaxKind.NullKeyword> {
+export class NullKeywordHandler extends ASTNodeHandler {
   /**
    * Extracts string value of node.
    *
    * @param _node - NullKeyword node to extract data from.
-   * @param _rootNode - FileSource root node that contains the supplied node.
    * @returns Text value of node.
    */
-  public getData(_node: ts.Node, _rootNode: ts.SourceFile) {
+  public getData(_node: ts.Node) {
     return String(null)
   }
 }

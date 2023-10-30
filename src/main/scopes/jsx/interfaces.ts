@@ -7,7 +7,7 @@
 
 import type * as ts from 'typescript'
 
-import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
+import { type ASTNodeHandler } from './ast-node-handler.js'
 
 export interface Attribute {
   name: string
@@ -15,8 +15,8 @@ export interface Attribute {
 }
 
 export interface JsxElement {
-  name: string
-  prefix?: string
+  name?: string | undefined
+  prefix?: string | undefined
   raw: string
   attributes: JsxElementAttribute[]
   importedBy: string
@@ -40,33 +40,22 @@ export interface JsxImportElement {
   isAll: boolean
 }
 
-export interface ASTNodeHandler<T extends ts.SyntaxKind> {
-  handle?: (
-    node: ts.Node & { kind: T },
-    accumulator: JsxScopeAccumulator,
-    rootNode: ts.SourceFile
-  ) => void
-  getData: (node: ts.Node & { kind: T }, rootNode: ts.SourceFile) => any
-}
-
 export interface FileTree {
   root: string
   children: FileTree[]
 }
 
-export interface JsxElementImportHandler {
+export interface JsxElementImportMatcher {
   isMatch: (element: PartialJsxElement, imports: JsxImportElement[]) => boolean
-  getSanitizedElement: (element: PartialJsxElement) => PartialJsxElement
 }
-
-export interface JsxImportElementHandler<T extends ts.Node> {
-  isMatch: (importNode: T) => boolean
-  getJsxImport: (importNode: T) => JsxImportElement
-}
-
-export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>
 
 export interface JsxElementsConfig {
   allowedAttributeNames?: [string, ...string[]]
   allowedAttributeStringValues?: [string, ...string[]]
 }
+
+export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>
+
+export type AstNodeHandlerMap = Partial<
+Record<ts.SyntaxKind, new (rootNode: ts.SourceFile) => ASTNodeHandler>
+>

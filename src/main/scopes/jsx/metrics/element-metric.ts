@@ -7,6 +7,7 @@
 
 import { type Attributes } from '@opentelemetry/api'
 
+import { hash, substitute } from '../../../core/anonymize.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import { getPackageDetails } from '../../utils/get-package-details.js'
@@ -25,7 +26,7 @@ export class JsxElementMetric extends ScopeMetric {
    *
    * @param data - Object containing name and version to extract data to generate metric from.
    * @param config - Determines which attributes name and values to collect for.
-   * @param logger - TODO
+   * @param logger - Logger instance.
    */
   public constructor(data: JsxElement, config: JsxElementsConfig, logger: Logger) {
     super(logger)
@@ -42,20 +43,16 @@ export class JsxElementMetric extends ScopeMetric {
   public override get attributes(): Attributes {
     const allowedAttributeNames: string[] = this.config.allowedAttributeNames ?? []
     const allowedAttributeStringValues: string[] = this.config.allowedAttributeStringValues ?? []
-    const { owner, name: invokerName } = getPackageDetails(this.data.importedBy)
-    let metricData = {
-      ...this.data,
-      'invoker.package.raw': this.data.importedBy,
-      'invoker.package.owner': owner,
-      'invoker.package.name': invokerName
-    }
-    // TODO: pull in the correct functions when available
-    metricData = hash(this.data, [
-      'raw',
-      'invoker.package.raw',
-      'invoker.package.owner',
-      'invoker.package.name'
-    ])
+    const { owner, name: invokerName } = getPackageDetails(this.logger, this.data.importedBy)
+    const metricData = hash(
+      {
+        ...this.data,
+        'invoker.package.raw': this.data.importedBy,
+        'invoker.package.owner': owner,
+        'invoker.package.name': invokerName
+      },
+      ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+    )
     metricData.attributes = substitute(
       this.data.attributes,
       allowedAttributeNames,
@@ -73,13 +70,4 @@ export class JsxElementMetric extends ScopeMetric {
       'module.specifier': metricData.importPath
     }
   }
-}
-
-// TODO: REMOVE
-function hash(data: any, _hashes: any) {
-  return data
-}
-// TODO: REMOVE
-function substitute(data: any, _keys: any, _values: any) {
-  return data
 }

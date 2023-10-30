@@ -6,31 +6,28 @@
  */
 import type * as ts from 'typescript'
 
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 import { getNodeHandler } from '../../attributes-node-handler-map.js'
-import { type ASTNodeHandler } from '../../interfaces.js'
 import { DefaultHandler } from './default-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a JsxAttribute kind.
  *
  */
-export class JsxAttributeHandler implements ASTNodeHandler<ts.SyntaxKind.JsxAttribute> {
+export class JsxAttributeHandler extends ASTNodeHandler {
   /**
    * Extracts string value of node.
    *
    * @param node - JsxAttribute node to extract data from.
-   * @param rootNode - FileSource root node that contains the supplied node.
    * @returns Text value of node.
    */
-  public getData(node: ts.Node, rootNode: ts.SourceFile): string {
-    const nodeAsJsxAttribute = node as ts.JsxAttribute
-    if (nodeAsJsxAttribute.initializer) {
-      return getNodeHandler(nodeAsJsxAttribute.initializer.kind).getData(
-        nodeAsJsxAttribute.initializer,
-        rootNode
-      )
+  public getData(node: ts.JsxAttribute): string {
+    if (node.initializer) {
+      return getNodeHandler(node.initializer.kind, this.sourceNode).getData(
+        node.initializer
+      ) as string
     }
     // return raw data
-    return new DefaultHandler().getData(node, rootNode)
+    return new DefaultHandler(this.sourceNode).getData(node)
   }
 }

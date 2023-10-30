@@ -6,25 +6,26 @@
  */
 
 import {
-  type JsxElementImportHandler,
+  type JsxElementImportMatcher,
   type JsxImportElement,
   type PartialJsxElement
-} from '../../interfaces.js'
+} from '../interfaces.js'
 
 /**
- * Identifies JsxElements that have been imported as renamed imports.
+ * Identifies JsxElements that have been imported as named imports.
  */
-export class RenamedImportElementImportHandler implements JsxElementImportHandler {
+export class NamedImportMatcher implements JsxElementImportMatcher {
   /**
-   * Determines if a given JsxElement is a renamed import
-   * (e.g.: import {something as somethingElse} from 'package).
+   * Determines if a given JsxElement is a named import (e.g.: import {something} from 'package).
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
    * @returns True if element was imported a named import, false otherwise.
    */
   isMatch(element: PartialJsxElement, imports: JsxImportElement[]) {
-    return element.prefix !== undefined && imports.some((i) => i.rename === element.prefix)
+    return (
+      element.prefix === undefined && imports.some((i) => !i.isDefault && i.name === element.name)
+    )
   }
 
   /**

@@ -6,21 +6,20 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler } from '../../interfaces.js'
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a NumericLiteral kind.
  *
  */
-export class NumericLiteralHandler implements ASTNodeHandler<ts.SyntaxKind.NumericLiteral> {
+export class NumericLiteralHandler extends ASTNodeHandler {
   /**
    * Extracts string value of node.
    *
    * @param node - NumericLiteral node to extract data from.
-   * @param _rootNode - FileSource root node that contains the supplied node.
    * @returns Text value of node.
    */
-  public getData(node: ts.Node, _rootNode: ts.SourceFile): number {
-    return Number((node as ts.NumericLiteral).text)
+  public getData(node: ts.NumericLiteral): number {
+    return Number(node.text)
   }
 }

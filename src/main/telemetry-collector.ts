@@ -68,7 +68,7 @@ export class TelemetryCollector {
     configValidator.validate(config)
 
     // TODO: move this logic elsewhere
-    // TODO: handle non-existant remote
+    // TODO: handle non-existent remote
     const gitOrigin = await runCommand('git remote get-url origin', this.logger)
     const repository = tokenizeRepository(gitOrigin.stdout)
     const emitterInfo = await getTelemetryPackageData(this.logger)

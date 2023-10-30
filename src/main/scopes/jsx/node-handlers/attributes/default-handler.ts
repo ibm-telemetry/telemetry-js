@@ -6,22 +6,20 @@
  */
 import type * as ts from 'typescript'
 
-import { type ASTNodeHandler } from '../../interfaces.js'
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 
 /**
  * Holds logic to extract raw data from an AST node.
  *
  */
-// TODOASKJOE
-export class DefaultHandler implements ASTNodeHandler<any> {
+export class DefaultHandler extends ASTNodeHandler {
   /**
    * Extracts raw string representation of node.
    *
    * @param node - Node to extract data from.
-   * @param rootNode - FileSource root node that contains the supplied node.
    * @returns Text value of node.
    */
-  public getData(node: ts.Node, rootNode: ts.SourceFile) {
-    return rootNode.text.substring(node.pos, node.end).trim()
+  public getData(node: ts.Node) {
+    return this.sourceNode.text.substring(node.pos, node.end).trim()
   }
 }

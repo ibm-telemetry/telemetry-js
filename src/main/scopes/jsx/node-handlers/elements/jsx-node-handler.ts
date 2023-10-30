@@ -6,6 +6,7 @@
  */
 import type * as ts from 'typescript'
 
+import { ASTNodeHandler } from '../../ast-node-handler.js'
 import { getNodeHandler } from '../../attributes-node-handler-map.js'
 import { type JsxElementAttribute } from '../../interfaces.js'
 
@@ -13,24 +14,15 @@ import { type JsxElementAttribute } from '../../interfaces.js'
  * Holds node handling logic to be inherited by Jsx node handlers.
  *
  */
-export abstract class JsxNodeHandler {
+export abstract class JsxNodeHandler extends ASTNodeHandler {
   /**
    * Given a TagName node representing a JsxElement, obtains the name and prefix values.
    *
    * @param tagName - TagName node of JsxElement to obtain name and prefix for.
    * @returns Object containing name and prefix (as strings).
    */
-  protected getElementNameAndPrefix(tagName: ts.Node) {
-    // TODOASKJOE
-    const tagNameAsAny = tagName as any
-    let name = ''
-    let prefix
-    if (typeof tagNameAsAny.escapedText === 'string') {
-      name = tagNameAsAny.escapedText
-    } else {
-      prefix = tagNameAsAny.expression.escapedText
-      name = tagNameAsAny.name.escapedText
-    }
+  protected getElementNameAndPrefix(tagName: ts.JsxTagNameExpression) {
+    const [name, prefix] = tagName.getText(this.sourceNode).split('.')
     return { name, prefix }
   }
 
@@ -38,19 +30,17 @@ export abstract class JsxNodeHandler {
    * Parses JsxAttribute nodes into an array of JsxElementAttribute.
    *
    * @param attributes - JsxAttributes node to parse attributes for.
-   * @param sourceNode - Top-level root node containing raw text data (usually source file node).
    * @returns Array of parsed attributes.
    */
-  protected getElementAttributes(attributes: ts.JsxAttributes, sourceNode: ts.SourceFile) {
+  protected getElementAttributes(attributes: ts.JsxAttributes) {
     const attrs: JsxElementAttribute[] = []
     if (attributes.properties.length) {
       attributes.properties.forEach((attr) => {
         let name
         if (attr.name && 'escapedText' in attr.name) {
-          name = attr.name.escapedText
+          name = attr.name.escapedText.toString()
         }
-        const value = getNodeHandler(attr.kind).getData(attr, sourceNode)
-        // TODOASKJOE
+        const value = getNodeHandler(attr.kind, this.sourceNode).getData(attr)
         attrs.push({ name, value })
       })
     }

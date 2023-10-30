@@ -10,12 +10,12 @@ import { type Schema } from 'ajv'
 
 import { anonymize } from './core/anonymize.js'
 import { ConfigValidator } from './core/config/config-validator.js'
+import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
 import { type Logger } from './core/log/logger.js'
 import { Trace } from './core/log/trace.js'
 import { parseYamlFile } from './core/parse-yaml-file.js'
-import * as ResourceAttributes from './core/resource-attributes.js'
 import { runCommand } from './core/run-command.js'
 import { type Scope } from './core/scope.js'
 import { tokenizeRepository } from './core/tokenize-repository.js'
@@ -76,21 +76,21 @@ export class TelemetryCollector {
     const metricReader = initializeOpenTelemetry(
       anonymize(
         {
-          [ResourceAttributes.EMITTER_NAME]: emitterInfo.name,
-          [ResourceAttributes.EMITTER_VERSION]: emitterInfo.version,
-          [ResourceAttributes.PROJECT_ID]: config.projectId,
-          [ResourceAttributes.ANALYZED_RAW]: gitOrigin.stdout,
-          [ResourceAttributes.ANALYZED_HOST]: repository.host,
-          [ResourceAttributes.ANALYZED_OWNER]: repository.owner,
-          [ResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [ResourceAttributes.DATE]: date
+          [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
+          [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
+          [CustomResourceAttributes.PROJECT_ID]: config.projectId,
+          [CustomResourceAttributes.ANALYZED_RAW]: gitOrigin.stdout,
+          [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
+          [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
+          [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
+          [CustomResourceAttributes.DATE]: date
         },
         {
           hash: [
-            ResourceAttributes.ANALYZED_RAW,
-            ResourceAttributes.ANALYZED_HOST,
-            ResourceAttributes.ANALYZED_OWNER,
-            ResourceAttributes.ANALYZED_REPOSITORY
+            CustomResourceAttributes.ANALYZED_RAW,
+            CustomResourceAttributes.ANALYZED_HOST,
+            CustomResourceAttributes.ANALYZED_OWNER,
+            CustomResourceAttributes.ANALYZED_REPOSITORY
           ]
         }
       )

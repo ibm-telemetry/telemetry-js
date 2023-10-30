@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { CustomResourceAttributes } from '../../main/core/custom-resource-attributes.js'
 import { initializeOpenTelemetry } from '../../main/core/initialize-open-telemetry.js'
-import * as ResourceAttributes from '../../main/core/resource-attributes.js'
 
 /**
  * Initializes the OpenTelemetry package with test values.
@@ -17,13 +17,13 @@ export function initializeOtelForTest() {
   const date = new Date(2023).toISOString()
 
   return initializeOpenTelemetry({
-    [ResourceAttributes.EMITTER_NAME]: 'telemetryName',
-    [ResourceAttributes.EMITTER_VERSION]: 'telemetryVersion',
-    [ResourceAttributes.PROJECT_ID]: 'projectId',
-    [ResourceAttributes.ANALYZED_RAW]: 'gitOrigin',
-    [ResourceAttributes.ANALYZED_HOST]: 'host',
-    [ResourceAttributes.ANALYZED_OWNER]: 'owner',
-    [ResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
-    [ResourceAttributes.DATE]: date
+    [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',
+    [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: 'telemetryVersion',
+    [CustomResourceAttributes.PROJECT_ID]: 'projectId',
+    [CustomResourceAttributes.ANALYZED_RAW]: 'gitOrigin',
+    [CustomResourceAttributes.ANALYZED_HOST]: 'host',
+    [CustomResourceAttributes.ANALYZED_OWNER]: 'owner',
+    [CustomResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
+    [CustomResourceAttributes.DATE]: date
   })
 }

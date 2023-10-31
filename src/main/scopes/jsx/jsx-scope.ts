@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -16,7 +17,7 @@ import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { DefaultImportMatcher } from './import-matchers/default-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { type JsxElement, JsxElementsConfig } from './interfaces.js'
+import { type JsxElement } from './interfaces.js'
 import { JsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
 
@@ -38,10 +39,10 @@ export class JsxScope extends Scope {
 
     const promises: Array<Promise<void>> = []
 
-    Object.entries(collectorKeys).forEach(([key, value]) => {
+    Object.keys(collectorKeys).forEach((key) => {
       switch (key) {
         case 'elements':
-          promises.push(this.collectJsxElements(value))
+          promises.push(this.collectJsxElements())
           break
       }
     })
@@ -52,11 +53,9 @@ export class JsxScope extends Scope {
   /**
    * Generates metrics for all discovered instrumented jsx elements found
    * in the current working directory's project.
-   *
-   * @param config - Determines which attributes name and values to collect for.
    */
   @Trace()
-  private async collectJsxElements(config: JsxElementsConfig): Promise<void> {
+  private async collectJsxElements(): Promise<void> {
     const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
     const elements = findInstrumentedJsxElements(
@@ -76,7 +75,7 @@ export class JsxScope extends Scope {
       const filePackage = await getFileRootPackage(fileName, packageJsonTree, this.logger)
       elements[fileName]?.forEach((element) => {
         element.importedBy = filePackage
-        this.capture(new JsxElementMetric(element as JsxElement, config, this.logger))
+        this.capture(new JsxElementMetric(element as JsxElement, this.config, this.logger))
       })
     }
   }

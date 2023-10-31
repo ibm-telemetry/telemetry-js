@@ -15,8 +15,8 @@ export interface Attribute {
 }
 
 export interface JsxElement {
-  name?: string | undefined
-  prefix?: string | undefined
+  name: string | undefined
+  prefix: string | undefined
   raw: string
   attributes: JsxElementAttribute[]
   importedBy: string
@@ -47,11 +47,6 @@ export interface FileTree {
 
 export interface JsxElementImportMatcher {
   isMatch: (element: PartialJsxElement, imports: JsxImportElement[]) => boolean
-}
-
-export interface JsxElementsConfig {
-  allowedAttributeNames?: [string, ...string[]]
-  allowedAttributeStringValues?: [string, ...string[]]
 }
 
 export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>

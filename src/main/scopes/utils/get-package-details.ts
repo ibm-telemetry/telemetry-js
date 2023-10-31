@@ -40,7 +40,7 @@ export function getPackageDetails(
       major,
       minor,
       patch,
-      preRelease: prerelease
+      preRelease: prerelease.length === 0 ? undefined : prerelease
     }
   } else {
     result = {

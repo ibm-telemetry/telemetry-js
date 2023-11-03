@@ -13,7 +13,7 @@ import { Fixture } from '../../../../__utils/fixture.js'
 describe('falseKeywordHandler', () => {
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/simple.tsx')
-    const program = ts.createProgram([fixture.path], { })
+    const program = ts.createProgram([fixture.path], {})
     const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
 
     const sourceFile = sourceFiles[0]

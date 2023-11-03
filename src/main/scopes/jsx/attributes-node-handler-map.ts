@@ -7,11 +7,10 @@
 
 import * as ts from 'typescript'
 
-import { type ASTNodeHandler } from './ast-node-handler.js'
+import { type AstNodeHandler } from './ast-node-handler.js'
 import { type AstNodeHandlerMap } from './interfaces.js'
 import { DefaultHandler } from './node-handlers/attributes/default-handler.js'
 import { FalseKeywordHandler } from './node-handlers/attributes/false-keyword-handler.js'
-import { JsxExpressionHandler } from './node-handlers/attributes/jsx-expression-handler.js'
 import { NullKeywordHandler } from './node-handlers/attributes/null-keyword-handler.js'
 import { NumericLiteralHandler } from './node-handlers/attributes/numeric-literal-handler.js'
 import { StringLiteralHandler } from './node-handlers/attributes/string-literal-handler.js'
@@ -22,7 +21,6 @@ import { UndefinedKeywordHandler } from './node-handlers/attributes/undefined-ke
 export const AttributesNodeHandlerMap: AstNodeHandlerMap = {
   [ts.SyntaxKind.StringLiteral]: StringLiteralHandler,
   [ts.SyntaxKind.FalseKeyword]: FalseKeywordHandler,
-  [ts.SyntaxKind.JsxExpression]: JsxExpressionHandler,
   [ts.SyntaxKind.NullKeyword]: NullKeywordHandler,
   [ts.SyntaxKind.NumericLiteral]: NumericLiteralHandler,
   [ts.SyntaxKind.TrueKeyword]: TrueKeywordHandler,
@@ -32,7 +30,7 @@ export const AttributesNodeHandlerMap: AstNodeHandlerMap = {
 export const getNodeHandler = (
   nodeKind: ts.SyntaxKind,
   sourceNode: ts.SourceFile
-): ASTNodeHandler => {
+): AstNodeHandler => {
   const Handler = AttributesNodeHandlerMap[nodeKind] ?? DefaultHandler
   return new Handler(sourceNode)
 }

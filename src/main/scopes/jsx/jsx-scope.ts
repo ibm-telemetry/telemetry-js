@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import ts from 'typescript'
+
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -58,8 +60,10 @@ export class JsxScope extends Scope {
   private async collectJsxElements(): Promise<void> {
     const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
+    const program = ts.createProgram(fileNames, {})
+    const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
     const elements = findInstrumentedJsxElements(
-      fileNames,
+      sourceFiles,
       instrumentedPkg.name,
       [
         new AllImportMatcher(),

@@ -10,7 +10,7 @@ import type * as ts from 'typescript'
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
  */
-export abstract class ASTNodeHandler {
+export abstract class AstNodeHandler {
   protected readonly sourceNode: ts.SourceFile
 
   // Top-level root node containing raw text data (usually source file node).

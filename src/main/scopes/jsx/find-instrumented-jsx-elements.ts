@@ -4,11 +4,11 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
 import { findAllJsxElements } from './find-all-jsx-elements.js'
 import {
-  type AstNodeHandlerMap,
+  type ElementNodeHandlerMap,
   type JsxElementImportMatcher,
   type PartialJsxElement
 } from './interfaces.js'
@@ -17,7 +17,7 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 /**
  * Finds all JSX elements in cwd's repository and computes prop values.
  *
- * @param fileNames - List of filepaths to process when looking for JsxElements.
+ * @param sourceFiles - List of filepaths to process when looking for JsxElements.
  * @param instrumentedPkg - Name of the instrumented package to find JsxElements for.
  * @param elementMatchers - Array of matchers to determine whether a given element has been imported
  *  by the instrumentedPkg.
@@ -26,15 +26,13 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  * @returns All JSX elements found in current repository.
  */
 export function findInstrumentedJsxElements(
-  fileNames: string[],
+  sourceFiles: ts.SourceFile[],
   instrumentedPkg: string,
   elementMatchers: JsxElementImportMatcher[],
-  jsxNodeHandlerMap: AstNodeHandlerMap
+  jsxNodeHandlerMap: ElementNodeHandlerMap
 ): Record<string, PartialJsxElement[]> {
   const fileData: Record<string, JsxScopeAccumulator> = {}
   const elements: Record<string, PartialJsxElement[]> = {}
-  const program = ts.createProgram(fileNames, {})
-  const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
   for (const sourceFile of sourceFiles) {
     fileData[sourceFile.fileName] = findAllJsxElements(sourceFile, jsxNodeHandlerMap)
   }

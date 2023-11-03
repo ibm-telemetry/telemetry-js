@@ -7,7 +7,7 @@
 
 import type * as ts from 'typescript'
 
-import { ASTNodeHandler } from './ast-node-handler.js'
+import { AstNodeHandler } from './ast-node-handler.js'
 import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 
 /**
@@ -16,6 +16,6 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  * @param node - Node element to process.
  * @param accumulator - Keeps the state of the collected data (by the handlers).
  */
-export abstract class ElementNodeHandler extends ASTNodeHandler {
+export abstract class ElementNodeHandler extends AstNodeHandler {
   abstract handle(node: ts.Node, accumulator: JsxScopeAccumulator): void
 }

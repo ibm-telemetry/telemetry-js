@@ -7,6 +7,7 @@
 
 import type * as ts from 'typescript'
 
+import { type AstNodeHandler } from './ast-node-handler.js'
 import { type ElementNodeHandler } from './element-node-handler.js'
 
 export interface Attribute {
@@ -51,6 +52,8 @@ export interface JsxElementImportMatcher {
 
 export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>
 
-export type ElementNodeHandlerMap = Partial<
-Record<ts.SyntaxKind, new (rootNode: ts.SourceFile) => ElementNodeHandler>
->
+type ElementNodeHandlerProducer = new (rootNode: ts.SourceFile) => ElementNodeHandler
+export type ElementNodeHandlerMap = Partial<Record<ts.SyntaxKind, ElementNodeHandlerProducer>>
+
+type AstNodeHandlerProducer = new (rootNode: ts.SourceFile) => AstNodeHandler
+export type AstNodeHandlerMap = Partial<Record<ts.SyntaxKind, AstNodeHandlerProducer>>

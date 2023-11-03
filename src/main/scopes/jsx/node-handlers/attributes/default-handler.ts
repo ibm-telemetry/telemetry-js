@@ -6,13 +6,13 @@
  */
 import type * as ts from 'typescript'
 
-import { ASTNodeHandler } from '../../ast-node-handler.js'
+import { AstNodeHandler } from '../../ast-node-handler.js'
 
 /**
  * Holds logic to extract raw data from an AST node.
  *
  */
-export class DefaultHandler extends ASTNodeHandler {
+export class DefaultHandler extends AstNodeHandler {
   /**
    * Extracts raw string representation of node.
    *

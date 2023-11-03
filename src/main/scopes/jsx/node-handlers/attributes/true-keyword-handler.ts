@@ -6,13 +6,13 @@
  */
 import type * as ts from 'typescript'
 
-import { ASTNodeHandler } from '../../ast-node-handler.js'
+import { AstNodeHandler } from '../../ast-node-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a TrueKeyword kind.
  *
  */
-export class TrueKeywordHandler extends ASTNodeHandler {
+export class TrueKeywordHandler extends AstNodeHandler {
   /**
    * Extracts string value of node.
    *

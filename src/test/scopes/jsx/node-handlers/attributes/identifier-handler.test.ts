@@ -8,20 +8,21 @@ import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 import { IdentifierHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/identifier-handler.js'
+import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 
 describe('identifierHandler', () => {
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/simple.tsx')
-    const program = ts.createProgram([fixture.path], { })
+    const program = ts.createProgram([fixture.path], {})
     const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
 
-    const sourceFile = sourceFiles[0]
-    // TODOASKJOE
-    const identifierElement = ((sourceFile?.statements[1] as ts.VariableStatement).declarationList.declarations[0]?.initializer as ts.JsxElement).openingElement.tagName
+    const sourceFile = sourceFiles[0] as ts.SourceFile
 
-    const handler = new IdentifierHandler(sourceFile as ts.SourceFile)
+    const handler = new IdentifierHandler(sourceFile)
 
-    expect(handler.getData(identifierElement as ts.Identifier)).toStrictEqual('Button')
+    expect(
+      handler.getData(findNodesByType(sourceFile, ts.SyntaxKind.Identifier)[0] as ts.Identifier)
+    ).toStrictEqual('Button')
   })
 })

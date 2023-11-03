@@ -8,20 +8,23 @@ import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 import { DefaultHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/default-handler.js'
+import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 
 describe('defaultHandler', () => {
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/simple.tsx')
-    const program = ts.createProgram([fixture.path], { })
+    const program = ts.createProgram([fixture.path], {})
     const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
 
-    const sourceFile = sourceFiles[0]
-    // TODOASKJOE
-    const jsxExpression = (((sourceFile?.statements[1] as ts.VariableStatement).declarationList.declarations[0]?.initializer as ts.JsxElement).openingElement.attributes.properties[0] as ts.JsxAttribute).initializer
+    const sourceFile = sourceFiles[0] as ts.SourceFile
 
-    const handler = new DefaultHandler(sourceFile as ts.SourceFile)
+    const handler = new DefaultHandler(sourceFile)
 
-    expect(handler.getData(jsxExpression as ts.JsxExpression)).toStrictEqual("{1 === 5 ? 'boo' : 'baa'}")
+    expect(
+      handler.getData(
+        findNodesByType(sourceFile, ts.SyntaxKind.JsxExpression)[0] as ts.JsxExpression
+      )
+    ).toStrictEqual("{1 === 5 ? 'boo' : 'baa'}")
   })
 })

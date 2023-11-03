@@ -15,5 +15,5 @@ module.exports = {
     'prettier --check',
     'eslint --max-warnings=0'
   ],
-  '**/package.json': ['node scripts/format-package-json.js']
+  '**/package.json': ['node scripts/format-package-json.js --fix']
 }

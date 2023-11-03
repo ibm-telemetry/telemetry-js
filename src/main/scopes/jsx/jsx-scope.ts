@@ -11,13 +11,13 @@ import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js'
 import { findProjectFiles } from './find-project-files.js'
-import { getFileRootPackage } from './get-file-root-package.js'
+import { getFileRoot } from './get-file-root.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { DefaultImportMatcher } from './import-matchers/default-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { type JsxElement } from './interfaces.js'
+import { type FileTree, type PartialJsxElement } from './interfaces.js'
 import { JsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
 
@@ -71,12 +71,25 @@ export class JsxScope extends Scope {
     )
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
 
-    for (const fileName of Object.keys(elements)) {
-      const filePackage = await getFileRootPackage(fileName, packageJsonTree, this.logger)
-      elements[fileName]?.forEach((element) => {
-        element.importedBy = filePackage
-        this.capture(new JsxElementMetric(element as JsxElement, this.config, this.logger))
-      })
-    }
+    const promises = Object.entries(elements).map(async ([fileName, elements]) => {
+      await this.captureFileElements(fileName, elements, packageJsonTree)
+    })
+    await Promise.allSettled(promises)
+  }
+
+  // TODO docs
+  @Trace()
+  async captureFileElements(
+    fileName: string,
+    elements: PartialJsxElement[],
+    packageJsonTree: FileTree[]
+  ) {
+    const fileRoot = getFileRoot(fileName, packageJsonTree)
+    const filePackage = (await getPackageData(fileRoot, this.logger)).name
+    elements.forEach((element) => {
+      this.capture(
+        new JsxElementMetric({ ...element, importedBy: filePackage }, this.config, this.logger)
+      )
+    })
   }
 }

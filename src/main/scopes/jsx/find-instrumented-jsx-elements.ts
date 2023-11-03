@@ -19,7 +19,7 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  *
  * @param fileNames - List of filepaths to process when looking for JsxElements.
  * @param instrumentedPkg - Name of the instrumented package to find JsxElements for.
- * @param elementHandlers - Array of matchers to determine whether a given element has been imported
+ * @param elementMatchers - Array of matchers to determine whether a given element has been imported
  *  by the instrumentedPkg.
  * @param jsxNodeHandlerMap - Determines what handlers (instances) are called given
  * the found node types.
@@ -28,7 +28,7 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
 export function findInstrumentedJsxElements(
   fileNames: string[],
   instrumentedPkg: string,
-  elementHandlers: JsxElementImportMatcher[],
+  elementMatchers: JsxElementImportMatcher[],
   jsxNodeHandlerMap: AstNodeHandlerMap
 ): Record<string, PartialJsxElement[]> {
   const fileData: Record<string, JsxScopeAccumulator> = {}
@@ -45,7 +45,7 @@ export function findInstrumentedJsxElements(
       .flat()
     elements[fileName] = []
     accumulator.elements.forEach((el) => {
-      const matcher = elementHandlers.find((c) => c.isMatch(el, importedIdentifiers))
+      const matcher = elementMatchers.find((c) => c.isMatch(el, importedIdentifiers))
       if (matcher !== undefined) {
         elements[fileName]?.push(el)
       }

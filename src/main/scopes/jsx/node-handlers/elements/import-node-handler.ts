@@ -6,7 +6,7 @@
  */
 import type * as ts from 'typescript'
 
-import { ASTNodeHandler } from '../../ast-node-handler.js'
+import { ElementNodeHandler } from '../../element-node-handler.js'
 import { AllImportParser } from '../../import-parsers/all-import-parser.js'
 import { DefaultImportParser } from '../../import-parsers/default-import-parser.js'
 import { NamedImportParser } from '../../import-parsers/named-import-parser.js'
@@ -18,14 +18,14 @@ import { type JsxScopeAccumulator } from '../../jsx-scope-accumulator.js'
  * Holds logic to construct a JsxImport object given an ImportDeclaration node.
  *
  */
-export class ImportNodeHandler extends ASTNodeHandler {
+export class ImportNodeHandler extends ElementNodeHandler {
   /**
    * Processes an ImportDeclaration node data and adds it to the given accumulator.
    *
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated imports state.
    */
-  public override handle(node: ts.ImportDeclaration, accumulator: JsxScopeAccumulator) {
+  handle(node: ts.ImportDeclaration, accumulator: JsxScopeAccumulator) {
     accumulator.storeImport(this.getData(node))
   }
 

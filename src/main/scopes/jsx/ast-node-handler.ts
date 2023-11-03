@@ -7,9 +7,6 @@
 
 import type * as ts from 'typescript'
 
-import { IncorrectlyImplementedInterfaceError } from '../../exceptions/incorrectly-implemented-interface-error.js'
-import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
-
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
  */
@@ -19,10 +16,6 @@ export abstract class ASTNodeHandler {
   // Top-level root node containing raw text data (usually source file node).
   constructor(sourceNode: ts.SourceFile) {
     this.sourceNode = sourceNode
-  }
-
-  handle(_node: ts.Node, _accumulator: JsxScopeAccumulator) {
-    throw new IncorrectlyImplementedInterfaceError('handle', 'ASTNodeHandler')
   }
 
   abstract getData(node: ts.Node): unknown

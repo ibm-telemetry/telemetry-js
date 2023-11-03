@@ -16,7 +16,7 @@ import { type JsxImportElement } from '../interfaces.js'
 export class AllImportParser extends ImportClauseParser {
   /**
    * Determines if a given ImportClause ts node contains an all import
-   * (i.e. Import * as Something from `the-library`) and constructs and
+   * (i.e. `import * as Something from 'the-library'`) and constructs and
    * returns the constructed element (if any) inside an array.
    *
    * @param importNode - Node to evaluate.

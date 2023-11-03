@@ -21,7 +21,7 @@ export class JsxElementNodeHandler extends JsxNodeHandler {
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated elements state.
    */
-  public override handle(node: ts.JsxElement, accumulator: JsxScopeAccumulator) {
+  handle(node: ts.JsxElement, accumulator: JsxScopeAccumulator) {
     accumulator.storeElement(this.getData(node))
   }
 

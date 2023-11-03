@@ -6,15 +6,15 @@
  */
 import type * as ts from 'typescript'
 
-import { ASTNodeHandler } from '../../ast-node-handler.js'
 import { getNodeHandler } from '../../attributes-node-handler-map.js'
+import { ElementNodeHandler } from '../../element-node-handler.js'
 import { type JsxElementAttribute } from '../../interfaces.js'
 
 /**
  * Holds node handling logic to be inherited by Jsx node handlers.
  *
  */
-export abstract class JsxNodeHandler extends ASTNodeHandler {
+export abstract class JsxNodeHandler extends ElementNodeHandler {
   /**
    * Given a TagName node representing a JsxElement, obtains the name and prefix values.
    *

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import path from 'path'
+
 import { type Logger } from '../../core/log/logger.js'
 import { findNamedFiles } from './find-named-files.js'
 import { type FileTree } from './interfaces.js'
@@ -21,12 +23,7 @@ export async function getPackageJsonTree(cwd: string, logger: Logger): Promise<F
   const packageJsonFiles = await findNamedFiles(cwd, logger, 'package.json')
 
   // remove fileName to obtain directories, sort by level of nesting
-  const directories = packageJsonFiles
-    .map((path) => {
-      const chunks = path.split('/')
-      chunks.pop()
-      return chunks.join('/')
-    })
+  const directories = packageJsonFiles.map((filename) => path.dirname(filename))
     .sort((a, b) => a.split('/').length - b.split('/').length)
 
   const tree: FileTree[] = []

@@ -13,6 +13,7 @@ import { afterAll, describe, expect, it } from 'vitest'
 import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
 import { Logger } from '../../../main/core/log/logger.js'
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
+import { NoPackageJsonFoundError } from '../../../main/exceptions/no-package-json-found-error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
 import { Fixture } from '../../__utils/fixture.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
@@ -59,6 +60,20 @@ describe('class: NpmScope', () => {
 
       await expect(scope.run()).rejects.toThrow(EmptyScopeError)
     })
+  })
+
+  it('throws an error if no package.json files were found', async () => {
+    const fixture = new Fixture('projects/no-package-json-files/foo/bar')
+    const scope = new NpmScope(
+      fixture.path,
+      path.join(fixture.path, '..', '..'),
+      { collect: { npm: {} }, projectId: '123', version: 1 },
+      logger
+    )
+
+    await expect(
+      async () => await scope.findInstallingPackages('not-here', '0.1.0')
+    ).rejects.toThrow(NoPackageJsonFoundError)
   })
 
   describe('findInstallingPackages', () => {

@@ -9,6 +9,7 @@ import { Trace } from '../../core/log/trace.js'
 import { runCommand } from '../../core/run-command.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
+import { NoPackageJsonFoundError } from '../../exceptions/no-package-json-found-error.js'
 import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { getPackageData } from './get-package-data.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
@@ -99,23 +100,17 @@ export class NpmScope extends Scope {
       this.root,
       hasNodeModulesFolder
     )
+    const topMostDir = dirs.pop()
 
-    let installers: InstallingPackage[] = []
-
-    for (const d of dirs) {
-      // Allow this command to try and obtain results even if it exited with a total or partial
-      // error
-      const result = await runCommand('npm ls --all --json', this.logger, { cwd: d }, false)
-
-      const dependencyTree = JSON.parse(result.stdout)
-
-      installers = findInstallersFromTree(dependencyTree, packageName, packageVersion, this.logger)
-
-      if (installers.length > 0) {
-        break
-      }
+    if (topMostDir === undefined) {
+      throw new NoPackageJsonFoundError(this.root, this.cwd)
     }
 
-    return installers
+    // Allow this command to try and obtain results even if it exited with a total or partial error
+    const result = await runCommand('npm ls --all --json', this.logger, { cwd: topMostDir }, false)
+
+    const dependencyTree = JSON.parse(result.stdout)
+
+    return findInstallersFromTree(dependencyTree, packageName, packageVersion, this.logger)
   }
 }

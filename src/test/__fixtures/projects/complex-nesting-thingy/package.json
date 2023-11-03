@@ -1,0 +1,19 @@
+{
+  "name": "complex-nesting-thingy",
+  "description": "",
+  "version": "1.0.0",
+  "license": "ISC",
+  "author": "",
+  "main": "index.js",
+  "workspaces": [
+    "package1",
+    "package2",
+    "package3"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "root-only": "^1.0.0"
+  }
+}

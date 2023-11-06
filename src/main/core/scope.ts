@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import opentelemetry, { type Counter, type Meter } from '@opentelemetry/api'
+import opentelemetry, { type Counter, type Meter, ValueType } from '@opentelemetry/api'
 
 import { Loggable } from './log/loggable.js'
 import { type Logger } from './log/logger.js'
@@ -74,7 +74,9 @@ export abstract class Scope extends Loggable {
 
     // Ensure a counter exists
     if (this.metrics[dataPoint.name] === undefined) {
-      this.metrics[dataPoint.name] = this.scopeMeter.createCounter(dataPoint.name)
+      this.metrics[dataPoint.name] = this.scopeMeter.createCounter(dataPoint.name, {
+        valueType: ValueType.INT
+      })
     }
 
     // Log the metric

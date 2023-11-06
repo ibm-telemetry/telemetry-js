@@ -6,6 +6,8 @@
  */
 
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
+// import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+// import { AggregationTemporality } from '@opentelemetry/sdk-metrics'
 import { type Schema } from 'ajv'
 
 import { anonymize } from './core/anonymize.js'
@@ -106,6 +108,19 @@ export class TelemetryCollector {
     - instantiate an exporter
     - transmit the data to the remote server
     */
+
+    // const exporter = new OTLPMetricExporter({
+    //   url: 'http://localhost:3000/v1/metrics',
+    //   headers: {
+    //     // This is where we could define project-specific headers to "authenticate" requests
+    //     Authorization: 'Bearer abc123'
+    //   },
+    //   temporalityPreference: AggregationTemporality.DELTA
+    // })
+
+    // exporter.export(results.resourceMetrics, (exportResult) => {
+    //   console.log(exportResult)
+    // })
 
     this.logger.debug('Collection results:')
     this.logger.debug(JSON.stringify(results, undefined, 2))

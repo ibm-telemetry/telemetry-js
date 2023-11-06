@@ -20,8 +20,7 @@ import { ManualMetricReader } from './manual-metric-reader.js'
 function initializeOpenTelemetry(config: Attributes) {
   const resource = Resource.default().merge(
     new Resource({
-      // By default, remove the service name attribute, since it is unused
-      [SemanticResourceAttributes.SERVICE_NAME]: undefined,
+      [SemanticResourceAttributes.SERVICE_NAME]: 'IBM Telemetry',
       ...config
     })
   )

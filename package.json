@@ -50,6 +50,7 @@
     "@commitlint/config-conventional": "^17.8.1",
     "@ibm/telemetry-config-schema": "^0.2.0",
     "@opentelemetry/api": "^1.6.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.44.0",
     "@opentelemetry/resources": "^1.17.1",
     "@opentelemetry/sdk-metrics": "^1.17.1",
     "@opentelemetry/semantic-conventions": "^1.17.1",

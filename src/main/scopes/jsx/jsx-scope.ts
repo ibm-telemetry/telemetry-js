@@ -11,15 +11,15 @@ import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
+import { findFileRoot } from './find-file-root.js'
 import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js'
 import { findProjectFiles } from './find-project-files.js'
-import { getFileRoot } from './get-file-root.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { DefaultImportMatcher } from './import-matchers/default-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { type FileTree, type PartialJsxElement } from './interfaces.js'
+import { type FileTree, type JsxImportMatch, type PartialJsxElement } from './interfaces.js'
 import { JsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { JsxElementMetric } from './metrics/element-metric.js'
 
@@ -85,11 +85,14 @@ export class JsxScope extends Scope {
   @Trace()
   async captureFileElements(
     fileName: string,
-    elements: PartialJsxElement[],
+    elements: Array<PartialJsxElement & { importElement: JsxImportMatch }>,
     packageJsonTree: FileTree[]
   ) {
-    const fileRoot = getFileRoot(fileName, packageJsonTree)
-    const filePackage = (await getPackageData(fileRoot, this.logger)).name
+    const fileRoot = findFileRoot(fileName, packageJsonTree)
+    let filePackage: string | undefined
+    if (fileRoot !== undefined) {
+      filePackage = (await getPackageData(fileRoot, this.logger)).name
+    }
     elements.forEach((element) => {
       this.capture(
         new JsxElementMetric({ ...element, importedBy: filePackage }, this.config, this.logger)

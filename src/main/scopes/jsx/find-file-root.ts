@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { UnknownFilePackageError } from '../../exceptions/unknown-file-package-error.js'
 import { type FileTree } from './interfaces.js'
 
 /**
@@ -15,20 +14,13 @@ import { type FileTree } from './interfaces.js'
  * @param directoryTree - Tree structure of directories to match files to.
  * Used to match file against.
  * @returns Root directory name.
- * @throws UnknownFilePackageError if package could not be determined.
  */
-export function getFileRoot(
-  fileName: string,
-  directoryTree: FileTree[]
-): string {
+export function findFileRoot(fileName: string, directoryTree: FileTree[]): string | undefined {
   let next = directoryTree.find((tree) => fileName.includes(tree.root))
   let curr
   while (next !== undefined && next !== null) {
     curr = next
     next = curr.children.find((tree) => fileName.includes(tree.root))
   }
-  if (!curr) {
-    throw new UnknownFilePackageError()
-  }
-  return curr.root
+  return curr?.root
 }

@@ -6,8 +6,7 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { UnknownFilePackageError } from '../../../main/exceptions/unknown-file-package-error.js'
-import { getFileRoot } from '../../../main/scopes/jsx/get-file-root.js'
+import { findFileRoot } from '../../../main/scopes/jsx/find-file-root.js'
 import { Fixture } from '../../__utils/fixture.js'
 
 describe('getFileRootPackage', () => {
@@ -15,23 +14,23 @@ describe('getFileRootPackage', () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      getFileRoot('src/something/nested-1/nested-2/nested-3-2/fileName', await fixture.parse())
+      findFileRoot('src/something/nested-1/nested-2/nested-3-2/fileName', await fixture.parse())
     ).toStrictEqual('src/something/nested-1/nested-2/nested-3-2')
   })
 
   it('correctly returns root package.json for top-level file', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
-    expect(
-      getFileRoot('src/something/fileName', await fixture.parse())
-    ).toStrictEqual('src/something')
+    expect(findFileRoot('src/something/fileName', await fixture.parse())).toStrictEqual(
+      'src/something'
+    )
   })
 
   it('correctly returns root package.json for nested file without nested matchers', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      getFileRoot('src/something/more/stuff/here/fileName', await fixture.parse())
+      findFileRoot('src/something/more/stuff/here/fileName', await fixture.parse())
     ).toStrictEqual('src/something')
   })
 
@@ -39,7 +38,7 @@ describe('getFileRootPackage', () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      getFileRoot('src/something/nested-1/nested-2/fileName', await fixture.parse())
+      findFileRoot('src/something/nested-1/nested-2/fileName', await fixture.parse())
     ).toStrictEqual('src/something/nested-1/nested-2')
   })
 
@@ -47,7 +46,7 @@ describe('getFileRootPackage', () => {
     const fixture = new Fixture('package-json-tree.json')
 
     await expect(async () =>
-      getFileRoot('src/fileName', await fixture.parse())
-    ).rejects.toThrow(UnknownFilePackageError)
+      findFileRoot('src/fileName', await fixture.parse())
+    ).resolves.toBeUndefined()
   })
 })

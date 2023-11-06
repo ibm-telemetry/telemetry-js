@@ -10,6 +10,7 @@ import { findAllJsxElements } from './find-all-jsx-elements.js'
 import {
   type ElementNodeHandlerMap,
   type JsxElementImportMatcher,
+  type JsxImportMatch,
   type PartialJsxElement
 } from './interfaces.js'
 import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
@@ -30,22 +31,32 @@ export function findInstrumentedJsxElements(
   instrumentedPkg: string,
   elementMatchers: JsxElementImportMatcher[],
   jsxNodeHandlerMap: ElementNodeHandlerMap
-): Record<string, PartialJsxElement[]> {
+): Record<string, Array<PartialJsxElement & { importElement: JsxImportMatch }>> {
   const fileData: Record<string, JsxScopeAccumulator> = {}
-  const elements: Record<string, PartialJsxElement[]> = {}
+  const elements: Record<string, Array<PartialJsxElement & { importElement: JsxImportMatch }>> = {}
   for (const sourceFile of sourceFiles) {
     fileData[sourceFile.fileName] = findAllJsxElements(sourceFile, jsxNodeHandlerMap)
   }
   Object.entries(fileData).forEach(([fileName, accumulator]) => {
     const importedIdentifiers = accumulator.imports
       .filter((i) => i.importPath.startsWith(instrumentedPkg))
-      .map((i) => i.elements)
+      .map((i) =>
+        i.elements.map((impEl) => {
+          return { ...impEl, importPath: i.importPath }
+        })
+      )
       .flat()
     elements[fileName] = []
     accumulator.elements.forEach((el) => {
-      const matcher = elementMatchers.find((c) => c.isMatch(el, importedIdentifiers))
-      if (matcher !== undefined) {
-        elements[fileName]?.push(el)
+      // TODOASKJOE
+      let match: JsxImportMatch | undefined
+      let iterator = 0
+      while (match === null && iterator < elementMatchers.length) {
+        match = elementMatchers[iterator]?.findMatch(el, importedIdentifiers)
+        iterator++
+      }
+      if (match !== undefined) {
+        elements[fileName]?.push({ ...el, importElement: match })
       }
     })
   })

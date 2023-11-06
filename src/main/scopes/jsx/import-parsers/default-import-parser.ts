@@ -16,7 +16,7 @@ import { type JsxImportElement } from '../interfaces.js'
 export class DefaultImportParser extends ImportClauseParser {
   /**
    * Determines if a given ImportClause ts node contains default imports
-   * (i.e. Import Something from 'the-library') and constructs and
+   * (i.e. `import Something from 'the-library'`) and constructs and
    * returns the constructed elements (if any) inside an array.
    *
    * @param importNode - Node to evaluate.
@@ -30,6 +30,7 @@ export class DefaultImportParser extends ImportClauseParser {
         if (element.propertyName?.escapedText === 'default') {
           defaultImports.push({
             name: '[Default]',
+            rename: element.name.escapedText.toString(),
             isDefault: true,
             isAll: false
           })
@@ -40,6 +41,7 @@ export class DefaultImportParser extends ImportClauseParser {
     if (!importNode.namedBindings && importNode.name) {
       defaultImports.push({
         name: '[Default]',
+        rename: importNode.name.escapedText.toString(),
         isDefault: true,
         isAll: false
       })

@@ -45,7 +45,13 @@ export class JsxElementMetric extends ScopeMetric {
       this.config?.collect?.jsx?.elements?.allowedAttributeNames ?? []
     const allowedAttributeStringValues: string[] =
       this.config?.collect?.jsx?.elements?.allowedAttributeStringValues ?? []
-    const { owner, name: invokerName } = getPackageDetails(this.logger, this.data.importedBy)
+    let owner, invokerName
+    if (this.data.importedBy !== undefined) {
+      const pkgDetails = getPackageDetails(this.logger, this.data.importedBy)
+      owner = pkgDetails.owner
+      invokerName = pkgDetails.name
+    }
+
     const metricData = hash(
       {
         ...this.data,
@@ -55,21 +61,27 @@ export class JsxElementMetric extends ScopeMetric {
       },
       ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
     )
+
     metricData.attributes = substitute(
-      this.data.attributes,
+      metricData.attributes,
       allowedAttributeNames,
       allowedAttributeStringValues
     )
 
+    const name =
+      metricData.importElement.rename != null
+        ? metricData.name.replace(metricData.importElement.rename, metricData.importElement.name)
+        : metricData.name
+
     return {
       raw: metricData.raw,
-      name: metricData.name,
+      name,
       attributeNames: metricData.attributes.map((attr) => attr.name),
       attributeValues: metricData.attributes.map((attr) => attr.value as string),
       'invoker.package.raw': metricData['invoker.package.raw'],
       'invoker.package.owner': metricData['invoker.package.owner'],
       'invoker.package.name': metricData['invoker.package.name'],
-      'module.specifier': metricData.importPath
+      'module.specifier': metricData.importElement.importPath
     }
   }
 }

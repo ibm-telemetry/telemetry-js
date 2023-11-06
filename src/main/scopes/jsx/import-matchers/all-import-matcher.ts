@@ -7,12 +7,13 @@
 
 import {
   type JsxElementImportMatcher,
-  type JsxImportElement,
+  type JsxImportMatch,
   type PartialJsxElement
 } from '../interfaces.js'
 
 /**
- * Identifies JsxElements that have been imported as all imports.
+ * Identifies JsxElements that have been imported as all imports,
+ * and returns an import element match (if any) or undefined otherwise.
  */
 export class AllImportMatcher implements JsxElementImportMatcher {
   /**
@@ -22,9 +23,12 @@ export class AllImportMatcher implements JsxElementImportMatcher {
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns True if element was imported as all, false otherwise.
+   * @returns Corresponding JsxImportElement if element was imported as an all import,
+   * undefined otherwise.
    */
-  isMatch(element: PartialJsxElement, imports: JsxImportElement[]) {
-    return element.prefix !== undefined && imports.some((i) => i.isAll && i.name === element.prefix)
+  findMatch(element: PartialJsxElement, imports: JsxImportMatch[]) {
+    return element.prefix !== undefined
+      ? imports.find((i) => i.isAll && i.name === element.prefix)
+      : undefined
   }
 }

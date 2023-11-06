@@ -23,12 +23,12 @@ export class RenamedImportParser extends ImportClauseParser {
    * @returns Array of JsxImportElement.
    */
   parse(importNode: ts.ImportClause) {
-    const namedImports: JsxImportElement[] = []
+    const renamedImports: JsxImportElement[] = []
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamedImports) {
       importNode.namedBindings.elements.forEach((element) => {
         if (element.propertyName && element.propertyName.escapedText !== 'default') {
-          namedImports.push({
+          renamedImports.push({
             name: element.propertyName.escapedText.toString(),
             rename: element.name.escapedText.toString(),
             isDefault: false,
@@ -38,6 +38,6 @@ export class RenamedImportParser extends ImportClauseParser {
       })
     }
 
-    return namedImports
+    return renamedImports
   }
 }

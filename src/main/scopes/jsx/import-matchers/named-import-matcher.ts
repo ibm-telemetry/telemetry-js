@@ -7,34 +7,26 @@
 
 import {
   type JsxElementImportMatcher,
-  type JsxImportElement,
+  type JsxImportMatch,
   type PartialJsxElement
 } from '../interfaces.js'
 
 /**
- * Identifies JsxElements that have been imported as named imports.
+ * Identifies JsxElements that have been imported as named imports,
+ * and returns an import element match (if any) or undefined otherwise.
  */
 export class NamedImportMatcher implements JsxElementImportMatcher {
   /**
-   * Determines if a given JsxElement is a named import (e.g.: import {something} from 'package).
+   * Determines if a given JsxElement is a named import (e.g.: `import {something} from 'package'`).
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns True if element was imported a named import, false otherwise.
+   * @returns Corresponding JsxImportElement if element was imported as a name import,
+   * undefined otherwise.
    */
-  isMatch(element: PartialJsxElement, imports: JsxImportElement[]) {
-    return (
-      element.prefix === undefined && imports.some((i) => !i.isDefault && i.name === element.name)
-    )
-  }
-
-  /**
-   * Sanitizes the contents of a given JsxElement.
-   *
-   * @param element - JsxElement to sanitize.
-   * @returns Sanitized version of element (in this case, the element itself).
-   */
-  getSanitizedElement(element: PartialJsxElement) {
-    return element
+  findMatch(element: PartialJsxElement, imports: JsxImportMatch[]) {
+    return element.prefix === undefined
+      ? imports.find((i) => !i.isDefault && !i.isAll && i.name === element.name)
+      : undefined
   }
 }

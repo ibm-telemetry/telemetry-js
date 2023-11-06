@@ -23,7 +23,8 @@ export async function getPackageJsonTree(cwd: string, logger: Logger): Promise<F
   const packageJsonFiles = await findNamedFiles(cwd, logger, 'package.json')
 
   // remove fileName to obtain directories, sort by level of nesting
-  const directories = packageJsonFiles.map((filename) => path.dirname(filename))
+  const directories = packageJsonFiles
+    .map((filename) => path.dirname(filename))
     .sort((a, b) => a.split('/').length - b.split('/').length)
 
   const tree: FileTree[] = []

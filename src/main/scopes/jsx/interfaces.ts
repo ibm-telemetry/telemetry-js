@@ -16,12 +16,12 @@ export interface Attribute {
 }
 
 export interface JsxElement {
-  name: string | undefined
+  name: string
   prefix: string | undefined
   raw: string
   attributes: JsxElementAttribute[]
-  importedBy: string
-  importPath: string
+  importedBy: string | undefined
+  importElement: JsxImportMatch
 }
 
 export interface JsxElementAttribute {
@@ -41,16 +41,21 @@ export interface JsxImportElement {
   isAll: boolean
 }
 
+// TODOASKJOE
+
+export type JsxImportMatch = JsxImportElement & { importPath: string }
+
 export interface FileTree {
   root: string
   children: FileTree[]
 }
 
 export interface JsxElementImportMatcher {
-  isMatch: (element: PartialJsxElement, imports: JsxImportElement[]) => boolean
+  findMatch: (element: PartialJsxElement, imports: JsxImportMatch[]) => JsxImportMatch | undefined
 }
 
-export type PartialJsxElement = Omit<JsxElement, 'importedBy'> & Partial<JsxElement>
+export type PartialJsxElement = Omit<JsxElement, 'importedBy' | 'importElement'> &
+Partial<JsxElement>
 
 type ElementNodeHandlerProducer = new (rootNode: ts.SourceFile) => ElementNodeHandler
 export type ElementNodeHandlerMap = Partial<Record<ts.SyntaxKind, ElementNodeHandlerProducer>>

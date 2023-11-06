@@ -7,7 +7,7 @@
 
 import {
   type JsxElementImportMatcher,
-  type JsxImportElement,
+  type JsxImportMatch,
   type PartialJsxElement
 } from '../interfaces.js'
 
@@ -17,23 +17,19 @@ import {
 export class RenamedImportMatcher implements JsxElementImportMatcher {
   /**
    * Determines if a given JsxElement is a renamed import
-   * (e.g.: import {something as somethingElse} from 'package).
+   * (e.g.: `import {something as somethingElse} from 'package'`)
+   * and returns an import element match (if any) or undefined otherwise.
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns True if element was imported a named import, false otherwise.
+   * @returns Corresponding JsxImportElement if element was imported as a renamed import,
+   * undefined otherwise.
    */
-  isMatch(element: PartialJsxElement, imports: JsxImportElement[]) {
-    return element.prefix !== undefined && imports.some((i) => i.rename === element.prefix)
-  }
-
-  /**
-   * Sanitizes the contents of a given JsxElement.
-   *
-   * @param element - JsxElement to sanitize.
-   * @returns Sanitized version of element (in this case, the element itself).
-   */
-  getSanitizedElement(element: PartialJsxElement) {
-    return element
+  findMatch(element: PartialJsxElement, imports: JsxImportMatch[]) {
+    if (element.prefix !== undefined) {
+      return imports.find((i) => i.rename === element.prefix)
+    } else {
+      return imports.find((i) => i.rename === element.name)
+    }
   }
 }

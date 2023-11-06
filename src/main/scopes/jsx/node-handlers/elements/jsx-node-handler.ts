@@ -22,8 +22,8 @@ export abstract class JsxNodeHandler extends ElementNodeHandler {
    * @returns Object containing name and prefix (as strings).
    */
   protected getElementNameAndPrefix(tagName: ts.JsxTagNameExpression) {
-    const [name, prefix] = tagName.getText(this.sourceNode).split('.')
-    return { name, prefix }
+    const [prefix, ...name] = tagName.getText(this.sourceNode).split('.')
+    return { name: name.join('.'), prefix }
   }
 
   /**

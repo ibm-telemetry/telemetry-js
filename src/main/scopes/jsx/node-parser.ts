@@ -40,7 +40,7 @@ export class NodeParser {
     const Handler = this.nodeHandlerMap[node.kind]
 
     if (Handler !== undefined) {
-      const handler = new Handler(rootNode ?? node as ts.SourceFile)
+      const handler = new Handler(rootNode ?? (node as ts.SourceFile))
       handler.handle(node, this.accumulator)
     }
 

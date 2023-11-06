@@ -7,7 +7,7 @@
 
 import {
   type JsxElementImportMatcher,
-  type JsxImportElement,
+  type JsxImportMatch,
   type PartialJsxElement
 } from '../interfaces.js'
 
@@ -16,17 +16,17 @@ import {
  */
 export class DefaultImportMatcher implements JsxElementImportMatcher {
   /**
-   * Determines if a given JsxElement is a default import (e.g.: import something from 'package')
-   * that matches the supplied list of import elements.
+   * Determines if a given JsxElement is a default import (e.g.: `import something from 'package'`)
+   * and returns an import element match (if any) or undefined otherwise.
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns True if element was imported as a default, false otherwise.
+   * @returns Corresponding JsxImportElement if element was imported as a default,
+   * undefined otherwise.
    */
-  isMatch(element: PartialJsxElement, imports: JsxImportElement[]) {
-    return (
-      element.prefix !== undefined &&
-      imports.some((i) => i.isDefault && (i.name === element.prefix || i.name === element.name))
-    )
+  findMatch(element: PartialJsxElement, imports: JsxImportMatch[]) {
+    return element.prefix !== undefined
+      ? imports.find((i) => i.isDefault && (i.name === element.prefix || i.name === element.name))
+      : undefined
   }
 }

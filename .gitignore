@@ -19,4 +19,4 @@ src/schemas/telemetry-config.schema.json
 .env
 
 # Allow node_modules folders in test fixtures
-!src/test/__fixtures/projects/**/node_modules
+!src/test/__fixtures/projects/**/node_modules/

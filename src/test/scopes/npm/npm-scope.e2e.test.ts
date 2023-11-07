@@ -46,6 +46,17 @@ describe('class: NpmScope', () => {
 
       const results = await metricReader.collect()
 
+      // Metric timestamps change every run, so change them to a fixed value when comparing against
+      // snapshots
+      results.resourceMetrics.scopeMetrics.forEach((scopeMetric) => {
+        scopeMetric.metrics.forEach((metric) => {
+          metric.dataPoints.forEach((dataPoint) => {
+            ;(dataPoint as { startTime: [number, number] }).startTime = [0, 0]
+            ;(dataPoint as { endTime: [number, number] }).endTime = [0, 0]
+          })
+        })
+      })
+
       expect(results).toMatchSnapshot()
     })
 

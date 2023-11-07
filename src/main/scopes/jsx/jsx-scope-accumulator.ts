@@ -25,7 +25,7 @@ export class JsxScopeAccumulator {
    *
    * @param importData - Import object to add to the state.
    */
-  public storeImport(importData: JsxImport) {
+  public addImport(importData: JsxImport) {
     this.imports.push(importData)
   }
 
@@ -34,7 +34,7 @@ export class JsxScopeAccumulator {
    *
    * @param element - JsxElement object to add to the state.
    */
-  public storeElement(element: PartialJsxElement) {
+  public addElement(element: PartialJsxElement) {
     this.elements.push(element)
   }
 }

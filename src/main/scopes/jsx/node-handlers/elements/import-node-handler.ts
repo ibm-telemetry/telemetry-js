@@ -26,7 +26,7 @@ export class ImportNodeHandler extends ElementNodeHandler {
    * @param accumulator - JsxAccumulator instance that holds the aggregated imports state.
    */
   handle(node: ts.ImportDeclaration, accumulator: JsxScopeAccumulator) {
-    accumulator.storeImport(this.getData(node))
+    accumulator.addImport(this.getData(node))
   }
 
   /**

@@ -36,11 +36,15 @@ export const CustomResourceAttributes = Object.freeze({
   VERSION_PRE_RELEASE: 'version.preRelease',
 
   //
-  // Attributes relating to a dependency
+  // Attributes relating to a metric
   //
   RAW: 'raw',
-  OWNER: 'owner',
   NAME: 'name',
+
+  //
+  // Attributes relating to a dependency
+  //
+  OWNER: 'owner',
 
   //
   // Attributes relating to a dependency's installer
@@ -52,5 +56,19 @@ export const CustomResourceAttributes = Object.freeze({
   INSTALLER_VERSION_MAJOR: 'installer.version.major',
   INSTALLER_VERSION_MINOR: 'installer.version.minor',
   INSTALLER_VERSION_PATCH: 'installer.version.patch',
-  INSTALLER_VERSION_PRE_RELEASE: 'installer.version.preRelease'
+  INSTALLER_VERSION_PRE_RELEASE: 'installer.version.preRelease',
+
+  //
+  // Attributes relating to a jsx element
+  //
+  ATTRIBUTE_NAMES: 'attribute.names',
+  ATTRIBUTE_VALUES: 'attribute.values',
+  MODULE_SPECIFIER: 'module.specifier',
+
+  //
+  // Attributes relating to a jsx element's invoker
+  //
+  INVOKER_PACKAGE_RAW: 'invoker.package.raw',
+  INVOKER_PACKAGE_NAME: 'invoker.package.name',
+  INVOKER_PACKAGE_OWNER: 'invoker.package.owner'
 })

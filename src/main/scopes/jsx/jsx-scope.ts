@@ -5,15 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import ts from 'typescript'
-
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { findFileRoot } from './find-file-root.js'
 import { findInstrumentedJsxElements } from './find-instrumented-jsx-elements.js'
-import { findProjectFiles } from './find-project-files.js'
+import { getJsxSourceFiles } from './get-jsx-source-files.js'
 import { getPackageJsonTree } from './get-package-json-tree.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { DefaultImportMatcher } from './import-matchers/default-import-matcher.js'
@@ -58,10 +56,8 @@ export class JsxScope extends Scope {
    */
   @Trace()
   private async collectJsxElements(): Promise<void> {
-    const fileNames = await findProjectFiles(this.cwd, this.logger, ['js', 'jsx', 'ts', 'tsx'])
     const instrumentedPkg = await getPackageData(this.cwd, this.logger)
-    const program = ts.createProgram(fileNames, {})
-    const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
+    const sourceFiles = await getJsxSourceFiles(this.cwd, this.logger)
     const elements = findInstrumentedJsxElements(
       sourceFiles,
       instrumentedPkg.name,
@@ -81,7 +77,15 @@ export class JsxScope extends Scope {
     await Promise.allSettled(promises)
   }
 
-  // TODO docs
+  /**
+   * Generates metrics for all discovered instrumented jsx elements found
+   * in a given file.
+   *
+   * @param fileName - FileName of the file to generate metrics for.
+   * @param elements - Previously discovered instrumented elements contained in the file.
+   * @param packageJsonTree - Tree-like structure of package.json files contained in the project,
+   * used to map the given file to a package.
+   */
   @Trace()
   async captureFileElements(
     fileName: string,

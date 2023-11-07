@@ -7,6 +7,7 @@
 
 import * as ts from 'typescript'
 
+import { DEFAULT_ELEMENT_NAME, DEFAULT_IMPORT_KEY } from '../constants.js'
 import { ImportClauseParser } from '../import-clause-parser.js'
 import { type JsxImportElement } from '../interfaces.js'
 
@@ -27,9 +28,9 @@ export class DefaultImportParser extends ImportClauseParser {
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamedImports) {
       importNode.namedBindings.elements.forEach((element) => {
-        if (element.propertyName?.escapedText === 'default') {
+        if (element.propertyName?.escapedText === DEFAULT_IMPORT_KEY) {
           defaultImports.push({
-            name: '[Default]',
+            name: DEFAULT_ELEMENT_NAME,
             rename: element.name.escapedText.toString(),
             isDefault: true,
             isAll: false
@@ -40,7 +41,7 @@ export class DefaultImportParser extends ImportClauseParser {
 
     if (!importNode.namedBindings && importNode.name) {
       defaultImports.push({
-        name: '[Default]',
+        name: DEFAULT_ELEMENT_NAME,
         rename: importNode.name.escapedText.toString(),
         isDefault: true,
         isAll: false

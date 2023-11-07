@@ -8,6 +8,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { type Attributes } from '@opentelemetry/api'
 
 import { hash, substitute } from '../../../core/anonymize.js'
+import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import { getPackageDetails } from '../../utils/get-package-details.js'
@@ -55,9 +56,9 @@ export class JsxElementMetric extends ScopeMetric {
     const metricData = hash(
       {
         ...this.data,
-        'invoker.package.raw': this.data.importedBy,
-        'invoker.package.owner': owner,
-        'invoker.package.name': invokerName
+        [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: this.data.importedBy,
+        [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: owner,
+        [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: invokerName
       },
       ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
     )
@@ -74,14 +75,16 @@ export class JsxElementMetric extends ScopeMetric {
         : metricData.name
 
     return {
-      raw: metricData.raw,
-      name,
-      attributeNames: metricData.attributes.map((attr) => attr.name),
-      attributeValues: metricData.attributes.map((attr) => attr.value as string),
-      'invoker.package.raw': metricData['invoker.package.raw'],
-      'invoker.package.owner': metricData['invoker.package.owner'],
-      'invoker.package.name': metricData['invoker.package.name'],
-      'module.specifier': metricData.importElement.importPath
+      [CustomResourceAttributes.RAW]: metricData.raw,
+      [CustomResourceAttributes.NAME]: name,
+      [CustomResourceAttributes.ATTRIBUTE_NAMES]: metricData.attributes.map((attr) => attr.name),
+      [CustomResourceAttributes.ATTRIBUTE_VALUES]: metricData.attributes.map(
+        (attr) => attr.value as string
+      ),
+      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: metricData['invoker.package.raw'],
+      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: metricData['invoker.package.owner'],
+      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: metricData['invoker.package.name'],
+      [CustomResourceAttributes.MODULE_SPECIFIER]: metricData.importElement.importPath
     }
   }
 }

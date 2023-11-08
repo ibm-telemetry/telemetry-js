@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest'
 import { findDeepestContainingDirectory } from '../../../main/scopes/jsx/find-deepest-containing-directory.js'
 import { Fixture } from '../../__utils/fixture.js'
 
+// TODO: fix
 describe('findDeepestContainingDirectory', () => {
   it('correctly returns leaf package.json for nested file', async () => {
     const fixture = new Fixture('package-json-tree.json')

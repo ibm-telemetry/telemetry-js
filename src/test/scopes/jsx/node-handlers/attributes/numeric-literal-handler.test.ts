@@ -7,6 +7,7 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
+import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/get-tracked-source-files.js'
 import { NumericLiteralHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/numeric-literal-handler.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
@@ -17,10 +18,7 @@ describe('numericLiteralHandler', () => {
 
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/simple.tsx')
-    const program = ts.createProgram([fixture.path], {})
-    const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
-
-    const sourceFile = sourceFiles[0] as ts.SourceFile
+    const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
     const handler = new NumericLiteralHandler(sourceFile, logger)
 

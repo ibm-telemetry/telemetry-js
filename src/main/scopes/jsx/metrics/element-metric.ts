@@ -64,14 +64,18 @@ export class ElementMetric extends ScopeMetric {
     const packageDetails = new PackageDetailsProvider(this.logger).getPackageDetails(this.invoker)
 
     let metricData = {
-      raw: this.jsxElement.raw,
-      name: this.jsxElement.name,
-      'module.specifier': this.matchingImport.path,
-      'attribute.names': this.jsxElement.attributes.map((attr) => attr.name),
-      'attribute.values': this.jsxElement.attributes.map((attr) => attr.value),
-      'invoker.package.raw': this.invoker,
-      'invoker.package.owner': packageDetails.owner,
-      'invoker.package.name': packageDetails.name
+      [CustomResourceAttributes.RAW]: this.jsxElement.raw,
+      [CustomResourceAttributes.NAME]: this.jsxElement.name,
+      [CustomResourceAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
+      [CustomResourceAttributes.ATTRIBUTE_NAMES]: this.jsxElement.attributes.map(
+        (attr) => attr.name
+      ),
+      [CustomResourceAttributes.ATTRIBUTE_VALUES]: this.jsxElement.attributes.map(
+        (attr) => attr.value
+      ),
+      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
+      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: packageDetails.owner,
+      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: packageDetails.name
     }
 
     // Handle renamed elements
@@ -83,10 +87,10 @@ export class ElementMetric extends ScopeMetric {
     }
 
     metricData = hash(metricData, [
-      'raw',
-      'invoker.package.raw',
-      'invoker.package.owner',
-      'invoker.package.name'
+      CustomResourceAttributes.RAW,
+      CustomResourceAttributes.INVOKER_PACKAGE_RAW,
+      CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
+      CustomResourceAttributes.INVOKER_PACKAGE_NAME
     ])
 
     metricData = substitute(

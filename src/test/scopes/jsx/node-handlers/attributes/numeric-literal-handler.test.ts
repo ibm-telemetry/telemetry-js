@@ -10,8 +10,11 @@ import { describe, expect, it } from 'vitest'
 import { NumericLiteralHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/numeric-literal-handler.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
+import { initLogger } from '../../../../__utils/init-logger.js'
 
 describe('numericLiteralHandler', () => {
+  const logger = initLogger()
+
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/simple.tsx')
     const program = ts.createProgram([fixture.path], {})
@@ -19,7 +22,7 @@ describe('numericLiteralHandler', () => {
 
     const sourceFile = sourceFiles[0] as ts.SourceFile
 
-    const handler = new NumericLiteralHandler(sourceFile)
+    const handler = new NumericLiteralHandler(sourceFile, logger)
 
     expect(
       handler.getData(

@@ -8,7 +8,7 @@
 import * as ts from 'typescript'
 
 import { ImportClauseParser } from '../import-clause-parser.js'
-import { type JsxImportElement } from '../interfaces.js'
+import { type JsxImport } from '../interfaces.js'
 
 /**
  * Identifies Import nodes that have been imported as a rename.
@@ -20,16 +20,18 @@ export class RenamedImportParser extends ImportClauseParser {
    * returns the constructed elements (if any) inside an array.
    *
    * @param importNode - Node to evaluate.
+   * @param importPath - Module from which the import was imported.
    * @returns Array of JsxImportElement.
    */
-  parse(importNode: ts.ImportClause) {
-    const renamedImports: JsxImportElement[] = []
+  parse(importNode: ts.ImportClause, importPath: string) {
+    const renamedImports: JsxImport[] = []
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamedImports) {
       importNode.namedBindings.elements.forEach((element) => {
         if (element.propertyName && element.propertyName.escapedText !== 'default') {
           renamedImports.push({
             name: element.propertyName.escapedText.toString(),
+            path: importPath,
             rename: element.name.escapedText.toString(),
             isDefault: false,
             isAll: false

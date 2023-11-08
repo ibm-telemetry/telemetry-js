@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {
-  type JsxElementImportMatcher,
-  type JsxImportMatch,
-  type PartialJsxElement
-} from '../interfaces.js'
+import { type JsxElement, type JsxElementImportMatcher, type JsxImport } from '../interfaces.js'
 
 /**
  * Identifies JsxElements that have been imported as all imports,
@@ -26,7 +22,7 @@ export class AllImportMatcher implements JsxElementImportMatcher {
    * @returns Corresponding JsxImportElement if element was imported as an all import,
    * undefined otherwise.
    */
-  findMatch(element: PartialJsxElement, imports: JsxImportMatch[]) {
+  findMatch(element: JsxElement, imports: JsxImport[]) {
     return element.prefix !== undefined
       ? imports.find((i) => i.isAll && i.name === element.prefix)
       : undefined

@@ -7,12 +7,21 @@
 
 import type * as ts from 'typescript'
 
-import { type AstNodeHandler } from './ast-node-handler.js'
+import { type Logger } from '../../core/log/logger.js'
 import { type ElementNodeHandler } from './element-node-handler.js'
+import { type AttributeNodeHandler } from './node-handlers/attributes/attribute-node-handler.js'
 
-export interface Attribute {
+export interface JsxElementAttribute {
   name: string
-  value: unknown
+  value: string
+}
+
+export interface JsxImport {
+  name: string
+  path: string
+  isDefault: boolean
+  isAll: boolean
+  rename?: string
 }
 
 export interface JsxElement {
@@ -20,45 +29,27 @@ export interface JsxElement {
   prefix: string | undefined
   raw: string
   attributes: JsxElementAttribute[]
-  importedBy: string | undefined
-  importElement: JsxImportMatch
 }
-
-export interface JsxElementAttribute {
-  name: string | undefined
-  value: unknown
-}
-
-export interface JsxImport {
-  importPath: string
-  elements: JsxImportElement[]
-}
-
-export interface JsxImportElement {
-  name: string
-  isDefault: boolean
-  rename?: string
-  isAll: boolean
-}
-
-// TODOASKJOE
-
-export type JsxImportMatch = JsxImportElement & { importPath: string }
 
 export interface FileTree {
-  root: string
+  path: string
   children: FileTree[]
 }
 
 export interface JsxElementImportMatcher {
-  findMatch: (element: PartialJsxElement, imports: JsxImportMatch[]) => JsxImportMatch | undefined
+  findMatch: (element: JsxElement, imports: JsxImport[]) => JsxImport | undefined
 }
 
-export type PartialJsxElement = Omit<JsxElement, 'importedBy' | 'importElement'> &
-Partial<JsxElement>
+type ElementNodeHandlerClass<DataType> = new (
+  node: ts.SourceFile,
+  logger: Logger
+) => ElementNodeHandler<DataType>
 
-type ElementNodeHandlerProducer = new (rootNode: ts.SourceFile) => ElementNodeHandler
-export type ElementNodeHandlerMap = Partial<Record<ts.SyntaxKind, ElementNodeHandlerProducer>>
+export type ElementNodeHandlerMap = Partial<Record<ts.SyntaxKind, ElementNodeHandlerClass<unknown>>>
 
-type AstNodeHandlerProducer = new (rootNode: ts.SourceFile) => AstNodeHandler
-export type AstNodeHandlerMap = Partial<Record<ts.SyntaxKind, AstNodeHandlerProducer>>
+type AttributeNodeHandlerProducer = new (
+  node: ts.SourceFile,
+  logger: Logger
+) => AttributeNodeHandler
+
+export type AttributeNodeHandlerMap = Partial<Record<ts.SyntaxKind, AttributeNodeHandlerProducer>>

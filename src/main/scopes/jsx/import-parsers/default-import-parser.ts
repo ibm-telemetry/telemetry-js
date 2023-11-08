@@ -9,7 +9,7 @@ import * as ts from 'typescript'
 
 import { DEFAULT_ELEMENT_NAME, DEFAULT_IMPORT_KEY } from '../constants.js'
 import { ImportClauseParser } from '../import-clause-parser.js'
-import { type JsxImportElement } from '../interfaces.js'
+import { type JsxImport } from '../interfaces.js'
 
 /**
  * Identifies Import nodes that have been imported as default.
@@ -21,16 +21,18 @@ export class DefaultImportParser extends ImportClauseParser {
    * returns the constructed elements (if any) inside an array.
    *
    * @param importNode - Node to evaluate.
+   * @param importPath - Module from which the import was imported.
    * @returns Array of JsxImportElement.
    */
-  parse(importNode: ts.ImportClause) {
-    const defaultImports: JsxImportElement[] = []
+  parse(importNode: ts.ImportClause, importPath: string) {
+    const defaultImports: JsxImport[] = []
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamedImports) {
       importNode.namedBindings.elements.forEach((element) => {
         if (element.propertyName?.escapedText === DEFAULT_IMPORT_KEY) {
           defaultImports.push({
             name: DEFAULT_ELEMENT_NAME,
+            path: importPath,
             rename: element.name.escapedText.toString(),
             isDefault: true,
             isAll: false
@@ -42,6 +44,7 @@ export class DefaultImportParser extends ImportClauseParser {
     if (!importNode.namedBindings && importNode.name) {
       defaultImports.push({
         name: DEFAULT_ELEMENT_NAME,
+        path: importPath,
         rename: importNode.name.escapedText.toString(),
         isDefault: true,
         isAll: false

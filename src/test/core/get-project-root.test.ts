@@ -7,20 +7,15 @@
 import path from 'node:path'
 import url from 'node:url'
 
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { getProjectRoot } from '../../main/core/get-project-root.js'
-import { createLogFilePath } from '../../main/core/log/create-log-file-path.js'
-import { Logger } from '../../main/core/log/logger.js'
 import { RunCommandError } from '../../main/exceptions/run-command-error.js'
 import { Fixture } from '../__utils/fixture.js'
-
-const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+import { initLogger } from '../__utils/init-logger.js'
 
 describe('getProjectRoot', () => {
-  afterAll(async () => {
-    await logger.close()
-  })
+  const logger = initLogger()
 
   it('correctly gets project root', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules')

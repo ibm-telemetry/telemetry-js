@@ -10,9 +10,13 @@ import { type ElementNodeHandlerMap } from './interfaces.js'
 import { ImportNodeHandler } from './node-handlers/elements/import-node-handler.js'
 import { JsxElementNodeHandler } from './node-handlers/elements/jsx-element-node-handler.js'
 import { JsxSelfClosingElementNodeHandler } from './node-handlers/elements/jsx-self-closing-element-node-handler.js'
-// Maps node kinds to handlers that know how to process them
-// to generate JsxElement metrics for the JsxScope
-export const JsxNodeHandlerMap: ElementNodeHandlerMap = {
+
+//
+/**
+ * Maps node kinds to handlers that know how to process them to generate JsxElement metrics for the
+ * JsxScope.
+ */
+export const jsxNodeHandlerMap: ElementNodeHandlerMap = {
   [ts.SyntaxKind.ImportDeclaration]: ImportNodeHandler,
   [ts.SyntaxKind.JsxElement]: JsxElementNodeHandler,
   [ts.SyntaxKind.JsxSelfClosingElement]: JsxSelfClosingElementNodeHandler

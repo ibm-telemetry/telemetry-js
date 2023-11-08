@@ -6,13 +6,13 @@
  */
 import type * as ts from 'typescript'
 
-import { AstNodeHandler } from '../../ast-node-handler.js'
+import { AttributeNodeHandler } from './attribute-node-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a UndefinedKeyword kind.
  *
  */
-export class UndefinedKeywordHandler extends AstNodeHandler {
+export class UndefinedKeywordHandler extends AttributeNodeHandler {
   /**
    * Extracts string value of node.
    *

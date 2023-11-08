@@ -6,13 +6,13 @@
  */
 import type * as ts from 'typescript'
 
-import { AstNodeHandler } from '../../ast-node-handler.js'
+import { AttributeNodeHandler } from './attribute-node-handler.js'
 
 /**
  * Holds logic to extract raw data from an AST node.
  *
  */
-export class DefaultHandler extends AstNodeHandler {
+export class DefaultHandler extends AttributeNodeHandler {
   /**
    * Extracts raw string representation of node.
    *
@@ -20,6 +20,6 @@ export class DefaultHandler extends AstNodeHandler {
    * @returns Text value of node.
    */
   public getData(node: ts.Node) {
-    return this.sourceNode.text.substring(node.pos, node.end).trim()
+    return this.sourceFile.text.substring(node.pos, node.end).trim()
   }
 }

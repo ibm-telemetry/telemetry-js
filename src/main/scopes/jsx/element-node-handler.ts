@@ -7,8 +7,9 @@
 
 import type * as ts from 'typescript'
 
-import { AstNodeHandler } from './ast-node-handler.js'
-import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
+import { Loggable } from '../../core/log/loggable.js'
+import { type Logger } from '../../core/log/logger.js'
+import { type JsxElementAccumulator } from './jsx-element-accumulator.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
@@ -16,6 +17,15 @@ import { type JsxScopeAccumulator } from './jsx-scope-accumulator.js'
  * @param node - Node element to process.
  * @param accumulator - Keeps the state of the collected data (by the handlers).
  */
-export abstract class ElementNodeHandler extends AstNodeHandler {
-  abstract handle(node: ts.Node, accumulator: JsxScopeAccumulator): void
+export abstract class ElementNodeHandler<DataType> extends Loggable {
+  protected readonly sourceFile: ts.SourceFile
+
+  constructor(sourceFile: ts.SourceFile, logger: Logger) {
+    super(logger)
+    this.sourceFile = sourceFile
+  }
+
+  abstract handle(node: ts.Node, accumulator: JsxElementAccumulator): void
+
+  abstract getData(node: ts.Node): DataType
 }

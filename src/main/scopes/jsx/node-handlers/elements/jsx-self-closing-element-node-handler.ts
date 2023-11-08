@@ -6,8 +6,8 @@
  */
 import type * as ts from 'typescript'
 
-import { type PartialJsxElement } from '../../interfaces.js'
-import { type JsxScopeAccumulator } from '../../jsx-scope-accumulator.js'
+import { type JsxElement } from '../../interfaces.js'
+import { type JsxElementAccumulator } from '../../jsx-element-accumulator.js'
 import { JsxNodeHandler } from './jsx-node-handler.js'
 
 /**
@@ -21,8 +21,8 @@ export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler {
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated elements state.
    */
-  handle(node: ts.JsxSelfClosingElement, accumulator: JsxScopeAccumulator) {
-    accumulator.addElement(this.getData(node))
+  handle(node: ts.JsxSelfClosingElement, accumulator: JsxElementAccumulator) {
+    accumulator.elements.push(this.getData(node))
   }
 
   /**
@@ -31,14 +31,14 @@ export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler {
    * @param node - Node element to process.
    * @returns Constructed JsxElement object.
    */
-  getData(node: ts.JsxSelfClosingElement): PartialJsxElement {
+  getData(node: ts.JsxSelfClosingElement): JsxElement {
     const { name, prefix } = this.getElementNameAndPrefix(node.tagName)
 
     return {
       name,
       prefix,
       attributes: this.getElementAttributes(node.attributes),
-      raw: this.sourceNode.text.substring(node.pos, node.end).trim()
+      raw: this.sourceFile.text.substring(node.pos, node.end).trim()
     }
   }
 }

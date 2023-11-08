@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {
-  type JsxElementImportMatcher,
-  type JsxImportMatch,
-  type PartialJsxElement
-} from '../interfaces.js'
+import { type JsxElement, type JsxElementImportMatcher, type JsxImport } from '../interfaces.js'
 
 /**
  * Identifies JsxElements that have been imported as default imports.
@@ -21,10 +17,10 @@ export class DefaultImportMatcher implements JsxElementImportMatcher {
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns Corresponding JsxImportElement if element was imported as a default,
+   * @returns Corresponding JsxImport if element was imported as a default,
    * undefined otherwise.
    */
-  findMatch(element: PartialJsxElement, imports: JsxImportMatch[]) {
+  findMatch(element: JsxElement, imports: JsxImport[]) {
     return element.prefix !== undefined
       ? imports.find((i) => i.isDefault && (i.name === element.prefix || i.name === element.name))
       : undefined

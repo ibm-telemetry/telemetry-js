@@ -4,24 +4,19 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
-import { Logger } from '../../../main/core/log/logger.js'
 import { Trace } from '../../../main/core/log/trace.js'
 import { LoggerNotFoundError } from '../../../main/exceptions/logger-not-found-error.js'
-
-const testLogger = new Logger(await createLogFilePath(new Date().toISOString()))
+import { initLogger } from '../../__utils/init-logger.js'
 
 describe('trace', () => {
-  afterAll(async () => {
-    await testLogger.close()
-  })
+  const logger = initLogger()
 
   it('returns the original value', () => {
     const testTraceableMethod = (arg: string) => arg + 'hello'
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
 
@@ -45,7 +40,7 @@ describe('trace', () => {
   })
 
   it('returns early if descriptor does not have a value', () => {
-    const descriptor = { value: null, logger: testLogger }
+    const descriptor = { value: null, logger }
 
     // Decorate the function
 
@@ -57,7 +52,7 @@ describe('trace', () => {
   it('works with a promise', async () => {
     const testTraceableMethod = async (arg: string) => await Promise.resolve(arg)
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -72,7 +67,7 @@ describe('trace', () => {
       throw new Error(arg)
     }
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -93,7 +88,7 @@ describe('trace', () => {
       return new Error(arg)
     }
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -104,7 +99,7 @@ describe('trace', () => {
   it('works with a promise that throws an exception', async () => {
     const testTraceableMethod = async (arg: string) => await Promise.reject(new Error(arg))
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -122,7 +117,7 @@ describe('trace', () => {
   it('works with an undefined return value', () => {
     const testTraceableMethod = () => undefined
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -135,7 +130,7 @@ describe('trace', () => {
   it('works with a symbol', () => {
     const testTraceableMethod = () => Symbol('asdf')
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -147,7 +142,7 @@ describe('trace', () => {
   it('works with a bigint', () => {
     const testTraceableMethod = () => BigInt(123)
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     // Decorate the function
     Trace()({}, 'testFunctionName', descriptor)
@@ -159,7 +154,7 @@ describe('trace', () => {
   it('preserves metadata', () => {
     const testTraceableMethod = (arg: string) => arg
 
-    const descriptor = { value: testTraceableMethod, logger: testLogger }
+    const descriptor = { value: testTraceableMethod, logger }
 
     const metadataKey = 'testing123'
 

@@ -6,31 +6,37 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { findFileRoot } from '../../../main/scopes/jsx/find-file-root.js'
+import { findDeepestContainingDirectory } from '../../../main/scopes/jsx/find-deepest-containing-directory.js'
 import { Fixture } from '../../__utils/fixture.js'
 
-describe('getFileRootPackage', () => {
+describe('findDeepestContainingDirectory', () => {
   it('correctly returns leaf package.json for nested file', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      findFileRoot('src/something/nested-1/nested-2/nested-3-2/fileName', await fixture.parse())
+      findDeepestContainingDirectory(
+        'src/something/nested-1/nested-2/nested-3-2/fileName',
+        await fixture.parse()
+      )
     ).toStrictEqual('src/something/nested-1/nested-2/nested-3-2')
   })
 
   it('correctly returns root package.json for top-level file', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
-    expect(findFileRoot('src/something/fileName', await fixture.parse())).toStrictEqual(
-      'src/something'
-    )
+    expect(
+      findDeepestContainingDirectory('src/something/fileName', await fixture.parse())
+    ).toStrictEqual('src/something')
   })
 
   it('correctly returns root package.json for nested file without nested matchers', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      findFileRoot('src/something/more/stuff/here/fileName', await fixture.parse())
+      findDeepestContainingDirectory(
+        'src/something/more/stuff/here/fileName',
+        await fixture.parse()
+      )
     ).toStrictEqual('src/something')
   })
 
@@ -38,7 +44,10 @@ describe('getFileRootPackage', () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      findFileRoot('src/something/nested-1/nested-2/fileName', await fixture.parse())
+      findDeepestContainingDirectory(
+        'src/something/nested-1/nested-2/fileName',
+        await fixture.parse()
+      )
     ).toStrictEqual('src/something/nested-1/nested-2')
   })
 
@@ -46,7 +55,7 @@ describe('getFileRootPackage', () => {
     const fixture = new Fixture('package-json-tree.json')
 
     await expect(async () =>
-      findFileRoot('src/fileName', await fixture.parse())
+      findDeepestContainingDirectory('src/fileName', await fixture.parse())
     ).resolves.toBeUndefined()
   })
 })

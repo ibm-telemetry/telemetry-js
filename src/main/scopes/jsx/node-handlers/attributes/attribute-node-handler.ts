@@ -7,16 +7,20 @@
 
 import type * as ts from 'typescript'
 
+import { Loggable } from '../../../../core/log/loggable.js'
+import { type Logger } from '../../../../core/log/logger.js'
+
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
  */
-export abstract class AstNodeHandler {
-  protected readonly sourceNode: ts.SourceFile
+export abstract class AttributeNodeHandler extends Loggable {
+  protected readonly sourceFile: ts.SourceFile
 
   // Top-level root node containing raw text data (usually source file node).
-  constructor(sourceNode: ts.SourceFile) {
-    this.sourceNode = sourceNode
+  constructor(sourceFile: ts.SourceFile, logger: Logger) {
+    super(logger)
+    this.sourceFile = sourceFile
   }
 
-  abstract getData(node: ts.Node): unknown
+  abstract getData(node: ts.Node): string
 }

@@ -12,21 +12,21 @@ import { DefaultImportParser } from '../../import-parsers/default-import-parser.
 import { NamedImportParser } from '../../import-parsers/named-import-parser.js'
 import { RenamedImportParser } from '../../import-parsers/renamed-import-parser.js'
 import { type JsxImport } from '../../interfaces.js'
-import { type JsxScopeAccumulator } from '../../jsx-scope-accumulator.js'
+import { type JsxElementAccumulator } from '../../jsx-element-accumulator.js'
 
 /**
  * Holds logic to construct a JsxImport object given an ImportDeclaration node.
  *
  */
-export class ImportNodeHandler extends ElementNodeHandler {
+export class ImportNodeHandler extends ElementNodeHandler<JsxImport[]> {
   /**
    * Processes an ImportDeclaration node data and adds it to the given accumulator.
    *
    * @param node - Node element to process.
    * @param accumulator - JsxAccumulator instance that holds the aggregated imports state.
    */
-  handle(node: ts.ImportDeclaration, accumulator: JsxScopeAccumulator) {
-    accumulator.addImport(this.getData(node))
+  handle(node: ts.ImportDeclaration, accumulator: JsxElementAccumulator) {
+    accumulator.imports.push(...this.getData(node))
   }
 
   /**
@@ -35,7 +35,7 @@ export class ImportNodeHandler extends ElementNodeHandler {
    * @param node - Node element to process.
    * @returns Constructed JsxImport object.
    */
-  getData(node: ts.ImportDeclaration): JsxImport {
+  getData(node: ts.ImportDeclaration): JsxImport[] {
     const importParsers = [
       new AllImportParser(),
       new DefaultImportParser(),
@@ -43,15 +43,15 @@ export class ImportNodeHandler extends ElementNodeHandler {
       new RenamedImportParser()
     ]
 
-    const jsxImport: JsxImport = {
-      importPath: node.moduleSpecifier.getText(this.sourceNode),
-      elements: []
-    }
+    const results: JsxImport[] = []
+
     const importClause = node.importClause
+    const importPath = node.moduleSpecifier.getText(this.sourceFile)
 
     if (importClause) {
-      importParsers.forEach((parser) => jsxImport.elements.push(...parser.parse(importClause)))
+      importParsers.forEach((parser) => results.push(...parser.parse(importClause, importPath)))
     }
-    return jsxImport
+
+    return results
   }
 }

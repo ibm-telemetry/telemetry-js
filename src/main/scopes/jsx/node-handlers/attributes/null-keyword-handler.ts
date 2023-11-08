@@ -6,13 +6,13 @@
  */
 import type * as ts from 'typescript'
 
-import { AstNodeHandler } from '../../ast-node-handler.js'
+import { AttributeNodeHandler } from './attribute-node-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a NullKeyword kind.
  *
  */
-export class NullKeywordHandler extends AstNodeHandler {
+export class NullKeywordHandler extends AttributeNodeHandler {
   /**
    * Extracts string value of node.
    *

@@ -10,12 +10,12 @@ import { type Attributes } from '@opentelemetry/api'
 import { anonymize } from '../../../core/anonymize.js'
 import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
+import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { getPackageDetails } from '../../utils/get-package-details.js'
 
 export interface DependencyData {
-  name: string
-  version: string
+  rawName: string
+  rawVersion: string
   installerRawName: string
   installerRawVersion: string
 }
@@ -24,7 +24,8 @@ export interface DependencyData {
  * NPM scope metric that generates a dependency.count individual metric for a given dependency.
  */
 export class DependencyMetric extends ScopeMetric {
-  public override name: string
+  public override name = 'dependency.count' as const
+
   private readonly data: DependencyData
 
   /**
@@ -35,7 +36,6 @@ export class DependencyMetric extends ScopeMetric {
    */
   public constructor(data: DependencyData, logger: Logger) {
     super(logger)
-    this.name = 'dependency.count'
     this.data = data
   }
 
@@ -45,11 +45,11 @@ export class DependencyMetric extends ScopeMetric {
    * @returns OpenTelemetry compliant attributes, anonymized where necessary.
    */
   public override get attributes(): Attributes {
-    const { owner, name, major, minor, patch, preRelease } = getPackageDetails(
-      this.logger,
-      this.data.name,
-      this.data.version
-    )
+    const packageDetailsProvider = new PackageDetailsProvider(this.logger)
+
+    const { owner, name, major, minor, patch, preRelease } =
+      packageDetailsProvider.getPackageDetails(this.data.rawName, this.data.rawVersion)
+
     const {
       owner: installerOwner,
       name: installerName,
@@ -57,14 +57,17 @@ export class DependencyMetric extends ScopeMetric {
       minor: installerMinor,
       patch: installerPatch,
       preRelease: installerPreRelease
-    } = getPackageDetails(this.logger, this.data.installerRawName, this.data.installerRawVersion)
+    } = packageDetailsProvider.getPackageDetails(
+      this.data.installerRawName,
+      this.data.installerRawVersion
+    )
 
     return anonymize(
       {
-        [CustomResourceAttributes.RAW]: this.data.name,
+        [CustomResourceAttributes.RAW]: this.data.rawName,
         [CustomResourceAttributes.OWNER]: owner,
         [CustomResourceAttributes.NAME]: name,
-        [CustomResourceAttributes.VERSION_RAW]: this.data.version,
+        [CustomResourceAttributes.VERSION_RAW]: this.data.rawVersion,
         [CustomResourceAttributes.VERSION_MAJOR]: major?.toString(),
         [CustomResourceAttributes.VERSION_MINOR]: minor?.toString(),
         [CustomResourceAttributes.VERSION_PATCH]: patch?.toString(),

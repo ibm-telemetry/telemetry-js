@@ -4,22 +4,17 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
-import { Logger } from '../../../main/core/log/logger.js'
 import { runCommand } from '../../../main/core/run-command.js'
 import { findNestedDeps } from '../../../main/scopes/npm/find-nested-deps.js'
 import { Fixture } from '../../__utils/fixture.js'
-
-const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+import { initLogger } from '../../__utils/init-logger.js'
 
 const testDependencyTree = await new Fixture('dependency-trees/basic-dependency-tree.json').parse()
 
 describe('findNestedDeps', () => {
-  afterAll(async () => {
-    await logger.close()
-  })
+  const logger = initLogger()
 
   it('returns empty array if there are no matches', () => {
     expect(findNestedDeps(testDependencyTree, 'not-there', '1.0.0')).toStrictEqual([])

@@ -8,17 +8,15 @@
 import path from 'node:path'
 
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
-import { Logger } from '../../../main/core/log/logger.js'
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { NoPackageJsonFoundError } from '../../../main/exceptions/no-package-json-found-error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
 import { Fixture } from '../../__utils/fixture.js'
+import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
 
-const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 const config: ConfigSchema = {
   projectId: 'abc123',
   version: 1,
@@ -26,9 +24,7 @@ const config: ConfigSchema = {
 }
 
 describe('class: NpmScope', () => {
-  afterAll(async () => {
-    await logger.close()
-  })
+  const logger = initLogger()
 
   describe('run', () => {
     it('correctly captures dependency data', async () => {

@@ -9,15 +9,18 @@ import { describe, expect, it } from 'vitest'
 
 import { FalseKeywordHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/false-keyword-handler.js'
 import { Fixture } from '../../../../__utils/fixture.js'
+import { initLogger } from '../../../../__utils/init-logger.js'
 
 describe('falseKeywordHandler', () => {
+  const logger = initLogger()
+
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/simple.tsx')
     const program = ts.createProgram([fixture.path], {})
     const sourceFiles = program.getSourceFiles().filter((file) => !file.isDeclarationFile)
 
     const sourceFile = sourceFiles[0]
-    const handler = new FalseKeywordHandler(sourceFile as ts.SourceFile)
+    const handler = new FalseKeywordHandler(sourceFile as ts.SourceFile, logger)
 
     expect(handler.getData(sourceFile as ts.Node)).toStrictEqual('false')
   })

@@ -8,7 +8,7 @@
 import * as ts from 'typescript'
 
 import { ImportClauseParser } from '../import-clause-parser.js'
-import { type JsxImportElement } from '../interfaces.js'
+import { type JsxImport } from '../interfaces.js'
 
 /**
  * Identifies Import nodes that have been imported as all.
@@ -20,14 +20,16 @@ export class AllImportParser extends ImportClauseParser {
    * returns the constructed element (if any) inside an array.
    *
    * @param importNode - Node to evaluate.
-   * @returns Array of JsxImportElement.
+   * @param importPath - Module from which the import was imported.
+   * @returns Array of JsxImport.
    */
-  parse(importNode: ts.ImportClause) {
-    const allImports: JsxImportElement[] = []
+  parse(importNode: ts.ImportClause, importPath: string) {
+    const allImports: JsxImport[] = []
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamespaceImport) {
       allImports.push({
         name: importNode.namedBindings.name.escapedText.toString(),
+        path: importPath,
         isDefault: false,
         isAll: true
       })

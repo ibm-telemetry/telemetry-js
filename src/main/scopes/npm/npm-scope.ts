@@ -42,8 +42,8 @@ export class NpmScope extends Scope {
         this.capture(
           new DependencyMetric(
             {
-              name: dependency.name,
-              version: dependency.version,
+              rawName: dependency.name,
+              rawVersion: dependency.version,
               installerRawName: installingPkg.name,
               installerRawVersion: installingPkg.version
             },

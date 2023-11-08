@@ -1,16 +1,16 @@
 [
     {
-      "root": "src/something",
+      "path": "src/something",
       "children": [
         {
-          "root": "src/something/nested-1/nested-2",
+          "path": "src/something/nested-1/nested-2",
           "children": [
             {
-              "root": "src/something/nested-1/nested-2/nested-3-1",
+              "path": "src/something/nested-1/nested-2/nested-3-1",
               "children": []
             },
             {
-              "root": "src/something/nested-1/nested-2/nested-3-2",
+              "path": "src/something/nested-1/nested-2/nested-3-2",
               "children": []
             }
           ]

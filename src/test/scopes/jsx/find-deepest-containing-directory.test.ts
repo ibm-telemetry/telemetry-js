@@ -55,8 +55,6 @@ describe('findDeepestContainingDirectory', () => {
   it('throws error if file is not within packageJsonTree scope', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
-    await expect(async () =>
-      findDeepestContainingDirectory('src/fileName', await fixture.parse())
-    ).resolves.toBeUndefined()
+    expect(findDeepestContainingDirectory('src/fileName', await fixture.parse())).toBeUndefined()
   })
 })

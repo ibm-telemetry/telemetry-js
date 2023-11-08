@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import * as ts from 'typescript'
@@ -21,12 +22,24 @@ import { TrackedFileEnumerator } from '../../core/tracked-file-enumerator.js'
 export async function getTrackedSourceFiles(root: string, logger: Logger) {
   const fileEnumerator = new TrackedFileEnumerator(logger)
   const allowedSuffixes = ['.js', '.jsx', '.ts', '.tsx']
+  const files = []
 
-  const files = await fileEnumerator.find(root, (file) =>
-    allowedSuffixes.includes(path.extname(file))
-  )
+  if (allowedSuffixes.includes(path.extname(root))) {
+    files.push(root)
+  } else {
+    files.push(
+      ...(await fileEnumerator.find(root, (file) => allowedSuffixes.includes(path.extname(file))))
+    )
+  }
 
-  const program = ts.createProgram(files, {})
+  const promises = files.map(async (file) => {
+    return ts.createSourceFile(
+      file,
+      (await readFile(file)).toString(),
+      ts.ScriptTarget.ES2022 // TODO: what to put here? where to get this from?
+      // /* setParentNodes */ true // TODO: do we need setParentNodes?
+    )
+  })
 
-  return program.getSourceFiles().filter((file) => !file.isDeclarationFile)
+  return await Promise.all(promises)
 }

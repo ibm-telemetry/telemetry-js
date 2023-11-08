@@ -21,7 +21,7 @@ export class ElementMetric extends ScopeMetric {
   public override name = 'element.count' as const
   private readonly jsxElement: JsxElement
   private readonly matchingImport: JsxImport
-  private readonly invoker: string
+  private readonly invoker: string | undefined
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
 
@@ -37,7 +37,7 @@ export class ElementMetric extends ScopeMetric {
   public constructor(
     jsxElement: JsxElement,
     matchingImport: JsxImport,
-    invoker: string,
+    invoker: string | undefined,
     config: ConfigSchema,
     logger: Logger
   ) {
@@ -57,11 +57,13 @@ export class ElementMetric extends ScopeMetric {
    * @returns OpenTelemetry compliant attributes, anonymized and substituted where necessary.
    */
   public override get attributes(): Attributes {
-    if (this.invoker === undefined) {
-      throw new Error('Invoker not set at time of attribute collection')
-    }
+    let invokingPackageDetails
 
-    const packageDetails = new PackageDetailsProvider(this.logger).getPackageDetails(this.invoker)
+    if (this.invoker !== undefined) {
+      invokingPackageDetails = new PackageDetailsProvider(this.logger).getPackageDetails(
+        this.invoker
+      )
+    }
 
     let metricData = {
       [CustomResourceAttributes.RAW]: this.jsxElement.raw,
@@ -74,8 +76,8 @@ export class ElementMetric extends ScopeMetric {
         (attr) => attr.value
       ),
       [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: packageDetails.owner,
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: packageDetails.name
+      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
+      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name
     }
 
     // Handle renamed elements

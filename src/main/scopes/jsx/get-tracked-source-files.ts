@@ -20,7 +20,7 @@ import { TrackedFileEnumerator } from '../../core/tracked-file-enumerator.js'
  */
 export async function getTrackedSourceFiles(root: string, logger: Logger) {
   const fileEnumerator = new TrackedFileEnumerator(logger)
-  const allowedSuffixes = ['js', 'jsx', 'ts', 'tsx']
+  const allowedSuffixes = ['.js', '.jsx', '.ts', '.tsx']
 
   const files = await fileEnumerator.find(root, (file) =>
     allowedSuffixes.includes(path.extname(file))

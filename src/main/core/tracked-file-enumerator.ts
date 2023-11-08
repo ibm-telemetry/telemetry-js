@@ -16,7 +16,9 @@ import { runCommand } from './run-command.js'
 export class TrackedFileEnumerator extends Loggable {
   /**
    * Finds all tracked files under the provided root directory, filtering them based on which ones
-   * satisfy the provided predicate.
+   * satisfy the provided predicate. This method can also be used to find a singular tracked file by
+   * passing a path to a file as `root` instead of a directory. This will result in an array of
+   * length one being returned.
    *
    * @param root - Directory to consider as the root.
    * @param predicate - Function to indicate whether or not each enumerated file should be part of
@@ -28,8 +30,7 @@ export class TrackedFileEnumerator extends Loggable {
     root: string,
     predicate: (file: string) => boolean | Promise<boolean>
   ): Promise<string[]> {
-    // Ensure the provided path is normalized
-    root = path.resolve(root)
+    root = path.normalize(root)
 
     const allFiles = (
       await runCommand(`git ls-tree --full-tree --name-only -r HEAD ${root}`, this.logger)

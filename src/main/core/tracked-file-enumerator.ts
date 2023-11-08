@@ -33,7 +33,9 @@ export class TrackedFileEnumerator extends Loggable {
 
     const allFiles = (
       await runCommand(`git ls-tree --full-tree --name-only -r HEAD ${root}`, this.logger)
-    ).stdout.split(/\r?\n/g)
+    ).stdout
+      .split(/\r?\n/g)
+      .filter((file) => file != null && file)
 
     const checks = await Promise.all(allFiles.map(predicate))
 

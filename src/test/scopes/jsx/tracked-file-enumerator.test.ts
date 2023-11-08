@@ -25,4 +25,11 @@ describe('class: TrackedFileEnumerator', () => {
       enumerator.find(fixture.path, (fileName) => !fileName.endsWith('.ble'))
     ).resolves.toHaveLength(4)
   })
+  it('returns empty for no files', async () => {
+    const fixture = new Fixture('tracked-file-enumerator/does-not-exist')
+
+    await expect(
+      enumerator.find(fixture.path, (fileName) => !fileName.endsWith('.ble'))
+    ).resolves.toHaveLength(0)
+  })
 })

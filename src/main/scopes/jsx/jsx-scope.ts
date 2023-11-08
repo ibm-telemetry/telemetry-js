@@ -81,7 +81,7 @@ export class JsxScope extends Scope {
         const jsxImport = accumulator.elementImports.get(jsxElement)
         const invoker = accumulator.elementInvokers.get(jsxElement)
 
-        if (jsxImport === undefined || invoker === undefined) {
+        if (jsxImport === undefined) {
           return
         }
 

@@ -6,13 +6,13 @@
  */
 import type * as ts from 'typescript'
 
-import { ElementNodeHandler } from '../../element-node-handler.js'
 import { AllImportParser } from '../../import-parsers/all-import-parser.js'
 import { DefaultImportParser } from '../../import-parsers/default-import-parser.js'
 import { NamedImportParser } from '../../import-parsers/named-import-parser.js'
 import { RenamedImportParser } from '../../import-parsers/renamed-import-parser.js'
 import { type JsxImport } from '../../interfaces.js'
 import { type JsxElementAccumulator } from '../../jsx-element-accumulator.js'
+import { ElementNodeHandler } from './element-node-handler.js'
 
 /**
  * Holds logic to construct a JsxImport object given an ImportDeclaration node.

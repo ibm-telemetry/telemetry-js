@@ -6,8 +6,6 @@
  */
 import { describe, it } from 'vitest'
 
-describe('getPackageJsonTree', () => {
-  it.todo('correctly gets a tree')
-  it.todo('empty directory')
-  it.todo('directory does not exist')
+describe('class: ImportNodeHandler', () => {
+  it.todo('correctly returns the JsxImports for a complex fixture')
 })

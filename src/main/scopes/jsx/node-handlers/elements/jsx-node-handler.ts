@@ -8,8 +8,8 @@ import * as ts from 'typescript'
 
 import { Trace } from '../../../../core/log/trace.js'
 import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
-import { ElementNodeHandler } from '../../element-node-handler.js'
 import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
+import { ElementNodeHandler } from './element-node-handler.js'
 
 /**
  * Holds node handling logic to be inherited by Jsx node handlers.

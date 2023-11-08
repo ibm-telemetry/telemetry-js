@@ -8,8 +8,8 @@
 import type * as ts from 'typescript'
 
 import { type Logger } from '../../core/log/logger.js'
-import { type ElementNodeHandler } from './element-node-handler.js'
 import { type AttributeNodeHandler } from './node-handlers/attributes/attribute-node-handler.js'
+import { type ElementNodeHandler } from './node-handlers/elements/element-node-handler.js'
 
 export interface JsxElementAttribute {
   name: string

@@ -7,9 +7,9 @@
 
 import type * as ts from 'typescript'
 
-import { Loggable } from '../../core/log/loggable.js'
-import { type Logger } from '../../core/log/logger.js'
-import { type JsxElementAccumulator } from './jsx-element-accumulator.js'
+import { Loggable } from '../../../../core/log/loggable.js'
+import { type Logger } from '../../../../core/log/logger.js'
+import { type JsxElementAccumulator } from '../../jsx-element-accumulator.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.

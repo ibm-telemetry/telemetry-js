@@ -33,12 +33,7 @@ export async function getTrackedSourceFiles(root: string, logger: Logger) {
   }
 
   const promises = files.map(async (file) => {
-    return ts.createSourceFile(
-      file,
-      (await readFile(file)).toString(),
-      ts.ScriptTarget.ES2022 // TODO: what to put here? where to get this from?
-      // /* setParentNodes */ true // TODO: do we need setParentNodes?
-    )
+    return ts.createSourceFile(file, (await readFile(file)).toString(), ts.ScriptTarget.ES2021)
   })
 
   return await Promise.all(promises)

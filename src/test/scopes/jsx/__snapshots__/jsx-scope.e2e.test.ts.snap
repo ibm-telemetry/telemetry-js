@@ -1,0 +1,146 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] = `
+{
+  "errors": [],
+  "resourceMetrics": {
+    "resource": Resource {
+      "_asyncAttributesPromise": undefined,
+      "_attributes": {
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.raw": "gitOrigin",
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.17.1",
+      },
+      "_syncAttributes": {
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.raw": "gitOrigin",
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.17.1",
+      },
+      "asyncAttributesPending": false,
+    },
+    "scopeMetrics": [
+      {
+        "metrics": [
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "attribute.names": [
+                    "something",
+                    "simple",
+                  ],
+                  "attribute.values": [
+                    "1 === 5 ? 'boo' : 'baa'",
+                    "\\"4\\"",
+                  ],
+                  "invoker.package.name": "basic-project",
+                  "invoker.package.owner": undefined,
+                  "invoker.package.raw": "basic-project",
+                  "module.specifier": "instrumented",
+                  "name": "[Default]",
+                  "raw": "<Button something={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={}>Hey</Button>",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "attribute.names": [
+                    "firstProp",
+                    "secondProp",
+                    "numberProp",
+                    "undefinedProp",
+                    "nullProp",
+                    "objectProp",
+                    "isExplicitlyCool",
+                    "isNotCool",
+                    "objAccess",
+                  ],
+                  "attribute.values": [
+                    "\\"hi\\"",
+                    "\\"wow\\"",
+                    "5",
+                    "undefined",
+                    "null",
+                    "{key: 'value'}",
+                    "true",
+                    "false",
+                    "obj['accessKey']",
+                  ],
+                  "invoker.package.name": "basic-project",
+                  "invoker.package.owner": undefined,
+                  "invoker.package.raw": "basic-project",
+                  "module.specifier": "instrumented",
+                  "name": "ImaginaryThing",
+                  "raw": "<ImaginaryThing
+          firstProp=\\"hi\\"
+          secondProp=\\"wow\\"
+          numberProp={5}
+          undefinedProp={undefined}
+          nullProp={null}
+          objectProp={{key: 'value'}}
+          isCool
+          isExplicitlyCool={true}
+          isNotCool={false}
+          objAccess={obj['accessKey']}
+          {...spreadObj}
+        />",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+            ],
+            "descriptor": {
+              "description": "",
+              "name": "element.count",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 0,
+            },
+            "isMonotonic": true,
+          },
+        ],
+        "scope": {
+          "name": "jsx",
+          "schemaUrl": undefined,
+          "version": "",
+        },
+      },
+    ],
+  },
+}
+`;

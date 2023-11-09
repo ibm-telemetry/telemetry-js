@@ -12,7 +12,7 @@ export class ConfigValidationError extends Error {
   public readonly errors: Array<Record<string, unknown>>
 
   constructor(errors: Array<Record<string, unknown>>) {
-    super(JSON.stringify(errors, null, 2))
+    super(JSON.stringify(errors, undefined, 2))
 
     this.errors = errors
   }

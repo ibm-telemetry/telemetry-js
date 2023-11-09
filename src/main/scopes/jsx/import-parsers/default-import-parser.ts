@@ -41,7 +41,7 @@ export class DefaultImportParser extends ImportClauseParser {
       })
     }
 
-    if (!importNode.namedBindings && importNode.name) {
+    if (importNode.name) {
       defaultImports.push({
         name: DEFAULT_ELEMENT_NAME,
         path: importPath,

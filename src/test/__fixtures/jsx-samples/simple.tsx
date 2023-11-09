@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 // @ts-nocheck
-import Button from 'somewhere'
 
+import Button from 'button-library'
 
 const sample = <Button something={1 === 5 ? 'boo' : 'baa'} simple="4">Hey</Button>
 

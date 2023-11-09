@@ -46,7 +46,8 @@ export class ImportNodeHandler extends ElementNodeHandler<JsxImport[]> {
     const results: JsxImport[] = []
 
     const importClause = node.importClause
-    const importPath = node.moduleSpecifier.getText(this.sourceFile)
+    // This has quotes on it which need to be removed
+    const importPath = node.moduleSpecifier.getText(this.sourceFile).slice(1, -1)
 
     if (importClause) {
       importParsers.forEach((parser) => results.push(...parser.parse(importClause, importPath)))

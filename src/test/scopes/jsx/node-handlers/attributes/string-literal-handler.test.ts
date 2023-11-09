@@ -26,6 +26,6 @@ describe('stringLiteralHandler', () => {
       handler.getData(
         findNodesByType(sourceFile, ts.SyntaxKind.StringLiteral)[0] as ts.StringLiteral
       )
-    ).toStrictEqual('somewhere')
+    ).toStrictEqual('"button-library"')
   })
 })

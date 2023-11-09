@@ -65,10 +65,9 @@ export class JsxScope extends Scope {
       new NamedImportMatcher(),
       new RenamedImportMatcher()
     ]
-    const packageJsonTree = await getPackageJsonTree(this.root, this.cwd, this.logger)
+    const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
     const instrumentedPackage = await getPackageData(this.cwd, this.logger)
-    const sourceFiles = await getTrackedSourceFiles(this.cwd, this.logger)
-
+    const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
     const promises = sourceFiles.map(async (sourceFile) => {
       const accumulator = new JsxElementAccumulator()
 
@@ -105,9 +104,9 @@ export class JsxScope extends Scope {
   }
 
   removeIrrelevantImports(accumulator: JsxElementAccumulator, instrumentedPackageName: string) {
-    const imports = accumulator.imports.filter((jsxImport) =>
-      jsxImport.path.startsWith(instrumentedPackageName)
-    )
+    const imports = accumulator.imports.filter((jsxImport) => {
+      return jsxImport.path.startsWith(instrumentedPackageName)
+    })
 
     accumulator.imports.splice(0, accumulator.imports.length, ...imports)
   }

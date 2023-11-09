@@ -20,7 +20,7 @@ export function findDeepestContainingDirectory(
 ): string | undefined {
   let next = directoryTree.find((tree) => fileName.includes(tree.path))
   let curr
-  while (next !== undefined && next !== null) {
+  while (next !== undefined) {
     curr = next
     next = curr.children.find((tree) => fileName.includes(tree.path))
   }

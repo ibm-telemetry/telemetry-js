@@ -20,6 +20,6 @@ export class StringLiteralHandler extends AttributeNodeHandler {
    * @returns Text value of node.
    */
   public getData(node: ts.StringLiteral): string {
-    return node.text
+    return `"${node.text}"`
   }
 }

@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: ImportNodeHandler > correctly returns the JsxImports for a complex fixture 1`] = `
+[
+  {
+    "isAll": false,
+    "isDefault": true,
+    "name": "[Default]",
+    "path": "button-library",
+    "rename": "Button",
+  },
+  {
+    "isAll": true,
+    "isDefault": false,
+    "name": "Accordion",
+    "path": "accordion-library",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Slug",
+    "path": "components-library",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Tile",
+    "path": "components-library",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Notification",
+    "path": "components-library",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "One",
+    "path": "components-library",
+    "rename": "Two",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Three",
+    "path": "components-library",
+    "rename": "Four",
+  },
+  {
+    "isAll": false,
+    "isDefault": true,
+    "name": "[Default]",
+    "path": "bla-library",
+    "rename": "Bla",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Bla1",
+    "path": "bla-library",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Bla2",
+    "path": "bla-library",
+    "rename": "Bla3",
+  },
+  {
+    "isAll": false,
+    "isDefault": true,
+    "name": "[Default]",
+    "path": "bla-library",
+    "rename": "Bla4",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Bla1",
+    "path": "bla-library",
+  },
+  {
+    "isAll": false,
+    "isDefault": false,
+    "name": "Bla2",
+    "path": "bla-library",
+    "rename": "Bla3",
+  },
+]
+`;

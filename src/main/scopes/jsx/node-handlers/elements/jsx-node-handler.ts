@@ -7,6 +7,8 @@
 import * as ts from 'typescript'
 
 import { Trace } from '../../../../core/log/trace.js'
+import { NoAttributeExpressionFoundError } from '../../../../exceptions/no-attribute-expression-found-error.js'
+import { NoAttributeInitializerFoundError } from '../../../../exceptions/no-attribute-initializer-found-error.js'
 import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
 import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
 import { ElementNodeHandler } from './element-node-handler.js'
@@ -23,7 +25,8 @@ export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
    * @returns Object containing name and prefix (as strings).
    */
   protected getElementNameAndPrefix(tagName: ts.JsxTagNameExpression) {
-    const [prefix, ...name] = tagName.getText(this.sourceFile).split('.')
+    const chunks = tagName.getText(this.sourceFile).split('.')
+    const [prefix, ...name] = chunks.length === 1 ? [undefined, chunks] : chunks
     return { name: name.join('.'), prefix }
   }
 
@@ -46,12 +49,21 @@ export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
         return
       }
 
-      const value = getAttributeNodeHandler(attr.kind, this.sourceFile, this.logger).getData(attr)
-
-      attrs.push({
-        name: attr.name.escapedText.toString(),
-        value
-      })
+      try {
+        attrs.push({
+          name: attr.name.escapedText.toString(),
+          value: getAttributeNodeHandler(attr.kind, this.sourceFile, this.logger).getData(attr)
+        })
+      } catch (e) {
+        if (
+          e instanceof NoAttributeExpressionFoundError ||
+          e instanceof NoAttributeInitializerFoundError
+        ) {
+          this.logger.error(e)
+        } else {
+          throw e
+        }
+      }
     })
 
     return attrs

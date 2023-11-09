@@ -4,7 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import path from 'node:path'
 
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
@@ -13,6 +12,7 @@ import { describe, expect, it } from 'vitest'
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { NoPackageJsonFoundError } from '../../../main/exceptions/no-package-json-found-error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
+import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
@@ -42,16 +42,7 @@ describe('class: NpmScope', () => {
 
       const results = await metricReader.collect()
 
-      // Metric timestamps change every run, so change them to a fixed value when comparing against
-      // snapshots
-      results.resourceMetrics.scopeMetrics.forEach((scopeMetric) => {
-        scopeMetric.metrics.forEach((metric) => {
-          metric.dataPoints.forEach((dataPoint) => {
-            ;(dataPoint as { startTime: [number, number] }).startTime = [0, 0]
-            ;(dataPoint as { endTime: [number, number] }).endTime = [0, 0]
-          })
-        })
-      })
+      clearDataPointTimes(results)
 
       expect(results).toMatchSnapshot()
     })

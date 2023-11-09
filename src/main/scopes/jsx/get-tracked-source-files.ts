@@ -24,6 +24,7 @@ export async function getTrackedSourceFiles(root: string, logger: Logger) {
   const allowedSuffixes = ['.js', '.jsx', '.ts', '.tsx']
   const files = []
 
+  // If a file is passed instead of a directory, avoid the `git ls-tree` call
   if (allowedSuffixes.includes(path.extname(root))) {
     files.push(root)
   } else {

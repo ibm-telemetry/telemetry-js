@@ -24,6 +24,7 @@ export class JsxAttributeHandler extends AttributeNodeHandler {
    */
   public getData(node: ts.JsxAttribute): string {
     if (node.initializer === undefined) {
+      // TODOASKJOE: isCool
       throw new NoAttributeInitializerFoundError(node.getText(this.sourceFile))
     }
     return getAttributeNodeHandler(node.initializer.kind, this.sourceFile, this.logger).getData(

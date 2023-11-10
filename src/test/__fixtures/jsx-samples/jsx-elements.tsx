@@ -6,6 +6,7 @@
  */
 // @ts-nocheck
 <>
+    {/* JsxElements */}
     <Prefix.Element1>SomethingHere</Prefix.Element1>
     <Element1>SomethingHere</Element1>
     <Prefix.Property.Nested.Element>SomethingHere</Prefix.Property.Nested.Element>
@@ -20,7 +21,26 @@
         attr11={variable}
         attr12={element[access]}
         attr13={{key: 'value', key2: 10}}
-        {...spreadObj}>
+        {...spreadObj}
+        exp={}>
         SomethingHere
     </Element1>
+
+    {/* JsxSelfClosingElements */}
+    <Prefix.Element1/>
+    <Element1/>
+    <Prefix.Property.Nested.Element/>
+    <Element1
+        attr1="string"
+        attr2={4}
+        attr5={undefined}
+        attr6={null}
+        attr8
+        attr9={true}
+        attr10={false}
+        attr11={variable}
+        attr12={element[access]}
+        attr13={{key: 'value', key2: 10}}
+        {...spreadObj}
+        exp={}/>
 </>

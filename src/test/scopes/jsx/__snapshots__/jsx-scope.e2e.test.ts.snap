@@ -58,7 +58,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                   "invoker.package.raw": "basic-project",
                   "module.specifier": "instrumented",
                   "name": "[Default]",
-                  "raw": "<Button something={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={}>Hey</Button>",
+                  "raw": "<Button something={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={} woo>Hey</Button>",
                 },
                 "endTime": [
                   0,

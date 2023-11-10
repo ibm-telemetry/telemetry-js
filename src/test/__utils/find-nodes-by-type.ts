@@ -11,13 +11,19 @@ import * as ts from 'typescript'
  *
  * @param sourceNode - Top-level node to start analysis from.
  * @param kind - Node kind to find nodes for.
+ * @param predicate - Function to indicate whether or not each node that matches the kind
+ *  should be part of the result set.
  * @returns Array of nodes that match the specified kind.
  */
-export function findNodesByType(sourceNode: ts.SourceFile, kind: ts.SyntaxKind) {
+export function findNodesByType(
+  sourceNode: ts.SourceFile,
+  kind: ts.SyntaxKind,
+  predicate: (node: ts.Node) => boolean = () => true
+) {
   const nodes: ts.Node[] = []
 
   function visit(node: ts.Node) {
-    if (node.kind === kind) {
+    if (node.kind === kind && predicate(node)) {
       nodes.push(node)
     }
 

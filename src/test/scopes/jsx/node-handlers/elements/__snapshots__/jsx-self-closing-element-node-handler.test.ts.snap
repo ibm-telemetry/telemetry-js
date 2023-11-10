@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: JsxSelfClosingElementNodeHandler > correctly returns the JsxElements for a complex fixture 1`] = `
+[
+  {
+    "attributes": [],
+    "name": "Element1",
+    "prefix": "Prefix",
+    "raw": "<Prefix.Element1/>",
+  },
+  {
+    "attributes": [],
+    "name": "Element1",
+    "prefix": undefined,
+    "raw": "<Element1/>",
+  },
+  {
+    "attributes": [],
+    "name": "Property.Nested.Element",
+    "prefix": "Prefix",
+    "raw": "<Prefix.Property.Nested.Element/>",
+  },
+  {
+    "attributes": [
+      {
+        "name": "attr1",
+        "value": "\\"string\\"",
+      },
+      {
+        "name": "attr2",
+        "value": "4",
+      },
+      {
+        "name": "attr5",
+        "value": "undefined",
+      },
+      {
+        "name": "attr6",
+        "value": "null",
+      },
+      {
+        "name": "attr9",
+        "value": "true",
+      },
+      {
+        "name": "attr10",
+        "value": "false",
+      },
+      {
+        "name": "attr11",
+        "value": "variable",
+      },
+      {
+        "name": "attr12",
+        "value": "element[access]",
+      },
+      {
+        "name": "attr13",
+        "value": "{key: 'value', key2: 10}",
+      },
+    ],
+    "name": "Element1",
+    "prefix": undefined,
+    "raw": "<Element1
+        attr1=\\"string\\"
+        attr2={4}
+        attr5={undefined}
+        attr6={null}
+        attr8
+        attr9={true}
+        attr10={false}
+        attr11={variable}
+        attr12={element[access]}
+        attr13={{key: 'value', key2: 10}}
+        {...spreadObj}
+        exp={}/>",
+  },
+]
+`;

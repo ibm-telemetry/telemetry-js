@@ -21,8 +21,10 @@ export class JsxSpreadAttributeHandler extends AttributeNodeHandler {
    * @returns Text value of node.
    */
   public getData(node: ts.JsxSpreadAttribute): string {
-    return getAttributeNodeHandler(node.expression.kind, this.sourceFile, this.logger).getData(
-      node.expression
-    )
+    return `{...${getAttributeNodeHandler(
+      node.expression.kind,
+      this.sourceFile,
+      this.logger
+    ).getData(node.expression)}}`
   }
 }

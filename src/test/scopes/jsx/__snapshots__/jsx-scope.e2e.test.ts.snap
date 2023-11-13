@@ -1,5 +1,37 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`class: JsxScope > parseFile > correctly detects imports and elements in a given file 1`] = `
+[
+  {
+    "attributes": [
+      {
+        "name": "something",
+        "value": "1 === 5 ? 'boo' : 'baa'",
+      },
+      {
+        "name": "simple",
+        "value": "\\"4\\"",
+      },
+    ],
+    "name": "Button",
+    "prefix": undefined,
+    "raw": "<Button something={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={} woo>Hey</Button>",
+  },
+]
+`;
+
+exports[`class: JsxScope > parseFile > correctly detects imports and elements in a given file 2`] = `
+[
+  {
+    "isAll": false,
+    "isDefault": true,
+    "name": "[Default]",
+    "path": "instrumented",
+    "rename": "Button",
+  },
+]
+`;
+
 exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] = `
 {
   "errors": [],

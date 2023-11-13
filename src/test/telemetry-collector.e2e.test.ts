@@ -28,10 +28,18 @@ describe('telemetryCollector', () => {
       const promises = telemetryCollector.runScopes(cwd.path, root.path, {
         projectId: 'asdf',
         version: 1,
-        collect: { npm: { dependencies: null } }
+        collect: {
+          npm: { dependencies: null },
+          jsx: {
+            elements: {
+              allowedAttributeNames: ['firstProp', 'secondProp'],
+              allowedAttributeStringValues: ['hi', 'wow']
+            }
+          }
+        }
       })
 
-      expect(promises).toHaveLength(1)
+      expect(promises).toHaveLength(2)
 
       await Promise.allSettled(promises)
     })

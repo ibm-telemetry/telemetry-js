@@ -9,6 +9,7 @@ import path from 'node:path'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
+import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { Fixture } from '../../__utils/fixture.js'
@@ -47,5 +48,24 @@ describe('class: JsxScope', () => {
 
       expect(results).toMatchSnapshot()
     })
+
+    it.todo('throws EmptyScopeError if no collector has been defined', async () => {
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const scope = new JsxScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        { collect: { npm: {} }, projectId: '123', version: 1 },
+        logger
+      )
+
+      await expect(scope.run()).rejects.toThrow(EmptyScopeError)
+    })
+
+    it.todo('throws an error if no package.json files were found', async () => {})
   })
+
+  describe.todo('parseFile')
+  describe.todo('removeIrrelevantImports')
+  describe.todo('resolveElementImports')
+  describe.todo('resolveInvokers')
 })

@@ -11,7 +11,7 @@ import { CustomResourceAttributes } from '../../../../main/core/custom-resource-
 import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
 
-describe('dependencyMetric', () => {
+describe('class: DependencyMetric', () => {
   const logger = initLogger()
 
   it('returns the correct attributes for a standard package', () => {

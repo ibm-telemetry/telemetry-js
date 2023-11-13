@@ -6,6 +6,6 @@
  */
 import { describe, it } from 'vitest'
 
-describe('class: DefaultImportMatcher', () => {
-  it.todo('todo')
+describe('class: PackageDetailsProvider', () => {
+  it.todo('bla')
 })

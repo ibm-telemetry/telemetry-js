@@ -15,7 +15,6 @@ import { findDeepestContainingDirectory } from './find-deepest-containing-direct
 import { getPackageJsonTree } from './get-package-json-tree.js'
 import { getTrackedSourceFiles } from './get-tracked-source-files.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
-import { DefaultImportMatcher } from './import-matchers/default-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
 import { type FileTree, type JsxElementImportMatcher } from './interfaces.js'
@@ -61,7 +60,6 @@ export class JsxScope extends Scope {
   async captureElementMetrics(): Promise<void> {
     const importMatchers = [
       new AllImportMatcher(),
-      new DefaultImportMatcher(),
       new NamedImportMatcher(),
       new RenamedImportMatcher()
     ]

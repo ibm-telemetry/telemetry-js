@@ -21,8 +21,10 @@ export class NamedImportMatcher implements JsxElementImportMatcher {
    * undefined otherwise.
    */
   findMatch(element: JsxElement, imports: JsxImport[]) {
-    return element.prefix === undefined
-      ? imports.find((i) => !i.isDefault && !i.isAll && i.name === element.name)
-      : undefined
+    if (element.prefix !== undefined) {
+      return imports.find((i) => !i.isDefault && !i.isAll && i.name === element.prefix)
+    } else {
+      return imports.find((i) => !i.isDefault && !i.isAll && i.name === element.name)
+    }
   }
 }

@@ -8,7 +8,6 @@ import * as ts from 'typescript'
 
 import { Trace } from '../../../../core/log/trace.js'
 import { NoAttributeExpressionFoundError } from '../../../../exceptions/no-attribute-expression-found-error.js'
-import { NoAttributeInitializerFoundError } from '../../../../exceptions/no-attribute-initializer-found-error.js'
 import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
 import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
 import { ElementNodeHandler } from './element-node-handler.js'
@@ -55,10 +54,7 @@ export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
           value: getAttributeNodeHandler(attr.kind, this.sourceFile, this.logger).getData(attr)
         })
       } catch (e) {
-        if (
-          e instanceof NoAttributeExpressionFoundError ||
-          e instanceof NoAttributeInitializerFoundError
-        ) {
+        if (e instanceof NoAttributeExpressionFoundError) {
           this.logger.error(e)
         } else {
           throw e

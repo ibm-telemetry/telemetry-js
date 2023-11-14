@@ -39,6 +39,10 @@ exports[`class: JsxSelfClosingElementNodeHandler > correctly returns the JsxElem
         "value": "null",
       },
       {
+        "name": "attr8",
+        "value": "true",
+      },
+      {
         "name": "attr9",
         "value": "true",
       },

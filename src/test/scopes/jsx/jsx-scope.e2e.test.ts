@@ -78,9 +78,8 @@ describe('class: JsxScope', () => {
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
       jsxScope.parseFile(accumulator, sourceFile)
-      // TODOASKJOE
-      expect(accumulator.elements).toMatchSnapshot()
-      expect(accumulator.imports).toMatchSnapshot()
+      expect(accumulator.elements).toMatchSnapshot('elements')
+      expect(accumulator.imports).toMatchSnapshot('imports')
     })
   })
   describe('removeIrrelevantImports', () => {

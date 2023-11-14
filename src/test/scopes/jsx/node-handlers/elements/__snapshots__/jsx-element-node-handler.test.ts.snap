@@ -39,6 +39,10 @@ exports[`class: JsxElementNodeHandler > correctly returns the JsxElements for a 
         "value": "null",
       },
       {
+        "name": "attr8",
+        "value": "true",
+      },
+      {
         "name": "attr9",
         "value": "true",
       },

@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 // @ts-nocheck
-<>
+const theComponent = () => (
+    <>
     {/* JsxElements */}
     <Prefix.Element1>SomethingHere</Prefix.Element1>
     <Element1>SomethingHere</Element1>
@@ -44,3 +45,4 @@
         {...spreadObj}
         exp={}/>
 </>
+)

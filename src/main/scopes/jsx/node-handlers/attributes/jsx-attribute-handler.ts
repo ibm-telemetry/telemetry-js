@@ -6,9 +6,9 @@
  */
 import type * as ts from 'typescript'
 
-import { NoAttributeInitializerFoundError } from '../../../../exceptions/no-attribute-initializer-found-error.js'
 import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
 import { AttributeNodeHandler } from './attribute-node-handler.js'
+import { TrueKeywordHandler } from './true-keyword-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a JsxAttribute kind.
@@ -24,8 +24,7 @@ export class JsxAttributeHandler extends AttributeNodeHandler {
    */
   public getData(node: ts.JsxAttribute): string {
     if (node.initializer === undefined) {
-      // TODOASKJOE: isCool
-      throw new NoAttributeInitializerFoundError(node.getText(this.sourceFile))
+      return new TrueKeywordHandler(this.sourceFile, this.logger).getData(node)
     }
     return getAttributeNodeHandler(node.initializer.kind, this.sourceFile, this.logger).getData(
       node.initializer

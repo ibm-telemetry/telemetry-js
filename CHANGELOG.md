@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.8](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.7...v0.3.8) (2023-11-15)
+
+
+### Bug Fixes
+
+* **deps:** upgrade devDependencies (minor) ([#124](https://github.com/ibm-telemetry/telemetry-js/issues/124)) ([e7cf605](https://github.com/ibm-telemetry/telemetry-js/commit/e7cf60535a68deb6c08108d0822d84cb5ea79b42))
+* only consider root-most npm ls when finding installing packages ([ecb0925](https://github.com/ibm-telemetry/telemetry-js/commit/ecb09256a774a8cceac12fede327af458e655b51))
+* otel currency updates, get ready for export ([f070c57](https://github.com/ibm-telemetry/telemetry-js/commit/f070c576a26fe2e8d5f2a757643b61b29786caa8))
+* regular expression security hotspots ([0a1711f](https://github.com/ibm-telemetry/telemetry-js/commit/0a1711f51aa07db591ac0f7b8fbbe8e45d03af02))
+* remove test output ([2a6d541](https://github.com/ibm-telemetry/telemetry-js/commit/2a6d5415e2b8896b9fe547779b56abda51d3df45))
+
 ## [0.3.7](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.6...v0.3.7) (2023-10-26)
 
 

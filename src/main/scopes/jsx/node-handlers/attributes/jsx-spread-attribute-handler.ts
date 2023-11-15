@@ -6,7 +6,7 @@
  */
 import type * as ts from 'typescript'
 
-import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
+import { ComplexAttribute } from '../../complex-attribute.js'
 import { AttributeNodeHandler } from './attribute-node-handler.js'
 
 /**
@@ -20,11 +20,7 @@ export class JsxSpreadAttributeHandler extends AttributeNodeHandler {
    * @param node - JsxAttribute node to extract data from.
    * @returns Text value of node.
    */
-  public getData(node: ts.JsxSpreadAttribute): string {
-    return `{...${getAttributeNodeHandler(
-      node.expression.kind,
-      this.sourceFile,
-      this.logger
-    ).getData(node.expression)}}`
+  public getData(node: ts.JsxSpreadAttribute) {
+    return new ComplexAttribute(node.getText(this.sourceFile))
   }
 }

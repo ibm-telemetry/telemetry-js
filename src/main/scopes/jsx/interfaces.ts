@@ -4,16 +4,16 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import type * as ts from 'typescript'
 
 import { type Logger } from '../../core/log/logger.js'
+import { type ComplexAttribute } from './complex-attribute.js'
 import { type AttributeNodeHandler } from './node-handlers/attributes/attribute-node-handler.js'
 import { type ElementNodeHandler } from './node-handlers/elements/element-node-handler.js'
 
 export interface JsxElementAttribute {
   name: string
-  value: string
+  value: string | number | boolean | ComplexAttribute | null | undefined
 }
 
 export interface JsxImport {

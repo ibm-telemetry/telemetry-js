@@ -17,18 +17,18 @@ import { initLogger } from '../../../../__utils/init-logger.js'
 describe('class: JsxExpressionHandler', () => {
   const logger = initLogger()
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
     const handler = new JsxExpressionHandler(sourceFile, logger)
 
-    expect(
-      handler.getData(
-        findNodesByType(sourceFile, ts.SyntaxKind.JsxExpression)[0] as ts.JsxExpression
-      )
-    ).toStrictEqual("1 === 5 ? 'boo' : 'baa'")
+    const nodes = findNodesByType<ts.JsxExpression>(sourceFile, ts.SyntaxKind.JsxExpression)
+    const data = nodes.map(handler.getData.bind(handler))
+
+    expect(data).toMatchSnapshot()
   })
+
   it('throws NoAttributeExpressionFoundError if attribute does not have an expression', async () => {
-    const fixture = new Fixture('jsx-samples/jsx-elements.tsx')
+    const fixture = new Fixture('jsx-samples/all-jsx-element-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
     const handler = new JsxExpressionHandler(sourceFile, logger)
 

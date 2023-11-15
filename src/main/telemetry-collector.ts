@@ -10,7 +10,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 // import { AggregationTemporality } from '@opentelemetry/sdk-metrics'
 import { type Schema } from 'ajv'
 
-import { anonymize } from './core/anonymize.js'
+import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config/config-validator.js'
 import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
 import { getProjectRoot } from './core/get-project-root.js'
@@ -76,7 +76,7 @@ export class TelemetryCollector {
     const emitterInfo = await getTelemetryPackageData(this.logger)
 
     const metricReader = initializeOpenTelemetry(
-      anonymize(
+      hash(
         {
           [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
           [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
@@ -87,14 +87,12 @@ export class TelemetryCollector {
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
           [CustomResourceAttributes.DATE]: date
         },
-        {
-          hash: [
-            CustomResourceAttributes.ANALYZED_RAW,
-            CustomResourceAttributes.ANALYZED_HOST,
-            CustomResourceAttributes.ANALYZED_OWNER,
-            CustomResourceAttributes.ANALYZED_REPOSITORY
-          ]
-        }
+        [
+          CustomResourceAttributes.ANALYZED_RAW,
+          CustomResourceAttributes.ANALYZED_HOST,
+          CustomResourceAttributes.ANALYZED_OWNER,
+          CustomResourceAttributes.ANALYZED_REPOSITORY
+        ]
       )
     )
 

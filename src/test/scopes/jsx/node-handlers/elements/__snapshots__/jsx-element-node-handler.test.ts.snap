@@ -24,43 +24,49 @@ exports[`class: JsxElementNodeHandler > correctly returns the JsxElements for a 
     "attributes": [
       {
         "name": "attr1",
-        "value": "\\"string\\"",
+        "value": "string",
       },
       {
         "name": "attr2",
-        "value": "4",
+        "value": 4,
       },
       {
         "name": "attr5",
-        "value": "undefined",
+        "value": undefined,
       },
       {
         "name": "attr6",
-        "value": "null",
+        "value": null,
       },
       {
         "name": "attr8",
-        "value": "true",
+        "value": true,
       },
       {
         "name": "attr9",
-        "value": "true",
+        "value": true,
       },
       {
         "name": "attr10",
-        "value": "false",
+        "value": false,
       },
       {
         "name": "attr11",
-        "value": "variable",
+        "value": ComplexAttribute {
+          "complexValue": "variable",
+        },
       },
       {
         "name": "attr12",
-        "value": "element[access]",
+        "value": ComplexAttribute {
+          "complexValue": "element[access]",
+        },
       },
       {
         "name": "attr13",
-        "value": "{key: 'value', key2: 10}",
+        "value": ComplexAttribute {
+          "complexValue": "{key: 'value', key2: 10}",
+        },
       },
     ],
     "name": "Element1",

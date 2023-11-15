@@ -17,15 +17,17 @@ describe('stringLiteralHandler', () => {
   const logger = initLogger()
 
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
     const handler = new StringLiteralHandler(sourceFile, logger)
+    const nodes = findNodesByType(sourceFile, ts.SyntaxKind.StringLiteral, (node) => {
+      return node.parent.kind === ts.SyntaxKind.JsxAttribute
+    })
 
-    expect(
-      handler.getData(
-        findNodesByType(sourceFile, ts.SyntaxKind.StringLiteral)[0] as ts.StringLiteral
-      )
-    ).toStrictEqual('"button-library"')
+    expect(handler.getData(nodes[0] as ts.StringLiteral)).toStrictEqual('firstPropValue')
+    expect(handler.getData(nodes[1] as ts.StringLiteral)).toStrictEqual('stringPropValue')
+    expect(handler.getData(nodes[2] as ts.StringLiteral)).toStrictEqual('secondStringPropValue')
+    expect(nodes).toHaveLength(3)
   })
 })

@@ -7,12 +7,13 @@
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { type Attributes } from '@opentelemetry/api'
 
-import { hash, substitute } from '../../../core/anonymize.js'
+import { hash } from '../../../core/anonymize/hash.js'
+import { substitute } from '../../../core/anonymize/substitute.js'
 import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { type JsxElement, type JsxImport } from '../interfaces.js'
+import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates an element.count individual metric for a given element.
@@ -65,15 +66,27 @@ export class ElementMetric extends ScopeMetric {
       )
     }
 
-    let metricData = {
+    const attrMap = this.jsxElement.attributes.reduce<Record<string, JsxElementAttribute['value']>>(
+      (prev, cur) => {
+        prev[cur.name] = cur.value
+        return prev
+      },
+      {}
+    )
+
+    const anonymizedAttributes = substitute(
+      attrMap,
+      this.allowedAttributeNames,
+      this.allowedAttributeStringValues
+    )
+
+    let metricData: Attributes = {
       [CustomResourceAttributes.RAW]: this.jsxElement.raw,
       [CustomResourceAttributes.NAME]: this.jsxElement.name,
       [CustomResourceAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: this.jsxElement.attributes.map(
-        (attr) => attr.name
-      ),
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: this.jsxElement.attributes.map(
-        (attr) => attr.value
+      [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
+      [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((val) =>
+        String(val)
       ),
       [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
       [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
@@ -94,12 +107,6 @@ export class ElementMetric extends ScopeMetric {
       CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
       CustomResourceAttributes.INVOKER_PACKAGE_NAME
     ])
-
-    metricData = substitute(
-      metricData,
-      this.allowedAttributeNames,
-      this.allowedAttributeStringValues
-    )
 
     return metricData
   }

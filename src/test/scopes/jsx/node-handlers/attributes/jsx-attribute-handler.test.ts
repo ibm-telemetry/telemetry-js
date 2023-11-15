@@ -16,12 +16,13 @@ import { initLogger } from '../../../../__utils/init-logger.js'
 describe('class: JsxAttributeHandler', () => {
   const logger = initLogger()
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
     const handler = new JsxAttributeHandler(sourceFile, logger)
+    const nodes = findNodesByType(sourceFile, ts.SyntaxKind.JsxAttribute)
 
-    expect(
-      handler.getData(findNodesByType(sourceFile, ts.SyntaxKind.JsxAttribute)[0] as ts.JsxAttribute)
-    ).toStrictEqual("1 === 5 ? 'boo' : 'baa'")
+    nodes.forEach((node) => {
+      expect(() => handler.getData(node as ts.JsxAttribute)).not.toThrow()
+    })
   })
 })

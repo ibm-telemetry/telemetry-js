@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { anonymize } from '../../../../main/core/anonymize.js'
+import { hash } from '../../../../main/core/anonymize/hash.js'
 import { CustomResourceAttributes } from '../../../../main/core/custom-resource-attributes.js'
 import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
@@ -25,7 +25,7 @@ describe('class: DependencyMetric', () => {
       logger
     ).attributes
     expect(attributes).toStrictEqual(
-      anonymize(
+      hash(
         {
           raw: 'test-1',
           owner: undefined,
@@ -44,20 +44,18 @@ describe('class: DependencyMetric', () => {
           'installer.version.preRelease': undefined,
           'installer.version.raw': '1.0.0'
         },
-        {
-          hash: [
-            'raw',
-            'owner',
-            'name',
-            'version.raw',
-            'version.preRelease',
-            'installer.raw',
-            'installer.owner',
-            'installer.name',
-            'installer.version.raw',
-            'installer.version.preRelease'
-          ]
-        }
+        [
+          'raw',
+          'owner',
+          'name',
+          'version.raw',
+          'version.preRelease',
+          'installer.raw',
+          'installer.owner',
+          'installer.name',
+          'installer.version.raw',
+          'installer.version.preRelease'
+        ]
       )
     )
   })
@@ -73,7 +71,7 @@ describe('class: DependencyMetric', () => {
       logger
     ).attributes
     expect(attributes).toStrictEqual(
-      anonymize(
+      hash(
         {
           raw: 'test-1',
           owner: undefined,
@@ -92,20 +90,18 @@ describe('class: DependencyMetric', () => {
           'installer.version.preRelease': 'rc.4',
           'installer.version.raw': '1.0.0-rc.4'
         },
-        {
-          hash: [
-            'raw',
-            'owner',
-            'name',
-            'version.raw',
-            'version.preRelease',
-            'installer.raw',
-            'installer.owner',
-            'installer.name',
-            'installer.version.raw',
-            'installer.version.preRelease'
-          ]
-        }
+        [
+          'raw',
+          'owner',
+          'name',
+          'version.raw',
+          'version.preRelease',
+          'installer.raw',
+          'installer.owner',
+          'installer.name',
+          'installer.version.raw',
+          'installer.version.preRelease'
+        ]
       )
     )
   })
@@ -121,7 +117,7 @@ describe('class: DependencyMetric', () => {
       logger
     ).attributes
     expect(attributes).toStrictEqual(
-      anonymize(
+      hash(
         {
           raw: 'test-1',
           owner: undefined,
@@ -140,20 +136,18 @@ describe('class: DependencyMetric', () => {
           'version.patch': '1',
           'version.preRelease': undefined
         },
-        {
-          hash: [
-            'raw',
-            'owner',
-            'name',
-            'version.raw',
-            'version.preRelease',
-            'installer.raw',
-            'installer.owner',
-            'installer.name',
-            'installer.version.raw',
-            'installer.version.preRelease'
-          ]
-        }
+        [
+          'raw',
+          'owner',
+          'name',
+          'version.raw',
+          'version.preRelease',
+          'installer.raw',
+          'installer.owner',
+          'installer.name',
+          'installer.version.raw',
+          'installer.version.preRelease'
+        ]
       )
     )
   })
@@ -170,7 +164,7 @@ describe('class: DependencyMetric', () => {
     ).attributes
 
     expect(attributes).toStrictEqual(
-      anonymize(
+      hash(
         {
           raw: 'test-1',
           owner: undefined,
@@ -189,20 +183,18 @@ describe('class: DependencyMetric', () => {
           'installer.version.preRelease': 'rc.0',
           'installer.version.raw': '1.0.0-rc.0+99999'
         },
-        {
-          hash: [
-            'raw',
-            'owner',
-            'name',
-            'version.raw',
-            'version.preRelease',
-            'installer.raw',
-            'installer.owner',
-            'installer.name',
-            'installer.version.raw',
-            'installer.version.preRelease'
-          ]
-        }
+        [
+          'raw',
+          'owner',
+          'name',
+          'version.raw',
+          'version.preRelease',
+          'installer.raw',
+          'installer.owner',
+          'installer.name',
+          'installer.version.raw',
+          'installer.version.preRelease'
+        ]
       )
     )
   })
@@ -218,7 +210,7 @@ describe('class: DependencyMetric', () => {
       logger
     ).attributes
     expect(attributes).toStrictEqual(
-      anonymize(
+      hash(
         {
           raw: '@owner/test-1',
           owner: '@owner',
@@ -237,20 +229,18 @@ describe('class: DependencyMetric', () => {
           'version.patch': '1',
           'version.preRelease': 'rc.0'
         },
-        {
-          hash: [
-            'raw',
-            'owner',
-            'name',
-            'version.raw',
-            'version.preRelease',
-            'installer.raw',
-            'installer.owner',
-            'installer.name',
-            'installer.version.raw',
-            'installer.version.preRelease'
-          ]
-        }
+        [
+          'raw',
+          'owner',
+          'name',
+          'version.raw',
+          'version.preRelease',
+          'installer.raw',
+          'installer.owner',
+          'installer.name',
+          'installer.version.raw',
+          'installer.version.preRelease'
+        ]
       )
     )
   })

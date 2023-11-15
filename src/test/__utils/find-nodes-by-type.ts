@@ -15,11 +15,11 @@ import * as ts from 'typescript'
  *  should be part of the result set.
  * @returns Array of nodes that match the specified kind.
  */
-export function findNodesByType(
+export function findNodesByType<T = ts.Node>(
   sourceNode: ts.SourceFile,
   kind: ts.SyntaxKind,
   predicate: (node: ts.Node) => boolean = () => true
-) {
+): T[] {
   const nodes: ts.Node[] = []
 
   function visit(node: ts.Node) {
@@ -34,5 +34,5 @@ export function findNodesByType(
 
   visit(sourceNode)
 
-  return nodes
+  return nodes as T[]
 }

@@ -7,6 +7,7 @@
 import type * as ts from 'typescript'
 
 import { AttributeNodeHandler } from './attribute-node-handler.js'
+import { DefaultHandler } from './default-handler.js'
 
 /**
  * Holds logic to extract data from an AST node that is a Identifier kind.
@@ -19,7 +20,12 @@ export class IdentifierHandler extends AttributeNodeHandler {
    * @param node - Identifier node to extract data from.
    * @returns Text value of node.
    */
-  public getData(node: ts.Identifier): string {
-    return node.escapedText.toString()
+  public getData(node: ts.Identifier) {
+    // `undefined` is an identifier, so it has to be treated as a special case
+    if (node.escapedText.toString() === 'undefined') {
+      return undefined
+    }
+
+    return new DefaultHandler(this.sourceFile, this.logger).getData(node)
   }
 }

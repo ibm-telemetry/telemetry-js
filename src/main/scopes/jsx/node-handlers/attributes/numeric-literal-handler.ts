@@ -19,7 +19,7 @@ export class NumericLiteralHandler extends AttributeNodeHandler {
    * @param node - NumericLiteral node to extract data from.
    * @returns Text value of node.
    */
-  public getData(node: ts.NumericLiteral): string {
-    return node.text
+  public getData(node: ts.NumericLiteral) {
+    return Number(node.text)
   }
 }

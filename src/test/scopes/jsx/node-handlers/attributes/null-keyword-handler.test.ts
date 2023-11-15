@@ -16,11 +16,11 @@ describe('nullKeywordHandler', () => {
   const logger = initLogger()
 
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
     const handler = new NullKeywordHandler(sourceFile, logger)
 
-    expect(handler.getData(sourceFile as ts.Node)).toStrictEqual('null')
+    expect(handler.getData(sourceFile as ts.Node)).toStrictEqual(null)
   })
 })

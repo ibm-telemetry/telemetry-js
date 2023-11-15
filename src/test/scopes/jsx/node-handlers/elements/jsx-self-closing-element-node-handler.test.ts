@@ -16,7 +16,7 @@ import { initLogger } from '../../../../__utils/init-logger.js'
 
 describe('class: JsxSelfClosingElementNodeHandler', async () => {
   const logger = initLogger()
-  const fixture = new Fixture('jsx-samples/jsx-elements.tsx')
+  const fixture = new Fixture('jsx-samples/all-jsx-element-types.tsx')
   const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
   const accumulator = new JsxElementAccumulator()
   const handler = new JsxSelfClosingElementNodeHandler(sourceFile, logger)

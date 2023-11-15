@@ -17,7 +17,7 @@ describe('numericLiteralHandler', () => {
   const logger = initLogger()
 
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
     const handler = new NumericLiteralHandler(sourceFile, logger)
@@ -26,6 +26,6 @@ describe('numericLiteralHandler', () => {
       handler.getData(
         findNodesByType(sourceFile, ts.SyntaxKind.NumericLiteral)[0] as ts.NumericLiteral
       )
-    ).toStrictEqual('1')
+    ).toStrictEqual(5)
   })
 })

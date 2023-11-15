@@ -20,6 +20,6 @@ export class TrueKeywordHandler extends AttributeNodeHandler {
    * @returns Text value of node.
    */
   public getData(_node: ts.Node) {
-    return String(true)
+    return true
   }
 }

@@ -7,7 +7,7 @@
 
 import { type Attributes } from '@opentelemetry/api'
 
-import { anonymize } from '../../../core/anonymize.js'
+import { hash } from '../../../core/anonymize/hash.js'
 import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
@@ -62,7 +62,7 @@ export class DependencyMetric extends ScopeMetric {
       this.data.installerRawVersion
     )
 
-    return anonymize(
+    return hash(
       {
         [CustomResourceAttributes.RAW]: this.data.rawName,
         [CustomResourceAttributes.OWNER]: owner,
@@ -81,20 +81,18 @@ export class DependencyMetric extends ScopeMetric {
         [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
         [CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
       },
-      {
-        hash: [
-          CustomResourceAttributes.RAW,
-          CustomResourceAttributes.OWNER,
-          CustomResourceAttributes.NAME,
-          CustomResourceAttributes.VERSION_RAW,
-          CustomResourceAttributes.VERSION_PRE_RELEASE,
-          CustomResourceAttributes.INSTALLER_RAW,
-          CustomResourceAttributes.INSTALLER_OWNER,
-          CustomResourceAttributes.INSTALLER_NAME,
-          CustomResourceAttributes.INSTALLER_VERSION_RAW,
-          CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
-        ]
-      }
+      [
+        CustomResourceAttributes.RAW,
+        CustomResourceAttributes.OWNER,
+        CustomResourceAttributes.NAME,
+        CustomResourceAttributes.VERSION_RAW,
+        CustomResourceAttributes.VERSION_PRE_RELEASE,
+        CustomResourceAttributes.INSTALLER_RAW,
+        CustomResourceAttributes.INSTALLER_OWNER,
+        CustomResourceAttributes.INSTALLER_NAME,
+        CustomResourceAttributes.INSTALLER_VERSION_RAW,
+        CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
+      ]
     )
   }
 }

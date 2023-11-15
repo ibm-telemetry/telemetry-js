@@ -16,11 +16,12 @@ describe('falseKeywordHandler', () => {
   const logger = initLogger()
 
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
     const handler = new FalseKeywordHandler(sourceFile, logger)
 
-    expect(handler.getData(sourceFile as ts.Node)).toStrictEqual('false')
+    // eslint-disable-next-line vitest/prefer-to-be-falsy -- we want strict false comparison
+    expect(handler.getData(sourceFile as ts.Node)).toStrictEqual(false)
   })
 })

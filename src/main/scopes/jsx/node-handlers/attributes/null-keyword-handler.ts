@@ -20,6 +20,6 @@ export class NullKeywordHandler extends AttributeNodeHandler {
    * @returns Text value of node.
    */
   public getData(_node: ts.Node) {
-    return String(null)
+    return null
   }
 }

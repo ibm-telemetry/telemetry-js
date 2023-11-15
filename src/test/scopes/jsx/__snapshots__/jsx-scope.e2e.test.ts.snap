@@ -5,21 +5,23 @@ exports[`class: JsxScope > parseFile > correctly detects imports and elements in
   {
     "attributes": [
       {
-        "name": "something",
-        "value": "1 === 5 ? 'boo' : 'baa'",
+        "name": "firstProp",
+        "value": ComplexAttribute {
+          "complexValue": "1 === 5 ? 'boo' : 'baa'",
+        },
       },
       {
         "name": "simple",
-        "value": "\\"4\\"",
+        "value": "4",
       },
       {
         "name": "woo",
-        "value": "true",
+        "value": true,
       },
     ],
     "name": "Button",
     "prefix": undefined,
-    "raw": "<Button something={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={} woo>Hey</Button>",
+    "raw": "<Button firstProp={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={} woo>Hey</Button>",
   },
 ]
 `;
@@ -82,21 +84,21 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
               {
                 "attributes": {
                   "attribute.names": [
-                    "something",
-                    "simple",
-                    "woo",
+                    "firstProp",
+                    "[redacted2]",
+                    "[redacted4]",
                   ],
                   "attribute.values": [
-                    "1 === 5 ? 'boo' : 'baa'",
-                    "\\"4\\"",
-                    "true",
+                    "[redacted1]",
+                    "[redacted3]",
+                    "[redacted5]",
                   ],
-                  "invoker.package.name": "basic-project",
+                  "invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "invoker.package.owner": undefined,
-                  "invoker.package.raw": "basic-project",
+                  "invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "module.specifier": "instrumented",
                   "name": "[Default]",
-                  "raw": "<Button something={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={} woo>Hey</Button>",
+                  "raw": "d2762594f220c02e2f58009515fac49d05cf5f2457fe037a55a33ad18c3a7894",
                 },
                 "endTime": [
                   0,
@@ -113,45 +115,33 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                   "attribute.names": [
                     "firstProp",
                     "secondProp",
-                    "numberProp",
-                    "undefinedProp",
-                    "nullProp",
-                    "objectProp",
-                    "isCool",
-                    "isExplicitlyCool",
-                    "isNotCool",
-                    "objAccess",
+                    "[redacted6]",
+                    "[redacted8]",
+                    "[redacted10]",
+                    "[redacted12]",
+                    "[redacted14]",
+                    "[redacted15]",
+                    "[redacted16]",
+                    "[redacted18]",
                   ],
                   "attribute.values": [
-                    "\\"hi\\"",
-                    "\\"wow\\"",
-                    "5",
-                    "undefined",
-                    "null",
-                    "{key: 'value'}",
-                    "true",
-                    "true",
-                    "false",
-                    "obj['accessKey']",
+                    "hi",
+                    "wow",
+                    "[redacted7]",
+                    "[redacted9]",
+                    "[redacted11]",
+                    "[redacted13]",
+                    "[redacted5]",
+                    "[redacted5]",
+                    "[redacted17]",
+                    "[redacted19]",
                   ],
-                  "invoker.package.name": "basic-project",
+                  "invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "invoker.package.owner": undefined,
-                  "invoker.package.raw": "basic-project",
+                  "invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "module.specifier": "instrumented",
                   "name": "ImaginaryThing",
-                  "raw": "<ImaginaryThing
-          firstProp=\\"hi\\"
-          secondProp=\\"wow\\"
-          numberProp={5}
-          undefinedProp={undefined}
-          nullProp={null}
-          objectProp={{key: 'value'}}
-          isCool
-          isExplicitlyCool={true}
-          isNotCool={false}
-          objAccess={obj['accessKey']}
-          {...spreadObj}
-        />",
+                  "raw": "899e0be4e2eff31c6817a727793f72f83e010711b58e6d730dde8b87afae500e",
                 },
                 "endTime": [
                   0,

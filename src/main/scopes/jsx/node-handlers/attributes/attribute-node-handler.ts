@@ -9,6 +9,7 @@ import type * as ts from 'typescript'
 
 import { Loggable } from '../../../../core/log/loggable.js'
 import { type Logger } from '../../../../core/log/logger.js'
+import { type JsxElementAttribute } from '../../interfaces.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
@@ -22,5 +23,5 @@ export abstract class AttributeNodeHandler extends Loggable {
     this.sourceFile = sourceFile
   }
 
-  abstract getData(node: ts.Node): string
+  abstract getData(node: ts.Node): JsxElementAttribute['value']
 }

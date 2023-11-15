@@ -19,7 +19,7 @@ export class StringLiteralHandler extends AttributeNodeHandler {
    * @param node - StringLiteral node to extract data from.
    * @returns Text value of node.
    */
-  public getData(node: ts.StringLiteral): string {
-    return `"${node.text}"`
+  public getData(node: ts.StringLiteral) {
+    return node.text
   }
 }

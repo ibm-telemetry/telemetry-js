@@ -6,6 +6,7 @@
  */
 import type * as ts from 'typescript'
 
+import { ComplexAttribute } from '../../complex-attribute.js'
 import { AttributeNodeHandler } from './attribute-node-handler.js'
 
 /**
@@ -20,6 +21,6 @@ export class DefaultHandler extends AttributeNodeHandler {
    * @returns Text value of node.
    */
   public getData(node: ts.Node) {
-    return this.sourceFile.text.substring(node.pos, node.end).trim()
+    return new ComplexAttribute(this.sourceFile.text.substring(node.pos, node.end).trim())
   }
 }

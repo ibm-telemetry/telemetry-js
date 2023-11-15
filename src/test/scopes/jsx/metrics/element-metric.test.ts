@@ -7,6 +7,8 @@
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
+import { hash } from '../../../../main/core/anonymize/hash.js'
+import { substitute } from '../../../../main/core/anonymize/substitute.js'
 import { CustomResourceAttributes } from '../../../../main/core/custom-resource-attributes.js'
 import { type JsxElement, type JsxImport } from '../../../../main/scopes/jsx/interfaces.js'
 import { ElementMetric } from '../../../../main/scopes/jsx/metrics/element-metric.js'
@@ -47,79 +49,135 @@ describe('class: ElementMetric', () => {
   it('returns the correct attributes for a standard element', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, 'the-library', config, logger)
       .attributes
+    const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
+      prev[cur.name] = cur.value
+      return prev
+    }, {})
 
-    expect(attributes).toStrictEqual({
-      [CustomResourceAttributes.RAW]: '<theName />',
-      [CustomResourceAttributes.NAME]: 'theName',
-      [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: ['attrName'],
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: ['attrValue'],
-      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
-    })
+    const subs = substitute(attrMap, [], [])
+
+    expect(attributes).toStrictEqual(
+      hash(
+        {
+          [CustomResourceAttributes.RAW]: '<theName />',
+          [CustomResourceAttributes.NAME]: 'theName',
+          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
+          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
+          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+        },
+        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+      )
+    )
   })
   it('returns the correct attributes for a renamed element', () => {
     const renamedImport = { ...jsxImport, name: 'theActualName', rename: 'theName' }
     const attributes = new ElementMetric(jsxElement, renamedImport, 'the-library', config, logger)
       .attributes
+    const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
+      prev[cur.name] = cur.value
+      return prev
+    }, {})
 
-    expect(attributes).toStrictEqual({
-      [CustomResourceAttributes.RAW]: '<theName />',
-      [CustomResourceAttributes.NAME]: 'theActualName',
-      [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: ['attrName'],
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: ['attrValue'],
-      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
-    })
+    const subs = substitute(attrMap, [], [])
+
+    expect(attributes).toStrictEqual(
+      hash(
+        {
+          [CustomResourceAttributes.RAW]: '<theName />',
+          [CustomResourceAttributes.NAME]: 'theActualName',
+          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
+          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
+          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+        },
+        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+      )
+    )
   })
   it('returns the correct attributes for a default element', () => {
     const defaultImport = { ...jsxImport, name: '[Default]', rename: 'theName', isDefault: true }
     const attributes = new ElementMetric(jsxElement, defaultImport, 'the-library', config, logger)
       .attributes
+    const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
+      prev[cur.name] = cur.value
+      return prev
+    }, {})
 
-    expect(attributes).toStrictEqual({
-      [CustomResourceAttributes.RAW]: '<theName />',
-      [CustomResourceAttributes.NAME]: '[Default]',
-      [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: ['attrName'],
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: ['attrValue'],
-      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
-    })
+    const subs = substitute(attrMap, [], [])
+
+    expect(attributes).toStrictEqual(
+      hash(
+        {
+          [CustomResourceAttributes.RAW]: '<theName />',
+          [CustomResourceAttributes.NAME]: '[Default]',
+          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
+          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
+          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+        },
+        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+      )
+    )
   })
   it('returns the correct attributes for an element with no invoker', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, undefined, config, logger)
       .attributes
+    const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
+      prev[cur.name] = cur.value
+      return prev
+    }, {})
 
-    expect(attributes).toStrictEqual({
-      [CustomResourceAttributes.RAW]: '<theName />',
-      [CustomResourceAttributes.NAME]: 'theName',
-      [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: ['attrName'],
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: ['attrValue'],
-      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: undefined,
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: undefined
-    })
+    const subs = substitute(attrMap, [], [])
+
+    expect(attributes).toStrictEqual(
+      hash(
+        {
+          [CustomResourceAttributes.RAW]: '<theName />',
+          [CustomResourceAttributes.NAME]: 'theName',
+          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
+          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: undefined,
+          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: undefined
+        },
+        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+      )
+    )
   })
   it('returns the correct attributes for an element with invoker that has owner', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, '@owner/library', config, logger)
       .attributes
 
-    expect(attributes).toStrictEqual({
-      [CustomResourceAttributes.RAW]: '<theName />',
-      [CustomResourceAttributes.NAME]: 'theName',
-      [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: ['attrName'],
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: ['attrValue'],
-      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
-    })
+    const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
+      prev[cur.name] = cur.value
+      return prev
+    }, {})
+
+    const subs = substitute(attrMap, [], [])
+
+    expect(attributes).toStrictEqual(
+      hash(
+        {
+          [CustomResourceAttributes.RAW]: '<theName />',
+          [CustomResourceAttributes.NAME]: 'theName',
+          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
+          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
+          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
+          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
+        },
+        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+      )
+    )
   })
   it.todo('anonymizes unallowed attributes and values')
 })

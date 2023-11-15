@@ -7,6 +7,7 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
+import { ComplexAttribute } from '../../../../../main/scopes/jsx/complex-attribute.js'
 import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/get-tracked-source-files.js'
 import { IdentifierHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/identifier-handler.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
@@ -16,14 +17,33 @@ import { initLogger } from '../../../../__utils/init-logger.js'
 describe('identifierHandler', () => {
   const logger = initLogger()
 
-  it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/simple.tsx')
+  it('correctly returns undefined for undefined attribute value', async () => {
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
     const handler = new IdentifierHandler(sourceFile, logger)
 
     expect(
-      handler.getData(findNodesByType(sourceFile, ts.SyntaxKind.Identifier)[0] as ts.Identifier)
-    ).toStrictEqual('Button')
+      handler.getData(
+        findNodesByType(sourceFile, ts.SyntaxKind.Identifier, (node) => {
+          return node.parent.kind === ts.SyntaxKind.JsxExpression
+        })[0] as ts.Identifier
+      )
+    ).toBeUndefined()
+  })
+
+  it('correctly returns complex attribute', async () => {
+    const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
+    const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+
+    const handler = new IdentifierHandler(sourceFile, logger)
+
+    expect(
+      handler.getData(
+        findNodesByType(sourceFile, ts.SyntaxKind.Identifier, (node) => {
+          return node.parent.getChildAt(0).getText(sourceFile) === 'identifierProp'
+        })[0] as ts.Identifier
+      )
+    ).toStrictEqual(new ComplexAttribute('identifierProp'))
   })
 })

@@ -22,7 +22,7 @@ export class JsxAttributeHandler extends AttributeNodeHandler {
    * @returns Text value of node.
    * @throws NoAttributeExpressionFoundError if node's expression is undefined.
    */
-  public getData(node: ts.JsxAttribute): string {
+  public getData(node: ts.JsxAttribute) {
     if (node.initializer === undefined) {
       return new TrueKeywordHandler(this.sourceFile, this.logger).getData(node)
     }

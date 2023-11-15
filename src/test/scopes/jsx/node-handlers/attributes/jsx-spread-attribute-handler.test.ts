@@ -7,6 +7,7 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
+import { ComplexAttribute } from '../../../../../main/scopes/jsx/complex-attribute.js'
 import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/get-tracked-source-files.js'
 import { JsxSpreadAttributeHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/jsx-spread-attribute-handler.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
@@ -16,7 +17,7 @@ import { initLogger } from '../../../../__utils/init-logger.js'
 describe('class: JsxSpreadAttributeHandler', () => {
   const logger = initLogger()
   it('correctly returns node text', async () => {
-    const fixture = new Fixture('jsx-samples/jsx-elements.tsx')
+    const fixture = new Fixture('jsx-samples/all-jsx-element-types.tsx')
     const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
     const handler = new JsxSpreadAttributeHandler(sourceFile, logger)
 
@@ -24,6 +25,6 @@ describe('class: JsxSpreadAttributeHandler', () => {
       handler.getData(
         findNodesByType(sourceFile, ts.SyntaxKind.JsxSpreadAttribute)[0] as ts.JsxSpreadAttribute
       )
-    ).toStrictEqual('{...spreadObj}')
+    ).toStrictEqual(new ComplexAttribute('{...spreadObj}'))
   })
 })

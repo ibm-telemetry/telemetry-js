@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.8...v0.4.0) (2023-11-15)
+
+
+### Features
+
+* jsx scope ([#87](https://github.com/ibm-telemetry/telemetry-js/issues/87)) ([856dcd5](https://github.com/ibm-telemetry/telemetry-js/commit/856dcd54277531a61c0bcf9b367ad715ad4c8b10))
+
 ## [0.3.8](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.7...v0.3.8) (2023-11-15)
 
 

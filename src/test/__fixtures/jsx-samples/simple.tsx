@@ -8,7 +8,7 @@
 
 import Button from 'button-library'
 
-const sample = <Button something={1 === 5 ? 'boo' : 'baa'} simple="4">Hey</Button>
+const sample = <Button something={1 === 5 ? 'boo' : 'baa'} id={someIdentifier} simple="4">Hey</Button>
 
 const undef = undefined
 

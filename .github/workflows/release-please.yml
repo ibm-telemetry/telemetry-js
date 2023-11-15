@@ -21,11 +21,26 @@ jobs:
 
       - name: Update release PR 🔄
         uses: google-github-actions/release-please-action@v3
+        id: release
         with:
           release-type: node
           draft-pull-request: true
           package-name: '@ibm/telemetry-js'
           pull-request-title-pattern: 'release${scope}: release${component} ${version}'
           token: ${{ steps.app-token.outputs.token }}
-
-    # TODO: npm publication https://github.com/google-github-actions/release-please-action#automating-publication-to-npm
+          # The logic below handles the npm publication:
+      - uses: actions/checkout@v2
+      # these if statements ensure that a publication only occurs when
+      # a new release is created:
+        if: ${{ steps.release.outputs.release_created }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: 'https://registry.npmjs.org'
+        if: ${{ steps.release.outputs.release_created }}
+      - run: npm ci
+        if: ${{ steps.release.outputs.release_created }}
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPMJS_PUBLISH_TOKEN}}
+        if: ${{ steps.release.outputs.release_created }}

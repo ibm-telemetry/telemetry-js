@@ -26,7 +26,6 @@ const config: ConfigSchema = {
     }
   }
 }
-// TODO: incorporate hashing
 describe('class: ElementMetric', () => {
   const logger = initLogger()
   const jsxElement: JsxElement = {

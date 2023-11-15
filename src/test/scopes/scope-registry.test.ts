@@ -11,6 +11,6 @@ import { scopeRegistry } from '../../main/scopes/scope-registry.js'
 describe('scopeRegistry', () => {
   it('has all scope keys defined', () => {
     expect(scopeRegistry.npm).toBeDefined()
-    expect(scopeRegistry.jsx).not.toBeDefined()
+    expect(scopeRegistry.jsx).toBeDefined()
   })
 })

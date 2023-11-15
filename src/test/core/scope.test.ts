@@ -5,19 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type Attributes } from '@opentelemetry/api'
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath } from '../../main/core/log/create-log-file-path.js'
-import { Logger } from '../../main/core/log/logger.js'
 import { Scope } from '../../main/core/scope.js'
 import { ScopeMetric } from '../../main/core/scope-metric.js'
-
-const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+import { initLogger } from '../__utils/init-logger.js'
 
 describe('scope', () => {
-  afterAll(async () => {
-    await logger.close()
-  })
+  const logger = initLogger()
 
   it('correctly captures a data point', async () => {
     const myScope = new (class MyScope extends Scope {
@@ -36,7 +31,7 @@ describe('scope', () => {
     })()
 
     const myMetric = new (class MyMetric extends ScopeMetric {
-      public override name: string = 'my-metric'
+      public override name = 'my-metric' as const
 
       public override get attributes(): Attributes {
         return { hello: 'hi' }

@@ -37,7 +37,7 @@ function run() {
  */
 async function collect(opts: CommandLineOptions) {
   const date = new Date().toISOString()
-  const logFilePath = await createLogFilePath(date)
+  const logFilePath = createLogFilePath(date)
   const logger = new Logger(logFilePath)
 
   const telemetryCollector = new TelemetryCollector(opts.config, configSchemaJson, logger)

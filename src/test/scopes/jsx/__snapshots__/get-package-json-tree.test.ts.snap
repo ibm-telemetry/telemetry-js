@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getPackageJsonTree > correctly gets a tree 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/basic-project/node_modules/foo",
+      },
+      {
+        "children": [],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/basic-project/node_modules/instrumented",
+      },
+    ],
+    "path": "../../../../../../../../../../../src/test/__fixtures/projects/basic-project",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/package1",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/package2/node_modules/instrumented",
+          },
+        ],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/package2",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/package3/node_modules/instrumented",
+          },
+        ],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/package3",
+      },
+      {
+        "children": [],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/node_modules/instrumented",
+      },
+      {
+        "children": [],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/node_modules/intermediate",
+      },
+      {
+        "children": [],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy/node_modules/root-only",
+      },
+    ],
+    "path": "../../../../../../../../../../../src/test/__fixtures/projects/complex-nesting-thingy",
+  },
+  {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [],
+            "path": "../../../../../../../../../../../src/test/__fixtures/projects/nested-node-modules-folders/node_modules/nested-dep/node_modules/very-nested-dep",
+          },
+        ],
+        "path": "../../../../../../../../../../../src/test/__fixtures/projects/nested-node-modules-folders/node_modules/nested-dep",
+      },
+    ],
+    "path": "../../../../../../../../../../../src/test/__fixtures/projects/nested-node-modules-folders",
+  },
+  {
+    "children": [],
+    "path": "../../../../../../../../../../../src/test/__fixtures/projects/no-node-modules-folders",
+  },
+]
+`;

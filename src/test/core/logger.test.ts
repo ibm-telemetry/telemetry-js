@@ -14,7 +14,7 @@ import { Logger } from '../../main/core/log/logger.js'
 describe('logger', () => {
   it('creates and logs message to file', async () => {
     const date = new Date().toISOString()
-    const logFilePath = await createLogFilePath(date)
+    const logFilePath = createLogFilePath(date)
     const logger = new Logger(logFilePath)
 
     await expect(access(logFilePath)).rejects.toThrow('ENOENT')
@@ -34,7 +34,7 @@ describe('logger', () => {
   })
   it('logs error message', async () => {
     const date = new Date().toISOString()
-    const logFilePath = await createLogFilePath(date)
+    const logFilePath = createLogFilePath(date)
     const logger = new Logger(logFilePath)
 
     await expect(access(logFilePath)).rejects.toThrow('ENOENT')

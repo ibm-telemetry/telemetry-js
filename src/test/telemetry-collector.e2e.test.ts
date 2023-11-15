@@ -7,20 +7,15 @@
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import path from 'path'
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath } from '../main/core/log/create-log-file-path.js'
-import { Logger } from '../main/core/log/logger.js'
 import { UnknownScopeError } from '../main/exceptions/unknown-scope-error.js'
 import { TelemetryCollector } from '../main/telemetry-collector.js'
 import { Fixture } from './__utils/fixture.js'
-
-const logger = new Logger(await createLogFilePath(new Date().toISOString()))
+import { initLogger } from './__utils/init-logger.js'
 
 describe('telemetryCollector', () => {
-  afterAll(async () => {
-    await logger.close()
-  })
+  const logger = initLogger()
 
   describe('runScopes', () => {
     it('does not throw when existing scopes are specified in the config', async () => {
@@ -33,10 +28,18 @@ describe('telemetryCollector', () => {
       const promises = telemetryCollector.runScopes(cwd.path, root.path, {
         projectId: 'asdf',
         version: 1,
-        collect: { npm: { dependencies: null } }
+        collect: {
+          npm: { dependencies: null },
+          jsx: {
+            elements: {
+              allowedAttributeNames: ['firstProp', 'secondProp'],
+              allowedAttributeStringValues: ['hi', 'wow']
+            }
+          }
+        }
       })
 
-      expect(promises).toHaveLength(1)
+      expect(promises).toHaveLength(2)
 
       await Promise.allSettled(promises)
     })

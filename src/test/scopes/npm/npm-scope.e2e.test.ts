@@ -4,21 +4,19 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import path from 'node:path'
 
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import { afterAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { createLogFilePath } from '../../../main/core/log/create-log-file-path.js'
-import { Logger } from '../../../main/core/log/logger.js'
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { NoPackageJsonFoundError } from '../../../main/exceptions/no-package-json-found-error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
+import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { Fixture } from '../../__utils/fixture.js'
+import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
 
-const logger = new Logger(await createLogFilePath(new Date().toISOString()))
 const config: ConfigSchema = {
   projectId: 'abc123',
   version: 1,
@@ -26,9 +24,7 @@ const config: ConfigSchema = {
 }
 
 describe('class: NpmScope', () => {
-  afterAll(async () => {
-    await logger.close()
-  })
+  const logger = initLogger()
 
   describe('run', () => {
     it('correctly captures dependency data', async () => {
@@ -46,21 +42,12 @@ describe('class: NpmScope', () => {
 
       const results = await metricReader.collect()
 
-      // Metric timestamps change every run, so change them to a fixed value when comparing against
-      // snapshots
-      results.resourceMetrics.scopeMetrics.forEach((scopeMetric) => {
-        scopeMetric.metrics.forEach((metric) => {
-          metric.dataPoints.forEach((dataPoint) => {
-            ;(dataPoint as { startTime: [number, number] }).startTime = [0, 0]
-            ;(dataPoint as { endTime: [number, number] }).endTime = [0, 0]
-          })
-        })
-      })
+      clearDataPointTimes(results)
 
       expect(results).toMatchSnapshot()
     })
 
-    it('throws EmptyCollectorError if no collector has been defined', async () => {
+    it('throws EmptyScopeError if no collector has been defined', async () => {
       const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
       const scope = new NpmScope(
         fixture.path,

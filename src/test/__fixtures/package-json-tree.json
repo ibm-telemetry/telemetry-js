@@ -1,0 +1,29 @@
+[
+    {
+      "path": "src/something",
+      "children": [
+        {
+          "path": "src/something/nested-1/nested-2",
+          "children": [
+            {
+              "path": "src/something/nested-1/nested-2/nested-3-1",
+              "children": []
+            },
+            {
+              "path": "src/something/nested-1/nested-2/nested-3-2",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "root": "src/something-2",
+      "children": [
+        {
+          "root": "src/something-2/nested-1/nested-2",
+          "children": []
+        }
+      ]
+    }
+  ]

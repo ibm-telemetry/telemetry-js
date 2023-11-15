@@ -22,6 +22,10 @@ import { DependencyMetric } from './metrics/dependency-metric.js'
 export class NpmScope extends Scope {
   public override name = 'npm' as const
 
+  /**
+   * Finds and generates metrics for all for the instrumented package installation details,
+   * along with peer dependencies and the installer.
+   */
   @Trace()
   private async collectDependencies(): Promise<void> {
     const { name: instrumentedPkgName, version: instrumentedPkgVersion } = await getPackageData(
@@ -38,8 +42,8 @@ export class NpmScope extends Scope {
         this.capture(
           new DependencyMetric(
             {
-              name: dependency.name,
-              version: dependency.version,
+              rawName: dependency.name,
+              rawVersion: dependency.version,
               installerRawName: installingPkg.name,
               installerRawVersion: installingPkg.version
             },
@@ -50,6 +54,9 @@ export class NpmScope extends Scope {
     })
   }
 
+  /**
+   * Entry point for the scope.
+   */
   @Trace()
   public override async run(): Promise<void> {
     const collectorKeys = this.config.collect[this.name]

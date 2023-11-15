@@ -6,17 +6,16 @@
  */
 
 import { type Attributes } from '@opentelemetry/api'
-import { SemVer } from 'semver'
 
-import { anonymize } from '../../../core/anonymize.js'
+import { hash } from '../../../core/anonymize/hash.js'
 import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
-import { Trace } from '../../../core/log/trace.js'
+import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 
 export interface DependencyData {
-  name: string
-  version: string
+  rawName: string
+  rawVersion: string
   installerRawName: string
   installerRawVersion: string
 }
@@ -25,7 +24,8 @@ export interface DependencyData {
  * NPM scope metric that generates a dependency.count individual metric for a given dependency.
  */
 export class DependencyMetric extends ScopeMetric {
-  public override name: string
+  public override name = 'dependency.count' as const
+
   private readonly data: DependencyData
 
   /**
@@ -36,15 +36,20 @@ export class DependencyMetric extends ScopeMetric {
    */
   public constructor(data: DependencyData, logger: Logger) {
     super(logger)
-    this.name = 'dependency.count'
     this.data = data
   }
 
+  /**
+   * Get all OpenTelemetry Attributes for this metric data point.
+   *
+   * @returns OpenTelemetry compliant attributes, anonymized where necessary.
+   */
   public override get attributes(): Attributes {
-    const { owner, name, major, minor, patch, preRelease } = this.getPackageDetails(
-      this.data.name,
-      this.data.version
-    )
+    const packageDetailsProvider = new PackageDetailsProvider(this.logger)
+
+    const { owner, name, major, minor, patch, preRelease } =
+      packageDetailsProvider.getPackageDetails(this.data.rawName, this.data.rawVersion)
+
     const {
       owner: installerOwner,
       name: installerName,
@@ -52,70 +57,42 @@ export class DependencyMetric extends ScopeMetric {
       minor: installerMinor,
       patch: installerPatch,
       preRelease: installerPreRelease
-    } = this.getPackageDetails(this.data.installerRawName, this.data.installerRawVersion)
+    } = packageDetailsProvider.getPackageDetails(
+      this.data.installerRawName,
+      this.data.installerRawVersion
+    )
 
-    return anonymize(
+    return hash(
       {
-        [CustomResourceAttributes.RAW]: this.data.name,
+        [CustomResourceAttributes.RAW]: this.data.rawName,
         [CustomResourceAttributes.OWNER]: owner,
         [CustomResourceAttributes.NAME]: name,
-        [CustomResourceAttributes.VERSION_RAW]: this.data.version,
-        [CustomResourceAttributes.VERSION_MAJOR]: major.toString(),
-        [CustomResourceAttributes.VERSION_MINOR]: minor.toString(),
-        [CustomResourceAttributes.VERSION_PATCH]: patch.toString(),
+        [CustomResourceAttributes.VERSION_RAW]: this.data.rawVersion,
+        [CustomResourceAttributes.VERSION_MAJOR]: major?.toString(),
+        [CustomResourceAttributes.VERSION_MINOR]: minor?.toString(),
+        [CustomResourceAttributes.VERSION_PATCH]: patch?.toString(),
         [CustomResourceAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
         [CustomResourceAttributes.INSTALLER_RAW]: this.data.installerRawName,
         [CustomResourceAttributes.INSTALLER_OWNER]: installerOwner,
         [CustomResourceAttributes.INSTALLER_NAME]: installerName,
         [CustomResourceAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
-        [CustomResourceAttributes.INSTALLER_VERSION_MAJOR]: installerMajor.toString(),
-        [CustomResourceAttributes.INSTALLER_VERSION_MINOR]: installerMinor.toString(),
-        [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch.toString(),
+        [CustomResourceAttributes.INSTALLER_VERSION_MAJOR]: installerMajor?.toString(),
+        [CustomResourceAttributes.INSTALLER_VERSION_MINOR]: installerMinor?.toString(),
+        [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
         [CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
       },
-      {
-        hash: [
-          CustomResourceAttributes.RAW,
-          CustomResourceAttributes.OWNER,
-          CustomResourceAttributes.NAME,
-          CustomResourceAttributes.VERSION_RAW,
-          CustomResourceAttributes.VERSION_PRE_RELEASE,
-          CustomResourceAttributes.INSTALLER_RAW,
-          CustomResourceAttributes.INSTALLER_OWNER,
-          CustomResourceAttributes.INSTALLER_NAME,
-          CustomResourceAttributes.INSTALLER_VERSION_RAW,
-          CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
-        ]
-      }
+      [
+        CustomResourceAttributes.RAW,
+        CustomResourceAttributes.OWNER,
+        CustomResourceAttributes.NAME,
+        CustomResourceAttributes.VERSION_RAW,
+        CustomResourceAttributes.VERSION_PRE_RELEASE,
+        CustomResourceAttributes.INSTALLER_RAW,
+        CustomResourceAttributes.INSTALLER_OWNER,
+        CustomResourceAttributes.INSTALLER_NAME,
+        CustomResourceAttributes.INSTALLER_VERSION_RAW,
+        CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
+      ]
     )
-  }
-
-  /**
-   * Extracts atomic attributes from the given package name and version.
-   *
-   * @param rawPackageName - Raw name of package.
-   * @param rawPackageVersion - Raw version of package.
-   * @returns Object containing package owner, name, major, minor, patch and preRelease versions.
-   */
-  @Trace()
-  private getPackageDetails(rawPackageName: string, rawPackageVersion: string) {
-    let owner, name
-
-    if (rawPackageName.startsWith('@') && rawPackageName.includes('/')) {
-      ;[owner, name] = rawPackageName.split('/')
-    } else {
-      name = rawPackageName
-    }
-
-    const { major, minor, patch, prerelease } = new SemVer(rawPackageVersion)
-
-    return {
-      owner: owner === '' ? undefined : owner,
-      name: name === '' ? undefined : name,
-      major,
-      minor,
-      patch,
-      preRelease: prerelease.length === 0 ? undefined : prerelease
-    }
   }
 }

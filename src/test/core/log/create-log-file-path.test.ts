@@ -13,7 +13,7 @@ describe('createLogFilePath', () => {
   it('creates a path for a temp file', async () => {
     // 2023-08-29T20:02:44.226Z
     const date = new Date().toISOString()
-    const logFilePath = await createLogFilePath(date)
+    const logFilePath = createLogFilePath(date)
 
     expect(existsSync(logFilePath)).toBeFalsy()
 

@@ -20,8 +20,8 @@ const config: ConfigSchema = {
   collect: {
     jsx: {
       elements: {
-        allowedAttributeNames: ['firstProp', 'secondProp'],
-        allowedAttributeStringValues: ['hi', 'wow']
+        allowedAttributeNames: ['allowedAttrName'],
+        allowedAttributeStringValues: ['allowedAttrValue']
       }
     }
   }
@@ -179,5 +179,65 @@ describe('class: ElementMetric', () => {
       )
     )
   })
-  it.todo('anonymizes unallowed attributes and values')
+  it('returns the correct attribute name and values for unallowed attributes and values', () => {
+    const elementWithAllowedAttrs = {
+      ...jsxElement,
+      attributes: [
+        {
+          name: 'unAllowedAttrName',
+          value: 'unAllowedAttrValue'
+        },
+        {
+          name: 'allowedAttrName',
+          value: 'allowedAttrValue'
+        },
+        {
+          name: 'allowedAttrName',
+          value: 'unAllowedAttrValue'
+        },
+        {
+          name: 'unAllowedAttrName',
+          value: 'allowedAttrValue'
+        }
+      ]
+    }
+    const attributes = new ElementMetric(
+      elementWithAllowedAttrs,
+      jsxImport,
+      '@owner/library',
+      config,
+      logger
+    ).attributes
+
+    const attrMap = elementWithAllowedAttrs.attributes.reduce<Record<string, unknown>>(
+      (prev, cur) => {
+        prev[cur.name] = cur.value
+        return prev
+      },
+      {}
+    )
+
+    const substitutedAttributes = substitute(attrMap, ['allowedAttrName'], ['allowedAttrValue'])
+
+    expect(attributes).toStrictEqual(
+      hash(
+        {
+          [CustomResourceAttributes.RAW]: '<theName />',
+          [CustomResourceAttributes.NAME]: 'theName',
+          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
+          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
+          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
+          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
+          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
+          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
+        },
+        [
+          CustomResourceAttributes.RAW,
+          CustomResourceAttributes.INVOKER_PACKAGE_RAW,
+          CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
+          CustomResourceAttributes.INVOKER_PACKAGE_NAME
+        ]
+      )
+    )
+  })
 })

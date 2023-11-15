@@ -72,19 +72,20 @@ exports[`class: JsxElementNodeHandler > correctly returns the JsxElements for a 
     "name": "Element1",
     "prefix": undefined,
     "raw": "<Element1
-        attr1=\\"string\\"
-        attr2={4}
-        attr5={undefined}
-        attr6={null}
-        attr8
-        attr9={true}
-        attr10={false}
-        attr11={variable}
-        attr12={element[access]}
-        attr13={{key: 'value', key2: 10}}
-        {...spreadObj}
-        exp={}>
-        SomethingHere
+      attr1=\\"string\\"
+      attr2={4}
+      attr5={undefined}
+      attr6={null}
+      attr8
+      attr9={true}
+      attr10={false}
+      attr11={variable}
+      attr12={element[access]}
+      attr13={{key: 'value', key2: 10}}
+      {...spreadObj}
+      exp={}
+    >
+      SomethingHere
     </Element1>",
   },
 ]

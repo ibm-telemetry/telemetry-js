@@ -155,6 +155,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
               },
             ],
             "descriptor": {
+              "advice": {},
               "description": "",
               "name": "element.count",
               "type": "COUNTER",

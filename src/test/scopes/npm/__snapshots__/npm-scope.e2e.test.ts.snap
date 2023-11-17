@@ -126,6 +126,7 @@ exports[`class: NpmScope > run > correctly captures dependency data 1`] = `
               },
             ],
             "descriptor": {
+              "advice": {},
               "description": "",
               "name": "dependency.count",
               "type": "COUNTER",

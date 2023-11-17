@@ -40,7 +40,7 @@ const config: ConfigSchema = {
 describe('class: JsxScope', () => {
   const logger = initLogger()
   describe('run', () => {
-    // eslint-disable-next-line vitest/no-disabled-tests -- TODO: Non-deterministic. Issue #134
+    // TODO: Non-deterministic. Issue #134
     it('correctly captures jsx element metric data', async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'basic-project'))

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.3...v0.6.0) (2023-11-17)
+
+
+### Features
+
+* **jsx:** remove raw attr from jsx elements ([0e5db9d](https://github.com/ibm-telemetry/telemetry-js/commit/0e5db9d218480987b269d60a35aabd2a00bb00a2))
+
+
+### Bug Fixes
+
+* **npm:** add caching to get-package-data ([692ac0a](https://github.com/ibm-telemetry/telemetry-js/commit/692ac0aaba3c0aaa8bb24f5212f68c849ed86e90))
+
 ## [0.5.3](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.2...v0.5.3) (2023-11-17)
 
 

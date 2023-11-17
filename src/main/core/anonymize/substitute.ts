@@ -4,9 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { safeStringify } from '../log/safe-stringify.js'
+import { TypedKeyMap } from './typed-key-map.js'
 
-const subs = new Map()
+const subs = new TypedKeyMap()
 let curSub = 1
 
 /**
@@ -23,12 +23,8 @@ export function substitute<T extends Record<string, unknown>>(
   allowedKeys: Array<keyof T>,
   allowedValues: unknown[]
 ): T {
-  // for each raw entry, map it to something
   const substitutedEntries = Object.entries(raw).map(([key, value]) => {
-    // Avoid object equality for complex values
-    value = safeStringify(value)
-
-    // Key is not safe. substitute key and value
+    // Key is not safe. Substitute key and value
     if (!allowedKeys.includes(key)) {
       if (!subs.has(key)) {
         subs.set(key, nextSub())
@@ -40,9 +36,7 @@ export function substitute<T extends Record<string, unknown>>(
       return { key: subs.get(key), value: subs.get(value) }
     }
 
-    // Past this point, key is safe
-
-    // Value is a string that's not safe
+    // Key is safe. Value is a string that's not safe
     if (typeof value === 'string' && !allowedValues.includes(value)) {
       if (!subs.has(value)) {
         subs.set(value, nextSub())
@@ -51,7 +45,7 @@ export function substitute<T extends Record<string, unknown>>(
       return { key, value: subs.get(value) }
     }
 
-    // Value is an object that's not safe
+    // Key is safe. Value is an object that's not safe
     if (typeof value === 'object' && !allowedValues.includes(value)) {
       if (!subs.has(value)) {
         subs.set(value, nextSub())

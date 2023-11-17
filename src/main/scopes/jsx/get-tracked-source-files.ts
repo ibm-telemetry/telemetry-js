@@ -10,7 +10,6 @@ import path from 'node:path'
 import * as ts from 'typescript'
 
 import { type Logger } from '../../core/log/logger.js'
-import { safeStringify } from '../../core/log/safe-stringify.js'
 import { TrackedFileEnumerator } from '../../core/tracked-file-enumerator.js'
 
 /**
@@ -48,6 +47,10 @@ export async function getTrackedSourceFiles(root: string, logger: Logger) {
 
   const results = await Promise.all(promises)
 
-  logger.traceExit('', 'getTrackedSourceFiles', safeStringify(results))
+  logger.traceExit(
+    '',
+    'getTrackedSourceFiles',
+    results.map((result) => result.fileName)
+  )
   return results
 }

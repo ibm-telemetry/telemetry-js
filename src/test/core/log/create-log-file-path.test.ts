@@ -17,8 +17,6 @@ describe('createLogFilePath', () => {
 
     expect(existsSync(logFilePath)).toBeFalsy()
 
-    console.log(logFilePath)
-
     // Roughly matching this format:
     // ....../path/to/stuff/ibmtelemetry-20230829T200356643Z-31dSMr.log
     expect(/ibmtelemetry-[\dTZ]+-.{6}\.log/.test(logFilePath)).toBeTruthy()

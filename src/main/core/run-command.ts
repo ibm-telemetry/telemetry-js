@@ -33,7 +33,7 @@ export async function runCommand(
   options: childProcess.SpawnOptions = {},
   rejectOnError: boolean = true
 ) {
-  logger.traceEnter('run-command', 'runCommand', [cmd, options, rejectOnError])
+  logger.traceEnter('', 'runCommand', [cmd, options, rejectOnError])
 
   guardShell(cmd)
 
@@ -88,7 +88,7 @@ export async function runCommand(
     }
 
     hasCallbackBeenTriggered = true
-    logger.traceExit('run-command', 'runCommand', result)
+    logger.traceExit('', 'runCommand', result)
   })
 
   proc.on('close', (exitCode) => {
@@ -116,7 +116,7 @@ export async function runCommand(
     }
 
     hasCallbackBeenTriggered = true
-    logger.traceExit('run-command', 'runCommand', result)
+    logger.traceExit('', 'runCommand', result)
   })
 
   return await promise

@@ -128,8 +128,9 @@ export class TelemetryCollector {
    * Run all scopes defined in the provided config file against the provided cwd and root
    * directories.
    *
-   * @param cwd - The current working directory of telemetry data collection.
-   * @param root - The root directory of the project being analyzed.
+   * @param cwd - The current working directory of telemetry data collection. This is an absolute
+   * path.
+   * @param root - The root directory of the project being analyzed. This is an absolute path.
    * @param config - The provided config.
    * @throws An error if an unknown scope is encountered in the config object.
    * @returns A set of promises. One per executing scope.

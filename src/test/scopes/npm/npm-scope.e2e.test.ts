@@ -28,10 +28,12 @@ describe('class: NpmScope', () => {
 
   describe('run', () => {
     it('correctly captures dependency data', async () => {
-      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const cwd = new Fixture('projects/basic-project/node_modules/instrumented')
+      const root = new Fixture('projects/basic-project')
+
       const scope = new NpmScope(
-        fixture.path,
-        path.join(fixture.path, '..', '..'),
+        cwd.path,
+        root.path,
         { collect: { npm: { dependencies: null } }, projectId: '123', version: 1 },
         logger
       )

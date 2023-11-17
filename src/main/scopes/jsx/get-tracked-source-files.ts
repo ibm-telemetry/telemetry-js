@@ -10,26 +10,30 @@ import path from 'node:path'
 import * as ts from 'typescript'
 
 import { type Logger } from '../../core/log/logger.js'
+import { safeStringify } from '../../core/log/safe-stringify.js'
 import { TrackedFileEnumerator } from '../../core/tracked-file-enumerator.js'
 
 /**
  * Gets all tracked source files to consider for data collection.
  *
- * @param root - Root directory in which to search for tracked source files.
+ * @param root - Root directory in which to search for tracked source files. This is an absolute
+ * path.
  * @param logger - Logger instance to use.
  * @returns An array of source file objects.
  */
 export async function getTrackedSourceFiles(root: string, logger: Logger) {
+  logger.traceEnter('', 'getTrackedSourceFiles', [root])
+
   const fileEnumerator = new TrackedFileEnumerator(logger)
-  const allowedSuffixes = ['.js', '.jsx', '.ts', '.tsx']
+  const allowedExtensions = ['.js', '.mjs', '.cjs', '.jsx', '.tsx']
   const files = []
 
   // If a file is passed instead of a directory, avoid the `git ls-tree` call
-  if (allowedSuffixes.includes(path.extname(root))) {
+  if (allowedExtensions.includes(path.extname(root))) {
     files.push(root)
   } else {
     files.push(
-      ...(await fileEnumerator.find(root, (file) => allowedSuffixes.includes(path.extname(file))))
+      ...(await fileEnumerator.find(root, (file) => allowedExtensions.includes(path.extname(file))))
     )
   }
 
@@ -42,5 +46,8 @@ export async function getTrackedSourceFiles(root: string, logger: Logger) {
     )
   })
 
-  return await Promise.all(promises)
+  const results = await Promise.all(promises)
+
+  logger.traceExit('', 'getTrackedSourceFiles', safeStringify(results))
+  return results
 }

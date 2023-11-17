@@ -10,7 +10,7 @@
  * current directory.
  */
 export class NoPackageJsonFoundError extends Error {
-  constructor(root: string, cwd: string) {
+  constructor(cwd: string, root: string) {
     super(`No package.json files found between ${root} and ${cwd}`)
   }
 }

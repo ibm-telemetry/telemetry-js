@@ -12,33 +12,36 @@ import { type FileTree } from './interfaces.js'
 
 /**
  * Constructs an array of trees from all package.json files in the given repository,
- *  where every nested object is a subpath of the root.
+ * where every nested object is a subpath of the root.
  *
- * @param root - Root-most directory to consider.
+ * @param root - Root-most directory to consider. This is an absolute path.
  * @param logger - Logger instance.
  * @returns Array of trees of package.json files.
  */
 export async function getPackageJsonTree(root: string, logger: Logger): Promise<FileTree[]> {
+  logger.traceEnter('', 'getPackageJsonTree', [root])
+
   const dirs = (
     await new TrackedFileEnumerator(logger).find(
       root,
       (fileName) => path.basename(fileName) === 'package.json'
     )
   )
-    .map((fileName) => path.dirname(fileName))
+    .map((f) => path.dirname(f))
     .sort((a, b) => a.split('/').length - b.split('/').length)
 
   const tree: FileTree[] = []
 
-  dirs.forEach((path) => {
+  dirs.forEach((dir) => {
     let currNode = tree
-    let nextNode = tree.find((root) => path.includes(root.path))
+    let nextNode = tree.find((root) => dir.includes(root.path))
     while (nextNode !== null && nextNode !== undefined) {
       currNode = nextNode.children
-      nextNode = currNode.find((node) => path.includes(node.path))
+      nextNode = currNode.find((node) => dir.includes(node.path))
     }
-    currNode.push({ path, children: [] })
+    currNode.push({ path: dir, children: [] })
   })
 
+  logger.traceExit('', 'getPackageJsonTree', tree)
   return tree
 }

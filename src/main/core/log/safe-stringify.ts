@@ -15,7 +15,7 @@ export function safeStringify(arg: unknown): string {
   let result
 
   if (arg instanceof Function) {
-    return arg.name + '(...)'
+    return (arg.name === '' ? 'unknownFn' : arg.name) + '(...)'
   }
 
   if (result === undefined) {

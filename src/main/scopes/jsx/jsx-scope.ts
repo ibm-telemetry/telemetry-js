@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type ts from 'typescript'
+import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
@@ -126,18 +126,30 @@ export class JsxScope extends Scope {
     })
   }
 
+  /**
+   * Adds data to the accumulator for each package that invokes the jsx elements in the accumulator.
+   *
+   * @param accumulator - Accumulator to store results in.
+   * @param sourceFilePath - Absolute path to a sourceFile.
+   * @param packageJsonTree - Directory tree of package.json files.
+   * @returns Promise of all invokers getting resolved.
+   */
   async resolveInvokers(
     accumulator: JsxElementAccumulator,
-    fileName: string,
+    sourceFilePath: string,
     packageJsonTree: FileTree[]
   ) {
+    const containingDir = findDeepestContainingDirectory(
+      sourceFilePath,
+      packageJsonTree,
+      this.logger
+    )
+
+    if (containingDir === undefined) {
+      return
+    }
+
     const promises = accumulator.elements.map(async (jsxElement) => {
-      const containingDir = findDeepestContainingDirectory(fileName, packageJsonTree)
-
-      if (containingDir === undefined) {
-        return undefined
-      }
-
       const containingPackageData = await getPackageData(containingDir, this.logger)
 
       accumulator.elementInvokers.set(jsxElement, containingPackageData.name)

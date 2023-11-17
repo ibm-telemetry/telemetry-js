@@ -12,12 +12,19 @@ import { type PackageData } from './interfaces.js'
  * Given a path to a package, get details about it, including name and version.
  *
  * @param packagePath - A directory to be treated as a package. It may or may not include a
- * package.json file directly in it.
+ * package.json file directly in it. This is an absolute path.
  * @param logger - Logger instance.
  * @throws If no package details could be obtained or the directory didn't point to a valid package.
  * @returns An object containing details about the package.
  */
 export async function getPackageData(packagePath: string, logger: Logger): Promise<PackageData> {
-  const result = await runCommand('npm pkg get name version', logger, { cwd: packagePath })
-  return JSON.parse(result.stdout)
+  logger.traceEnter('', 'getPackageData', [packagePath])
+
+  const result = await runCommand('npm pkg get name version', logger, {
+    cwd: packagePath
+  })
+  const parsed = JSON.parse(result.stdout)
+
+  logger.traceExit('', 'getPackageData', parsed)
+  return parsed
 }

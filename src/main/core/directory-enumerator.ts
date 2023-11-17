@@ -18,8 +18,9 @@ export class DirectoryEnumerator extends Loggable {
   /**
    * Finds directories between leaf and root (inclusive) which satisfy the predicate.
    *
-   * @param leaf - Leaf-most directory. This must be inside of the root directory.
-   * @param root - Root-most directory.
+   * @param leaf - Leaf-most directory. This must be inside of the root directory. This is an
+   * absolute path.
+   * @param root - Root-most directory. This is an absolute path.
    * @param predicate - Function to indicate whether or not each enumerated directory should be part
    * of the result set.
    * @returns A (possibly empty) array of directories.
@@ -30,13 +31,9 @@ export class DirectoryEnumerator extends Loggable {
     root: string,
     predicate: (dir: string) => boolean | Promise<boolean>
   ): Promise<string[]> {
-    // Ensure the format is normalized
-    leaf = path.resolve(leaf)
-    root = path.resolve(root)
-
     // (if leaf is not a subpath of root, throw an exception)
     if (path.relative(root, leaf).startsWith('..')) {
-      throw new InvalidRootPathError(root, leaf)
+      throw new InvalidRootPathError(leaf, root)
     }
 
     const dirs = []

@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'node:path'
+import path from 'path'
 
 import { Loggable } from './log/loggable.js'
 import { Trace } from './log/trace.js'
@@ -20,7 +20,9 @@ export class TrackedFileEnumerator extends Loggable {
    * passing a path to a file as `root` instead of a directory. This will result in an array of
    * length one being returned.
    *
-   * @param root - Directory to consider as the root.
+   * The returned paths are absolute.
+   *
+   * @param root - Directory to consider as the root. This is an absolute path.
    * @param predicate - Function to indicate whether or not each enumerated file should be part of
    * the result set.
    * @returns A (possibly empty) array of files.
@@ -30,8 +32,6 @@ export class TrackedFileEnumerator extends Loggable {
     root: string,
     predicate: (file: string) => boolean | Promise<boolean>
   ): Promise<string[]> {
-    root = path.normalize(root)
-
     const allFiles = (
       await runCommand(`git ls-tree --full-tree --name-only -r HEAD ${root}`, this.logger)
     ).stdout
@@ -40,6 +40,8 @@ export class TrackedFileEnumerator extends Loggable {
 
     const checks = await Promise.all(allFiles.map(predicate))
 
-    return allFiles.filter((_file, index) => checks[index] === true)
+    return allFiles
+      .filter((_file, index) => checks[index] === true)
+      .map((file) => path.resolve(file))
   }
 }

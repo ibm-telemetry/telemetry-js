@@ -8,15 +8,19 @@ import { describe, expect, it } from 'vitest'
 
 import { findDeepestContainingDirectory } from '../../../main/scopes/jsx/find-deepest-containing-directory.js'
 import { Fixture } from '../../__utils/fixture.js'
+import { initLogger } from '../../__utils/init-logger.js'
 
 describe('findDeepestContainingDirectory', () => {
+  const logger = initLogger()
+
   it('correctly returns leaf package.json for nested file', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
       findDeepestContainingDirectory(
         'src/something/nested-1/nested-2/nested-3-2/fileName',
-        await fixture.parse()
+        await fixture.parse(),
+        logger
       )
     ).toStrictEqual('src/something/nested-1/nested-2/nested-3-2')
   })
@@ -25,7 +29,7 @@ describe('findDeepestContainingDirectory', () => {
     const fixture = new Fixture('package-json-tree.json')
 
     expect(
-      findDeepestContainingDirectory('src/something/fileName', await fixture.parse())
+      findDeepestContainingDirectory('src/something/fileName', await fixture.parse(), logger)
     ).toStrictEqual('src/something')
   })
 
@@ -35,7 +39,8 @@ describe('findDeepestContainingDirectory', () => {
     expect(
       findDeepestContainingDirectory(
         'src/something/more/stuff/here/fileName',
-        await fixture.parse()
+        await fixture.parse(),
+        logger
       )
     ).toStrictEqual('src/something')
   })
@@ -46,7 +51,8 @@ describe('findDeepestContainingDirectory', () => {
     expect(
       findDeepestContainingDirectory(
         'src/something/nested-1/nested-2/fileName',
-        await fixture.parse()
+        await fixture.parse(),
+        logger
       )
     ).toStrictEqual('src/something/nested-1/nested-2')
   })
@@ -54,6 +60,8 @@ describe('findDeepestContainingDirectory', () => {
   it('throws error if file is not within packageJsonTree scope', async () => {
     const fixture = new Fixture('package-json-tree.json')
 
-    expect(findDeepestContainingDirectory('src/fileName', await fixture.parse())).toBeUndefined()
+    expect(
+      findDeepestContainingDirectory('src/fileName', await fixture.parse(), logger)
+    ).toBeUndefined()
   })
 })

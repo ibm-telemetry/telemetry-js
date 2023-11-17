@@ -9,7 +9,7 @@
  * Exception thrown when an invalid root is supplied for a given directory.
  */
 export class InvalidRootPathError extends Error {
-  constructor(root: string, cwd: string) {
-    super(`${cwd} is not a subpath of ${root}`)
+  constructor(child: string, root: string) {
+    super(`${child} is not a subpath of ${root}`)
   }
 }

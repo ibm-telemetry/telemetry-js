@@ -19,10 +19,10 @@ export class Fixture {
   /**
    * Constructs a new test fixture based on a path to a fixture file.
    *
-   * @param fixturePath - Relative path to the fixture within the __fixtures directory.
+   * @param fixturePath - Absolute path to the fixture within the __fixtures directory.
    */
   public constructor(fixturePath: string) {
-    this.path = path.join('src/test/__fixtures', fixturePath)
+    this.path = path.resolve('src/test/__fixtures', fixturePath)
   }
 
   /**

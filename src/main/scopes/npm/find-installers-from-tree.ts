@@ -47,11 +47,8 @@ export function findInstallersFromTree(
   packageVersion: string,
   logger: Logger
 ) {
-  logger.traceEnter('find-installers-from-tree', 'findInstallersFromTree', [
-    dependencyTree,
-    packageName,
-    packageVersion
-  ])
+  logger.traceEnter('', 'findInstallersFromTree', [dependencyTree, packageName, packageVersion])
+
   let results: InstallingPackage[] = []
 
   // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
@@ -62,6 +59,6 @@ export function findInstallersFromTree(
     results = matches.map((match) => getPackageSubTree(dependencyTree, match.slice(0, -2)))
   }
 
-  logger.traceExit('find-installers-from-tree', 'findInstallersFromTree', results)
+  logger.traceExit('', 'findInstallersFromTree', results)
   return results
 }

@@ -103,7 +103,7 @@ export class NpmScope extends Scope {
     const topMostDir = dirs.pop()
 
     if (topMostDir === undefined) {
-      throw new NoPackageJsonFoundError(this.root, this.cwd)
+      throw new NoPackageJsonFoundError(this.cwd, this.root)
     }
 
     // Allow this command to try and obtain results even if it exited with a total or partial error

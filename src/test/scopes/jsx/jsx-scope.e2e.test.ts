@@ -73,6 +73,7 @@ describe('class: JsxScope', () => {
     const fixture = new Fixture('projects/basic-project/test.jsx')
     const root = new Fixture(path.join('projects', 'basic-project'))
     const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+
     it('correctly detects imports and elements in a given file', async () => {
       const accumulator = new JsxElementAccumulator()
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
@@ -82,6 +83,7 @@ describe('class: JsxScope', () => {
       expect(accumulator.imports).toMatchSnapshot('imports')
     })
   })
+
   describe('removeIrrelevantImports', () => {
     it('correctly removes unwanted imports', () => {
       const accumulator = new JsxElementAccumulator()
@@ -108,6 +110,7 @@ describe('class: JsxScope', () => {
       jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
       expect(accumulator.imports).toHaveLength(2)
     })
+
     it('removes all imports if no imports match instrumented package', () => {
       const accumulator = new JsxElementAccumulator()
       accumulator.imports.push({
@@ -133,6 +136,7 @@ describe('class: JsxScope', () => {
       jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
       expect(accumulator.imports).toHaveLength(0)
     })
+
     it("does not remove imports if there aren't any to remove", () => {
       const accumulator = new JsxElementAccumulator()
       accumulator.imports.push({
@@ -158,6 +162,7 @@ describe('class: JsxScope', () => {
       jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
       expect(accumulator.imports).toHaveLength(3)
     })
+
     it('can accept empty array', () => {
       const accumulator = new JsxElementAccumulator()
       expect(accumulator.imports).toHaveLength(0)
@@ -166,6 +171,7 @@ describe('class: JsxScope', () => {
       expect(accumulator.imports).toHaveLength(0)
     })
   })
+
   describe('resolveElementImports', () => {
     const jsxScope = new JsxScope('', '', config, logger)
     const defaultImport = {
@@ -218,6 +224,7 @@ describe('class: JsxScope', () => {
       raw: '',
       attributes: []
     }
+
     it('correctly identifies elements with their matchers', () => {
       const accumulator = new JsxElementAccumulator()
       accumulator.imports.push(defaultImport)
@@ -240,6 +247,7 @@ describe('class: JsxScope', () => {
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
       expect(accumulator.elementImports.get(renamedElement)).toStrictEqual(renamedImport)
     })
+
     it('discards elements that do not have a matcher', () => {
       const unmatchedElement1 = {
         name: 'noMatch1',
@@ -277,6 +285,7 @@ describe('class: JsxScope', () => {
       expect(accumulator.elementImports.get(unmatchedElement1)).toStrictEqual(undefined)
       expect(accumulator.elementImports.get(unmatchedElement2)).toStrictEqual(undefined)
     })
+
     it('can accept empty array', () => {
       const accumulator = new JsxElementAccumulator()
       expect(() => {
@@ -284,6 +293,7 @@ describe('class: JsxScope', () => {
       }).not.toThrow()
     })
   })
+
   describe('resolveInvokers', () => {
     const jsxScope = new JsxScope('', '', config, logger)
     const element1 = {
@@ -298,6 +308,7 @@ describe('class: JsxScope', () => {
       raw: '',
       attributes: []
     }
+
     it('correctly sets invoker name for elements', async () => {
       const root = new Fixture('projects/basic-project')
       const fileName = new Fixture('projects/basic-project/test.jsx')
@@ -311,6 +322,7 @@ describe('class: JsxScope', () => {
       expect(accumulator.elementInvokers.get(element1)).toStrictEqual('basic-project')
       expect(accumulator.elementInvokers.get(element2)).toStrictEqual('basic-project')
     })
+
     it('does not add an entry if filename package cannot be found', async () => {
       const fileName = new Fixture('projects/basic-project/test.jsx')
       const accumulator = new JsxElementAccumulator()

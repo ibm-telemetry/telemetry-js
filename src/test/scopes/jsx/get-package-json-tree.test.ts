@@ -8,35 +8,52 @@ import path from 'path'
 import { describe, expect, it } from 'vitest'
 
 import { getPackageJsonTree } from '../../../main/scopes/jsx/get-package-json-tree.js'
-import { type FileTree } from '../../../main/scopes/jsx/interfaces.js'
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 
 describe('getPackageJsonTree', () => {
   const logger = initLogger()
+
   it('correctly gets a tree', async () => {
-    const rootFixture = new Fixture('projects')
-    const tree = await getPackageJsonTree(rootFixture.path, logger)
+    const fixture = new Fixture('projects/complex-nesting-thingy')
 
-    const setRelativePaths = (tree: FileTree) => {
-      tree.path = path.relative(import.meta.url, tree.path)
-      tree.children.forEach((child) => {
-        setRelativePaths(child)
-      })
-    }
+    const tree = await getPackageJsonTree(fixture.path, logger)
 
-    tree.forEach((fileTree) => {
-      setRelativePaths(fileTree)
-    })
-    expect(tree).toMatchSnapshot()
+    expect(tree).toStrictEqual([
+      {
+        children: [
+          { children: [], path: path.join(fixture.path, 'package1') },
+          {
+            children: [
+              { children: [], path: path.join(fixture.path, 'package2/node_modules/instrumented') }
+            ],
+            path: path.join(fixture.path, 'package2')
+          },
+          {
+            children: [
+              { children: [], path: path.join(fixture.path, 'package3/node_modules/instrumented') }
+            ],
+            path: path.join(fixture.path, 'package3')
+          },
+          { children: [], path: path.join(fixture.path, 'node_modules/instrumented') },
+          { children: [], path: path.join(fixture.path, 'node_modules/intermediate') },
+          { children: [], path: path.join(fixture.path, 'node_modules/root-only') }
+        ],
+        path: path.join(fixture.path, '')
+      }
+    ])
   })
-  it('empty directory', async () => {
-    const rootFixture = new Fixture('jsx-samples')
+
+  it('return an empty tree for an empty directory', async () => {
+    const rootFixture = new Fixture('projects/no-package-json-files')
+
     const tree = await getPackageJsonTree(rootFixture.path, logger)
     expect(tree).toHaveLength(0)
   })
-  it('directory does not exist', async () => {
+
+  it('returns an empty tree with directory does not exist', async () => {
     const rootFixture = new Fixture('jsx-samples/does-not-exist')
+
     const tree = await getPackageJsonTree(rootFixture.path, logger)
     expect(tree).toHaveLength(0)
   })

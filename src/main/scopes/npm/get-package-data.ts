@@ -23,9 +23,10 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
   logger.traceEnter('', 'getPackageData', [packagePath])
 
   if (cache.has(packagePath)) {
-    const data = cache.get(packagePath) as Promise<PackageData>
+    const data = await (cache.get(packagePath) as Promise<PackageData>)
+    logger.debug('getPackageData cache hit for ' + packagePath)
     logger.traceExit('', 'getPackageData', data)
-    return await data
+    return data
   }
 
   const resultPromise = runCommand('npm pkg get name version', logger, {
@@ -36,7 +37,6 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
     resultPromise
       .then((result) => {
         const data = JSON.parse(result.stdout)
-        logger.debug('getPackageData cache hit for ' + packagePath)
         logger.traceExit('', 'getPackageData', data)
         resolve(data)
       })

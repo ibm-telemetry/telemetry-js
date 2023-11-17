@@ -20,7 +20,7 @@ export function safeStringify(arg: unknown): string {
   return util.inspect(arg, {
     compact: true,
     breakLength: Infinity,
-    depth: 20,
+    depth: 10,
     showHidden: false,
     maxArrayLength: 10000,
     maxStringLength: 10000

@@ -33,11 +33,12 @@ export class JsxElementNodeHandler extends JsxNodeHandler {
    */
   getData(node: ts.JsxElement): JsxElement {
     const { name, prefix } = this.getElementNameAndPrefix(node.openingElement.tagName)
-    const attributes = node.openingElement.attributes
+    const attributes = this.getElementAttributes(node.openingElement.attributes)
+
     return {
       name,
       prefix,
-      attributes: this.getElementAttributes(attributes)
+      attributes
     }
   }
 }

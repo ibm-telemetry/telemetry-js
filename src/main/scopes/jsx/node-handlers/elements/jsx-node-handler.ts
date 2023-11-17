@@ -35,7 +35,7 @@ export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
    * @param attributes - JsxAttributes node to parse attributes for.
    * @returns Array of parsed attributes.
    */
-  @Trace()
+  @Trace({ argFormatter: (arg: ts.JsxAttributes) => arg.getText() })
   protected getElementAttributes(attributes: ts.JsxAttributes) {
     const attrs: JsxElementAttribute[] = []
 

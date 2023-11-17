@@ -10,6 +10,11 @@ import { LoggerNotFoundError } from '../../exceptions/logger-not-found-error.js'
 import { type Loggable } from './loggable.js'
 import { Logger } from './logger.js'
 
+interface TraceConfig {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Needs to accept any possible arg
+  argFormatter?: (arg: any) => unknown
+}
+
 /**
  * Returns a decorated version of a method that automatically uses the logging
  * infrastructure to log a set of debug messages before and after the decorated method's execution.
@@ -21,9 +26,10 @@ import { Logger } from './logger.js'
  * reference equality checks may fail if they are looking at method property descriptor values
  * directly.
  *
+ * @param config - Optional configuration to use when logging.
  * @returns A decorated method.
  */
-export function Trace(): MethodDecorator {
+export function Trace(config?: TraceConfig): MethodDecorator {
   return function methodDecorator(target, propertyKey, descriptor) {
     if (
       descriptor.value === null ||
@@ -50,7 +56,11 @@ export function Trace(): MethodDecorator {
         throw new LoggerNotFoundError()
       }
 
-      logger.traceEnter(targetName, String(propertyKey), args)
+      logger.traceEnter(
+        targetName,
+        String(propertyKey),
+        config?.argFormatter !== undefined ? args.map(config.argFormatter) : args
+      )
 
       let result: unknown
       try {

@@ -42,6 +42,7 @@ export class TrackedFileEnumerator extends Loggable {
 
     return allFiles
       .filter((_file, index) => checks[index] === true)
-      .map((file) => path.resolve(file))
+      .map((file) => path.relative(root, file))
+      .map((file) => path.resolve(root, file))
   }
 }

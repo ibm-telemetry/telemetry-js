@@ -6,6 +6,7 @@
  */
 import path from 'path'
 
+import { InvalidRootPathError } from '../exceptions/invalid-root-path-error.js'
 import { Loggable } from './log/loggable.js'
 import { Trace } from './log/trace.js'
 import { runCommand } from './run-command.js'
@@ -42,7 +43,38 @@ export class TrackedFileEnumerator extends Loggable {
 
     return allFiles
       .filter((_file, index) => checks[index] === true)
-      .map((file) => path.relative(root, file))
-      .map((file) => path.resolve(root, file))
+      .map((file) => this.findAbsolutePath(file, root))
+  }
+
+  /**
+   * Given two paths that have partially overlapping directory hierarchies, find an absolute path
+   * that uses as many pieces of the two paths as possible.
+   *
+   * @param trackedFile - A file obtained from a git ls-tree command. This is NOT an absolute path.
+   * @param root - An absolute path representing a root director in which the tracked file is
+   * contained.
+   * @throws InvalidRootPathError if no valid path could be constructed using parts from both the
+   * trackedFile path and the root path.
+   * @returns A path.
+   */
+  private findAbsolutePath(trackedFile: string, root: string) {
+    trackedFile = path.normalize(trackedFile)
+    root = path.normalize(root)
+    const trackedFileParts = trackedFile.split(path.sep)
+    const suffixParts: string[] = []
+
+    while (trackedFileParts.length > 0) {
+      if (root.endsWith(trackedFileParts.join(path.sep))) {
+        break
+      }
+
+      suffixParts.unshift(trackedFileParts.pop() ?? '')
+    }
+
+    if (trackedFileParts.length === 0) {
+      throw new InvalidRootPathError(trackedFile, root)
+    }
+
+    return path.join(root, ...suffixParts)
   }
 }

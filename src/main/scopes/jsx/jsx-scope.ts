@@ -66,6 +66,7 @@ export class JsxScope extends Scope {
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
     const instrumentedPackage = await getPackageData(this.cwd, this.logger)
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
+
     const promises = sourceFiles.map(async (sourceFile) => {
       const accumulator = new JsxElementAccumulator()
 
@@ -132,7 +133,6 @@ export class JsxScope extends Scope {
    * @param accumulator - Accumulator to store results in.
    * @param sourceFilePath - Absolute path to a sourceFile.
    * @param packageJsonTree - Directory tree of package.json files.
-   * @returns Promise of all invokers getting resolved.
    */
   async resolveInvokers(
     accumulator: JsxElementAccumulator,
@@ -149,12 +149,10 @@ export class JsxScope extends Scope {
       return
     }
 
-    const promises = accumulator.elements.map(async (jsxElement) => {
-      const containingPackageData = await getPackageData(containingDir, this.logger)
+    const containingPackageData = await getPackageData(containingDir, this.logger)
 
+    accumulator.elements.forEach((jsxElement) => {
       accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
-
-    await Promise.allSettled(promises)
   }
 }

@@ -23,8 +23,8 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
   const result = await runCommand('npm pkg get name version', logger, {
     cwd: packagePath
   })
-  const parsed = JSON.parse(result.stdout)
+  const data = JSON.parse(result.stdout)
 
-  logger.traceExit('', 'getPackageData', parsed)
-  return parsed
+  logger.traceExit('', 'getPackageData', data)
+  return data
 }

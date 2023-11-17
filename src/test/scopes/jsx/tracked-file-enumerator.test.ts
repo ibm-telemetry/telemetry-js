@@ -37,7 +37,7 @@ describe('class: TrackedFileEnumerator', () => {
     ).resolves.toHaveLength(0)
   })
 
-  it('returns correctly resolved relative paths', async () => {
+  it('returns correctly resolved absolute paths', async () => {
     const root = new Fixture('projects/nested-project-files')
 
     const files = await enumerator.find(root.path, (fileName) => fileName.endsWith('.js'))

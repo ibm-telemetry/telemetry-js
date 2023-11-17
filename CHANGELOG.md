@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.4.0...v0.5.0) (2023-11-17)
+
+
+### Features
+
+* switch everything to absolute pathing ([a57263c](https://github.com/ibm-telemetry/telemetry-js/commit/a57263ca64a2d69af3bd45ccb025317e11c14518))
+
 ## [0.4.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.3.8...v0.4.0) (2023-11-15)
 
 

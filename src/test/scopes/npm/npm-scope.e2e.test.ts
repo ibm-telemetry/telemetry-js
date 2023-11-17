@@ -13,6 +13,7 @@ import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { NoPackageJsonFoundError } from '../../../main/exceptions/no-package-json-found-error.js'
 import { NpmScope } from '../../../main/scopes/npm/npm-scope.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
+import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
@@ -44,6 +45,7 @@ describe('class: NpmScope', () => {
 
       const results = await metricReader.collect()
 
+      clearTelemetrySdkVersion(results)
       clearDataPointTimes(results)
 
       expect(results).toMatchSnapshot()

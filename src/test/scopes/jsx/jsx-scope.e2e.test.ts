@@ -19,6 +19,7 @@ import { RenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/r
 import { JsxElementAccumulator } from '../../../main/scopes/jsx/jsx-element-accumulator.js'
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
+import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
@@ -51,6 +52,7 @@ describe('class: JsxScope', () => {
 
       const results = await metricReader.collect()
 
+      clearTelemetrySdkVersion(results)
       clearDataPointTimes(results)
 
       expect(results).toMatchSnapshot()

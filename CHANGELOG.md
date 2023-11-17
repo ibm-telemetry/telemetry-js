@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.2...v0.5.3) (2023-11-17)
+
+
+### Bug Fixes
+
+* **tracked-file-enumerator:** improve robustness and error handling ([e2a38ac](https://github.com/ibm-telemetry/telemetry-js/commit/e2a38ac6e332150db1de443e713cc9fd6b951c01))
+
 ## [0.5.2](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.1...v0.5.2) (2023-11-17)
 
 

@@ -8,7 +8,7 @@ import { type Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 import { type PackageData } from './interfaces.js'
 
-const cache = new Map()
+const cache = new Map<string, Promise<PackageData>>()
 
 /**
  * Given a path to a package, get details about it, including name and version.
@@ -23,18 +23,29 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
   logger.traceEnter('', 'getPackageData', [packagePath])
 
   if (cache.has(packagePath)) {
-    const data = cache.get(packagePath)
+    const data = cache.get(packagePath) as Promise<PackageData>
     logger.traceExit('', 'getPackageData', data)
-    return data
+    return await data
   }
 
-  const result = await runCommand('npm pkg get name version', logger, {
+  const resultPromise = runCommand('npm pkg get name version', logger, {
     cwd: packagePath
   })
-  const data = JSON.parse(result.stdout)
 
-  cache.set(packagePath, data)
+  const dataPromise = new Promise<PackageData>((resolve, reject) => {
+    resultPromise
+      .then((result) => {
+        const data = JSON.parse(result.stdout)
+        logger.debug('getPackageData cache hit for ' + packagePath)
+        logger.traceExit('', 'getPackageData', data)
+        resolve(data)
+      })
+      .catch((reason) => {
+        reject(reason)
+      })
+  })
 
-  logger.traceExit('', 'getPackageData', data)
-  return data
+  cache.set(packagePath, dataPromise)
+
+  return await dataPromise
 }

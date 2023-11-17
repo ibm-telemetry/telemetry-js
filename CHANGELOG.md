@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.1...v0.5.2) (2023-11-17)
+
+
+### Bug Fixes
+
+* resolution of overlapping root and tracked file paths ([8d7a282](https://github.com/ibm-telemetry/telemetry-js/commit/8d7a2829dd18c4fe26919d981a15d1bbcb6f8082))
+
 ## [0.5.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.0...v0.5.1) (2023-11-17)
 
 

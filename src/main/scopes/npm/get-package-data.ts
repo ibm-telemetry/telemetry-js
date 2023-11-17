@@ -8,6 +8,8 @@ import { type Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 import { type PackageData } from './interfaces.js'
 
+const cache = new Map()
+
 /**
  * Given a path to a package, get details about it, including name and version.
  *
@@ -20,10 +22,18 @@ import { type PackageData } from './interfaces.js'
 export async function getPackageData(packagePath: string, logger: Logger): Promise<PackageData> {
   logger.traceEnter('', 'getPackageData', [packagePath])
 
+  if (cache.has(packagePath)) {
+    const data = cache.get(packagePath)
+    logger.traceExit('', 'getPackageData', data)
+    return data
+  }
+
   const result = await runCommand('npm pkg get name version', logger, {
     cwd: packagePath
   })
   const data = JSON.parse(result.stdout)
+
+  cache.set(packagePath, data)
 
   logger.traceExit('', 'getPackageData', data)
   return data

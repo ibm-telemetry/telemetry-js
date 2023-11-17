@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.6.0...v0.6.1) (2023-11-17)
+
+
+### Bug Fixes
+
+* **core:** improve substitute and safeStringify stability ([a859944](https://github.com/ibm-telemetry/telemetry-js/commit/a859944f7924d3232e286641759f7baaf41998cd))
+* **npm:** improve performance of getPackageData ([8c43570](https://github.com/ibm-telemetry/telemetry-js/commit/8c43570b3d4745025971041506eb5c858be5f7be))
+
 ## [0.6.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.5.3...v0.6.0) (2023-11-17)
 
 

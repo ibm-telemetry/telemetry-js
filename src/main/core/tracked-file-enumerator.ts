@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { access } from 'fs/promises'
 import path from 'path'
 
 import { InvalidRootPathError } from '../exceptions/invalid-root-path-error.js'
@@ -41,23 +42,25 @@ export class TrackedFileEnumerator extends Loggable {
 
     const checks = await Promise.all(allFiles.map(predicate))
 
-    return allFiles
-      .filter((_file, index) => checks[index] === true)
-      .map((file) => this.findAbsolutePath(file, root))
+    return await Promise.all(
+      allFiles
+        .filter((_file, index) => checks[index] === true)
+        .map(async (file) => await this.findAbsolutePath(file, root))
+    )
   }
 
   /**
-   * Given two paths that have partially overlapping directory hierarchies, find an absolute path
-   * that uses as many pieces of the two paths as possible.
+   * Given two paths that may have partially overlapping directory hierarchies, find an absolute
+   * path that uses as many pieces of the two paths as possible.
    *
    * @param trackedFile - A file obtained from a git ls-tree command. This is NOT an absolute path.
-   * @param root - An absolute path representing a root director in which the tracked file is
+   * @param root - An absolute path representing a root directory in which the tracked file is
    * contained.
    * @throws InvalidRootPathError if no valid path could be constructed using parts from both the
    * trackedFile path and the root path.
-   * @returns A path.
+   * @returns A promise of a path.
    */
-  private findAbsolutePath(trackedFile: string, root: string) {
+  private async findAbsolutePath(trackedFile: string, root: string) {
     trackedFile = path.normalize(trackedFile)
     root = path.normalize(root)
     const trackedFileParts = trackedFile.split(path.sep)
@@ -71,10 +74,14 @@ export class TrackedFileEnumerator extends Loggable {
       suffixParts.unshift(trackedFileParts.pop() ?? '')
     }
 
-    if (trackedFileParts.length === 0) {
+    const finalPath = path.join(root, ...suffixParts)
+
+    try {
+      await access(finalPath)
+    } catch {
       throw new InvalidRootPathError(trackedFile, root)
     }
 
-    return path.join(root, ...suffixParts)
+    return finalPath
   }
 }

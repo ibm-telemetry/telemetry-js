@@ -81,7 +81,6 @@ export class ElementMetric extends ScopeMetric {
     )
 
     let metricData: Attributes = {
-      [CustomResourceAttributes.RAW]: this.jsxElement.raw,
       [CustomResourceAttributes.NAME]: this.jsxElement.name,
       [CustomResourceAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
       [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
@@ -102,7 +101,6 @@ export class ElementMetric extends ScopeMetric {
     }
 
     metricData = hash(metricData, [
-      CustomResourceAttributes.RAW,
       CustomResourceAttributes.INVOKER_PACKAGE_RAW,
       CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
       CustomResourceAttributes.INVOKER_PACKAGE_NAME

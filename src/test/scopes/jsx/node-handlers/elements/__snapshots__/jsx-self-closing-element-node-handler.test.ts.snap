@@ -6,19 +6,16 @@ exports[`class: JsxSelfClosingElementNodeHandler > correctly returns the JsxElem
     "attributes": [],
     "name": "Element1",
     "prefix": "Prefix",
-    "raw": "<Prefix.Element1/>",
   },
   {
     "attributes": [],
     "name": "Element1",
     "prefix": undefined,
-    "raw": "<Element1/>",
   },
   {
     "attributes": [],
     "name": "Property.Nested.Element",
     "prefix": "Prefix",
-    "raw": "<Prefix.Property.Nested.Element/>",
   },
   {
     "attributes": [
@@ -71,20 +68,6 @@ exports[`class: JsxSelfClosingElementNodeHandler > correctly returns the JsxElem
     ],
     "name": "Element1",
     "prefix": undefined,
-    "raw": "<Element1
-      attr1=\\"string\\"
-      attr2={4}
-      attr5={undefined}
-      attr6={null}
-      attr8
-      attr9={true}
-      attr10={false}
-      attr11={variable}
-      attr12={element[access]}
-      attr13={{key: 'value', key2: 10}}
-      {...spreadObj}
-      exp={}
-    />",
   },
 ]
 `;

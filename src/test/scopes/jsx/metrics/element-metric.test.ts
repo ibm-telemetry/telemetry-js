@@ -31,7 +31,6 @@ describe('class: ElementMetric', () => {
   const jsxElement: JsxElement = {
     name: 'theName',
     prefix: undefined,
-    raw: '<theName />',
     attributes: [
       {
         name: 'attrName',
@@ -58,7 +57,6 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.RAW]: '<theName />',
           [CustomResourceAttributes.NAME]: 'theName',
           [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
           [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
@@ -67,7 +65,7 @@ describe('class: ElementMetric', () => {
           [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
         },
-        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
       )
     )
   })
@@ -85,7 +83,6 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.RAW]: '<theName />',
           [CustomResourceAttributes.NAME]: 'theActualName',
           [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
           [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
@@ -94,7 +91,7 @@ describe('class: ElementMetric', () => {
           [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
         },
-        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
       )
     )
   })
@@ -112,7 +109,6 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.RAW]: '<theName />',
           [CustomResourceAttributes.NAME]: '[Default]',
           [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
           [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
@@ -121,7 +117,7 @@ describe('class: ElementMetric', () => {
           [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
         },
-        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
       )
     )
   })
@@ -138,7 +134,6 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.RAW]: '<theName />',
           [CustomResourceAttributes.NAME]: 'theName',
           [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
           [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
@@ -147,7 +142,7 @@ describe('class: ElementMetric', () => {
           [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: undefined
         },
-        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
       )
     )
   })
@@ -165,7 +160,6 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.RAW]: '<theName />',
           [CustomResourceAttributes.NAME]: 'theName',
           [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
           [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
@@ -174,7 +168,7 @@ describe('class: ElementMetric', () => {
           [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
           [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
         },
-        ['raw', 'invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
       )
     )
   })
@@ -221,7 +215,6 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.RAW]: '<theName />',
           [CustomResourceAttributes.NAME]: 'theName',
           [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
           [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
@@ -231,7 +224,6 @@ describe('class: ElementMetric', () => {
           [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
         },
         [
-          CustomResourceAttributes.RAW,
           CustomResourceAttributes.INVOKER_PACKAGE_RAW,
           CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
           CustomResourceAttributes.INVOKER_PACKAGE_NAME

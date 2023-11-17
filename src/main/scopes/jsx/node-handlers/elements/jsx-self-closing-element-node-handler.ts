@@ -37,8 +37,7 @@ export class JsxSelfClosingElementNodeHandler extends JsxNodeHandler {
     return {
       name,
       prefix,
-      attributes: this.getElementAttributes(node.attributes),
-      raw: this.sourceFile.text.substring(node.pos, node.end).trim()
+      attributes: this.getElementAttributes(node.attributes)
     }
   }
 }

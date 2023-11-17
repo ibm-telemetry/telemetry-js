@@ -15,7 +15,6 @@ describe('class: RenamedImportMatcher', () => {
   const element: JsxElement = {
     name: 'theElement',
     prefix: 'prefix',
-    raw: '<raw />',
     attributes: []
   }
   const allImport: JsxImport = {

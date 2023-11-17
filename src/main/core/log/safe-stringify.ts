@@ -14,6 +14,10 @@
 export function safeStringify(arg: unknown): string {
   let result
 
+  if (typeof arg === 'string') {
+    return arg
+  }
+
   if (arg instanceof Function) {
     return (arg.name === '' ? 'unknownFn' : arg.name) + '(...)'
   }

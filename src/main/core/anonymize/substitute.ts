@@ -4,6 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { safeStringify } from '../log/safe-stringify.js'
+
 const subs = new Map()
 let curSub = 1
 
@@ -23,6 +25,9 @@ export function substitute<T extends Record<string, unknown>>(
 ): T {
   // for each raw entry, map it to something
   const substitutedEntries = Object.entries(raw).map(([key, value]) => {
+    // Avoid object equality for complex values
+    value = safeStringify(value)
+
     // Key is not safe. substitute key and value
     if (!allowedKeys.includes(key)) {
       if (!subs.has(key)) {

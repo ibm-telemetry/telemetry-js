@@ -37,8 +37,7 @@ export class JsxElementNodeHandler extends JsxNodeHandler {
     return {
       name,
       prefix,
-      attributes: this.getElementAttributes(attributes),
-      raw: this.sourceFile.text.substring(node.pos, node.end).trim()
+      attributes: this.getElementAttributes(attributes)
     }
   }
 }

@@ -21,7 +21,26 @@ exports[`class: JsxScope > parseFile > correctly detects imports and elements in
     ],
     "name": "Button",
     "prefix": undefined,
-    "raw": "<Button firstProp={1 === 5 ? 'boo' : 'baa'} simple=\\"4\\" hi={} woo>Hey</Button>",
+  },
+  {
+    "attributes": [
+      {
+        "name": "firstProp",
+        "value": ComplexAttribute {
+          "complexValue": "1 === 5 ? 'boo' : 'baa'",
+        },
+      },
+      {
+        "name": "simple",
+        "value": "4",
+      },
+      {
+        "name": "woo",
+        "value": true,
+      },
+    ],
+    "name": "Button",
+    "prefix": undefined,
   },
 ]
 `;
@@ -98,7 +117,6 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                   "invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "module.specifier": "instrumented",
                   "name": "[Default]",
-                  "raw": "d2762594f220c02e2f58009515fac49d05cf5f2457fe037a55a33ad18c3a7894",
                 },
                 "endTime": [
                   0,
@@ -108,40 +126,39 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                   0,
                   0,
                 ],
-                "value": 1,
+                "value": 2,
               },
               {
                 "attributes": {
                   "attribute.names": [
                     "firstProp",
                     "secondProp",
-                    "[redacted6]",
                     "[redacted8]",
                     "[redacted10]",
                     "[redacted12]",
                     "[redacted14]",
-                    "[redacted15]",
                     "[redacted16]",
+                    "[redacted17]",
                     "[redacted18]",
+                    "[redacted20]",
                   ],
                   "attribute.values": [
-                    "hi",
-                    "wow",
+                    "[redacted6]",
                     "[redacted7]",
                     "[redacted9]",
                     "[redacted11]",
                     "[redacted13]",
+                    "[redacted15]",
                     "[redacted5]",
                     "[redacted5]",
-                    "[redacted17]",
                     "[redacted19]",
+                    "[redacted21]",
                   ],
                   "invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "invoker.package.owner": undefined,
                   "invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
                   "module.specifier": "instrumented",
                   "name": "ImaginaryThing",
-                  "raw": "899e0be4e2eff31c6817a727793f72f83e010711b58e6d730dde8b87afae500e",
                 },
                 "endTime": [
                   0,

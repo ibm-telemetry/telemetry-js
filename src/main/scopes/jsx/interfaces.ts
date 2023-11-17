@@ -27,7 +27,6 @@ export interface JsxImport {
 export interface JsxElement {
   name: string
   prefix: string | undefined
-  raw: string
   attributes: JsxElementAttribute[]
 }
 

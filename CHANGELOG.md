@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.6.2...v0.7.0) (2023-11-18)
+
+
+### Features
+
+* **core:** move to schema version 0.3.0 ([4efd234](https://github.com/ibm-telemetry/telemetry-js/commit/4efd2348ab1c52e04fccaa77537aa8634185cd18))
+
 ## [0.6.2](https://github.com/ibm-telemetry/telemetry-js/compare/v0.6.1...v0.6.2) (2023-11-17)
 
 

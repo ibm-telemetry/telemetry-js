@@ -22,7 +22,7 @@ describe('scope', () => {
        * Default constructor.
        */
       public constructor() {
-        super('', '', { collect: {}, projectId: '1234', version: 1 }, logger)
+        super('', '', { collect: {}, projectId: '1234', endpoint: '', version: 1 }, logger)
       }
 
       public override async run(): Promise<void> {

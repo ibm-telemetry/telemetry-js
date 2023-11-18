@@ -7,10 +7,10 @@
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import ajv, { type Schema, type ValidateFunction } from 'ajv'
 
-import { ConfigValidationError } from '../../exceptions/config-validation-error.js'
-import { Loggable } from '../log/loggable.js'
-import { type Logger } from '../log/logger.js'
-import { Trace } from '../log/trace.js'
+import { ConfigValidationError } from '../exceptions/config-validation-error.js'
+import { Loggable } from './log/loggable.js'
+import { type Logger } from './log/logger.js'
+import { Trace } from './log/trace.js'
 
 const Ajv = ajv.default
 

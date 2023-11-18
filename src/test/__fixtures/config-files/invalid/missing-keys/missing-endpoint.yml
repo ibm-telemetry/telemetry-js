@@ -5,9 +5,12 @@
 # LICENSE file in the root directory of this source tree.
 #
 version: 1
-endpoint: 'https://example.com/v1/metrics'
 collect:
   npm:
     dependencies:
-  jsx: {}
+  jsx:
+    elements:
+      allowedAttributeStringValues:
+        - 'one'
+        - 'two'
 projectId: '123'

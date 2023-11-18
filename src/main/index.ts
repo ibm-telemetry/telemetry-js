@@ -7,6 +7,7 @@
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import { Command } from 'commander'
 
+import { Environment } from './core/environment.js'
 import { createLogFilePath } from './core/log/create-log-file-path.js'
 import { Logger } from './core/log/logger.js'
 import { TelemetryCollector } from './telemetry-collector.js'
@@ -39,8 +40,14 @@ async function collect(opts: CommandLineOptions) {
   const date = new Date().toISOString()
   const logFilePath = createLogFilePath(date)
   const logger = new Logger(logFilePath)
+  const environment = new Environment()
 
-  const telemetryCollector = new TelemetryCollector(opts.config, configSchemaJson, logger)
+  const telemetryCollector = new TelemetryCollector(
+    opts.config,
+    configSchemaJson,
+    environment,
+    logger
+  )
 
   try {
     await telemetryCollector.run()

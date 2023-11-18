@@ -9,6 +9,7 @@ import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 
+import { Environment } from '../main/core/environment.js'
 import { UnknownScopeError } from '../main/exceptions/unknown-scope-error.js'
 import { TelemetryCollector } from '../main/telemetry-collector.js'
 import { Fixture } from './__utils/fixture.js'
@@ -19,7 +20,8 @@ describe('telemetryCollector', () => {
 
   describe('runScopes', () => {
     it('does not throw when existing scopes are specified in the config', async () => {
-      const telemetryCollector = new TelemetryCollector('', configSchemaJson, logger)
+      const environment = new Environment({ isExportEnabled: false })
+      const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
@@ -28,6 +30,7 @@ describe('telemetryCollector', () => {
       const promises = telemetryCollector.runScopes(cwd.path, root.path, {
         projectId: 'asdf',
         version: 1,
+        endpoint: '',
         collect: {
           npm: { dependencies: null },
           jsx: {
@@ -46,7 +49,8 @@ describe('telemetryCollector', () => {
   })
 
   it('throws when unknown scopes are encountered in the config', async () => {
-    const telemetryCollector = new TelemetryCollector('', configSchemaJson, logger)
+    const environment = new Environment({ isExportEnabled: false })
+    const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
 
     expect(() =>
       telemetryCollector.runScopes('', '', {

@@ -21,6 +21,7 @@ import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js
 const config: ConfigSchema = {
   projectId: 'abc123',
   version: 1,
+  endpoint: '',
   collect: { npm: { dependencies: null } }
 }
 
@@ -35,7 +36,7 @@ describe('class: NpmScope', () => {
       const scope = new NpmScope(
         cwd.path,
         root.path,
-        { collect: { npm: { dependencies: null } }, projectId: '123', version: 1 },
+        { collect: { npm: { dependencies: null } }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
 
@@ -56,7 +57,7 @@ describe('class: NpmScope', () => {
       const scope = new NpmScope(
         fixture.path,
         path.join(fixture.path, '..', '..'),
-        { collect: { npm: {} }, projectId: '123', version: 1 },
+        { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
 
@@ -69,7 +70,7 @@ describe('class: NpmScope', () => {
     const scope = new NpmScope(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      { collect: { npm: {} }, projectId: '123', version: 1 },
+      { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
       logger
     )
 

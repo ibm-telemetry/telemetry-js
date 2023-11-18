@@ -4,18 +4,19 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-// import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
-// import { AggregationTemporality } from '@opentelemetry/sdk-metrics'
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
 import { type Schema } from 'ajv'
 
 import { hash } from './core/anonymize/hash.js'
-import { ConfigValidator } from './core/config/config-validator.js'
+import { ConfigValidator } from './core/config-validator.js'
 import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
+import { Environment } from './core/environment.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
 import { type Logger } from './core/log/logger.js'
+import { safeStringify } from './core/log/safe-stringify.js'
 import { Trace } from './core/log/trace.js'
 import { parseYamlFile } from './core/parse-yaml-file.js'
 import { runCommand } from './core/run-command.js'
@@ -31,6 +32,7 @@ import { scopeRegistry } from './scopes/scope-registry.js'
 export class TelemetryCollector {
   private readonly configPath: string
   private readonly configSchemaJson: Schema
+  private readonly environment: Environment
   private readonly logger: Logger
 
   /**
@@ -38,11 +40,18 @@ export class TelemetryCollector {
    *
    * @param configPath - Path to a config file.
    * @param configSchemaJson - Path to a schema against which to validate the config file.
+   * @param environment - Environment variable configuration for this run.
    * @param logger - A logger instance.
    */
-  public constructor(configPath: string, configSchemaJson: Schema, logger: Logger) {
+  public constructor(
+    configPath: string,
+    configSchemaJson: Schema,
+    environment: Environment,
+    logger: Logger
+  ) {
     this.configPath = configPath
     this.configSchemaJson = configSchemaJson
+    this.environment = environment
     this.logger = logger
   }
 
@@ -51,6 +60,13 @@ export class TelemetryCollector {
    */
   @Trace()
   public async run() {
+    this.logger.debug('Environment: ' + JSON.stringify(this.environment))
+
+    if (!this.environment.isTelemetryEnabled) {
+      this.logger.debug('Telemetry disabled via environment variable')
+      return
+    }
+
     const date = new Date().toISOString()
     this.logger.debug('Date: ' + date)
 
@@ -69,7 +85,6 @@ export class TelemetryCollector {
     // This will throw if config does not conform to ConfigSchema
     configValidator.validate(config)
 
-    // TODO: move this logic elsewhere
     // TODO: handle non-existent remote
     const gitOrigin = await runCommand('git remote get-url origin', this.logger)
     const repository = tokenizeRepository(gitOrigin.stdout)
@@ -102,26 +117,10 @@ export class TelemetryCollector {
 
     const results = await metricReader.collect()
 
-    /*
-    - instantiate an exporter
-    - transmit the data to the remote server
-    */
-
-    // const exporter = new OTLPMetricExporter({
-    //   url: 'http://localhost:3000/v1/metrics',
-    //   headers: {
-    //     // This is where we could define project-specific headers to "authenticate" requests
-    //     Authorization: 'Bearer abc123'
-    //   },
-    //   temporalityPreference: AggregationTemporality.DELTA
-    // })
-
-    // exporter.export(results.resourceMetrics, (exportResult) => {
-    //   console.log(exportResult)
-    // })
-
     this.logger.debug('Collection results:')
     this.logger.debug(JSON.stringify(results, undefined, 2))
+
+    this.environment.isExportEnabled && this.emitMetrics(results.resourceMetrics, config)
   }
 
   /**
@@ -168,5 +167,17 @@ export class TelemetryCollector {
     }
 
     return promises
+  }
+
+  private emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
+    const exporter = new OTLPMetricExporter({
+      url: config.endpoint,
+      temporalityPreference: AggregationTemporality.DELTA
+    })
+
+    exporter.export(metrics, (result) => {
+      this.logger.debug('Metrics exporter finished')
+      this.logger.debug(safeStringify(result))
+    })
   }
 }

@@ -17,6 +17,7 @@ import { initLogger } from '../../../__utils/init-logger.js'
 const config: ConfigSchema = {
   projectId: 'abc123',
   version: 1,
+  endpoint: '',
   collect: {
     jsx: {
       elements: {

@@ -7,10 +7,10 @@
 import configFileSchema from '@ibm/telemetry-config-schema/config.schema.json'
 import { describe, expect, it } from 'vitest'
 
-import { ConfigValidator } from '../../../main/core/config/config-validator.js'
-import { ConfigValidationError } from '../../../main/exceptions/config-validation-error.js'
-import { Fixture } from '../../__utils/fixture.js'
-import { initLogger } from '../../__utils/init-logger.js'
+import { ConfigValidator } from '../../main/core/config-validator.js'
+import { ConfigValidationError } from '../../main/exceptions/config-validation-error.js'
+import { Fixture } from '../__utils/fixture.js'
+import { initLogger } from '../__utils/init-logger.js'
 
 describe('class: ConfigValidator', () => {
   const logger = initLogger()
@@ -129,6 +129,31 @@ describe('class: ConfigValidator', () => {
         message: "must have required property 'collect'",
         params: {
           missingProperty: 'collect'
+        }
+      }
+    ])
+  })
+
+  it('requires endpoint', async () => {
+    const fixture = new Fixture('config-files/invalid/missing-keys/missing-endpoint.yml')
+    const config = await fixture.parse()
+    let err
+
+    try {
+      validator.validate(config)
+    } catch (e) {
+      err = e
+    }
+
+    expect(err).toBeInstanceOf(ConfigValidationError)
+
+    expect((err as ConfigValidationError).errors).toStrictEqual([
+      {
+        instancePath: '',
+        keyword: 'required',
+        message: "must have required property 'endpoint'",
+        params: {
+          missingProperty: 'endpoint'
         }
       }
     ])
@@ -254,6 +279,14 @@ describe('class: ConfigValidator', () => {
         message: "must have required property 'version'",
         params: {
           missingProperty: 'version'
+        }
+      },
+      {
+        instancePath: '',
+        keyword: 'required',
+        message: "must have required property 'endpoint'",
+        params: {
+          missingProperty: 'endpoint'
         }
       },
       {

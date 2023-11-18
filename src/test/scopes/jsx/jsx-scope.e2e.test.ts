@@ -27,6 +27,7 @@ import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js
 const config: ConfigSchema = {
   projectId: 'abc123',
   version: 1,
+  endpoint: '',
   collect: {
     jsx: {
       elements: {
@@ -64,7 +65,7 @@ describe('class: JsxScope', () => {
       const scope = new JsxScope(
         fixture.path,
         path.join(fixture.path, '..', '..'),
-        { collect: { npm: {} }, projectId: '123', version: 1 },
+        { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
 

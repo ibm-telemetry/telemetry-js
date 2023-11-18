@@ -14,7 +14,6 @@ module.exports = {
     es2021: true
   },
   extends: [
-    'standard-with-typescript',
     'plugin:@typescript-eslint/strict',
     'plugin:eslint-comments/recommended',
     'plugin:jsdoc/recommended-typescript',
@@ -44,12 +43,13 @@ module.exports = {
       }
     }
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     project: 'tsconfig.eslint.json'
   },
-  plugins: ['jsdoc', 'notice', 'simple-import-sort'],
+  plugins: ['@typescript-eslint', 'jsdoc', 'notice', 'simple-import-sort'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',

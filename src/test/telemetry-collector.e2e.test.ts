@@ -7,7 +7,7 @@
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import path from 'path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
 import { UnknownScopeError } from '../main/exceptions/unknown-scope-error.js'
@@ -59,5 +59,16 @@ describe('telemetryCollector', () => {
         collect: { notARealScope: null }
       } as unknown as ConfigSchema)
     ).toThrow(UnknownScopeError)
+  })
+
+  it('does nothing when telemetry is disabled', async () => {
+    const environment = new Environment({ isTelemetryEnabled: false })
+    const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
+
+    const runScopesSpy = vi.spyOn(telemetryCollector, 'runScopes')
+
+    telemetryCollector.run()
+
+    expect(runScopesSpy).not.toHaveBeenCalled()
   })
 })

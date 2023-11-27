@@ -61,8 +61,19 @@ describe('telemetryCollector', () => {
     ).toThrow(UnknownScopeError)
   })
 
-  it('does nothing when telemetry is disabled', async () => {
+  it('does nothing when telemetry is disabled via envvar', async () => {
     const environment = new Environment({ isTelemetryEnabled: false })
+    const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
+
+    const runScopesSpy = vi.spyOn(telemetryCollector, 'runScopes')
+
+    telemetryCollector.run()
+
+    expect(runScopesSpy).not.toHaveBeenCalled()
+  })
+
+  it('does nothing when running in non-CI environment', async () => {
+    const environment = new Environment({ isCI: false })
     const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
 
     const runScopesSpy = vi.spyOn(telemetryCollector, 'runScopes')

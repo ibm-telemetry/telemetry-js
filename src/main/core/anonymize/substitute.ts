@@ -45,8 +45,8 @@ export function substitute<T extends Record<string, unknown>>(
       return { key, value: subs.get(value) }
     }
 
-    // Key is safe. Value is an object that's not safe
-    if (typeof value === 'object' && !allowedValues.includes(value)) {
+    // Key is safe. Value is an object that's not null and not safe
+    if (typeof value === 'object' && value !== null && !allowedValues.includes(value)) {
       if (!subs.has(value)) {
         subs.set(value, nextSub())
       }

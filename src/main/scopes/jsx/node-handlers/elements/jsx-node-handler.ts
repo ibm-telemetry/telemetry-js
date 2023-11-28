@@ -23,6 +23,7 @@ export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
    * @param tagName - TagName node of JsxElement to obtain name and prefix for.
    * @returns Object containing name and prefix (as strings).
    */
+  @Trace({ argFormatter: (arg: ts.JsxTagNameExpression) => arg.getText() })
   protected getElementNameAndPrefix(tagName: ts.JsxTagNameExpression) {
     const chunks = tagName.getText(this.sourceFile).split('.')
     const [prefix, ...name] = chunks.length === 1 ? [undefined, chunks] : chunks

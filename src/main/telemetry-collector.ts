@@ -67,6 +67,11 @@ export class TelemetryCollector {
       return
     }
 
+    if (!this.environment.isCI) {
+      this.logger.debug('Telemetry disabled because not running in CI')
+      return
+    }
+
     const date = new Date().toISOString()
     this.logger.debug('Date: ' + date)
 

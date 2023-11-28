@@ -91,4 +91,36 @@ describe('substitute', () => {
 
     expect(anon.knownKey1).not.toBe(anon.knownKey2)
   })
+
+  it('does not anonymize a number', () => {
+    const obj = {
+      knownKey1: Number('123')
+    }
+    const anon = substitute(obj, ['knownKey1'], [])
+    expect(anon.knownKey1).toBe(obj.knownKey1)
+  })
+
+  it('does not anonymize a boolean', () => {
+    const obj = {
+      knownKey1: true
+    }
+    const anon = substitute(obj, ['knownKey1'], [])
+    expect(anon.knownKey1).toBe(obj.knownKey1)
+  })
+
+  it('does not anonymize null', () => {
+    const obj = {
+      knownKey1: null
+    }
+    const anon = substitute(obj, ['knownKey1'], [])
+    expect(anon.knownKey1).toBe(obj.knownKey1)
+  })
+
+  it('does not anonymize undefined', () => {
+    const obj = {
+      knownKey1: undefined
+    }
+    const anon = substitute(obj, ['knownKey1'], [])
+    expect(anon.knownKey1).toBe(obj.knownKey1)
+  })
 })

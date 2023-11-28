@@ -41,7 +41,6 @@ const config: ConfigSchema = {
 describe('class: JsxScope', () => {
   const logger = initLogger()
   describe('run', () => {
-    // TODO: Non-deterministic. Issue #134
     it('correctly captures jsx element metric data', async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'basic-project'))
@@ -50,6 +49,7 @@ describe('class: JsxScope', () => {
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
+      jsxScope.__TEST__.RunSync()
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -69,6 +69,7 @@ describe('class: JsxScope', () => {
         logger
       )
 
+      scope.__TEST__.RunSync()
       await expect(scope.run()).rejects.toThrow(EmptyScopeError)
     })
   })

@@ -28,6 +28,7 @@ import { NodeParser } from './node-parser.js'
  */
 export class JsxScope extends Scope {
   public override name = 'jsx' as const
+  private RUN_SYNC = false
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -67,27 +68,64 @@ export class JsxScope extends Scope {
     const instrumentedPackage = await getPackageData(this.cwd, this.logger)
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
 
-    const promises = sourceFiles.map(async (sourceFile) => {
-      const accumulator = new JsxElementAccumulator()
+    const promises: Promise<void>[] = []
 
-      this.parseFile(accumulator, sourceFile)
-      this.removeIrrelevantImports(accumulator, instrumentedPackage.name)
-      this.resolveElementImports(accumulator, importMatchers)
-      await this.resolveInvokers(accumulator, sourceFile.fileName, packageJsonTree)
-
-      accumulator.elements.forEach((jsxElement) => {
-        const jsxImport = accumulator.elementImports.get(jsxElement)
-        const invoker = accumulator.elementInvokers.get(jsxElement)
-
-        if (jsxImport === undefined) {
-          return
-        }
-
-        this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
-      })
-    })
+    for (const sourceFile of sourceFiles) {
+      if (this.RUN_SYNC) {
+        await this.captureFileMetrics(
+          sourceFile,
+          instrumentedPackage.name,
+          importMatchers,
+          packageJsonTree
+        )
+      } else {
+        promises.push(
+          this.captureFileMetrics(
+            sourceFile,
+            instrumentedPackage.name,
+            importMatchers,
+            packageJsonTree
+          )
+        )
+      }
+    }
 
     await Promise.allSettled(promises)
+  }
+
+  /**
+   * Generates metrics for all discovered instrumented jsx elements found
+   * in the supplied SourceFile node.
+   *
+   * @param sourceFile - The sourcefile node to generate metrics for.
+   * @param instrumentedPackageName - Name of the instrumented package to capture metrics for.
+   * @param importMatchers - Matchers instances to use for import-element matching.
+   * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
+   */
+  @Trace()
+  async captureFileMetrics(
+    sourceFile: ts.SourceFile,
+    instrumentedPackageName: string,
+    importMatchers: JsxElementImportMatcher[],
+    packageJsonTree: FileTree[]
+  ) {
+    const accumulator = new JsxElementAccumulator()
+
+    this.parseFile(accumulator, sourceFile)
+    this.removeIrrelevantImports(accumulator, instrumentedPackageName)
+    this.resolveElementImports(accumulator, importMatchers)
+    await this.resolveInvokers(accumulator, sourceFile.fileName, packageJsonTree)
+
+    accumulator.elements.forEach((jsxElement) => {
+      const jsxImport = accumulator.elementImports.get(jsxElement)
+      const invoker = accumulator.elementInvokers.get(jsxElement)
+
+      if (jsxImport === undefined) {
+        return
+      }
+
+      this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
+    })
   }
 
   /**
@@ -154,5 +192,10 @@ export class JsxScope extends Scope {
     accumulator.elements.forEach((jsxElement) => {
       accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
+  }
+
+  // For testing purposes only
+  __TEST__ = {
+    RunSync: () => (this.RUN_SYNC = true)
   }
 }

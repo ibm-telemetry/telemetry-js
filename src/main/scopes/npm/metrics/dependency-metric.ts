@@ -4,8 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-import { type Attributes } from '@opentelemetry/api'
+import { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
@@ -62,37 +61,36 @@ export class DependencyMetric extends ScopeMetric {
       this.data.installerRawVersion
     )
 
-    return hash(
-      {
-        [CustomResourceAttributes.RAW]: this.data.rawName,
-        [CustomResourceAttributes.OWNER]: owner,
-        [CustomResourceAttributes.NAME]: name,
-        [CustomResourceAttributes.VERSION_RAW]: this.data.rawVersion,
-        [CustomResourceAttributes.VERSION_MAJOR]: major?.toString(),
-        [CustomResourceAttributes.VERSION_MINOR]: minor?.toString(),
-        [CustomResourceAttributes.VERSION_PATCH]: patch?.toString(),
-        [CustomResourceAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
-        [CustomResourceAttributes.INSTALLER_RAW]: this.data.installerRawName,
-        [CustomResourceAttributes.INSTALLER_OWNER]: installerOwner,
-        [CustomResourceAttributes.INSTALLER_NAME]: installerName,
-        [CustomResourceAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
-        [CustomResourceAttributes.INSTALLER_VERSION_MAJOR]: installerMajor?.toString(),
-        [CustomResourceAttributes.INSTALLER_VERSION_MINOR]: installerMinor?.toString(),
-        [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
-        [CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
-      },
-      [
-        CustomResourceAttributes.RAW,
-        CustomResourceAttributes.OWNER,
-        CustomResourceAttributes.NAME,
-        CustomResourceAttributes.VERSION_RAW,
-        CustomResourceAttributes.VERSION_PRE_RELEASE,
-        CustomResourceAttributes.INSTALLER_RAW,
-        CustomResourceAttributes.INSTALLER_OWNER,
-        CustomResourceAttributes.INSTALLER_NAME,
-        CustomResourceAttributes.INSTALLER_VERSION_RAW,
-        CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
-      ]
-    )
+    const metricData: Attributes = {
+      [CustomResourceAttributes.RAW]: this.data.rawName,
+      [CustomResourceAttributes.OWNER]: owner,
+      [CustomResourceAttributes.NAME]: name,
+      [CustomResourceAttributes.VERSION_RAW]: this.data.rawVersion,
+      [CustomResourceAttributes.VERSION_MAJOR]: major?.toString(),
+      [CustomResourceAttributes.VERSION_MINOR]: minor?.toString(),
+      [CustomResourceAttributes.VERSION_PATCH]: patch?.toString(),
+      [CustomResourceAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
+      [CustomResourceAttributes.INSTALLER_RAW]: this.data.installerRawName,
+      [CustomResourceAttributes.INSTALLER_OWNER]: installerOwner,
+      [CustomResourceAttributes.INSTALLER_NAME]: installerName,
+      [CustomResourceAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
+      [CustomResourceAttributes.INSTALLER_VERSION_MAJOR]: installerMajor?.toString(),
+      [CustomResourceAttributes.INSTALLER_VERSION_MINOR]: installerMinor?.toString(),
+      [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
+      [CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
+    }
+
+    return hash(metricData, [
+      CustomResourceAttributes.RAW,
+      CustomResourceAttributes.OWNER,
+      CustomResourceAttributes.NAME,
+      CustomResourceAttributes.VERSION_RAW,
+      CustomResourceAttributes.VERSION_PRE_RELEASE,
+      CustomResourceAttributes.INSTALLER_RAW,
+      CustomResourceAttributes.INSTALLER_OWNER,
+      CustomResourceAttributes.INSTALLER_NAME,
+      CustomResourceAttributes.INSTALLER_VERSION_RAW,
+      CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
+    ])
   }
 }

@@ -6,9 +6,9 @@
  */
 import path from 'path'
 
-import { type Logger } from '../../core/log/logger.js'
-import { TrackedFileEnumerator } from '../../core/tracked-file-enumerator.js'
-import { type FileTree } from './interfaces.js'
+import { type Logger } from '../../../core/log/logger.js'
+import { TrackedFileEnumerator } from '../../../core/tracked-file-enumerator.js'
+import { type FileTree } from '../interfaces.js'
 
 /**
  * Constructs an array of trees from all package.json files in the given repository,

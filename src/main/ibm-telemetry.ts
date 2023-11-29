@@ -29,7 +29,7 @@ import { scopeRegistry } from './scopes/scope-registry.js'
 /**
  * Instantiable class capable of collecting project-wide JS-based telemetry data.
  */
-export class TelemetryCollector {
+export class IbmTelemetry {
   private readonly configPath: string
   private readonly configSchemaJson: Schema
   private readonly environment: Environment
@@ -105,6 +105,7 @@ export class TelemetryCollector {
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
+          // [CustomResourceAttributes.ANALYZED_COMMIT]: 'abc123', // TODO: implement this!
           [CustomResourceAttributes.DATE]: date
         },
         [
@@ -125,7 +126,7 @@ export class TelemetryCollector {
     this.logger.debug('Collection results:')
     this.logger.debug(JSON.stringify(results, undefined, 2))
 
-    this.environment.isExportEnabled && this.emitMetrics(results.resourceMetrics, config)
+    this.environment.isExportEnabled && (await this.emitMetrics(results.resourceMetrics, config))
   }
 
   /**
@@ -174,15 +175,19 @@ export class TelemetryCollector {
     return promises
   }
 
-  private emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
+  @Trace()
+  private async emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
     const exporter = new OTLPMetricExporter({
       url: config.endpoint,
       temporalityPreference: AggregationTemporality.DELTA
     })
 
-    exporter.export(metrics, (result) => {
-      this.logger.debug('Metrics exporter finished')
-      this.logger.debug(safeStringify(result))
+    return await new Promise((resolve) => {
+      exporter.export(metrics, (result) => {
+        this.logger.debug('Metrics exporter finished')
+        this.logger.debug(safeStringify(result))
+        resolve(undefined)
+      })
     })
   }
 }

@@ -10,7 +10,7 @@ import { Command } from 'commander'
 import { Environment } from './core/environment.js'
 import { createLogFilePath } from './core/log/create-log-file-path.js'
 import { Logger } from './core/log/logger.js'
-import { TelemetryCollector } from './telemetry-collector.js'
+import { IbmTelemetry } from './ibm-telemetry.js'
 
 interface CommandLineOptions {
   config: string
@@ -42,15 +42,10 @@ async function collect(opts: CommandLineOptions) {
   const logger = new Logger(logFilePath)
   const environment = new Environment()
 
-  const telemetryCollector = new TelemetryCollector(
-    opts.config,
-    configSchemaJson,
-    environment,
-    logger
-  )
+  const ibmTelemetry = new IbmTelemetry(opts.config, configSchemaJson, environment, logger)
 
   try {
-    await telemetryCollector.run()
+    await ibmTelemetry.run()
   } catch (err) {
     // Catch any exception thrown, log it, and quietly exit
     if (err instanceof Error) {

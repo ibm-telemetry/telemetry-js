@@ -7,9 +7,9 @@
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 
-import { getPackageJsonTree } from '../../../main/scopes/jsx/get-package-json-tree.js'
-import { Fixture } from '../../__utils/fixture.js'
-import { initLogger } from '../../__utils/init-logger.js'
+import { getPackageJsonTree } from '../../../../main/scopes/jsx/utils/get-package-json-tree.js'
+import { Fixture } from '../../../__utils/fixture.js'
+import { initLogger } from '../../../__utils/init-logger.js'
 
 describe('getPackageJsonTree', () => {
   const logger = initLogger()

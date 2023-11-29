@@ -7,9 +7,9 @@
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 
-import { getTrackedSourceFiles } from '../../../main/scopes/jsx/get-tracked-source-files.js'
-import { Fixture } from '../../__utils/fixture.js'
-import { initLogger } from '../../__utils/init-logger.js'
+import { getTrackedSourceFiles } from '../../../../main/scopes/jsx/utils/get-tracked-source-files.js'
+import { Fixture } from '../../../__utils/fixture.js'
+import { initLogger } from '../../../__utils/init-logger.js'
 
 describe('getTrackedSourceFiles', () => {
   const logger = initLogger()

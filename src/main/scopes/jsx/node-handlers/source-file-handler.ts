@@ -6,21 +6,21 @@
  */
 import * as ts from 'typescript'
 
-import { Loggable } from '../../core/log/loggable.js'
-import { type Logger } from '../../core/log/logger.js'
-import { type ElementNodeHandlerMap } from './interfaces.js'
-import { type JsxElementAccumulator } from './jsx-element-accumulator.js'
+import { Loggable } from '../../../core/log/loggable.js'
+import { type Logger } from '../../../core/log/logger.js'
+import { type ElementNodeHandlerMap } from '../interfaces.js'
+import { type JsxElementAccumulator } from '../jsx-element-accumulator.js'
 
 /**
  * Class to handle traversing through a node's children and calling appropriate handlers.
  *
  */
-export class NodeParser extends Loggable {
+export class SourceFileHandler extends Loggable {
   private readonly accumulator: JsxElementAccumulator
   private readonly nodeHandlerMap: ElementNodeHandlerMap
 
   /**
-   * Instantiates a new NodeParser.
+   * Instantiates a new SourceFileHandler.
    *
    * @param accumulator - Keeps the state of the collected data (by the handlers).
    * @param nodeHandlerMap - Determines what handlers (instances) are called given
@@ -39,13 +39,13 @@ export class NodeParser extends Loggable {
   }
 
   /**
-   * Visits each children (recursively) of the supplied node and
-   * calls out to the appropriate node handlers.
+   * Visits each child (recursively) of the supplied node and calls out to the appropriate node
+   * handlers.
    *
    * @param node - Node to traverse through (usually a file node).
    * @param rootNode - Root Node of node tree.
    */
-  public visit(node: ts.Node, rootNode: ts.SourceFile) {
+  public handle(node: ts.Node, rootNode: ts.SourceFile) {
     const Handler = this.nodeHandlerMap[node.kind]
 
     if (Handler !== undefined) {
@@ -54,7 +54,7 @@ export class NodeParser extends Loggable {
     }
 
     ts.forEachChild(node, (node) => {
-      this.visit(node, rootNode)
+      this.handle(node, rootNode)
     })
   }
 }

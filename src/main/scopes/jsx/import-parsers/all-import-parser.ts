@@ -7,13 +7,13 @@
 
 import * as ts from 'typescript'
 
-import { ImportClauseParser } from '../import-clause-parser.js'
 import { type JsxImport } from '../interfaces.js'
+import { ImportParser } from './import-parser.js'
 
 /**
  * Identifies Import nodes that have been imported as all.
  */
-export class AllImportParser extends ImportClauseParser {
+export class AllImportParser extends ImportParser {
   /**
    * Determines if a given ImportClause ts node contains an all import
    * (i.e. `import * as Something from 'the-library'`) and constructs and

@@ -7,9 +7,9 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
-import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/get-tracked-source-files.js'
 import { JsxElementAccumulator } from '../../../../../main/scopes/jsx/jsx-element-accumulator.js'
 import { ImportNodeHandler } from '../../../../../main/scopes/jsx/node-handlers/elements/import-node-handler.js'
+import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/utils/get-tracked-source-files.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'

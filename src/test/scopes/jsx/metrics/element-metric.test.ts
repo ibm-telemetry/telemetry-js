@@ -49,8 +49,7 @@ describe('class: ElementMetric', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, 'the-library', config, logger)
       .attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
-      prev[cur.name] = cur.value
-      return prev
+      return { ...prev, [cur.name]: cur.value }
     }, {})
 
     const subs = substitute(attrMap, [], [])
@@ -75,8 +74,7 @@ describe('class: ElementMetric', () => {
     const attributes = new ElementMetric(jsxElement, renamedImport, 'the-library', config, logger)
       .attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
-      prev[cur.name] = cur.value
-      return prev
+      return { ...prev, [cur.name]: cur.value }
     }, {})
 
     const subs = substitute(attrMap, [], [])
@@ -101,8 +99,7 @@ describe('class: ElementMetric', () => {
     const attributes = new ElementMetric(jsxElement, defaultImport, 'the-library', config, logger)
       .attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
-      prev[cur.name] = cur.value
-      return prev
+      return { ...prev, [cur.name]: cur.value }
     }, {})
 
     const subs = substitute(attrMap, [], [])
@@ -126,8 +123,7 @@ describe('class: ElementMetric', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, undefined, config, logger)
       .attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
-      prev[cur.name] = cur.value
-      return prev
+      return { ...prev, [cur.name]: cur.value }
     }, {})
 
     const subs = substitute(attrMap, [], [])
@@ -152,8 +148,7 @@ describe('class: ElementMetric', () => {
       .attributes
 
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
-      prev[cur.name] = cur.value
-      return prev
+      return { ...prev, [cur.name]: cur.value }
     }, {})
 
     const subs = substitute(attrMap, [], [])
@@ -173,13 +168,13 @@ describe('class: ElementMetric', () => {
       )
     )
   })
-  it('returns the correct attribute name and values for unallowed attributes and values', () => {
+  it('returns the correct attribute name and values for disallowed attributes and values', () => {
     const elementWithAllowedAttrs = {
       ...jsxElement,
       attributes: [
         {
-          name: 'unAllowedAttrName',
-          value: 'unAllowedAttrValue'
+          name: 'disallowedAttrName',
+          value: 'disallowedAttrValue'
         },
         {
           name: 'allowedAttrName',
@@ -187,10 +182,10 @@ describe('class: ElementMetric', () => {
         },
         {
           name: 'allowedAttrName',
-          value: 'unAllowedAttrValue'
+          value: 'disallowedAttrValue'
         },
         {
-          name: 'unAllowedAttrName',
+          name: 'disallowedAttrName',
           value: 'allowedAttrValue'
         }
       ]
@@ -205,8 +200,7 @@ describe('class: ElementMetric', () => {
 
     const attrMap = elementWithAllowedAttrs.attributes.reduce<Record<string, unknown>>(
       (prev, cur) => {
-        prev[cur.name] = cur.value
-        return prev
+        return { ...prev, [cur.name]: cur.value }
       },
       {}
     )

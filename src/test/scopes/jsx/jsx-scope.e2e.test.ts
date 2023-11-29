@@ -82,7 +82,7 @@ describe('class: JsxScope', () => {
       const accumulator = new JsxElementAccumulator()
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
 
-      jsxScope.parseFile(accumulator, sourceFile)
+      jsxScope.processFile(accumulator, sourceFile)
       expect(accumulator.elements).toMatchSnapshot('elements')
       expect(accumulator.imports).toMatchSnapshot('imports')
     })

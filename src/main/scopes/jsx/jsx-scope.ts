@@ -70,7 +70,7 @@ export class JsxScope extends Scope {
     const promises = sourceFiles.map(async (sourceFile) => {
       const accumulator = new JsxElementAccumulator()
 
-      this.parseFile(accumulator, sourceFile)
+      this.processFile(accumulator, sourceFile)
       this.removeIrrelevantImports(accumulator, instrumentedPackage.name)
       this.resolveElementImports(accumulator, importMatchers)
       await this.resolveInvokers(accumulator, sourceFile.fileName, packageJsonTree)
@@ -96,10 +96,10 @@ export class JsxScope extends Scope {
    * @param accumulator - The accumulator in which to store elements/imports.
    * @param sourceFile - Root AST node to start Jsx explorations from.
    */
-  parseFile(accumulator: JsxElementAccumulator, sourceFile: ts.SourceFile) {
-    const parser = new SourceFileHandler(accumulator, jsxNodeHandlerMap, this.logger)
+  processFile(accumulator: JsxElementAccumulator, sourceFile: ts.SourceFile) {
+    const handler = new SourceFileHandler(accumulator, jsxNodeHandlerMap, this.logger)
 
-    parser.visit(sourceFile, sourceFile)
+    handler.handle(sourceFile, sourceFile)
   }
 
   removeIrrelevantImports(accumulator: JsxElementAccumulator, instrumentedPackageName: string) {

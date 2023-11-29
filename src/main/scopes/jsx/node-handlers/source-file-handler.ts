@@ -39,13 +39,13 @@ export class SourceFileHandler extends Loggable {
   }
 
   /**
-   * Visits each children (recursively) of the supplied node and
-   * calls out to the appropriate node handlers.
+   * Visits each child (recursively) of the supplied node and calls out to the appropriate node
+   * handlers.
    *
    * @param node - Node to traverse through (usually a file node).
    * @param rootNode - Root Node of node tree.
    */
-  public visit(node: ts.Node, rootNode: ts.SourceFile) {
+  public handle(node: ts.Node, rootNode: ts.SourceFile) {
     const Handler = this.nodeHandlerMap[node.kind]
 
     if (Handler !== undefined) {
@@ -54,7 +54,7 @@ export class SourceFileHandler extends Loggable {
     }
 
     ts.forEachChild(node, (node) => {
-      this.visit(node, rootNode)
+      this.handle(node, rootNode)
     })
   }
 }

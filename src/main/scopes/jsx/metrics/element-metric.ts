@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import { type Attributes } from '@opentelemetry/api'
+import { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substitute } from '../../../core/anonymize/substitute.js'
 import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
+import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
@@ -66,12 +67,13 @@ export class ElementMetric extends ScopeMetric {
       )
     }
 
-    const attrMap = this.jsxElement.attributes.reduce<Record<string, JsxElementAttribute['value']>>(
-      (prev, cur) => {
-        prev[cur.name] = cur.value
-        return prev
-      },
-      {}
+    const attrMap = deNull(
+      this.jsxElement.attributes.reduce<Record<string, JsxElementAttribute['value']>>(
+        (prev, cur) => {
+          return { ...prev, [cur.name]: cur.value }
+        },
+        {}
+      )
     )
 
     const anonymizedAttributes = substitute(
@@ -84,8 +86,8 @@ export class ElementMetric extends ScopeMetric {
       [CustomResourceAttributes.NAME]: this.jsxElement.name,
       [CustomResourceAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
       [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((val) =>
-        String(val)
+      [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
+        String(attr)
       ),
       [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
       [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,

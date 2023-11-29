@@ -7,6 +7,7 @@
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import opentelemetry, { type Counter, type Meter, ValueType } from '@opentelemetry/api'
 
+import { deNull } from './de-null.js'
 import { Loggable } from './log/loggable.js'
 import { type Logger } from './log/logger.js'
 import { Trace } from './log/trace.js'
@@ -80,6 +81,6 @@ export abstract class Scope extends Loggable {
     }
 
     // Log the metric
-    this.metrics[dataPoint.name]?.add(1, { ...dataPoint.attributes })
+    this.metrics[dataPoint.name]?.add(1, { ...deNull(dataPoint.attributes) })
   }
 }

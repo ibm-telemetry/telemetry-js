@@ -21,20 +21,17 @@ export function hash<T extends Record<string, unknown>>(
 ): T {
   const hashedEntries = Object.entries(raw).map(([key, value]) => {
     if (typeof value !== 'string') {
-      return { key, value }
+      return [key, value]
     }
 
     if (keys.includes(key)) {
       const hash = createHash('sha256')
       hash.update(value)
-      return { key, value: hash.digest('hex') }
+      return [key, hash.digest('hex')]
     }
 
-    return { key, value }
+    return [key, value]
   })
 
-  return hashedEntries.reduce<Record<string, unknown>>((prev, cur) => {
-    prev[cur.key] = cur.value
-    return prev
-  }, {}) as T
+  return Object.fromEntries(hashedEntries)
 }

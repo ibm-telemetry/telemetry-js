@@ -1,8 +1,8 @@
 // @ts-nocheck
-import Button from 'instrumented'
+import {Package3Comp} from 'instrumented'
 
-const sample = <Button firstProp={1 === 5 ? 'boo' : 'baa'} simple="4" hi={} woo>Hey</Button>
-const secondSample = <Button firstProp={1 === 5 ? 'boo' : 'baa'} simple="4" hi={} woo>key again</Button>
+const sample = <Package3Comp firstProp={1 === 5 ? 'boo' : 'baa'} simple="4" hi={} woo>Hey</Package3Comp>
+const secondSample = <Package3Comp firstProp={1 === 5 ? 'boo' : 'baa'} simple="4" hi={} woo>key again</Package3Comp>
 
 export {
   sample,

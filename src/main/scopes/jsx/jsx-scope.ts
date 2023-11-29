@@ -7,14 +7,16 @@
 
 import type * as ts from 'typescript'
 
+import { findInstallingPackages } from '../../core/find-installing-packages.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
+import { PackageData } from '../npm/interfaces.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { type FileTree, type JsxElementImportMatcher } from './interfaces.js'
+import { FileTree, type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
@@ -66,14 +68,58 @@ export class JsxScope extends Scope {
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
     const instrumentedPackage = await getPackageData(this.cwd, this.logger)
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
+    const fileDirectory: Record<string, string> = {}
+    const packageResolutions: Record<string, PackageData> = {}
 
+    // TODOASKJOE
+    const packageResolutionPromises: Promise<
+      PromiseSettledResult<PromiseSettledResult<any>[]>[]
+    >[] = []
+    packageJsonTree.forEach((tree) => {
+      packageResolutionPromises.push(this.resolvePackages(tree, packageResolutions))
+    })
+
+    await Promise.allSettled(packageResolutionPromises)
+
+    const localPackages = Object.values(packageResolutions)
+
+    const localInstallers = await this.findPkgLocalInstallers(
+      instrumentedPackage.name,
+      instrumentedPackage.version,
+      localPackages
+    )
+    
     const promises = sourceFiles.map(async (sourceFile) => {
+      const containingDir = findDeepestContainingDirectory(
+        sourceFile.fileName,
+        packageJsonTree,
+        this.logger
+      )
+      if (containingDir === undefined) return
+
+      fileDirectory[sourceFile.fileName] = containingDir
+
+      if (
+        !localInstallers.some(
+          (pkg) =>
+            pkg.name === packageResolutions[containingDir]?.name &&
+            pkg.version === packageResolutions[containingDir]?.version
+        )
+      ) {
+        return
+      }
+
       const accumulator = new JsxElementAccumulator()
 
       this.processFile(accumulator, sourceFile)
       this.removeIrrelevantImports(accumulator, instrumentedPackage.name)
       this.resolveElementImports(accumulator, importMatchers)
-      await this.resolveInvokers(accumulator, sourceFile.fileName, packageJsonTree)
+      await this.resolveInvokers(
+        accumulator,
+        sourceFile.fileName,
+        fileDirectory,
+        packageResolutions
+      )
 
       accumulator.elements.forEach((jsxElement) => {
         const jsxImport = accumulator.elementImports.get(jsxElement)
@@ -102,6 +148,13 @@ export class JsxScope extends Scope {
     handler.handle(sourceFile, sourceFile)
   }
 
+  /**
+   * Given an accumulator containing imports, removes all imports 
+   * that don't belong to the given instrumented package .
+   *
+   * @param accumulator - The accumulator in which the imports are stored.
+   * @param instrumentedPackageName - Name of instrumented package.
+   */
   removeIrrelevantImports(accumulator: JsxElementAccumulator, instrumentedPackageName: string) {
     const imports = accumulator.imports.filter((jsxImport) => {
       return jsxImport.path.startsWith(instrumentedPackageName)
@@ -110,6 +163,15 @@ export class JsxScope extends Scope {
     accumulator.imports.splice(0, accumulator.imports.length, ...imports)
   }
 
+  /**
+   * Given an accumulator containing imports and elements,
+   *  populates the accumulators' `elementImports` 
+   * with the corresponding element-import matches.
+   *
+   * @param accumulator - The accumulator in which the imports and elements are stored.
+   * @param elementMatchers - List of pre-instantiated JsxElementImportMatchers 
+   * to match elements against.
+   */
   resolveElementImports(
     accumulator: JsxElementAccumulator,
     elementMatchers: JsxElementImportMatcher[]
@@ -132,27 +194,84 @@ export class JsxScope extends Scope {
    *
    * @param accumulator - Accumulator to store results in.
    * @param sourceFilePath - Absolute path to a sourceFile.
-   * @param packageJsonTree - Directory tree of package.json files.
+   * @param fileDirectory - Cached mapping of files to their containing package directory.
+   * @param packageResolutions - Cached mapping of package directories to the resolved
+   * package name and version.
    */
   async resolveInvokers(
     accumulator: JsxElementAccumulator,
     sourceFilePath: string,
-    packageJsonTree: FileTree[]
+    fileDirectory: Record<string, string>,
+    packageResolutions: Record<string, PackageData>
   ) {
-    const containingDir = findDeepestContainingDirectory(
-      sourceFilePath,
-      packageJsonTree,
-      this.logger
-    )
+    const packageDir = fileDirectory[sourceFilePath]
+    if (packageDir === undefined) return
+    const containingPackageData = packageResolutions[packageDir]
 
-    if (containingDir === undefined) {
-      return
-    }
-
-    const containingPackageData = await getPackageData(containingDir, this.logger)
+    if (containingPackageData === undefined) return
 
     accumulator.elements.forEach((jsxElement) => {
       accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
+  }
+
+  /**
+   * Resolves the PackageData for all file directories contained in the given FileTree 
+   * and stores them in the packageResolutions mapper.
+   * 
+   * @param tree - FileTree to resolve packages for.
+   * @param packageResolutions - Map to store PackageData given a file directory.
+   * @returns Void promise.
+   */
+  async resolvePackages(tree: FileTree, packageResolutions: Record<string, PackageData>) {
+    packageResolutions[tree.path] = await getPackageData(tree.path, this.logger)
+    // TODOASKJOE
+    const promises: Promise<PromiseSettledResult<any>[]>[] = []
+    tree.children.forEach(async (child) => {
+      promises.push(this.resolvePackages(child, packageResolutions))
+    })
+    return Promise.allSettled(promises)
+  }
+
+  // TODOASKJOE: boiii is this expensive ... 🥵
+  /**
+   * Find the list of local packages that installed (nested or not) a given package 
+   * at a specific version.
+   * 
+   * @param pkgName - Name of package to find.
+   * @param pkgVersion - Version of package to find.
+   * @param localPackages - Precomputed list of local packages.
+   * @returns List of local installers for the given package name/version.
+   */
+  async findPkgLocalInstallers(pkgName: string, pkgVersion: string, localPackages: PackageData[]) {
+    const localInstallers: PackageData[] = []
+    const installingPackages = await findInstallingPackages(
+      pkgName,
+      pkgVersion,
+      this.cwd,
+      this.root,
+      this.logger
+    )
+    const promises: Promise<void>[] = []
+    installingPackages.forEach(async (pkg) => {
+      if (
+        !localPackages.some(
+          (localPkg) => localPkg.name === pkg.name && localPkg.version === pkg.version
+        )
+      ) {
+        promises.push(
+          new Promise<void>((resolve) =>
+            this.findPkgLocalInstallers(pkg.name, pkg.version, localPackages).then((installers) => {
+              localInstallers.push(...installers)
+              resolve()
+            })
+          )
+        )
+      } else {
+        localInstallers.push(pkg)
+      }
+    })
+    await Promise.allSettled(promises)
+    return localInstallers
   }
 }

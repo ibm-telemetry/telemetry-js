@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`findInstallingPackages > correctly finds installing package data 1`] = `
+[
+  {
+    "dependencies": [
+      {
+        "name": "foo",
+        "version": "1.0.0",
+      },
+      {
+        "name": "instrumented",
+        "version": "0.1.0",
+      },
+    ],
+    "name": "basic-project",
+    "version": "1.0.0",
+  },
+]
+`;
+
+exports[`findInstallingPackages > finds no results for a known package at an unknown version 1`] = `[]`;
+
+exports[`findInstallingPackages > finds no results for an unknown package 1`] = `[]`;

@@ -19,6 +19,8 @@ exports[`class: NpmScope > findInstallingPackages > correctly finds installing p
 ]
 `;
 
+exports[`class: NpmScope > findInstallingPackages > finds no results for a known package at an unknown version 1`] = `[]`;
+
 exports[`class: NpmScope > findInstallingPackages > finds no results for an known package at an unknown version 1`] = `[]`;
 
 exports[`class: NpmScope > findInstallingPackages > finds no results for an unknown package 1`] = `[]`;

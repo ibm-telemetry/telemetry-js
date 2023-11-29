@@ -16,7 +16,6 @@ import { NamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/nam
 import { RenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/renamed-import-matcher.js'
 import { JsxElementAccumulator } from '../../../main/scopes/jsx/jsx-element-accumulator.js'
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
-import { getPackageJsonTree } from '../../../main/scopes/jsx/utils/get-package-json-tree.js'
 import { getTrackedSourceFiles } from '../../../main/scopes/jsx/utils/get-tracked-source-files.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
@@ -59,6 +58,44 @@ describe('class: JsxScope', () => {
 
       expect(results).toMatchSnapshot()
     })
+    // TODOASKJOE: fix collection error
+
+    it('does not capture metric for files that are not in instrumented package', async () => {
+      const metricReader = initializeOtelForTest()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it.only('captures metric when instrumented package is installed in intermediate package', async () => {
+      const metricReader = initializeOtelForTest()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'intermediate', 'node_modules', 'instrumented')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
 
     it('throws EmptyScopeError if no collector has been defined', async () => {
       const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
@@ -316,12 +353,14 @@ describe('class: JsxScope', () => {
     it('correctly sets invoker name for elements', async () => {
       const root = new Fixture('projects/basic-project')
       const fileName = new Fixture('projects/basic-project/test.jsx')
-      const packageJsonTree = await getPackageJsonTree(root.path, logger)
       const accumulator = new JsxElementAccumulator()
       accumulator.elements.push(element1)
       accumulator.elements.push(element2)
 
-      await jsxScope.resolveInvokers(accumulator, fileName.path, packageJsonTree)
+      const fileDirectory = {[fileName.path]: root.path}
+      const packageResolutions = {[root.path]: {name: 'basic-project', version: '0.0.1'}}
+
+      await jsxScope.resolveInvokers(accumulator, fileName.path, fileDirectory, packageResolutions)
 
       expect(accumulator.elementInvokers.get(element1)).toStrictEqual('basic-project')
       expect(accumulator.elementInvokers.get(element2)).toStrictEqual('basic-project')
@@ -333,10 +372,21 @@ describe('class: JsxScope', () => {
       accumulator.elements.push(element1)
       accumulator.elements.push(element2)
 
-      await jsxScope.resolveInvokers(accumulator, fileName.path, [])
+      await jsxScope.resolveInvokers(accumulator, fileName.path, {}, {})
 
       expect(accumulator.elementInvokers.get(element1)).toBeUndefined()
       expect(accumulator.elementInvokers.get(element2)).toBeUndefined()
     })
+  })
+
+  describe('resolvePackages', () => {
+    it.todo("correctly populates packageResolutions map")
+    it.todo("can tolerate packages that do not exist")
+  })
+
+  describe('findPkgLocalInstallers', () => {
+    it.todo("correctly finds installers for a top-level package")
+    it.todo("correctly finds installers for a given package that was installed in an intermediate package")
+    it.todo("does not find any installers for unknown package")
   })
 })

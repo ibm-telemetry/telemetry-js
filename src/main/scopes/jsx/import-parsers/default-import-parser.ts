@@ -8,13 +8,13 @@
 import * as ts from 'typescript'
 
 import { DEFAULT_ELEMENT_NAME, DEFAULT_IMPORT_KEY } from '../constants.js'
-import { ImportClauseParser } from '../import-clause-parser.js'
 import { type JsxImport } from '../interfaces.js'
+import { ImportParser } from './import-parser.js'
 
 /**
  * Identifies Import nodes that have been imported as default.
  */
-export class DefaultImportParser extends ImportClauseParser {
+export class DefaultImportParser extends ImportParser {
   /**
    * Determines if a given ImportClause ts node contains default imports
    * (i.e. `import Something from 'the-library'`) and constructs and

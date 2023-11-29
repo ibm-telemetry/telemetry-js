@@ -6,21 +6,21 @@
  */
 import * as ts from 'typescript'
 
-import { Loggable } from '../../core/log/loggable.js'
-import { type Logger } from '../../core/log/logger.js'
-import { type ElementNodeHandlerMap } from './interfaces.js'
-import { type JsxElementAccumulator } from './jsx-element-accumulator.js'
+import { Loggable } from '../../../core/log/loggable.js'
+import { type Logger } from '../../../core/log/logger.js'
+import { type ElementNodeHandlerMap } from '../interfaces.js'
+import { type JsxElementAccumulator } from '../jsx-element-accumulator.js'
 
 /**
  * Class to handle traversing through a node's children and calling appropriate handlers.
  *
  */
-export class NodeParser extends Loggable {
+export class SourceFileHandler extends Loggable {
   private readonly accumulator: JsxElementAccumulator
   private readonly nodeHandlerMap: ElementNodeHandlerMap
 
   /**
-   * Instantiates a new NodeParser.
+   * Instantiates a new SourceFileHandler.
    *
    * @param accumulator - Keeps the state of the collected data (by the handlers).
    * @param nodeHandlerMap - Determines what handlers (instances) are called given

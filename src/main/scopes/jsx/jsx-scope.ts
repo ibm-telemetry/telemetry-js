@@ -11,17 +11,17 @@ import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { findDeepestContainingDirectory } from './find-deepest-containing-directory.js'
-import { getPackageJsonTree } from './get-package-json-tree.js'
-import { getTrackedSourceFiles } from './get-tracked-source-files.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
 import { type FileTree, type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
-import { jsxNodeHandlerMap } from './jsx-node-handler-map.js'
+import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
-import { NodeParser } from './node-parser.js'
+import { SourceFileHandler } from './node-handlers/source-file-handler.js'
+import { findDeepestContainingDirectory } from './utils/find-deepest-containing-directory.js'
+import { getPackageJsonTree } from './utils/get-package-json-tree.js'
+import { getTrackedSourceFiles } from './utils/get-tracked-source-files.js'
 
 /**
  * Scope class dedicated to data collection from a jsx environment.
@@ -97,7 +97,7 @@ export class JsxScope extends Scope {
    * @param sourceFile - Root AST node to start Jsx explorations from.
    */
   parseFile(accumulator: JsxElementAccumulator, sourceFile: ts.SourceFile) {
-    const parser = new NodeParser(accumulator, jsxNodeHandlerMap, this.logger)
+    const parser = new SourceFileHandler(accumulator, jsxNodeHandlerMap, this.logger)
 
     parser.visit(sourceFile, sourceFile)
   }

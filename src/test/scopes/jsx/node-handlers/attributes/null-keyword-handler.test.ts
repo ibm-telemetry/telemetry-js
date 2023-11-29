@@ -7,8 +7,8 @@
 import type * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
-import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/get-tracked-source-files.js'
 import { NullKeywordHandler } from '../../../../../main/scopes/jsx/node-handlers/attributes/null-keyword-handler.js'
+import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/utils/get-tracked-source-files.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 

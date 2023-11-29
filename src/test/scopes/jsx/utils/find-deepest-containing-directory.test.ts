@@ -6,9 +6,9 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { findDeepestContainingDirectory } from '../../../main/scopes/jsx/find-deepest-containing-directory.js'
-import { Fixture } from '../../__utils/fixture.js'
-import { initLogger } from '../../__utils/init-logger.js'
+import { findDeepestContainingDirectory } from '../../../../main/scopes/jsx/utils/find-deepest-containing-directory.js'
+import { Fixture } from '../../../__utils/fixture.js'
+import { initLogger } from '../../../__utils/init-logger.js'
 
 describe('findDeepestContainingDirectory', () => {
   const logger = initLogger()

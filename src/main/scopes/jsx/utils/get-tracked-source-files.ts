@@ -9,8 +9,8 @@ import path from 'node:path'
 
 import * as ts from 'typescript'
 
-import { type Logger } from '../../core/log/logger.js'
-import { TrackedFileEnumerator } from '../../core/tracked-file-enumerator.js'
+import { type Logger } from '../../../core/log/logger.js'
+import { TrackedFileEnumerator } from '../../../core/tracked-file-enumerator.js'
 
 /**
  * Gets all tracked source files to consider for data collection.

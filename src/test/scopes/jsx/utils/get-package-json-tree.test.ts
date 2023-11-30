@@ -24,11 +24,13 @@ describe('getPackageJsonTree', () => {
         children: [
           { children: [], path: path.join(fixture.path, 'package1') },
           {
-            children: [], path: path.join(fixture.path, 'package2')
+            children: [],
+            path: path.join(fixture.path, 'package2')
           },
           {
-            children: [], path: path.join(fixture.path, 'package3')
-          },
+            children: [],
+            path: path.join(fixture.path, 'package3')
+          }
         ],
         path: path.join(fixture.path, '')
       }

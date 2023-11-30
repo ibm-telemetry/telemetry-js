@@ -30,6 +30,8 @@ function initializeOpenTelemetry(config: Attributes) {
   meterProvider.addMetricReader(metricReader)
 
   // Set this MeterProvider to be global to the app being instrumented.
+  // TODOASKJOE: keep this?
+  opentelemetry.metrics.disable()
   opentelemetry.metrics.setGlobalMeterProvider(meterProvider)
 
   return metricReader

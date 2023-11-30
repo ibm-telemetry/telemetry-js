@@ -13,7 +13,7 @@ import { Fixture } from '../__utils/fixture.js'
 import { initLogger } from '../__utils/init-logger.js'
 
 describe('findInstallingPackages', () => {
-  const logger = initLogger() 
+  const logger = initLogger()
   it('throws an error if no package.json files were found', async () => {
     const fixture = new Fixture('projects/no-package-json-files/foo/bar')
 

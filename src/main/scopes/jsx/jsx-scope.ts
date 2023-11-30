@@ -71,10 +71,7 @@ export class JsxScope extends Scope {
     const fileDirectory: Record<string, string> = {}
     const packageResolutions: Record<string, PackageData> = {}
 
-    // TODOASKJOE
-    const packageResolutionPromises: Promise<
-      PromiseSettledResult<PromiseSettledResult<any>[]>[]
-    >[] = []
+    const packageResolutionPromises: Promise<void>[] = []
     packageJsonTree.forEach((tree) => {
       packageResolutionPromises.push(this.resolvePackages(tree, packageResolutions))
     })
@@ -88,7 +85,7 @@ export class JsxScope extends Scope {
       instrumentedPackage.version,
       localPackages
     )
-    
+
     const promises = sourceFiles.map(async (sourceFile) => {
       const containingDir = findDeepestContainingDirectory(
         sourceFile.fileName,
@@ -149,7 +146,7 @@ export class JsxScope extends Scope {
   }
 
   /**
-   * Given an accumulator containing imports, removes all imports 
+   * Given an accumulator containing imports, removes all imports
    * that don't belong to the given instrumented package .
    *
    * @param accumulator - The accumulator in which the imports are stored.
@@ -165,11 +162,11 @@ export class JsxScope extends Scope {
 
   /**
    * Given an accumulator containing imports and elements,
-   *  populates the accumulators' `elementImports` 
+   *  populates the accumulators' `elementImports`
    * with the corresponding element-import matches.
    *
    * @param accumulator - The accumulator in which the imports and elements are stored.
-   * @param elementMatchers - List of pre-instantiated JsxElementImportMatchers 
+   * @param elementMatchers - List of pre-instantiated JsxElementImportMatchers
    * to match elements against.
    */
   resolveElementImports(
@@ -216,28 +213,35 @@ export class JsxScope extends Scope {
   }
 
   /**
-   * Resolves the PackageData for all file directories contained in the given FileTree 
+   * Resolves the PackageData for all file directories contained in the given FileTree
    * and stores them in the packageResolutions mapper.
-   * 
+   *
    * @param tree - FileTree to resolve packages for.
    * @param packageResolutions - Map to store PackageData given a file directory.
    * @returns Void promise.
    */
   async resolvePackages(tree: FileTree, packageResolutions: Record<string, PackageData>) {
-    packageResolutions[tree.path] = await getPackageData(tree.path, this.logger)
-    // TODOASKJOE
-    const promises: Promise<PromiseSettledResult<any>[]>[] = []
+    try {
+      packageResolutions[tree.path] = await getPackageData(tree.path, this.logger)
+    } catch (err) {
+      if (err instanceof Error) {
+        this.logger.error(err)
+      } else {
+        this.logger.error(String(err))
+      }
+    }
+    const promises: Promise<void>[] = []
     tree.children.forEach(async (child) => {
       promises.push(this.resolvePackages(child, packageResolutions))
     })
-    return Promise.allSettled(promises)
+    return new Promise<void>((resolve) => Promise.allSettled(promises).then(() => resolve()))
   }
 
   // TODOASKJOE: boiii is this expensive ... 🥵
   /**
-   * Find the list of local packages that installed (nested or not) a given package 
+   * Find the list of local packages that installed (nested or not) a given package
    * at a specific version.
-   * 
+   *
    * @param pkgName - Name of package to find.
    * @param pkgVersion - Version of package to find.
    * @param localPackages - Precomputed list of local packages.

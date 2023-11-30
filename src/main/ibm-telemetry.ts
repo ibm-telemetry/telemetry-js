@@ -105,7 +105,7 @@ export class IbmTelemetry {
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          // [CustomResourceAttributes.ANALYZED_COMMIT]: 'abc123', // TODO: implement this!
+          [CustomResourceAttributes.ANALYZED_COMMIT]: 'abc123', // TODO: implement this!
           [CustomResourceAttributes.DATE]: date
         },
         [

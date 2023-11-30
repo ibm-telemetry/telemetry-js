@@ -7,10 +7,10 @@
 import path from 'path'
 import { describe, expect, it } from 'vitest'
 
-import { getProjectRoot } from '../../../main/core/get-project-root.js'
-import { TrackedFileEnumerator } from '../../../main/core/tracked-file-enumerator.js'
-import { Fixture } from '../../__utils/fixture.js'
-import { initLogger } from '../../__utils/init-logger.js'
+import { getProjectRoot } from '../../main/core/get-project-root.js'
+import { TrackedFileEnumerator } from '../../main/core/tracked-file-enumerator.js'
+import { Fixture } from '../__utils/fixture.js'
+import { initLogger } from '../__utils/init-logger.js'
 
 describe('class: TrackedFileEnumerator', () => {
   const logger = initLogger()

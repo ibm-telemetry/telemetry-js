@@ -11,23 +11,23 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
 import { UnknownScopeError } from '../main/exceptions/unknown-scope-error.js'
-import { TelemetryCollector } from '../main/telemetry-collector.js'
+import { IbmTelemetry } from '../main/ibm-telemetry.js'
 import { Fixture } from './__utils/fixture.js'
 import { initLogger } from './__utils/init-logger.js'
 
-describe('telemetryCollector', () => {
+describe('ibmTelemetry', () => {
   const logger = initLogger()
 
   describe('runScopes', () => {
     it('does not throw when existing scopes are specified in the config', async () => {
       const environment = new Environment({ isExportEnabled: false })
-      const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
+      const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
       )
 
-      const promises = telemetryCollector.runScopes(cwd.path, root.path, {
+      const promises = ibmTelemetry.runScopes(cwd.path, root.path, {
         projectId: 'asdf',
         version: 1,
         endpoint: '',
@@ -50,10 +50,10 @@ describe('telemetryCollector', () => {
 
   it('throws when unknown scopes are encountered in the config', async () => {
     const environment = new Environment({ isExportEnabled: false })
-    const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
+    const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
 
     expect(() =>
-      telemetryCollector.runScopes('', '', {
+      ibmTelemetry.runScopes('', '', {
         projectId: 'asdf',
         version: 1,
         collect: { notARealScope: null }
@@ -63,22 +63,22 @@ describe('telemetryCollector', () => {
 
   it('does nothing when telemetry is disabled via envvar', async () => {
     const environment = new Environment({ isTelemetryEnabled: false })
-    const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
+    const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
 
-    const runScopesSpy = vi.spyOn(telemetryCollector, 'runScopes')
+    const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
 
-    telemetryCollector.run()
+    ibmTelemetry.run()
 
     expect(runScopesSpy).not.toHaveBeenCalled()
   })
 
   it('does nothing when running in non-CI environment', async () => {
     const environment = new Environment({ isCI: false })
-    const telemetryCollector = new TelemetryCollector('', configSchemaJson, environment, logger)
+    const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
 
-    const runScopesSpy = vi.spyOn(telemetryCollector, 'runScopes')
+    const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
 
-    telemetryCollector.run()
+    ibmTelemetry.run()
 
     expect(runScopesSpy).not.toHaveBeenCalled()
   })

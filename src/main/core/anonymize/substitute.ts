@@ -33,7 +33,7 @@ export function substitute<T extends Record<string, unknown>>(
         subs.set(value, nextSub())
       }
 
-      return { key: subs.get(key), value: subs.get(value) }
+      return [subs.get(key), subs.get(value)]
     }
 
     // Key is safe. Value is a string that's not safe
@@ -42,7 +42,7 @@ export function substitute<T extends Record<string, unknown>>(
         subs.set(value, nextSub())
       }
 
-      return { key, value: subs.get(value) }
+      return [key, subs.get(value)]
     }
 
     // Key is safe. Value is an object that's not null and not safe
@@ -51,17 +51,14 @@ export function substitute<T extends Record<string, unknown>>(
         subs.set(value, nextSub())
       }
 
-      return { key, value: subs.get(value) }
+      return [key, subs.get(value)]
     }
 
     // Both key and value are safe
-    return { key, value }
+    return [key, value]
   })
 
-  return substitutedEntries.reduce<Record<string, unknown>>((prev, cur) => {
-    prev[cur.key] = cur.value
-    return prev
-  }, {}) as T
+  return Object.fromEntries(substitutedEntries)
 }
 
 function nextSub() {

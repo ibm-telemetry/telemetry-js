@@ -6,10 +6,10 @@
  */
 import * as ts from 'typescript'
 
-import { type ElementNodeHandlerMap } from './interfaces.js'
-import { ImportNodeHandler } from './node-handlers/elements/import-node-handler.js'
-import { JsxElementNodeHandler } from './node-handlers/elements/jsx-element-node-handler.js'
-import { JsxSelfClosingElementNodeHandler } from './node-handlers/elements/jsx-self-closing-element-node-handler.js'
+import { type ElementNodeHandlerMap } from '../interfaces.js'
+import { ImportNodeHandler } from '../node-handlers/elements/import-node-handler.js'
+import { JsxElementNodeHandler } from '../node-handlers/elements/jsx-element-node-handler.js'
+import { JsxSelfClosingElementNodeHandler } from '../node-handlers/elements/jsx-self-closing-element-node-handler.js'
 
 //
 /**

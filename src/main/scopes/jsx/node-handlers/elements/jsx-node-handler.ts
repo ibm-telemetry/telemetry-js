@@ -8,8 +8,8 @@ import * as ts from 'typescript'
 
 import { Trace } from '../../../../core/log/trace.js'
 import { NoAttributeExpressionFoundError } from '../../../../exceptions/no-attribute-expression-found-error.js'
-import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
 import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
+import { getAttributeNodeHandler } from '../../maps/attribute-node-handler-map.js'
 import { ElementNodeHandler } from './element-node-handler.js'
 
 /**

@@ -7,13 +7,13 @@
 
 import * as ts from 'typescript'
 
-import { ImportClauseParser } from '../import-clause-parser.js'
 import { type JsxImport } from '../interfaces.js'
+import { ImportParser } from './import-parser.js'
 
 /**
  * Identifies Import nodes that have been imported as a rename.
  */
-export class RenamedImportParser extends ImportClauseParser {
+export class RenamedImportParser extends ImportParser {
   /**
    * Determines if a given ImportClause ts node contains renamed imports
    * i.e. `import {Something as SomethingElse} from 'the-library'` and constructs and

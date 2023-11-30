@@ -6,7 +6,7 @@
  */
 import type * as ts from 'typescript'
 
-import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
+import { getAttributeNodeHandler } from '../../maps/attribute-node-handler-map.js'
 import { AttributeNodeHandler } from './attribute-node-handler.js'
 import { TrueKeywordHandler } from './true-keyword-handler.js'
 

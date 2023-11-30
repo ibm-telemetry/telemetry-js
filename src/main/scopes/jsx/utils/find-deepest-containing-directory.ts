@@ -4,8 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { type Logger } from '../../core/log/logger.js'
-import { type FileTree } from './interfaces.js'
+import { type Logger } from '../../../core/log/logger.js'
+import { type FileTree } from '../interfaces.js'
 
 /**
  * Given an ordered directory tree, finds the "most nested" directory path from the tree that

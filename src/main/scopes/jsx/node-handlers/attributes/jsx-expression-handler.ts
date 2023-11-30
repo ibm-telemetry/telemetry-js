@@ -7,7 +7,7 @@
 import type * as ts from 'typescript'
 
 import { NoAttributeExpressionFoundError } from '../../../../exceptions/no-attribute-expression-found-error.js'
-import { getAttributeNodeHandler } from '../../attributes-node-handler-map.js'
+import { getAttributeNodeHandler } from '../../maps/attribute-node-handler-map.js'
 import { AttributeNodeHandler } from './attribute-node-handler.js'
 
 /**

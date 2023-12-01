@@ -231,10 +231,14 @@ export class JsxScope extends Scope {
       }
     }
     const promises: Promise<void>[] = []
-    tree.children.forEach(async (child) => {
-      promises.push(this.resolvePackages(child, packageResolutions))
+    tree.children.forEach((child) => {
+      ;(async () => {
+        promises.push(this.resolvePackages(child, packageResolutions))
+      })()
     })
-    return new Promise<void>((resolve) => Promise.allSettled(promises).then(() => resolve()))
+    return new Promise<void>((resolve) => {
+      ;(() => Promise.allSettled(promises).then(() => resolve()))()
+    })
   }
 
   // TODOASKJOE: boiii is this expensive ... 🥵
@@ -257,23 +261,29 @@ export class JsxScope extends Scope {
       this.logger
     )
     const promises: Promise<void>[] = []
-    installingPackages.forEach(async (pkg) => {
-      if (
-        !localPackages.some(
-          (localPkg) => localPkg.name === pkg.name && localPkg.version === pkg.version
-        )
-      ) {
-        promises.push(
-          new Promise<void>((resolve) =>
-            this.findPkgLocalInstallers(pkg.name, pkg.version, localPackages).then((installers) => {
-              localInstallers.push(...installers)
-              resolve()
+    installingPackages.forEach((pkg) => {
+      ;(async () => {
+        if (
+          !localPackages.some(
+            (localPkg) => localPkg.name === pkg.name && localPkg.version === pkg.version
+          )
+        ) {
+          promises.push(
+            new Promise<void>((resolve) => {
+              ;(() => {
+                this.findPkgLocalInstallers(pkg.name, pkg.version, localPackages).then(
+                  (installers) => {
+                    localInstallers.push(...installers)
+                    resolve()
+                  }
+                )
+              })()
             })
           )
-        )
-      } else {
-        localInstallers.push(pkg)
-      }
+        } else {
+          localInstallers.push(pkg)
+        }
+      })()
     })
     await Promise.allSettled(promises)
     return localInstallers

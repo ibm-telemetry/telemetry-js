@@ -24,7 +24,6 @@ export async function getPackageJsonTree(root: string, logger: Logger): Promise<
   const dirs = (
     await new TrackedFileEnumerator(logger).find(
       root,
-      // TODOASKJOE
       (fileName) => path.basename(fileName) === 'package.json' && !fileName.includes('node_modules')
     )
   )

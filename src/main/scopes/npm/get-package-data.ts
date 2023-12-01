@@ -36,7 +36,7 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
   const dataPromise = new Promise<PackageData>((resolve, reject) => {
     resultPromise
       .then((result) => {
-        const [match] = /{[^}]*}/.exec(result.stdout) ?? []
+        const [match] = /^{[^}]*}/.exec(result.stdout) ?? []
         if (match === undefined) {
           reject(new SyntaxError('Invalid JSON response from package get: ' + result.stdout))
           return

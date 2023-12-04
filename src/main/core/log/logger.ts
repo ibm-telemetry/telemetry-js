@@ -12,6 +12,8 @@ type Level = 'debug' | 'error'
 
 const DRAIN_INTERVAL = 250 // ms
 
+let curPromiseId = 1
+
 /**
  * Logger class to log debug and error statements to a given file.
  */
@@ -89,7 +91,7 @@ export class Logger {
   public traceEnter(targetName: string, methodName: string, args: unknown[]) {
     const stringArgs = String(args.map(safeStringify))
 
-    this.debug(`-> ${targetName}::${methodName}(${stringArgs})`)
+    this.debug(`--> ${targetName}::${methodName}(${stringArgs})`)
   }
 
   /**
@@ -101,9 +103,16 @@ export class Logger {
    */
   public traceExit(targetName: string, methodName: string, result: unknown) {
     if (result instanceof Promise) {
+      const promiseIndex = curPromiseId++
+      this.debug(`-?- ${targetName}::${methodName}(...): awaiting [Promise${promiseIndex}]`)
+
       result.then(
         (value: unknown) => {
-          this.debug(`<- ${targetName}::${methodName}(...): ${safeStringify(value)}`)
+          this.debug(
+            `<-- ${targetName}::${methodName}(...): resolved [Promise${promiseIndex}]: ${safeStringify(
+              value
+            )}`
+          )
         },
         (err: unknown) => {
           this.error(`-x- ${targetName}::${methodName}(...): ${safeStringify(err)}`)
@@ -116,7 +125,7 @@ export class Logger {
       this.error(`-x- ${targetName}::${methodName}(...): ${safeStringify(result)}`)
       this.error(result)
     } else {
-      this.debug(`<- ${targetName}::${methodName}(...): ${safeStringify(result)}`)
+      this.debug(`<-- ${targetName}::${methodName}(...): ${safeStringify(result)}`)
     }
   }
 

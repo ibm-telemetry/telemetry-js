@@ -21,9 +21,9 @@ const __filename = (await import("node:url")).fileURLToPath(import.meta.url);
 const __dirname = (await import("node:path")).dirname(__filename);`
   },
   bundle: true,
-  entryPoints: [path.join('dist', 'main', 'index.js')],
+  entryPoints: [path.join('dist', 'main', 'index.js'), path.join('dist', 'main', 'collect.js')],
   format: 'esm',
-  outfile: path.join('dist', 'out.js'),
+  outdir: 'dist',
   platform: 'node',
   target: 'es2021'
 })

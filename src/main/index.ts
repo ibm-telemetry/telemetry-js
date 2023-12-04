@@ -4,58 +4,17 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
-import { Command } from 'commander'
-
-import { Environment } from './core/environment.js'
-import { createLogFilePath } from './core/log/create-log-file-path.js'
-import { Logger } from './core/log/logger.js'
-import { IbmTelemetry } from './ibm-telemetry.js'
-
-interface CommandLineOptions {
-  config: string
-}
-
-/**
- * Sets up Commander, registers the command action, and invokes the action.
- */
-function run() {
-  const program = new Command()
-    .description('Collect telemetry data for a package.')
-    .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
-    .action(collect)
-
-  program.parseAsync().catch((err) => {
-    // As a failsafe, this catches any uncaught exception, prints it to stderr, and silently exits
-    console.error(err)
-  })
-}
-
-/**
- * This is the main entrypoint for telemetry collection.
- *
- * @param opts - The command line options provided when the program was executed.
- */
-async function collect(opts: CommandLineOptions) {
-  const date = new Date().toISOString()
-  const logFilePath = createLogFilePath(date)
-  const logger = new Logger(logFilePath)
-  const environment = new Environment()
-
-  const ibmTelemetry = new IbmTelemetry(opts.config, configSchemaJson, environment, logger)
-
-  try {
-    await ibmTelemetry.run()
-  } catch (err) {
-    // Catch any exception thrown, log it, and quietly exit
-    if (err instanceof Error) {
-      logger.error(err)
-    } else {
-      logger.error(String(err))
+import childProcess from 'child_process'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
+childProcess
+  .spawn(
+    `node ${path.join(dirname(fileURLToPath(import.meta.url)), 'collect.js')}`,
+    process.argv.slice(2),
+    {
+      stdio: 'ignore',
+      detached: true,
+      shell: true
     }
-  }
-
-  await logger.close()
-}
-
-run()
+  )
+  .unref()

@@ -102,12 +102,12 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
             "dataPoints": [
               {
                 "attributes": {
-                  "jsx.element.attribute.names": [
+                  "jsx.element.attributes.names": [
                     "firstProp",
                     "[redacted2]",
                     "[redacted4]",
                   ],
-                  "jsx.element.attribute.values": [
+                  "jsx.element.attributes.values": [
                     "[redacted1]",
                     "[redacted3]",
                     "[redacted5]",
@@ -129,7 +129,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
               },
               {
                 "attributes": {
-                  "jsx.element.attribute.names": [
+                  "jsx.element.attributes.names": [
                     "firstProp",
                     "secondProp",
                     "[redacted6]",
@@ -139,7 +139,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                     "[redacted12]",
                     "[redacted14]",
                   ],
-                  "jsx.element.attribute.values": [
+                  "jsx.element.attributes.values": [
                     "hi",
                     "wow",
                     "[redacted7]",
@@ -168,7 +168,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
             "descriptor": {
               "advice": {},
               "description": "",
-              "name": "element.count",
+              "name": "jsx.element",
               "type": "COUNTER",
               "unit": "",
               "valueType": 0,

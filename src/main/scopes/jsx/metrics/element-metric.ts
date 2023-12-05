@@ -17,10 +17,10 @@ import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../in
 import { JsxScopeAttributes } from '../jsx-scope-attributes.js'
 
 /**
- * JSX scope metric that generates an element.count individual metric for a given element.
+ * JSX scope metric that generates a jsx.element individual metric for a given element.
  */
 export class ElementMetric extends ScopeMetric {
-  public override name = 'element.count' as const
+  public override name = 'jsx.element' as const
   private readonly jsxElement: JsxElement
   private readonly matchingImport: JsxImport
   private readonly invoker: string | undefined

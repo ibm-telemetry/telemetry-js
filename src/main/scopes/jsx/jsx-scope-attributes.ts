@@ -10,8 +10,8 @@ export const JsxScopeAttributes = Object.freeze({
   //
   NAME: 'jsx.element.name',
   MODULE_SPECIFIER: 'jsx.element.module.specifier',
-  ATTRIBUTE_NAMES: 'jsx.element.attribute.names',
-  ATTRIBUTE_VALUES: 'jsx.element.attribute.values',
+  ATTRIBUTE_NAMES: 'jsx.element.attributes.names',
+  ATTRIBUTE_VALUES: 'jsx.element.attributes.values',
 
   //
   // Attributes relating to a jsx element's invoker

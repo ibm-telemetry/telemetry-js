@@ -20,10 +20,10 @@ export interface DependencyData {
 }
 
 /**
- * NPM scope metric that generates a dependency.count individual metric for a given dependency.
+ * NPM scope metric that generates an npm.dependency individual metric for a given dependency.
  */
 export class DependencyMetric extends ScopeMetric {
-  public override name = 'dependency.count' as const
+  public override name = 'npm.dependency' as const
 
   private readonly data: DependencyData
 

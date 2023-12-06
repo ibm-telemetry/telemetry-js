@@ -81,7 +81,7 @@ describe('class: JsxScope', () => {
     })
 
     // TODOASKJOE: fix collection error
-    it.skip('captures metric when instrumented package is installed in intermediate package', async () => {
+    it('captures metric when instrumented package is installed in intermediate package', async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const cwd = new Fixture(

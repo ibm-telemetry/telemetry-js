@@ -9,8 +9,8 @@ import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substitute } from '../../../../main/core/anonymize/substitute.js'
-import { CustomResourceAttributes } from '../../../../main/core/custom-resource-attributes.js'
 import { type JsxElement, type JsxImport } from '../../../../main/scopes/jsx/interfaces.js'
+import { JsxScopeAttributes } from '../../../../main/scopes/jsx/jsx-scope-attributes.js'
 import { ElementMetric } from '../../../../main/scopes/jsx/metrics/element-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
 
@@ -27,6 +27,7 @@ const config: ConfigSchema = {
     }
   }
 }
+
 describe('class: ElementMetric', () => {
   const logger = initLogger()
   const jsxElement: JsxElement = {
@@ -45,6 +46,7 @@ describe('class: ElementMetric', () => {
     isDefault: false,
     isAll: false
   }
+
   it('returns the correct attributes for a standard element', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, 'the-library', config, logger)
       .attributes
@@ -57,18 +59,23 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.NAME]: 'theName',
-          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
-          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
-          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
-          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+          [JsxScopeAttributes.NAME]: 'theName',
+          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
+          [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
         },
-        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        [
+          'jsx.element.invoker.package.raw',
+          'jsx.element.invoker.package.owner',
+          'jsx.element.invoker.package.name'
+        ]
       )
     )
   })
+
   it('returns the correct attributes for a renamed element', () => {
     const renamedImport = { ...jsxImport, name: 'theActualName', rename: 'theName' }
     const attributes = new ElementMetric(jsxElement, renamedImport, 'the-library', config, logger)
@@ -82,18 +89,23 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.NAME]: 'theActualName',
-          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
-          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
-          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
-          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+          [JsxScopeAttributes.NAME]: 'theActualName',
+          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
+          [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
         },
-        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        [
+          'jsx.element.invoker.package.raw',
+          'jsx.element.invoker.package.owner',
+          'jsx.element.invoker.package.name'
+        ]
       )
     )
   })
+
   it('returns the correct attributes for a default element', () => {
     const defaultImport = { ...jsxImport, name: '[Default]', rename: 'theName', isDefault: true }
     const attributes = new ElementMetric(jsxElement, defaultImport, 'the-library', config, logger)
@@ -107,18 +119,23 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.NAME]: '[Default]',
-          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
-          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
-          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
-          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+          [JsxScopeAttributes.NAME]: '[Default]',
+          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
+          [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
         },
-        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        [
+          'jsx.element.invoker.package.raw',
+          'jsx.element.invoker.package.owner',
+          'jsx.element.invoker.package.name'
+        ]
       )
     )
   })
+
   it('returns the correct attributes for an element with no invoker', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, undefined, config, logger)
       .attributes
@@ -131,18 +148,23 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.NAME]: 'theName',
-          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
-          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
-          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: undefined,
-          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: undefined
+          [JsxScopeAttributes.NAME]: 'theName',
+          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: undefined,
+          [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: undefined
         },
-        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        [
+          'jsx.element.invoker.package.raw',
+          'jsx.element.invoker.package.owner',
+          'jsx.element.invoker.package.name'
+        ]
       )
     )
   })
+
   it('returns the correct attributes for an element with invoker that has owner', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, '@owner/library', config, logger)
       .attributes
@@ -156,18 +178,23 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.NAME]: 'theName',
-          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
-          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
-          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
-          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
-          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
+          [JsxScopeAttributes.NAME]: 'theName',
+          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
+          [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library'
         },
-        ['invoker.package.raw', 'invoker.package.owner', 'invoker.package.name']
+        [
+          'jsx.element.invoker.package.raw',
+          'jsx.element.invoker.package.owner',
+          'jsx.element.invoker.package.name'
+        ]
       )
     )
   })
+
   it('returns the correct attribute name and values for disallowed attributes and values', () => {
     const elementWithAllowedAttrs = {
       ...jsxElement,
@@ -210,18 +237,18 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [CustomResourceAttributes.NAME]: 'theName',
-          [CustomResourceAttributes.MODULE_SPECIFIER]: 'path',
-          [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
-          [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
-          [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
-          [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
-          [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: 'library'
+          [JsxScopeAttributes.NAME]: 'theName',
+          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
+          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
+          [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
+          [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library'
         },
         [
-          CustomResourceAttributes.INVOKER_PACKAGE_RAW,
-          CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
-          CustomResourceAttributes.INVOKER_PACKAGE_NAME
+          JsxScopeAttributes.INVOKER_PACKAGE_RAW,
+          JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
+          JsxScopeAttributes.INVOKER_PACKAGE_NAME
         ]
       )
     )

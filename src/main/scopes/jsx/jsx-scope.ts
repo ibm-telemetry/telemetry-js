@@ -139,6 +139,10 @@ export class JsxScope extends Scope {
    * @param accumulator - The accumulator in which to store elements/imports.
    * @param sourceFile - Root AST node to start Jsx explorations from.
    */
+  @Trace({
+    argFormatter: (arg) =>
+      arg instanceof JsxElementAccumulator ? '[JsxElementAccumulator]' : arg?.fileName
+  })
   processFile(accumulator: JsxElementAccumulator, sourceFile: ts.SourceFile) {
     const handler = new SourceFileHandler(accumulator, jsxNodeHandlerMap, this.logger)
 

@@ -7,8 +7,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { CustomResourceAttributes } from '../../../../main/core/custom-resource-attributes.js'
 import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency-metric.js'
+import { NpmScopeAttributes } from '../../../../main/scopes/npm/npm-scope-attributes.js'
 import { initLogger } from '../../../__utils/init-logger.js'
 
 describe('class: DependencyMetric', () => {
@@ -27,34 +27,34 @@ describe('class: DependencyMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          raw: 'test-1',
-          owner: undefined,
-          name: 'test-1',
-          'version.raw': '0.0.1',
-          'version.major': '0',
-          'version.minor': '0',
-          'version.patch': '1',
-          'version.preRelease': undefined,
-          'installer.name': 'test-1-installer',
-          'installer.owner': undefined,
-          'installer.raw': 'test-1-installer',
-          'installer.version.major': '1',
-          'installer.version.minor': '0',
-          'installer.version.patch': '0',
-          'installer.version.preRelease': undefined,
-          'installer.version.raw': '1.0.0'
+          [NpmScopeAttributes.RAW]: 'test-1',
+          [NpmScopeAttributes.OWNER]: undefined,
+          [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.VERSION_RAW]: '0.0.1',
+          [NpmScopeAttributes.VERSION_MAJOR]: '0',
+          [NpmScopeAttributes.VERSION_MINOR]: '0',
+          [NpmScopeAttributes.VERSION_PATCH]: '1',
+          [NpmScopeAttributes.VERSION_PRE_RELEASE]: undefined,
+          [NpmScopeAttributes.INSTALLER_RAW]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_OWNER]: undefined,
+          [NpmScopeAttributes.INSTALLER_NAME]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_VERSION_RAW]: '1.0.0',
+          [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: undefined
         },
         [
-          'raw',
-          'owner',
-          'name',
-          'version.raw',
-          'version.preRelease',
-          'installer.raw',
-          'installer.owner',
-          'installer.name',
-          'installer.version.raw',
-          'installer.version.preRelease'
+          'npm.dependency.raw',
+          'npm.dependency.owner',
+          'npm.dependency.name',
+          'npm.dependency.version.raw',
+          'npm.dependency.version.preRelease',
+          'npm.dependency.installer.raw',
+          'npm.dependency.installer.owner',
+          'npm.dependency.installer.name',
+          'npm.dependency.installer.version.raw',
+          'npm.dependency.installer.version.preRelease'
         ]
       )
     )
@@ -73,34 +73,34 @@ describe('class: DependencyMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          raw: 'test-1',
-          owner: undefined,
-          name: 'test-1',
-          'installer.name': 'test-1-installer',
-          'version.raw': '0.0.1-rc.0',
-          'version.major': '0',
-          'version.minor': '0',
-          'version.patch': '1',
-          'version.preRelease': 'rc.0',
-          'installer.owner': undefined,
-          'installer.raw': 'test-1-installer',
-          'installer.version.major': '1',
-          'installer.version.minor': '0',
-          'installer.version.patch': '0',
-          'installer.version.preRelease': 'rc.4',
-          'installer.version.raw': '1.0.0-rc.4'
+          [NpmScopeAttributes.RAW]: 'test-1',
+          [NpmScopeAttributes.OWNER]: undefined,
+          [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.VERSION_RAW]: '0.0.1-rc.0',
+          [NpmScopeAttributes.VERSION_MAJOR]: '0',
+          [NpmScopeAttributes.VERSION_MINOR]: '0',
+          [NpmScopeAttributes.VERSION_PATCH]: '1',
+          [NpmScopeAttributes.VERSION_PRE_RELEASE]: 'rc.0',
+          [NpmScopeAttributes.INSTALLER_RAW]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_OWNER]: undefined,
+          [NpmScopeAttributes.INSTALLER_NAME]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_VERSION_RAW]: '1.0.0-rc.4',
+          [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: 'rc.4'
         },
         [
-          'raw',
-          'owner',
-          'name',
-          'version.raw',
-          'version.preRelease',
-          'installer.raw',
-          'installer.owner',
-          'installer.name',
-          'installer.version.raw',
-          'installer.version.preRelease'
+          'npm.dependency.raw',
+          'npm.dependency.owner',
+          'npm.dependency.name',
+          'npm.dependency.version.raw',
+          'npm.dependency.version.preRelease',
+          'npm.dependency.installer.raw',
+          'npm.dependency.installer.owner',
+          'npm.dependency.installer.name',
+          'npm.dependency.installer.version.raw',
+          'npm.dependency.installer.version.preRelease'
         ]
       )
     )
@@ -119,34 +119,34 @@ describe('class: DependencyMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          raw: 'test-1',
-          owner: undefined,
-          name: 'test-1',
-          'installer.name': 'test-1-installer',
-          'installer.owner': undefined,
-          'installer.raw': 'test-1-installer',
-          'installer.version.major': '1',
-          'installer.version.minor': '0',
-          'installer.version.patch': '0',
-          'installer.version.preRelease': undefined,
-          'installer.version.raw': '1.0.0+9999',
-          'version.raw': '0.0.1+12345',
-          'version.major': '0',
-          'version.minor': '0',
-          'version.patch': '1',
-          'version.preRelease': undefined
+          [NpmScopeAttributes.RAW]: 'test-1',
+          [NpmScopeAttributes.OWNER]: undefined,
+          [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.VERSION_RAW]: '0.0.1+12345',
+          [NpmScopeAttributes.VERSION_MAJOR]: '0',
+          [NpmScopeAttributes.VERSION_MINOR]: '0',
+          [NpmScopeAttributes.VERSION_PATCH]: '1',
+          [NpmScopeAttributes.VERSION_PRE_RELEASE]: undefined,
+          [NpmScopeAttributes.INSTALLER_RAW]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_OWNER]: undefined,
+          [NpmScopeAttributes.INSTALLER_NAME]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_VERSION_RAW]: '1.0.0+9999',
+          [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: undefined
         },
         [
-          'raw',
-          'owner',
-          'name',
-          'version.raw',
-          'version.preRelease',
-          'installer.raw',
-          'installer.owner',
-          'installer.name',
-          'installer.version.raw',
-          'installer.version.preRelease'
+          'npm.dependency.raw',
+          'npm.dependency.owner',
+          'npm.dependency.name',
+          'npm.dependency.version.raw',
+          'npm.dependency.version.preRelease',
+          'npm.dependency.installer.raw',
+          'npm.dependency.installer.owner',
+          'npm.dependency.installer.name',
+          'npm.dependency.installer.version.raw',
+          'npm.dependency.installer.version.preRelease'
         ]
       )
     )
@@ -158,7 +158,7 @@ describe('class: DependencyMetric', () => {
         rawName: 'test-1',
         rawVersion: '0.0.1-rc.1+12345',
         installerRawName: 'test-1-installer',
-        installerRawVersion: '1.0.0-rc.0+99999'
+        installerRawVersion: '1.0.0-rc.0+9999'
       },
       logger
     ).attributes
@@ -166,34 +166,34 @@ describe('class: DependencyMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          raw: 'test-1',
-          owner: undefined,
-          name: 'test-1',
-          'installer.name': 'test-1-installer',
-          'version.raw': '0.0.1-rc.1+12345',
-          'version.major': '0',
-          'version.minor': '0',
-          'version.patch': '1',
-          'version.preRelease': 'rc.1',
-          'installer.owner': undefined,
-          'installer.raw': 'test-1-installer',
-          'installer.version.major': '1',
-          'installer.version.minor': '0',
-          'installer.version.patch': '0',
-          'installer.version.preRelease': 'rc.0',
-          'installer.version.raw': '1.0.0-rc.0+99999'
+          [NpmScopeAttributes.RAW]: 'test-1',
+          [NpmScopeAttributes.OWNER]: undefined,
+          [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.VERSION_RAW]: '0.0.1-rc.1+12345',
+          [NpmScopeAttributes.VERSION_MAJOR]: '0',
+          [NpmScopeAttributes.VERSION_MINOR]: '0',
+          [NpmScopeAttributes.VERSION_PATCH]: '1',
+          [NpmScopeAttributes.VERSION_PRE_RELEASE]: 'rc.1',
+          [NpmScopeAttributes.INSTALLER_RAW]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_OWNER]: undefined,
+          [NpmScopeAttributes.INSTALLER_NAME]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_VERSION_RAW]: '1.0.0-rc.0+9999',
+          [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: 'rc.0'
         },
         [
-          'raw',
-          'owner',
-          'name',
-          'version.raw',
-          'version.preRelease',
-          'installer.raw',
-          'installer.owner',
-          'installer.name',
-          'installer.version.raw',
-          'installer.version.preRelease'
+          'npm.dependency.raw',
+          'npm.dependency.owner',
+          'npm.dependency.name',
+          'npm.dependency.version.raw',
+          'npm.dependency.version.preRelease',
+          'npm.dependency.installer.raw',
+          'npm.dependency.installer.owner',
+          'npm.dependency.installer.name',
+          'npm.dependency.installer.version.raw',
+          'npm.dependency.installer.version.preRelease'
         ]
       )
     )
@@ -209,37 +209,38 @@ describe('class: DependencyMetric', () => {
       },
       logger
     ).attributes
+
     expect(attributes).toStrictEqual(
       hash(
         {
-          raw: '@owner/test-1',
-          owner: '@owner',
-          name: 'test-1',
-          'installer.name': 'test-1-installer',
-          'installer.owner': '@installer',
-          'installer.raw': '@installer/test-1-installer',
-          'installer.version.major': '1',
-          'installer.version.minor': '0',
-          'installer.version.patch': '0',
-          'installer.version.preRelease': undefined,
-          'installer.version.raw': '1.0.0',
-          'version.raw': '0.0.1-rc.0+12345',
-          'version.major': '0',
-          'version.minor': '0',
-          'version.patch': '1',
-          'version.preRelease': 'rc.0'
+          [NpmScopeAttributes.RAW]: '@owner/test-1',
+          [NpmScopeAttributes.OWNER]: '@owner',
+          [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.VERSION_RAW]: '0.0.1-rc.0+12345',
+          [NpmScopeAttributes.VERSION_MAJOR]: '0',
+          [NpmScopeAttributes.VERSION_MINOR]: '0',
+          [NpmScopeAttributes.VERSION_PATCH]: '1',
+          [NpmScopeAttributes.VERSION_PRE_RELEASE]: 'rc.0',
+          [NpmScopeAttributes.INSTALLER_RAW]: '@installer/test-1-installer',
+          [NpmScopeAttributes.INSTALLER_OWNER]: '@installer',
+          [NpmScopeAttributes.INSTALLER_NAME]: 'test-1-installer',
+          [NpmScopeAttributes.INSTALLER_VERSION_RAW]: '1.0.0',
+          [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: undefined
         },
         [
-          'raw',
-          'owner',
-          'name',
-          'version.raw',
-          'version.preRelease',
-          'installer.raw',
-          'installer.owner',
-          'installer.name',
-          'installer.version.raw',
-          'installer.version.preRelease'
+          'npm.dependency.raw',
+          'npm.dependency.owner',
+          'npm.dependency.name',
+          'npm.dependency.version.raw',
+          'npm.dependency.version.preRelease',
+          'npm.dependency.installer.raw',
+          'npm.dependency.installer.owner',
+          'npm.dependency.installer.name',
+          'npm.dependency.installer.version.raw',
+          'npm.dependency.installer.version.preRelease'
         ]
       )
     )
@@ -256,7 +257,7 @@ describe('class: DependencyMetric', () => {
       logger
     ).attributes
 
-    expect(attributes[CustomResourceAttributes.VERSION_PRE_RELEASE]).toBeUndefined()
-    expect(attributes[CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]).toBeUndefined()
+    expect(attributes[NpmScopeAttributes.VERSION_PRE_RELEASE]).toBeUndefined()
+    expect(attributes[NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]).toBeUndefined()
   })
 })

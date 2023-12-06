@@ -1,5 +1,26 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`class: JsxScope > findLocalPackages > correctly finds local packages 1`] = `
+[
+  {
+    "name": "complex-nesting-thingy",
+    "version": "1.0.0",
+  },
+  {
+    "name": "package1",
+    "version": "1.0.0",
+  },
+  {
+    "name": "package2",
+    "version": "1.0.0",
+  },
+  {
+    "name": "package3",
+    "version": "1.0.0",
+  },
+]
+`;
+
 exports[`class: JsxScope > findPkgLocalInstallers > correctly finds installers for a given package that was installed in an intermediate package 1`] = `
 [
   {
@@ -99,27 +120,6 @@ exports[`class: JsxScope > parseFile > correctly detects imports and elements in
     "rename": "Button",
   },
 ]
-`;
-
-exports[`class: JsxScope > resolvePackages > correctly populates packageResolutions map 1`] = `
-{
-  "complex-nesting-thingy": {
-    "name": "complex-nesting-thingy",
-    "version": "1.0.0",
-  },
-  "package1": {
-    "name": "package1",
-    "version": "1.0.0",
-  },
-  "package2": {
-    "name": "package2",
-    "version": "1.0.0",
-  },
-  "package3": {
-    "name": "package3",
-    "version": "1.0.0",
-  },
-}
 `;
 
 exports[`class: JsxScope > run > captures metric when instrumented package is installed in intermediate package 1`] = `

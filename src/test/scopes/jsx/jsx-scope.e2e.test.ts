@@ -19,7 +19,6 @@ import { JsxElementAccumulator } from '../../../main/scopes/jsx/jsx-element-accu
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
 import { getPackageJsonTree } from '../../../main/scopes/jsx/utils/get-package-json-tree.js'
 import { getTrackedSourceFiles } from '../../../main/scopes/jsx/utils/get-tracked-source-files.js'
-import { PackageData } from '../../../main/scopes/npm/interfaces.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
 import { Fixture } from '../../__utils/fixture.js'
@@ -80,7 +79,6 @@ describe('class: JsxScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    // TODOASKJOE: fix collection error
     it('captures metric when instrumented package is installed in intermediate package', async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
@@ -360,65 +358,34 @@ describe('class: JsxScope', () => {
     }
 
     it('correctly sets invoker name for elements', async () => {
-      const root = new Fixture('projects/basic-project')
-      const fileName = new Fixture('projects/basic-project/test.jsx')
       const accumulator = new JsxElementAccumulator()
       accumulator.elements.push(element1)
       accumulator.elements.push(element2)
 
-      const fileDirectory = { [fileName.path]: root.path }
-      const packageResolutions = { [root.path]: { name: 'basic-project', version: '0.0.1' } }
-
-      await jsxScope.resolveInvokers(accumulator, fileName.path, fileDirectory, packageResolutions)
+      await jsxScope.resolveInvokers(accumulator, { name: 'basic-project', version: '0.0.1' })
 
       expect(accumulator.elementInvokers.get(element1)).toStrictEqual('basic-project')
       expect(accumulator.elementInvokers.get(element2)).toStrictEqual('basic-project')
     })
-
-    it('does not add an entry if filename package cannot be found', async () => {
-      const fileName = new Fixture('projects/basic-project/test.jsx')
-      const accumulator = new JsxElementAccumulator()
-      accumulator.elements.push(element1)
-      accumulator.elements.push(element2)
-
-      await jsxScope.resolveInvokers(accumulator, fileName.path, {}, {})
-
-      expect(accumulator.elementInvokers.get(element1)).toBeUndefined()
-      expect(accumulator.elementInvokers.get(element2)).toBeUndefined()
-    })
   })
 
-  describe('resolvePackages', () => {
+  describe('findLocalPackages', () => {
     const jsxScope = new JsxScope('', '', config, logger)
-    it('correctly populates packageResolutions map', async () => {
+    it('correctly finds local packages', async () => {
       const packagesRoot = new Fixture('projects/complex-nesting-thingy')
       const tree = await getPackageJsonTree(packagesRoot.path, logger)
 
-      expect(tree[0]).not.toBeUndefined()
-
-      const packageResolutions: Record<string, PackageData> = {}
-
-      await jsxScope.resolvePackages(tree[0] as FileTree, packageResolutions)
-
-      const transformed: Record<string, PackageData> = {}
-
-      Object.keys(packageResolutions).forEach((filePath) => {
-        transformed[path.basename(filePath)] = packageResolutions[filePath] as PackageData
-      })
-
-      expect(transformed).toMatchSnapshot()
+      await expect(jsxScope.findLocalPackages(tree)).resolves.toMatchSnapshot()
     })
     it('can tolerate packages that do not exist', async () => {
-      const packageResolutions: Record<string, PackageData> = {}
+      const trees: FileTree[] = [
+        {
+          path: 'does/not/exist',
+          children: []
+        }
+      ]
 
-      const tree: FileTree = {
-        path: 'does/not/exist',
-        children: []
-      }
-
-      await jsxScope.resolvePackages(tree, packageResolutions)
-
-      expect(packageResolutions).toStrictEqual({})
+      await expect(jsxScope.findLocalPackages(trees)).resolves.toStrictEqual([])
     })
   })
 

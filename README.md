@@ -188,13 +188,13 @@ This data can help you answer questions such as:
    the target product:
 
    ```json path="package.json"
-   ...,
+   ---,
    "scripts": {
-   ...,
+   ---,
    "postinstall": "npx -y @ibm/telemetry-js --config=telemetry.yml",
-   ...
+   ---
    },
-   ...
+   ---
    ```
 
    Make sure the `--config=telemetry.yml` arg is congruent with the path to the `telemetry.yml`

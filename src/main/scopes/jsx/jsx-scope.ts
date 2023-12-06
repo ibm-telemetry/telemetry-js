@@ -178,9 +178,8 @@ export class JsxScope extends Scope {
   /**
    * Adds data to the accumulator for each package that invokes the jsx elements in the accumulator.
    *
-   * @param accumulator - Accumulator to store results in.
+   * @param accumulator - Accumulator where element data is stored in.
    * @param invoker - Package the accumulator data belongs to.
-   * package name and version.
    */
   async resolveInvokers(accumulator: JsxElementAccumulator, invoker: PackageData) {
     accumulator.elements.forEach((jsxElement) => {

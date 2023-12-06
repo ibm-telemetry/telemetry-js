@@ -103,7 +103,7 @@ stored data in the database.
 Start by determining what data (scopes) your package should collect. IBM Telemetry collection works
 on a per-scope basis:
 
-#### Npm scope
+#### npm scope
 
 Captures data relating to the instrumented package's installer(s) and dependencies installed
 alongside it. Specifically:
@@ -122,13 +122,16 @@ This data can help answer questions such as:
 
 #### JSX scope
 
+This scope is only applicable to React packages, if the package you're instrumenting does not export
+React components you do not need to configure this scope.
+
 Captures (JSX) element-specific usage data for the instrumented package. Specifically:
 
 - All elements exported through the instrumented package that are being used in a given project that
   installed the package
 - Element configurations (attributes and values), as determined by the `allowedAttributeNames` and
   `allowedAttributeStringValues` config options (see
-  [Jsx Schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#jsx-schema))
+  [JSX Schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#jsx-schema))
 - Import paths used to access the instrumented package's exported elements
 
 This data can help you answer questions such as:

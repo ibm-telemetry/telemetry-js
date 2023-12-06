@@ -152,7 +152,7 @@ This data can help you answer questions such as:
    Sample:
 
    ```yaml path="sample-telemetry.yml"
-   # yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@0.2.0/dist/config.schema.json
+   # yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@0.3.0/dist/config.schema.json
    version: 1
    projectId: 'project id'
    endpoint: 'http://localhost:3000/v1/metrics'

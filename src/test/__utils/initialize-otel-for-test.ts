@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import opentelemetry from '@opentelemetry/api'
+
 import { CustomResourceAttributes } from '../../main/core/custom-resource-attributes.js'
 import { initializeOpenTelemetry } from '../../main/core/initialize-open-telemetry.js'
 
@@ -16,6 +18,7 @@ import { initializeOpenTelemetry } from '../../main/core/initialize-open-telemet
 export function initializeOtelForTest() {
   const date = new Date(2023).toISOString()
 
+  opentelemetry.metrics.disable()
   return initializeOpenTelemetry({
     [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',
     [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: 'telemetryVersion',

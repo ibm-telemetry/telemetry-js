@@ -70,7 +70,8 @@ values that haven't been **specifically configured** by the instrumented package
 types are also redacted. This means project-specific data supplied to JSX elements will never be
 captured.
 
-All sensitive data that may contain confidential or personally identifiable information that gets collected by the telemetry process gets anonymized previous to storage, see
+All sensitive data that may contain confidential or personally identifiable information that gets
+collected by the telemetry process gets anonymized previous to storage, see
 [anonymization](#anonymization).
 
 ### When does data get collected?
@@ -92,9 +93,9 @@ from being collected in your project.
 
 ### Anonymization
 
-All sensitive data is hashed using the SHA-256 cryptographic function, meaning an instrumented package
-owner can query for specific known names/values but can never recover original values from the
-stored data in the database.
+All sensitive data is hashed using the SHA-256 cryptographic function, meaning an instrumented
+package owner can query for specific known names/values but can never recover original values from
+the stored data in the database.
 
 ## Onboarding a package onto IBM Telemetry
 

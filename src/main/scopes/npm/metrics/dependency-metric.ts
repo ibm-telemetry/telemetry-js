@@ -7,10 +7,10 @@
 import { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
-import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
+import { NpmScopeAttributes } from '../npm-scope-attributes.js'
 
 export interface DependencyData {
   rawName: string
@@ -20,10 +20,10 @@ export interface DependencyData {
 }
 
 /**
- * NPM scope metric that generates a dependency.count individual metric for a given dependency.
+ * NPM scope metric that generates an npm.dependency individual metric for a given dependency.
  */
 export class DependencyMetric extends ScopeMetric {
-  public override name = 'dependency.count' as const
+  public override name = 'npm.dependency' as const
 
   private readonly data: DependencyData
 
@@ -62,35 +62,35 @@ export class DependencyMetric extends ScopeMetric {
     )
 
     const metricData: Attributes = {
-      [CustomResourceAttributes.RAW]: this.data.rawName,
-      [CustomResourceAttributes.OWNER]: owner,
-      [CustomResourceAttributes.NAME]: name,
-      [CustomResourceAttributes.VERSION_RAW]: this.data.rawVersion,
-      [CustomResourceAttributes.VERSION_MAJOR]: major?.toString(),
-      [CustomResourceAttributes.VERSION_MINOR]: minor?.toString(),
-      [CustomResourceAttributes.VERSION_PATCH]: patch?.toString(),
-      [CustomResourceAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
-      [CustomResourceAttributes.INSTALLER_RAW]: this.data.installerRawName,
-      [CustomResourceAttributes.INSTALLER_OWNER]: installerOwner,
-      [CustomResourceAttributes.INSTALLER_NAME]: installerName,
-      [CustomResourceAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
-      [CustomResourceAttributes.INSTALLER_VERSION_MAJOR]: installerMajor?.toString(),
-      [CustomResourceAttributes.INSTALLER_VERSION_MINOR]: installerMinor?.toString(),
-      [CustomResourceAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
-      [CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
+      [NpmScopeAttributes.RAW]: this.data.rawName,
+      [NpmScopeAttributes.OWNER]: owner,
+      [NpmScopeAttributes.NAME]: name,
+      [NpmScopeAttributes.VERSION_RAW]: this.data.rawVersion,
+      [NpmScopeAttributes.VERSION_MAJOR]: major?.toString(),
+      [NpmScopeAttributes.VERSION_MINOR]: minor?.toString(),
+      [NpmScopeAttributes.VERSION_PATCH]: patch?.toString(),
+      [NpmScopeAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
+      [NpmScopeAttributes.INSTALLER_RAW]: this.data.installerRawName,
+      [NpmScopeAttributes.INSTALLER_OWNER]: installerOwner,
+      [NpmScopeAttributes.INSTALLER_NAME]: installerName,
+      [NpmScopeAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
+      [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: installerMajor?.toString(),
+      [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: installerMinor?.toString(),
+      [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
+      [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
     }
 
     return hash(metricData, [
-      CustomResourceAttributes.RAW,
-      CustomResourceAttributes.OWNER,
-      CustomResourceAttributes.NAME,
-      CustomResourceAttributes.VERSION_RAW,
-      CustomResourceAttributes.VERSION_PRE_RELEASE,
-      CustomResourceAttributes.INSTALLER_RAW,
-      CustomResourceAttributes.INSTALLER_OWNER,
-      CustomResourceAttributes.INSTALLER_NAME,
-      CustomResourceAttributes.INSTALLER_VERSION_RAW,
-      CustomResourceAttributes.INSTALLER_VERSION_PRE_RELEASE
+      NpmScopeAttributes.RAW,
+      NpmScopeAttributes.OWNER,
+      NpmScopeAttributes.NAME,
+      NpmScopeAttributes.VERSION_RAW,
+      NpmScopeAttributes.VERSION_PRE_RELEASE,
+      NpmScopeAttributes.INSTALLER_RAW,
+      NpmScopeAttributes.INSTALLER_OWNER,
+      NpmScopeAttributes.INSTALLER_NAME,
+      NpmScopeAttributes.INSTALLER_VERSION_RAW,
+      NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE
     ])
   }
 }

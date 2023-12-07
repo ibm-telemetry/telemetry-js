@@ -197,9 +197,12 @@ export class JsxScope extends Scope {
       accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
   }
-
-  // For testing purposes only
-  __TEST__ = {
-    RunSync: () => (this.RUN_SYNC = true)
+  /**
+   * For testing purposes only. Makes the JsxScope collection run "synchronously"
+   * (one source file at a time).
+   *
+   */
+  SetRunSync() {
+    this.RUN_SYNC = true
   }
 }

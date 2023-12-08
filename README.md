@@ -38,7 +38,7 @@ Find out more detailed documentation and guidelines by choosing from the followi
 best describes your use case:
 
 - [I use a package that is collecting data via IBM Telemetry](#ibm-telemetry-collection-basics)
-- [I have a package that I want to onboard onto IBM Telemetry](#onboarding-a-package-onto-ibm-telemetry)
+- [I have a package that I want to onboard to IBM Telemetry](#onboarding-a-package-to-ibm-telemetry)
 - [I don't work for IBM. Can I still use this?](#i-dont-work-for-ibm-can-i-still-use-this)
 
 ## IBM Telemetry collection basics
@@ -80,7 +80,7 @@ JSX elements will never be captured.
 
 All sensitive data that may contain confidential or personally identifiable information that gets
 collected by the IBM Telemetry JS tooling gets anonymized/de-identified prior to storage in our
-database, see [anonymizing](#anonymizing).
+database, see [anonymizing](#anonymizing--de-identifying).
 
 ### When does data get collected?
 
@@ -114,9 +114,9 @@ As a general philosophy, we favor anonymizing fields over de-identifying them.
 ### Getting started
 
 Start by determining what data (scopes) your package should collect. IBM Telemetry collection works
-on a per-scope basis:
+on a per-scope basis.
 
-#### npm scope
+### NPM scope
 
 Captures data relating to the instrumented package's installer(s) and dependencies installed
 alongside it. Specifically:
@@ -132,7 +132,7 @@ This data can help answer questions such as:
 - What percentage of consumers are using the latest version of my package?
 - What version of React/Angular/Vue... are consumers most using along with my package?
 
-#### JSX scope
+### JSX scope
 
 This scope is only applicable to React packages. This scope may be useful to configure if the
 package you're instrumenting exports React components.

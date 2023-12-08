@@ -108,12 +108,7 @@ describe('class: JsxScope', () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const cwd = new Fixture(
-        path.join(
-          'projects',
-          'complex-nesting-thingy',
-          'node_modules',
-          'instrumented-top-level'
-        )
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented-top-level')
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import path from 'node:path'
+
 import type * as ts from 'typescript'
 
 import { findInstallingPackages } from '../../core/find-installing-packages.js'
@@ -123,14 +125,26 @@ export class JsxScope extends Scope {
     packageJsonTree: FileTree[],
     localInstallers: PackageData[]
   ) {
-    const containingDir = findDeepestContainingDirectory(
+    let containingDir = findDeepestContainingDirectory(
       sourceFile.fileName,
       packageJsonTree,
       this.logger
     )
     if (containingDir === undefined) return
 
-    const containingDirPackage = await getPackageData(containingDir, this.logger)
+    let containingDirPackage = await getPackageData(containingDir, this.logger)
+
+    while (
+      !localInstallers.some(
+        (pkg) =>
+          pkg.name === containingDirPackage?.name && pkg.version === containingDirPackage?.version
+      ) &&
+      containingDir !== this.root
+    ) {
+      console.log('here, checking ', containingDir)
+      containingDir = containingDir?.substring(0, containingDir.lastIndexOf(path.sep))
+      containingDirPackage = await getPackageData(containingDir, this.logger)
+    }
 
     if (
       !localInstallers.some(
@@ -138,8 +152,11 @@ export class JsxScope extends Scope {
           pkg.name === containingDirPackage?.name && pkg.version === containingDirPackage?.version
       )
     ) {
+      console.log('here', containingDir)
       return
     }
+
+    console.log('went past', sourceFile.fileName)
 
     const accumulator = new JsxElementAccumulator()
 

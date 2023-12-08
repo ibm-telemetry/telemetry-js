@@ -61,7 +61,7 @@ describe('class: JsxScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    it('does not capture metric for files that are not in instrumented package', async () => {
+    it('does not capture metrics for files that are not in instrumented package', async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const cwd = new Fixture(
@@ -79,7 +79,7 @@ describe('class: JsxScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    it('captures metric when instrumented package is installed in intermediate package', async () => {
+    it('captures metrics when instrumented package is installed in intermediate package', async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const cwd = new Fixture(
@@ -90,6 +90,29 @@ describe('class: JsxScope', () => {
           'intermediate',
           'node_modules',
           'instrumented'
+        )
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('captures metrics for nested files when instrumented package is installed in top-level package', async () => {
+      const metricReader = initializeOtelForTest()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join(
+          'projects',
+          'complex-nesting-thingy',
+          'node_modules',
+          'instrumented-top-level'
         )
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)

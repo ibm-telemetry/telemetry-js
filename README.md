@@ -1,5 +1,3 @@
-# WIP - Not finalized/approved
-
 # IBM Telemetry JS
 
 > JavaScript telemetry tooling for open/inner source projects

@@ -28,7 +28,7 @@ import { getTrackedSourceFiles } from './utils/get-tracked-source-files.js'
  */
 export class JsxScope extends Scope {
   public override name = 'jsx' as const
-  private RUN_SYNC = false
+  private runSync = false
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -71,7 +71,7 @@ export class JsxScope extends Scope {
     const promises: Promise<void>[] = []
 
     for (const sourceFile of sourceFiles) {
-      if (this.RUN_SYNC) {
+      if (this.runSync) {
         await this.captureFileMetrics(
           sourceFile,
           instrumentedPackage.name,
@@ -202,7 +202,7 @@ export class JsxScope extends Scope {
    * (one source file at a time).
    *
    */
-  SetRunSync() {
-    this.RUN_SYNC = true
+  setRunSync() {
+    this.runSync = true
   }
 }

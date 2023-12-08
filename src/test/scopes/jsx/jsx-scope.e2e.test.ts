@@ -49,7 +49,7 @@ describe('class: JsxScope', () => {
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
-      jsxScope.SetRunSync()
+      jsxScope.setRunSync()
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -69,7 +69,7 @@ describe('class: JsxScope', () => {
         logger
       )
 
-      scope.SetRunSync()
+      scope.setRunSync()
       await expect(scope.run()).rejects.toThrow(EmptyScopeError)
     })
   })

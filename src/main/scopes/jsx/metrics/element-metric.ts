@@ -9,18 +9,18 @@ import { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substitute } from '../../../core/anonymize/substitute.js'
-import { CustomResourceAttributes } from '../../../core/custom-resource-attributes.js'
 import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../interfaces.js'
+import { JsxScopeAttributes } from '../jsx-scope-attributes.js'
 
 /**
- * JSX scope metric that generates an element.count individual metric for a given element.
+ * JSX scope metric that generates a jsx.element individual metric for a given element.
  */
 export class ElementMetric extends ScopeMetric {
-  public override name = 'element.count' as const
+  public override name = 'jsx.element' as const
   private readonly jsxElement: JsxElement
   private readonly matchingImport: JsxImport
   private readonly invoker: string | undefined
@@ -83,29 +83,29 @@ export class ElementMetric extends ScopeMetric {
     )
 
     let metricData: Attributes = {
-      [CustomResourceAttributes.NAME]: this.jsxElement.name,
-      [CustomResourceAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
-      [CustomResourceAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
-      [CustomResourceAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
+      [JsxScopeAttributes.NAME]: this.jsxElement.name,
+      [JsxScopeAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
+      [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
+      [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
         String(attr)
       ),
-      [CustomResourceAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
-      [CustomResourceAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
-      [CustomResourceAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name
+      [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
+      [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
+      [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name
     }
 
     // Handle renamed elements
     if (this.matchingImport.rename !== undefined) {
-      metricData[CustomResourceAttributes.NAME] = this.jsxElement.name.replace(
+      metricData[JsxScopeAttributes.NAME] = this.jsxElement.name.replace(
         this.matchingImport.rename,
         this.matchingImport.name
       )
     }
 
     metricData = hash(metricData, [
-      CustomResourceAttributes.INVOKER_PACKAGE_RAW,
-      CustomResourceAttributes.INVOKER_PACKAGE_OWNER,
-      CustomResourceAttributes.INVOKER_PACKAGE_NAME
+      JsxScopeAttributes.INVOKER_PACKAGE_RAW,
+      JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
+      JsxScopeAttributes.INVOKER_PACKAGE_NAME
     ])
 
     return metricData

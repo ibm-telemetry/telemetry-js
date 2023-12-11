@@ -102,20 +102,20 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
             "dataPoints": [
               {
                 "attributes": {
-                  "attribute.names": [
+                  "jsx.element.attributes.names": [
                     "firstProp",
                     "[redacted2]",
                     "[redacted4]",
                   ],
-                  "attribute.values": [
+                  "jsx.element.attributes.values": [
                     "[redacted1]",
                     "[redacted3]",
                     "[redacted5]",
                   ],
-                  "invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
-                  "invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
-                  "module.specifier": "instrumented",
-                  "name": "[Default]",
+                  "jsx.element.invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
+                  "jsx.element.invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
+                  "jsx.element.module.specifier": "instrumented",
+                  "jsx.element.name": "[Default]",
                 },
                 "endTime": [
                   0,
@@ -129,7 +129,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
               },
               {
                 "attributes": {
-                  "attribute.names": [
+                  "jsx.element.attributes.names": [
                     "firstProp",
                     "secondProp",
                     "[redacted6]",
@@ -139,7 +139,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                     "[redacted12]",
                     "[redacted14]",
                   ],
-                  "attribute.values": [
+                  "jsx.element.attributes.values": [
                     "hi",
                     "wow",
                     "[redacted7]",
@@ -149,10 +149,10 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                     "[redacted13]",
                     "[redacted15]",
                   ],
-                  "invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
-                  "invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
-                  "module.specifier": "instrumented",
-                  "name": "ImaginaryThing",
+                  "jsx.element.invoker.package.name": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
+                  "jsx.element.invoker.package.raw": "e497ed4e62a3b47d9cd8aaebefb6c0837b94fb8d710461ba203aa33ccf64cc4d",
+                  "jsx.element.module.specifier": "instrumented",
+                  "jsx.element.name": "ImaginaryThing",
                 },
                 "endTime": [
                   0,
@@ -168,7 +168,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
             "descriptor": {
               "advice": {},
               "description": "",
-              "name": "element.count",
+              "name": "jsx.element",
               "type": "COUNTER",
               "unit": "",
               "valueType": 0,

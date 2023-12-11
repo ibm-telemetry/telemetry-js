@@ -36,9 +36,13 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
   const dataPromise = new Promise<PackageData>((resolve, reject) => {
     resultPromise
       .then((result) => {
-        const data = JSON.parse(result.stdout)
-        logger.traceExit('', 'getPackageData', data)
-        resolve(data)
+        const [match] = /{[^{]*?}/.exec(result.stdout) ?? []
+        if (match === undefined) {
+          reject(new SyntaxError('Invalid JSON response from package get: ' + result.stdout))
+          return
+        }
+
+        resolve(JSON.parse(match))
       })
       .catch((reason) => {
         reject(reason)
@@ -47,5 +51,6 @@ export async function getPackageData(packagePath: string, logger: Logger): Promi
 
   cache.set(packagePath, dataPromise)
 
+  logger.traceExit('', 'getPackageData', dataPromise)
   return await dataPromise
 }

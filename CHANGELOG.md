@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.8.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.8.0...v0.8.1) (2023-12-08)
+
+
+### Bug Fixes
+
+* remove WIP heading from readme ([7503381](https://github.com/ibm-telemetry/telemetry-js/commit/7503381f7fcc16828c4c600ca0d2cfecf54b03e1))
+
+## [0.8.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.7.0...v0.8.0) (2023-12-08)
+
+
+### Features
+
+* add ci awareness ([994431c](https://github.com/ibm-telemetry/telemetry-js/commit/994431c89ae54707662477a88d1a27689c8b4ea8))
+* adjust metric names for consistency ([2c31748](https://github.com/ibm-telemetry/telemetry-js/commit/2c31748b0fffe854bfd58556ee659217dbe84f63))
+* **core:** remove nullish values from captured metrics ([738e035](https://github.com/ibm-telemetry/telemetry-js/commit/738e0351865a9ac6637d38ba11fc4fc6ec19cc86))
+* fully qualify scope metric attribute names ([1891a35](https://github.com/ibm-telemetry/telemetry-js/commit/1891a354b507a41411410fea04939523e0d86fbd))
+
+
+### Bug Fixes
+
+* add tracing to JsxScope#processFile ([2c8d326](https://github.com/ibm-telemetry/telemetry-js/commit/2c8d3262979ee83438a34438c793c7bd11d44f3f))
+* **core:** use Object.fromEntries instead of map/reduce ([71e245a](https://github.com/ibm-telemetry/telemetry-js/commit/71e245a9178d0aa5641963a852623e3b08b0f940))
+* get-package-data regular expression workspace bug ([c52ad7c](https://github.com/ibm-telemetry/telemetry-js/commit/c52ad7ce77488f6dab64f68b484970ff638e7493)), closes [#107](https://github.com/ibm-telemetry/telemetry-js/issues/107)
+* improve promise tracking in debug logging ([cc14bc2](https://github.com/ibm-telemetry/telemetry-js/commit/cc14bc202a85e59a4878930f3c782e0cd1fa900e))
+* run jsxScope e2e run one file at a time in tests ([#145](https://github.com/ibm-telemetry/telemetry-js/issues/145)) ([c7ea7b6](https://github.com/ibm-telemetry/telemetry-js/commit/c7ea7b6f4bd903eab7bf8ddb38da8c2b50026df2))
+
 ## [0.7.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.6.2...v0.7.0) (2023-11-18)
 
 

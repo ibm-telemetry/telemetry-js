@@ -25,14 +25,14 @@
   },
   "type": "module",
   "bin": {
-    "ibmtelemetry": "dist/index.js"
+    "ibmtelemetry": "dist/collect.js"
   },
   "engines": {
     "node": ">=16",
     "npm": ">=8"
   },
   "files": [
-    "dist/index.js",
+    "dist/background-process.js",
     "dist/collect.js"
   ],
   "scripts": {

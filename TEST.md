@@ -3,5 +3,5 @@
 This package uses IBM Telemetry to collect metrics data. By installing this package as a dependency
 you are agreeing to telemetry collection. To opt out, see
 [Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
-For more information on the data being collected, please see
-[IBM Telemetry](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).
+For more information on the data being collected, please see the
+[IBM Telemetry documentation](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).

@@ -16,7 +16,7 @@ jobs:
           app-id: ${{ secrets.TELEMETRY_APP_ID }}
           private-key: ${{ secrets.TELEMETRY_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-          repositories: 'telemetry-dco'
+          repositories: 'telemetry-js,telemetry-dco'
 
       - name: 'DCO Assistant 📝'
         if:

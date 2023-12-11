@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "root-only": "^1.0.0",
-    "instrumented-top-level": "^1.0.0"
+    "instrumented-top-level": "^1.0.0",
+    "another-package": "^1.0.0"
   }
 }

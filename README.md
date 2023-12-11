@@ -24,12 +24,11 @@
 
 ## Overview
 
-The purpose of this project is to provide standardized tooling to open source and inner source
-maintainers that allows them to instrument their packages with telemetry tooling. This tooling
-allows anonymized data to be captured on behalf of the instrumented package and reported back to a
-central server for later analysis.
+IBM Telemetry collects anonymized usage data for open source and inner source packages when they
+have been instrumented with this tooling. This data is reported back to a central server so package
+maintainers can analyze usage and make improvements.
 
-This project uses [OpenTelemetry](https://opentelemetry.io/) as the foundation of its data transport
+IBM Telemetry uses [OpenTelemetry](https://opentelemetry.io) as the foundation of its data transport
 format.
 
 Find out more detailed documentation and guidelines by choosing from the following sections what
@@ -61,7 +60,7 @@ may capture the following data about your project:
 
 - A de-identified version of your project's name (as defined in your package.json file)
 - Your project's version (as defined in package.json) with any identifiable parts removed
-- de-identified names and versions of your project's dependencies
+- De-identified names and versions of your project's dependencies
 
 **JSX data**
 
@@ -84,7 +83,7 @@ database, see [anonymizing](#anonymizing--de-identifying).
 
 Telemetry collection runs exclusively in CI environments. Collection will never happen on local
 development environments or on projects that aren't configured to run automated scripts on a CI
-environment (GitHub actions, Travis CI, etc.).
+environment (GitHub actions, Travis CI, etc.)
 
 During a build or any other CI operation that installs package dependencies (`npm install`,
 `yarn install`, ...), IBM telemetry will run as a background process and perform data collection.
@@ -141,7 +140,7 @@ Captures (JSX) element-specific usage data for the instrumented package. Specifi
   installed the package
 - Element configurations (attributes and values), as determined by the `allowedAttributeNames` and
   `allowedAttributeStringValues` config options (see
-  [JSX Schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#jsx-schema))
+  [JSX schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#jsx-schema))
 - Import paths used to access the instrumented package's exported elements
 
 This data can help you answer questions such as:
@@ -224,7 +223,7 @@ This data can help you answer questions such as:
 
    > [TODO: badge or SVG graphic]
    >
-   > This package uses IBM Telemetry to collect metric data. By installing this package as a
+   > This package uses IBM Telemetry to collect metrics data. By installing this package as a
    > dependency you are agreeing to telemetry collection. To opt out, see
    > [Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
    > For more information on the data being collected, please see
@@ -242,7 +241,7 @@ This data can help you answer questions such as:
 
 ## I don't work for IBM. Can I still use this?
 
-Yes! This package can send its output to any OpenTelemetry-compatible Collector endpoint via the
+Yes! This package can send its output to any OpenTelemetry-compatible collector endpoint via the
 standard `v1/metrics`
 [Rest API endpoint](https://opentelemetry.io/docs/specs/otlp/#otlphttp-request). All you need to do
 is specify your collector endpoint's URL in the `endpoint` configuration setting in your

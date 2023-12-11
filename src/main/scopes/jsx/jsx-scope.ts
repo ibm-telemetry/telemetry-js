@@ -202,7 +202,10 @@ export class JsxScope extends Scope {
    */
   removeIrrelevantImports(accumulator: JsxElementAccumulator, instrumentedPackageName: string) {
     const imports = accumulator.imports.filter((jsxImport) => {
-      return jsxImport.path.startsWith(instrumentedPackageName)
+      return (
+        jsxImport.path === instrumentedPackageName ||
+        jsxImport.path.startsWith(`${instrumentedPackageName}${path.sep}`)
+      )
     })
 
     accumulator.imports.splice(0, accumulator.imports.length, ...imports)

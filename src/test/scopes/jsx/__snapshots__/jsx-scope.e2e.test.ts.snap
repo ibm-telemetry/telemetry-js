@@ -122,126 +122,6 @@ exports[`class: JsxScope > parseFile > correctly detects imports and elements in
 ]
 `;
 
-exports[`class: JsxScope > run > captures metric when instrumented package is installed in intermediate package 1`] = `
-{
-  "errors": [],
-  "resourceMetrics": {
-    "resource": Resource {
-      "_asyncAttributesPromise": undefined,
-      "_attributes": {
-        "analyzed.host": "host",
-        "analyzed.owner": "owner",
-        "analyzed.raw": "gitOrigin",
-        "analyzed.repository": "repository",
-        "date": "1970-01-01T00:00:02.023Z",
-        "project.id": "projectId",
-        "service.name": "IBM Telemetry",
-        "telemetry.emitter.name": "telemetryName",
-        "telemetry.emitter.version": "telemetryVersion",
-        "telemetry.sdk.language": "nodejs",
-        "telemetry.sdk.name": "opentelemetry",
-        "telemetry.sdk.version": "[omitted for test snapshot]",
-      },
-      "_syncAttributes": {
-        "analyzed.host": "host",
-        "analyzed.owner": "owner",
-        "analyzed.raw": "gitOrigin",
-        "analyzed.repository": "repository",
-        "date": "1970-01-01T00:00:02.023Z",
-        "project.id": "projectId",
-        "service.name": "IBM Telemetry",
-        "telemetry.emitter.name": "telemetryName",
-        "telemetry.emitter.version": "telemetryVersion",
-        "telemetry.sdk.language": "nodejs",
-        "telemetry.sdk.name": "opentelemetry",
-        "telemetry.sdk.version": "[omitted for test snapshot]",
-      },
-      "asyncAttributesPending": false,
-    },
-    "scopeMetrics": [
-      {
-        "metrics": [
-          {
-            "aggregationTemporality": 1,
-            "dataPointType": 3,
-            "dataPoints": [
-              {
-                "attributes": {
-                  "jsx.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "jsx.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "jsx.element.invoker.package.name": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
-                  "jsx.element.invoker.package.raw": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
-                  "jsx.element.module.specifier": "instrumented",
-                  "jsx.element.name": "Package2Comp",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 2,
-              },
-              {
-                "attributes": {
-                  "jsx.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "jsx.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "jsx.element.invoker.package.name": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
-                  "jsx.element.invoker.package.raw": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
-                  "jsx.element.module.specifier": "instrumented",
-                  "jsx.element.name": "Package3Comp",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 2,
-              },
-            ],
-            "descriptor": {
-              "advice": {},
-              "description": "",
-              "name": "jsx.element",
-              "type": "COUNTER",
-              "unit": "",
-              "valueType": 0,
-            },
-            "isMonotonic": true,
-          },
-        ],
-        "scope": {
-          "name": "jsx",
-          "schemaUrl": undefined,
-          "version": "",
-        },
-      },
-    ],
-  },
-}
-`;
-
 exports[`class: JsxScope > run > captures metrics for nested files when instrumented package is installed in top-level package 1`] = `
 {
   "errors": [],
@@ -355,6 +235,126 @@ exports[`class: JsxScope > run > captures metrics for nested files when instrume
                   "jsx.element.invoker.package.raw": "f84f677580b9f6ca2ead5a2142dfcc9c63df7cf3564272c24de12b041846fcbe",
                   "jsx.element.module.specifier": "instrumented-top-level",
                   "jsx.element.name": "Package3Comp2",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 2,
+              },
+            ],
+            "descriptor": {
+              "advice": {},
+              "description": "",
+              "name": "jsx.element",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 0,
+            },
+            "isMonotonic": true,
+          },
+        ],
+        "scope": {
+          "name": "jsx",
+          "schemaUrl": undefined,
+          "version": "",
+        },
+      },
+    ],
+  },
+}
+`;
+
+exports[`class: JsxScope > run > captures metrics when instrumented package is installed in intermediate package 1`] = `
+{
+  "errors": [],
+  "resourceMetrics": {
+    "resource": Resource {
+      "_asyncAttributesPromise": undefined,
+      "_attributes": {
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.raw": "gitOrigin",
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "[omitted for test snapshot]",
+      },
+      "_syncAttributes": {
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.raw": "gitOrigin",
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "[omitted for test snapshot]",
+      },
+      "asyncAttributesPending": false,
+    },
+    "scopeMetrics": [
+      {
+        "metrics": [
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "jsx.element.attributes.names": [
+                    "firstProp",
+                    "[redacted2]",
+                    "[redacted4]",
+                  ],
+                  "jsx.element.attributes.values": [
+                    "[redacted1]",
+                    "[redacted3]",
+                    "[redacted5]",
+                  ],
+                  "jsx.element.invoker.package.name": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
+                  "jsx.element.invoker.package.raw": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
+                  "jsx.element.module.specifier": "instrumented",
+                  "jsx.element.name": "Package2Comp",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 2,
+              },
+              {
+                "attributes": {
+                  "jsx.element.attributes.names": [
+                    "firstProp",
+                    "[redacted2]",
+                    "[redacted4]",
+                  ],
+                  "jsx.element.attributes.values": [
+                    "[redacted1]",
+                    "[redacted3]",
+                    "[redacted5]",
+                  ],
+                  "jsx.element.invoker.package.name": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
+                  "jsx.element.invoker.package.raw": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
+                  "jsx.element.module.specifier": "instrumented",
+                  "jsx.element.name": "Package3Comp",
                 },
                 "endTime": [
                   0,
@@ -519,7 +519,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
 }
 `;
 
-exports[`class: JsxScope > run > does not capture metric for files that are not in instrumented package 1`] = `
+exports[`class: JsxScope > run > does not capture metrics for files that are not in instrumented package 1`] = `
 {
   "errors": [],
   "resourceMetrics": {

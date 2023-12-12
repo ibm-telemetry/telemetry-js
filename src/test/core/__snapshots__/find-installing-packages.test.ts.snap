@@ -19,6 +19,49 @@ exports[`findInstallingPackages > correctly finds installing package data 1`] = 
 ]
 `;
 
+exports[`findInstallingPackages > correctly finds installing package data for multiple versions when version is not supplied 1`] = `
+[
+  {
+    "dependencies": [
+      {
+        "name": "another-package",
+        "version": "2.0.0",
+      },
+      {
+        "name": "instrumented",
+        "version": "2.0.0",
+      },
+    ],
+    "name": "intermediate",
+    "version": "1.0.0",
+  },
+  {
+    "dependencies": [
+      {
+        "name": "instrumented",
+        "version": "2.0.0",
+      },
+    ],
+    "name": "package2",
+    "version": "1.0.0",
+  },
+  {
+    "dependencies": [
+      {
+        "name": "another-package",
+        "version": "2.0.0",
+      },
+      {
+        "name": "instrumented",
+        "version": "1.0.0",
+      },
+    ],
+    "name": "package1",
+    "version": "1.0.0",
+  },
+]
+`;
+
 exports[`findInstallingPackages > finds no results for a known package at an unknown version 1`] = `[]`;
 
 exports[`findInstallingPackages > finds no results for an unknown package 1`] = `[]`;

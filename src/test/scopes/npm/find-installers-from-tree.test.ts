@@ -29,6 +29,10 @@ describe('findInstallersFromTree', () => {
     expect(findInstallersFromTree(testDependencyTree, logger, 'three', '1.0.0')).toMatchSnapshot()
   })
 
+  it('returns all instances when version is not specified', () => {
+    expect(findInstallersFromTree(testDependencyTree, logger, 'four')).toMatchSnapshot()
+  })
+
   it('only picks up correct version', () => {
     expect(findInstallersFromTree(testDependencyTree, logger, 'four', '1.0.1')).toMatchSnapshot()
   })

@@ -125,12 +125,59 @@ export class JsxScope extends Scope {
     packageJsonTree: FileTree[],
     localInstallers: PackageData[]
   ) {
+    const localFileInstaller = await this.findFileLocalInstaller(
+      sourceFile,
+      instrumentedPackageName,
+      packageJsonTree,
+      localInstallers
+    )
+
+    // file does not belong to a local installer
+    if (localFileInstaller === undefined) {
+      return
+    }
+
+    const accumulator = new JsxElementAccumulator()
+
+    this.processFile(accumulator, sourceFile)
+    this.removeIrrelevantImports(accumulator, instrumentedPackageName)
+    this.resolveElementImports(accumulator, importMatchers)
+    await this.resolveInvokers(accumulator, localFileInstaller)
+
+    accumulator.elements.forEach((jsxElement) => {
+      const jsxImport = accumulator.elementImports.get(jsxElement)
+      const invoker = accumulator.elementInvokers.get(jsxElement)
+
+      if (jsxImport === undefined) {
+        return
+      }
+
+      this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
+    })
+  }
+
+  /**
+   * Find a sourcefile's local package given a pre-computed array of local installer.
+   *
+   * @param sourceFile - The sourcefile to match to an installer.
+   * @param instrumentedPackageName - Name of the instrumented package to match file against.
+   * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
+   * @param localInstallers - Array of local packages.
+   * @returns Local installer PackageData if found, undefined otherwise.
+   */
+  @Trace()
+  async findFileLocalInstaller(
+    sourceFile: ts.SourceFile,
+    instrumentedPackageName: string,
+    packageJsonTree: FileTree[],
+    localInstallers: PackageData[]
+  ) {
     const containingDir = findDeepestContainingDirectory(
       sourceFile.fileName,
       packageJsonTree,
       this.logger
     )
-    if (containingDir === undefined) return
+    if (containingDir === undefined) return undefined
 
     let currDirPackage = await getPackageData(containingDir, this.logger)
     let currDir = containingDir
@@ -147,38 +194,22 @@ export class JsxScope extends Scope {
         (await findInstallingPackages(containingDir, currDir, this.logger, instrumentedPackageName))
           .length > 0
       ) {
-        return
+        return undefined
       }
       currDir = currDir?.substring(0, currDir.lastIndexOf(path.sep))
       currDirPackage = await getPackageData(currDir, this.logger)
     }
 
-    // file does not belong to any local installer, do not collect metrics
+    // file does not belong to any local installer, return undefined
     if (
       !localInstallers.some(
         (pkg) => pkg.name === currDirPackage?.name && pkg.version === currDirPackage?.version
       )
     ) {
-      return
+      return undefined
     }
 
-    const accumulator = new JsxElementAccumulator()
-
-    this.processFile(accumulator, sourceFile)
-    this.removeIrrelevantImports(accumulator, instrumentedPackageName)
-    this.resolveElementImports(accumulator, importMatchers)
-    await this.resolveInvokers(accumulator, currDirPackage)
-
-    accumulator.elements.forEach((jsxElement) => {
-      const jsxImport = accumulator.elementImports.get(jsxElement)
-      const invoker = accumulator.elementInvokers.get(jsxElement)
-
-      if (jsxImport === undefined) {
-        return
-      }
-
-      this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
-    })
+    return currDirPackage
   }
 
   /**

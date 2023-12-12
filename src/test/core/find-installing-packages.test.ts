@@ -42,6 +42,23 @@ describe('findInstallingPackages', () => {
     expect(pkgs).toMatchSnapshot()
   })
 
+  it('correctly finds installing package data for multiple versions when version is not supplied', async () => {
+    const cwd = new Fixture(
+      path.join(
+        'projects',
+        'complex-nesting-thingy',
+        'node_modules',
+        'package2',
+        'node_modules',
+        'instrumented'
+      )
+    )
+    const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+    const pkgs = await findInstallingPackages(cwd.path, root.path, logger, 'instrumented')
+
+    expect(pkgs).toMatchSnapshot()
+  })
+
   it('finds no results for an unknown package', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
     const pkgs = await findInstallingPackages(

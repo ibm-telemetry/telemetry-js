@@ -173,6 +173,14 @@ describe('class: JsxScope', () => {
     })
   })
 
+  describe('findFileLocalInstaller', () => {
+    it.todo('correctly finds direct installer for file')
+    it.todo('correctly finds top-level installer for file')
+    it.todo('correctly returns undefined for file with no local installer')
+    it.todo('correctly returns undefined for file that has a different an immediate local install')
+    it.todo('correctly returns undefined for file that has a mid-level a different local install')
+  })
+
   describe('removeIrrelevantImports', () => {
     it('correctly removes unwanted imports', () => {
       const accumulator = new JsxElementAccumulator()
@@ -194,7 +202,13 @@ describe('class: JsxScope', () => {
         isDefault: false,
         isAll: true
       })
-      expect(accumulator.imports).toHaveLength(3)
+      accumulator.imports.push({
+        name: 'name',
+        path: 'instrumented-bla',
+        isDefault: false,
+        isAll: true
+      })
+      expect(accumulator.imports).toHaveLength(4)
       const jsxScope = new JsxScope('', '', config, logger)
       jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
       expect(accumulator.imports).toHaveLength(2)

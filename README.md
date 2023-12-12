@@ -25,8 +25,8 @@
 ## Overview
 
 IBM Telemetry collects anonymized usage data for open source and inner source packages when they
-have been instrumented with this tooling. This data is reported back to a central server so package
-maintainers can analyze usage and make improvements.
+have been instrumented with this JavaScript tooling. The data is reported back to a central server
+so package maintainers can analyze usage and make improvements.
 
 IBM Telemetry uses [OpenTelemetry](https://opentelemetry.io) as the foundation of its data transport
 format.
@@ -221,7 +221,7 @@ stored. You should strongly consider adding an informational paragraph to your d
 README) as follows:
 
 ```markdown
-## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/9601e428b92164c8036a3e9f26ddb1cd050d537c/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/9601e428b92164c8036a3e9f26ddb1cd050d537c/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/9601e428b92164c8036a3e9f26ddb1cd050d537c/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
+## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
 
 This package uses IBM Telemetry to collect metrics data. By installing this package as a dependency
 you are agreeing to telemetry collection. To opt out, see

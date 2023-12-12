@@ -69,6 +69,7 @@ describe('class: JsxScope', () => {
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
+      jsxScope.setRunSync()
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -94,6 +95,7 @@ describe('class: JsxScope', () => {
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
+      jsxScope.setRunSync()
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -112,6 +114,26 @@ describe('class: JsxScope', () => {
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
+      jsxScope.setRunSync()
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('does not capture metrics for nested files when local package has installed a more specific version of the instrumented package', async () => {
+      const metricReader = initializeOtelForTest()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'another-package')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync()
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -124,15 +146,15 @@ describe('class: JsxScope', () => {
 
     it('throws EmptyScopeError if no collector has been defined', async () => {
       const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
-      const scope = new JsxScope(
+      const jsxScope = new JsxScope(
         fixture.path,
         path.join(fixture.path, '..', '..'),
         { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
 
-      scope.setRunSync()
-      await expect(scope.run()).rejects.toThrow(EmptyScopeError)
+      jsxScope.setRunSync()
+      await expect(jsxScope.run()).rejects.toThrow(EmptyScopeError)
     })
   })
 

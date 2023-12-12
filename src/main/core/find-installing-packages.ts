@@ -21,20 +21,20 @@ import { runCommand } from './run-command.js'
  * If no installers were found after the root-most project directory was searched, an empty array
  * is returned.
  *
- * @param packageName - The name of the package to search for.
- * @param packageVersion - The exact version of the package to search for.
  * @param cwd - Current working directory. This must be inside of the root directory. This is an
  * absolute path.
  * @param root - Root-most directory. This is an absolute path.
  * @param logger - Logger instance.
+ * @param packageName - The name of the package to search for.
+ * @param packageVersion - The exact version of the package to search for.
  * @returns A possibly empty array of installing packages.
  */
 export async function findInstallingPackages(
-  packageName: string,
-  packageVersion: string,
   cwd: string,
   root: string,
-  logger: Logger
+  logger: Logger,
+  packageName: string,
+  packageVersion?: string
 ): Promise<InstallingPackage[]> {
   logger.traceEnter('', 'findInstallingPackages', [packageName, packageVersion, cwd, root])
   const dirs = await new DirectoryEnumerator(logger).find(cwd, root, hasNodeModulesFolder)
@@ -49,7 +49,7 @@ export async function findInstallingPackages(
 
   const dependencyTree = JSON.parse(result.stdout)
 
-  const installers = findInstallersFromTree(dependencyTree, packageName, packageVersion, logger)
+  const installers = findInstallersFromTree(dependencyTree, logger, packageName, packageVersion)
 
   logger.traceExit('', 'findInstallingPackages', installers)
   return installers

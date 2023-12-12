@@ -28,11 +28,11 @@ export class NpmScope extends Scope {
       this.logger
     )
     const installingPackages = await findInstallingPackages(
-      instrumentedPkgName,
-      instrumentedPkgVersion,
       this.cwd,
       this.root,
-      this.logger
+      this.logger,
+      instrumentedPkgName,
+      instrumentedPkgVersion
     )
 
     installingPackages.forEach((installingPkg) => {

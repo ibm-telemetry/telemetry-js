@@ -20,11 +20,11 @@ describe('findInstallingPackages', () => {
     await expect(
       async () =>
         await findInstallingPackages(
-          'not-here',
-          '0.1.0',
           fixture.path,
           path.join(fixture.path, '..', '..'),
-          logger
+          logger,
+          'not-here',
+          '0.1.0'
         )
     ).rejects.toThrow(NoPackageJsonFoundError)
   })
@@ -32,11 +32,11 @@ describe('findInstallingPackages', () => {
   it('correctly finds installing package data', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
     const pkgs = await findInstallingPackages(
-      'instrumented',
-      '0.1.0',
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      logger
+      logger,
+      'instrumented',
+      '0.1.0'
     )
 
     expect(pkgs).toMatchSnapshot()
@@ -45,11 +45,11 @@ describe('findInstallingPackages', () => {
   it('finds no results for an unknown package', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
     const pkgs = await findInstallingPackages(
-      'not-here',
-      '0.1.0',
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      logger
+      logger,
+      'not-here',
+      '0.1.0'
     )
 
     expect(pkgs).toMatchSnapshot()
@@ -58,11 +58,11 @@ describe('findInstallingPackages', () => {
   it('finds no results for a known package at an unknown version', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
     const pkgs = await findInstallingPackages(
-      'instrumented',
-      '0.3.0',
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      logger
+      logger,
+      'instrumented',
+      '0.3.0'
     )
 
     expect(pkgs).toMatchSnapshot()

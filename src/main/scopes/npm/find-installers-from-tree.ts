@@ -36,16 +36,16 @@ import { type InstallingPackage } from './interfaces.js'
  * installers were found.
  *
  * @param dependencyTree - The tree to search.
+ * @param logger - A logger instance.
  * @param packageName - The name of the package for which to search.
  * @param packageVersion - The specific version of the package for which to search.
- * @param logger - A logger instance.
  * @returns An array of results.
  */
 export function findInstallersFromTree(
   dependencyTree: Record<string, unknown>,
+  logger: Logger,
   packageName: string,
-  packageVersion: string,
-  logger: Logger
+  packageVersion?: string
 ) {
   logger.traceEnter('', 'findInstallersFromTree', [dependencyTree, packageName, packageVersion])
 

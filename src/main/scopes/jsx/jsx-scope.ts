@@ -125,45 +125,49 @@ export class JsxScope extends Scope {
     packageJsonTree: FileTree[],
     localInstallers: PackageData[]
   ) {
-    let containingDir = findDeepestContainingDirectory(
+    const containingDir = findDeepestContainingDirectory(
       sourceFile.fileName,
       packageJsonTree,
       this.logger
     )
     if (containingDir === undefined) return
 
-    let containingDirPackage = await getPackageData(containingDir, this.logger)
+    let currDirPackage = await getPackageData(containingDir, this.logger)
+    let currDir = containingDir
 
+    // go up the directory until we find the nested-most local installer in the file tree
     while (
       !localInstallers.some(
-        (pkg) =>
-          pkg.name === containingDirPackage?.name && pkg.version === containingDirPackage?.version
+        (pkg) => pkg.name === currDirPackage?.name && pkg.version === currDirPackage?.version
       ) &&
-      containingDir !== this.root
+      currDir !== this.root
     ) {
-      console.log('here, checking ', containingDir)
-      containingDir = containingDir?.substring(0, containingDir.lastIndexOf(path.sep))
-      containingDirPackage = await getPackageData(containingDir, this.logger)
+      // nested installation of instrumented package found, do not explore further
+      if (
+        (await findInstallingPackages(containingDir, currDir, this.logger, instrumentedPackageName))
+          .length > 0
+      ) {
+        return
+      }
+      currDir = currDir?.substring(0, currDir.lastIndexOf(path.sep))
+      currDirPackage = await getPackageData(currDir, this.logger)
     }
 
+    // file does not belong to any local installer, do not collect metrics
     if (
       !localInstallers.some(
-        (pkg) =>
-          pkg.name === containingDirPackage?.name && pkg.version === containingDirPackage?.version
+        (pkg) => pkg.name === currDirPackage?.name && pkg.version === currDirPackage?.version
       )
     ) {
-      console.log('here', containingDir)
       return
     }
-
-    console.log('went past', sourceFile.fileName)
 
     const accumulator = new JsxElementAccumulator()
 
     this.processFile(accumulator, sourceFile)
     this.removeIrrelevantImports(accumulator, instrumentedPackageName)
     this.resolveElementImports(accumulator, importMatchers)
-    await this.resolveInvokers(accumulator, containingDirPackage)
+    await this.resolveInvokers(accumulator, currDirPackage)
 
     accumulator.elements.forEach((jsxElement) => {
       const jsxImport = accumulator.elementImports.get(jsxElement)
@@ -296,11 +300,11 @@ export class JsxScope extends Scope {
   async findPkgLocalInstallers(pkgName: string, pkgVersion: string, localPackages: PackageData[]) {
     const localInstallers: PackageData[] = []
     const installingPackages = await findInstallingPackages(
-      pkgName,
-      pkgVersion,
       this.cwd,
       this.root,
-      this.logger
+      this.logger,
+      pkgName,
+      pkgVersion
     )
     const promises: Promise<void>[] = []
     installingPackages.forEach((pkg) => {

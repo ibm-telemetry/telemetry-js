@@ -8,7 +8,8 @@
   "workspaces": [
     "package1",
     "package2",
-    "package3"
+    "package3",
+    "mid-level"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

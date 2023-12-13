@@ -161,7 +161,8 @@ The IBM Telemetry team will assign you a project ID to include in your `telemetr
 This file defines what types of metrics will be captured for your project as well as some general
 configuration settings.
 
-> **Note:** This config file needs to be included in your published NPM package!
+> [!IMPORTANT]
+> This config file needs to be included in your published NPM package!
 
 Sample:
 

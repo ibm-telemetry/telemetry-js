@@ -30,7 +30,7 @@ jobs:
           path-to-signatures: 'dco-signatures.json'
           path-to-document: 'https://github.com/ibm-telemetry/telemetry-dco/blob/main/dco.md'
           branch: 'main'
-          allowlist: renovate[bot],github-actions[bot],telemmy[bot],sonarcloud[bot]
+          allowlist: renovate[bot],github-actions[bot],dependabot[bot],telemmy[bot],sonarcloud[bot]
           remote-organization-name: ibm-telemetry
           remote-repository-name: telemetry-dco
           create-file-commit-message: 'chore: create file to store dco signatures'

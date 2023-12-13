@@ -24,12 +24,11 @@
 
 ## Overview
 
-The purpose of this project is to provide standardized tooling to open source and inner source
-maintainers that allows them to instrument their packages with telemetry tooling. This tooling
-allows anonymized data to be captured on behalf of the instrumented package and reported back to a
-central server for later analysis.
+IBM Telemetry collects anonymized usage data for open source and inner source packages when they
+have been instrumented with this JavaScript tooling. The data is reported back to a central server
+so package maintainers can analyze usage and make improvements.
 
-This project uses [OpenTelemetry](https://opentelemetry.io/) as the foundation of its data transport
+IBM Telemetry uses [OpenTelemetry](https://opentelemetry.io) as the foundation of its data transport
 format.
 
 Find out more detailed documentation and guidelines by choosing from the following sections what
@@ -61,7 +60,7 @@ may capture the following data about your project:
 
 - A de-identified version of your project's name (as defined in your package.json file)
 - Your project's version (as defined in package.json) with any identifiable parts removed
-- de-identified names and versions of your project's dependencies
+- De-identified names and versions of your project's dependencies
 
 **JSX data**
 
@@ -84,7 +83,7 @@ database, see [anonymizing](#anonymizing--de-identifying).
 
 Telemetry collection runs exclusively in CI environments. Collection will never happen on local
 development environments or on projects that aren't configured to run automated scripts on a CI
-environment (GitHub actions, Travis CI, etc.).
+environment (GitHub actions, Travis CI, etc.)
 
 During a build or any other CI operation that installs package dependencies (`npm install`,
 `yarn install`, ...), IBM telemetry will run as a background process and perform data collection.
@@ -141,7 +140,7 @@ Captures (JSX) element-specific usage data for the instrumented package. Specifi
   installed the package
 - Element configurations (attributes and values), as determined by the `allowedAttributeNames` and
   `allowedAttributeStringValues` config options (see
-  [JSX Schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#jsx-schema))
+  [JSX schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#jsx-schema))
 - Import paths used to access the instrumented package's exported elements
 
 This data can help you answer questions such as:
@@ -153,96 +152,110 @@ This data can help you answer questions such as:
 
 ### Set up
 
-1. Obtain a project ID from the IBM Telemetry team by opening an issue
-   [here](https://github.com/ibm-telemetry/telemetry-js/issues/new/choose). The IBM Telemetry team
-   will assign you a project ID to include in your `telemetry.yml` config file.
+#### 1. Obtain a project ID from the IBM Telemetry team by opening an issue [here](https://github.com/ibm-telemetry/telemetry-js/issues/new/choose).
 
-1. Create a `telemetry.yml` config file.
+The IBM Telemetry team will assign you a project ID to include in your `telemetry.yml` config file.
 
-   This file defines what types of metrics will be captured for your project as well as some general
-   configuration settings.
+#### 2. Create a `telemetry.yml` config file.
 
-   > **Note:** This config file needs to be included in your published NPM package!
+This file defines what types of metrics will be captured for your project as well as some general
+configuration settings.
 
-   Sample:
+> **Note:** This config file needs to be included in your published NPM package!
 
-   ```yaml path="sample-telemetry.yml"
-   # yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@0.3.0/dist/config.schema.json
-   version: 1
-   projectId: '<your assigned project id>'
-   endpoint: 'http://localhost:3000/v1/metrics'
-   collect:
-     npm:
-       dependencies: null
-     jsx:
-       elements:
-         allowedAttributeNames:
-           - 'size'
-           - 'title'
-           - 'etc.'
-         allowedAttributeStringValues:
-           - 'small'
-           - 'medium'
-           - 'large'
-           - 'title1'
-           - 'title2'
-           - 'etc.'
-   ```
+Sample:
 
-   See the
-   [telemetry config schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#schema-keys)
-   for a detailed explanation of all available configuration options.
+```yaml path="sample-telemetry.yml"
+# yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@0.3.0/dist/config.schema.json
+version: 1
+projectId: '<your assigned project id>'
+endpoint: 'http://localhost:3000/v1/metrics'
+collect:
+  npm:
+    dependencies: null
+  jsx:
+    elements:
+      allowedAttributeNames:
+        - 'size'
+        - 'title'
+        - 'etc.'
+      allowedAttributeStringValues:
+        - 'small'
+        - 'medium'
+        - 'large'
+        - 'title1'
+        - 'title2'
+        - 'etc.'
+```
 
-   > **Note**: Though this file can live anywhere within your project, it is customary to place it
-   > at the root level.
+See the
+[telemetry config schema](https://github.com/ibm-telemetry/telemetry-config-schema/tree/main#schema-keys)
+for a detailed explanation of all available configuration options.
 
-1. Add a post-install script to your package.json file.
+> **Note**: Though this file can live anywhere within your project, it is customary to place it at
+> the root level.
 
-   > It is not necessary for your package to directly install IBM Telemetry as a dependency.
-   > Instead, use `npx` to call the published collection script directly from the
-   > `@ibm/telemetry-js` package.
+#### 3. Add a post-install script to your package.json file.
 
-   The post-install script runs telemetry collection anytime your package gets installed inside of
-   another project.
+> It is not necessary for your package to directly install IBM Telemetry as a dependency. Instead,
+> use `npx` to call the published collection script directly from the `@ibm/telemetry-js` package.
 
-   ```jsonc path="package.json"
-   // ...
-   "scripts": {
-     // ...
-     "postinstall": "npx -y @ibm/telemetry-js --config=path/to/your/telemetry.yml"
-   }
-   // ...
-   ```
+The post-install script runs telemetry collection anytime your package gets installed inside of
+another project.
 
-   Make sure the `--config` options points to your `telemetry.yml` file within your package.
+```jsonc path="package.json"
+// ...
+"scripts": {
+  // ...
+  "postinstall": "npx -y @ibm/telemetry-js --config=path/to/your/telemetry.yml"
+}
+// ...
+```
 
-1. Add telemetry collection disclaimer to your docs
+Make sure the `--config` options points to your `telemetry.yml` file within your package.
 
-   You'll want to be as transparent as possible about telemetry collection and the data that is
-   being stored. You should strongly consider adding an informational paragraph to your docs
-   (usually the README) as follows:
+#### 4. Add telemetry collection disclaimer to your docs.
 
-   > [TODO: badge or SVG graphic]
-   >
-   > This package uses IBM Telemetry to collect metric data. By installing this package as a
-   > dependency you are agreeing to telemetry collection. To opt out, see
-   > [Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
-   > For more information on the data being collected, please see
-   > [IBM Telemetry](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).
+You'll want to be as transparent as possible about telemetry collection and the data that is being
+stored. You should strongly consider adding an informational paragraph to your docs (usually the
+README) as follows:
 
-1. Publish a new version of your package
+```markdown
+## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
 
-   Package consumers need to install a version of your package that includes both the config file
-   and post-install script in order for telemetry collection to occur.
+This package uses IBM Telemetry to collect metrics data. By installing this package as a dependency
+you are agreeing to telemetry collection. To opt out, see
+[Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
+For more information on the data being collected, please see the
+[IBM Telemetry documentation](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).
+```
 
-1. Done!
+<details>
+  <summary>Preview disclaimer</summary>
+  
+## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
 
-   Whenever consumers pick up a version of your package that includes the config file and
-   post-install script, telemetry collection will run and collect metrics.
+This package uses IBM Telemetry to collect metrics data. By installing this package as a dependency
+you are agreeing to telemetry collection. To opt out, see
+[Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
+For more information on the data being collected, please see the
+[IBM Telemetry documentation](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).
+
+</details>
+
+#### 5. Publish a new version of your package.
+
+Package consumers need to install a version of your package that includes both the config file and
+post-install script in order for telemetry collection to occur.
+
+#### 6. Done!
+
+Whenever consumers pick up a version of your package that includes the config file and post-install
+script, telemetry collection will run and collect metrics.
 
 ## I don't work for IBM. Can I still use this?
 
-Yes! This package can send its output to any OpenTelemetry-compatible Collector endpoint via the
+Yes! This package can send its output to any OpenTelemetry-compatible collector endpoint via the
 standard `v1/metrics`
 [Rest API endpoint](https://opentelemetry.io/docs/specs/otlp/#otlphttp-request). All you need to do
 is specify your collector endpoint's URL in the `endpoint` configuration setting in your

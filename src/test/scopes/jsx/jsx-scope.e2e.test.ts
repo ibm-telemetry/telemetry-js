@@ -158,7 +158,7 @@ describe('class: JsxScope', () => {
     })
   })
 
-  describe('parseFile', () => {
+  describe('processFile', () => {
     const fixture = new Fixture('projects/basic-project/test.jsx')
     const root = new Fixture(path.join('projects', 'basic-project'))
     const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
@@ -174,10 +174,86 @@ describe('class: JsxScope', () => {
   })
 
   describe('findFileLocalInstaller', () => {
-    it.todo('correctly finds direct installer for file')
-    it.todo('correctly finds top-level installer for file')
-    it.todo('correctly returns undefined for file with no local installer')
-    it.todo('correctly returns undefined for file that has a different an immediate local install')
+    it('correctly finds direct installer for file', async () => {
+      const fixture = new Fixture(path.join('projects', 'basic-project', 'test.jsx'))
+      const root = new Fixture(path.join('projects', 'basic-project'))
+      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+      const packageJsonTree = await getPackageJsonTree(root.path, logger)
+
+      const localInstaller = { name: 'basic-project', version: '1.0.0' }
+
+      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
+        sourceFile,
+        'instrumented',
+        packageJsonTree,
+        [localInstaller]
+      )
+      expect(fileLocalInstaller).toStrictEqual(localInstaller)
+    })
+
+    it('correctly finds top-level installer for file', async () => {
+      const fixture = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'package1', 'test.jsx')
+      )
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+      const packageJsonTree = await getPackageJsonTree(root.path, logger)
+
+      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
+
+      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
+        sourceFile,
+        'instrumented-top-level',
+        packageJsonTree,
+        [localInstaller]
+      )
+      expect(fileLocalInstaller).toStrictEqual(localInstaller)
+    })
+
+    it('correctly returns undefined for file with no local installer', async () => {
+      const fixture = new Fixture(path.join('projects', 'basic-project', 'test.jsx'))
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+      const packageJsonTree = await getPackageJsonTree(root.path, logger)
+
+      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
+
+      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
+        sourceFile,
+        'instrumented-top-level',
+        packageJsonTree,
+        [localInstaller]
+      )
+      expect(fileLocalInstaller).toStrictEqual(undefined)
+    })
+
+    it('correctly returns undefined for file that has a different immediate local install', async () => {
+      const fixture = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'package1', 'test.jsx')
+      )
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+      const packageJsonTree = await getPackageJsonTree(root.path, logger)
+
+      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
+
+      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
+        sourceFile,
+        'another-package',
+        packageJsonTree,
+        [localInstaller]
+      )
+      expect(fileLocalInstaller).toStrictEqual(undefined)
+    })
+
+    it.todo(
+      'correctly returns local installer for file that has a different immediate local install of the same version'
+    )
+
     it.todo('correctly returns undefined for file that has a mid-level a different local install')
   })
 
@@ -427,7 +503,7 @@ describe('class: JsxScope', () => {
   describe('findLocalPackages', () => {
     const jsxScope = new JsxScope('', '', config, logger)
     it('correctly finds local packages', async () => {
-      const packagesRoot = new Fixture('projects/complex-nesting-thingy')
+      const packagesRoot = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const tree = await getPackageJsonTree(packagesRoot.path, logger)
 
       await expect(jsxScope.findLocalPackages(tree)).resolves.toMatchSnapshot()
@@ -446,8 +522,8 @@ describe('class: JsxScope', () => {
 
   describe('findPkgLocalInstallers', () => {
     it('correctly finds installers for a top-level package', async () => {
-      const root = new Fixture('projects/basic-project')
-      const cwd = new Fixture('projects/basic-project')
+      const root = new Fixture(path.join('projects', 'basic-project'))
+      const cwd = new Fixture(path.join('projects', 'basic-project'))
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
       const localPackages = [{ name: 'basic-project', version: '1.0.0' }]
 

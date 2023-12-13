@@ -65,7 +65,7 @@ exports[`class: JsxScope > findPkgLocalInstallers > correctly finds installers f
 ]
 `;
 
-exports[`class: JsxScope > parseFile > correctly detects imports and elements in a given file > elements 1`] = `
+exports[`class: JsxScope > processFile > correctly detects imports and elements in a given file > elements 1`] = `
 [
   {
     "attributes": [
@@ -110,7 +110,7 @@ exports[`class: JsxScope > parseFile > correctly detects imports and elements in
 ]
 `;
 
-exports[`class: JsxScope > parseFile > correctly detects imports and elements in a given file > imports 1`] = `
+exports[`class: JsxScope > processFile > correctly detects imports and elements in a given file > imports 1`] = `
 [
   {
     "isAll": false,

@@ -128,7 +128,7 @@ Sample:
 # yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@0.3.0/dist/config.schema.json
 version: 1
 projectId: '<your assigned project id>'
-endpoint: 'http://localhost:3000/v1/metrics'
+endpoint: 'https://example.com/v1/metrics'
 collect:
   npm:
     dependencies: null
@@ -169,7 +169,7 @@ another project.
 
 Make sure the `--config` options points to your `telemetry.yml` file within your package.
 
-### 4. Add telemetry collection disclaimer to your docs.
+### 4. Add telemetry collection notice to your docs.
 
 You'll want to be as transparent as possible about telemetry collection and the data that is being
 stored. You should strongly consider adding an informational paragraph to your docs (usually the
@@ -186,7 +186,7 @@ For more information on the data being collected, please see the
 ```
 
 <details>
-  <summary>Preview disclaimer</summary>
+  <summary>Preview notice</summary>
 
 ## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
 

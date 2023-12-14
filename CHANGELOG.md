@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.8.1...v1.0.0) (2023-12-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* promote to v1
+
+### Features
+
+* implement commit hash collection ([#156](https://github.com/ibm-telemetry/telemetry-js/issues/156)) ([48b4fc7](https://github.com/ibm-telemetry/telemetry-js/commit/48b4fc733b73dd50fe0feaa59bd0a0a7ff9f3d71))
+* promote to v1 ([6e870c4](https://github.com/ibm-telemetry/telemetry-js/commit/6e870c4a949b4e121b27a3ec2f12e82ed55a00c1))
+
+
+### Bug Fixes
+
+* **deps:** upgrade devDependencies (minor) ([#141](https://github.com/ibm-telemetry/telemetry-js/issues/141)) ([bbf3c4a](https://github.com/ibm-telemetry/telemetry-js/commit/bbf3c4a1107503a3ff28c5ea805adcda0342fa3d))
+* **dev-deps:** update vite to latest ([222423b](https://github.com/ibm-telemetry/telemetry-js/commit/222423b9d4171f41fbcc2fa7cf56ed9dc216ed7b))
+
 ## [0.8.1](https://github.com/ibm-telemetry/telemetry-js/compare/v0.8.0...v0.8.1) (2023-12-08)
 
 

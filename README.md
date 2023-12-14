@@ -1,6 +1,6 @@
 # IBM Telemetry JS
 
-> JavaScript telemetry tooling for open/inner source projects
+> JavaScript telemetry tooling for open/inner source projects.
 
 [![IBM Telemetry JS is released under the Apache-2.0 license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/ibm-telemetry/telemetry-js/blob/main/LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/carbon-design-system/carbon/blob/master/CONTRIBUTING.md)

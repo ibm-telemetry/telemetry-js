@@ -92,6 +92,7 @@ export class IbmTelemetry {
 
     // TODO: handle non-existent remote
     const gitOrigin = await runCommand('git remote get-url origin', this.logger)
+    const commitHash = await runCommand('git rev-parse HEAD', this.logger)
     const repository = tokenizeRepository(gitOrigin.stdout)
     const emitterInfo = await getTelemetryPackageData(this.logger)
 
@@ -105,7 +106,7 @@ export class IbmTelemetry {
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [CustomResourceAttributes.ANALYZED_COMMIT]: 'abc123', // TODO: implement this!
+          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash.stdout,
           [CustomResourceAttributes.DATE]: date
         },
         [

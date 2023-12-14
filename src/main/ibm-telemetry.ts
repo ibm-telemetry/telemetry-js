@@ -13,6 +13,8 @@ import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config-validator.js'
 import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
 import { Environment } from './core/environment.js'
+import { getCommitBranches } from './core/get-commit-branches.js'
+import { getCommitTags } from './core/get-commit-tags.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
 import { type Logger } from './core/log/logger.js'
@@ -90,10 +92,8 @@ export class IbmTelemetry {
     // This will throw if config does not conform to ConfigSchema
     configValidator.validate(config)
 
-    // TODO: handle non-existent remote
-    const gitOrigin = await runCommand('git remote get-url origin', this.logger)
-    const commitHash = await runCommand('git rev-parse HEAD', this.logger)
-    const repository = tokenizeRepository(gitOrigin.stdout)
+    const { gitOrigin, repository, commitHash, commitTags, commitBranches } =
+      await this.getGitInfo(cwd)
     const emitterInfo = await getTelemetryPackageData(this.logger)
 
     const metricReader = initializeOpenTelemetry(
@@ -102,18 +102,21 @@ export class IbmTelemetry {
           [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
           [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
           [CustomResourceAttributes.PROJECT_ID]: config.projectId,
-          [CustomResourceAttributes.ANALYZED_RAW]: gitOrigin.stdout,
+          [CustomResourceAttributes.ANALYZED_RAW]: gitOrigin,
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash.stdout,
+          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
+          [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
           [CustomResourceAttributes.DATE]: date
         },
         [
           CustomResourceAttributes.ANALYZED_RAW,
           CustomResourceAttributes.ANALYZED_HOST,
           CustomResourceAttributes.ANALYZED_OWNER,
-          CustomResourceAttributes.ANALYZED_REPOSITORY
+          CustomResourceAttributes.ANALYZED_REPOSITORY,
+          CustomResourceAttributes.ANALYZED_COMMIT,
+          CustomResourceAttributes.ANALYZED_REFS
         ]
       )
     )
@@ -190,5 +193,17 @@ export class IbmTelemetry {
         resolve(undefined)
       })
     })
+  }
+
+  @Trace()
+  private async getGitInfo(cwd: string) {
+    // TODO: handle non-existent remote
+    const gitOrigin = (await runCommand('git remote get-url origin', this.logger)).stdout
+    const commitHash = (await runCommand('git rev-parse HEAD', this.logger)).stdout
+    const commitBranches = await getCommitBranches(commitHash, cwd, this.logger)
+    const commitTags = await getCommitTags(commitHash, cwd, this.logger)
+    const repository = tokenizeRepository(gitOrigin)
+
+    return { gitOrigin, commitHash, commitBranches, commitTags, repository }
   }
 }

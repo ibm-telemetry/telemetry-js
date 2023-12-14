@@ -22,7 +22,7 @@ export function substitute<T extends Record<string, unknown>>(
   raw: T,
   allowedKeys: Array<keyof T>,
   allowedValues: unknown[]
-): T {
+): { [Property in keyof T]: T[Property] extends object ? string : T[Property] } {
   const substitutedEntries = Object.entries(raw).map(([key, value]) => {
     // Key is not safe. Substitute key and value
     if (!allowedKeys.includes(key)) {

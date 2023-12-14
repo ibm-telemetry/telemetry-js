@@ -24,6 +24,23 @@ describe('anonymize', () => {
     })
   })
 
+  it('hashes an array value when its key is provided', () => {
+    const result = hash({ ignoreMe: 'i better not be hashed!', arrayValue: ['1', '2', '3', '4'] }, [
+      'arrayValue'
+    ])
+
+    expect(result).toMatchObject({
+      ignoreMe: 'i better not be hashed!',
+      // This is the sha256 hash of each element in the array
+      arrayValue: [
+        '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
+        'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35',
+        '4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce',
+        '4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a'
+      ]
+    })
+  })
+
   it('does not modify a number value', () => {
     const result = hash({ dollars: 999 }, ['dollars'])
 

@@ -14,8 +14,8 @@
  */
 export function deNull<T extends Record<string, unknown>>(
   obj: T
-): { [Property in keyof T]?: NonNullable<T[Property]> } {
-  return Object.entries(obj).reduce<ReturnType<typeof deNull<T>>>((prev, [key, val]) => {
+): Record<string, NonNullable<T[string]>> {
+  return Object.entries(obj).reduce((prev, [key, val]) => {
     if (val === null || val === undefined) {
       return prev
     }

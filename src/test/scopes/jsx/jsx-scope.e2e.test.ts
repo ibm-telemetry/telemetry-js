@@ -145,7 +145,9 @@ describe('class: JsxScope', () => {
     })
 
     it('throws EmptyScopeError if no collector has been defined', async () => {
-      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const fixture = new Fixture(
+        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
+      )
       const jsxScope = new JsxScope(
         fixture.path,
         path.join(fixture.path, '..', '..'),
@@ -159,7 +161,7 @@ describe('class: JsxScope', () => {
   })
 
   describe('processFile', () => {
-    const fixture = new Fixture('projects/basic-project/test.jsx')
+    const fixture = new Fixture(path.join('projects', 'basic-project', 'test.jsx'))
     const root = new Fixture(path.join('projects', 'basic-project'))
     const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
 
@@ -251,10 +253,31 @@ describe('class: JsxScope', () => {
     })
 
     it.todo(
-      'correctly returns local installer for file that has a different immediate local install of the same version'
+      'correctly returns local installer for file that has an immediate local install of the same version'
     )
 
-    it.todo('correctly returns undefined for file that has a mid-level a different local install')
+    it.todo(
+      'correctly returns undefined for file that has a mid-level different local install',
+      async () => {
+        const fixture = new Fixture(
+          path.join('projects', 'complex-nesting-thingy', 'package1', 'test.jsx')
+        )
+        const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+        const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+        const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+        const packageJsonTree = await getPackageJsonTree(root.path, logger)
+
+        const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
+
+        const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
+          sourceFile,
+          'another-package',
+          packageJsonTree,
+          [localInstaller]
+        )
+        expect(fileLocalInstaller).toStrictEqual(undefined)
+      }
+    )
   })
 
   describe('removeIrrelevantImports', () => {
@@ -532,9 +555,16 @@ describe('class: JsxScope', () => {
       expect(installers).toMatchSnapshot()
     })
     it('correctly finds installers for a given package that was installed in an intermediate package', async () => {
-      const root = new Fixture('projects/complex-nesting-thingy')
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const cwd = new Fixture(
-        'projects/complex-nesting-thingy/node_modules/intermediate/node_modules/instrumented'
+        path.join(
+          'projects',
+          'complex-nesting-thingy',
+          'node_modules',
+          'intermediate',
+          'node_modules',
+          'instrumented'
+        )
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
       const localPackages = [

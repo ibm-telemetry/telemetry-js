@@ -22,6 +22,12 @@ describe('getPackageJsonTree', () => {
     expect(tree).toStrictEqual([
       {
         children: [
+          {
+            children: [
+              { children: [], path: path.join(fixture.path, 'mid-level', 'nested-level') }
+            ],
+            path: path.join(fixture.path, 'mid-level')
+          },
           { children: [], path: path.join(fixture.path, 'package1') },
           {
             children: [],

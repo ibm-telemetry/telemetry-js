@@ -7,6 +7,10 @@ exports[`class: JsxScope > findLocalPackages > correctly finds local packages 1`
     "version": "1.0.0",
   },
   {
+    "name": "mid-level",
+    "version": "1.0.0",
+  },
+  {
     "name": "package1",
     "version": "1.0.0",
   },
@@ -16,6 +20,10 @@ exports[`class: JsxScope > findLocalPackages > correctly finds local packages 1`
   },
   {
     "name": "package3",
+    "version": "1.0.0",
+  },
+  {
+    "name": "nested-level",
     "version": "1.0.0",
   },
 ]

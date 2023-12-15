@@ -9,7 +9,11 @@ import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substitute } from '../../../../main/core/anonymize/substitute.js'
-import { type JsxElement, type JsxImport } from '../../../../main/scopes/jsx/interfaces.js'
+import {
+  type JsxElement,
+  JsxElementAttribute,
+  type JsxImport
+} from '../../../../main/scopes/jsx/interfaces.js'
 import { JsxScopeAttributes } from '../../../../main/scopes/jsx/jsx-scope-attributes.js'
 import { ElementMetric } from '../../../../main/scopes/jsx/metrics/element-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
@@ -50,9 +54,12 @@ describe('class: ElementMetric', () => {
   it('returns the correct attributes for a standard element', () => {
     const attributes = new ElementMetric(jsxElement, jsxImport, 'the-library', config, logger)
       .attributes
-    const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
-      return { ...prev, [cur.name]: cur.value }
-    }, {})
+    const attrMap = jsxElement.attributes.reduce<Record<string, JsxElementAttribute['value']>>(
+      (prev, cur) => {
+        return { ...prev, [cur.name]: cur.value }
+      },
+      {}
+    )
 
     const subs = substitute(attrMap, [], [])
 

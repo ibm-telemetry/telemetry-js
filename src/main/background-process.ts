@@ -14,6 +14,7 @@ import { IbmTelemetry } from './ibm-telemetry.js'
 
 interface CommandLineOptions {
   config: string
+  log?: string
 }
 
 /**
@@ -23,6 +24,7 @@ function run() {
   const program = new Command()
     .description('Collect telemetry data for a package.')
     .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
+    .option('--log <log-path>', 'Path to temp log file')
     .action(collect)
 
   program.parseAsync().catch((err) => {
@@ -38,7 +40,7 @@ function run() {
  */
 async function collect(opts: CommandLineOptions) {
   const date = new Date().toISOString()
-  const logFilePath = createLogFilePath(date)
+  const logFilePath = opts.log ?? createLogFilePath(date)
   const logger = new Logger(logFilePath)
   const environment = new Environment()
 

@@ -332,9 +332,9 @@ export class JsxScope extends Scope {
       })
     }
 
-    return Promise.allSettled(trees.map((tree) => resolveBranchPackages(tree))).then(
-      () => localPackages
-    )
+    await Promise.allSettled(trees.map((tree) => resolveBranchPackages(tree)))
+
+    return localPackages
   }
 
   /**
@@ -358,21 +358,15 @@ export class JsxScope extends Scope {
     const promises: Promise<void>[] = []
     installingPackages.forEach((pkg) => {
       ;(async () => {
-        if (
-          !localPackages.some(
-            (localPkg) => localPkg.name === pkg.name && localPkg.version === pkg.version
-          )
-        ) {
+        if (!this.isLocalInstaller(localPackages, pkg)) {
           promises.push(
             new Promise<void>((resolve) => {
-              ;(() => {
-                this.findPkgLocalInstallers(pkg.name, pkg.version, localPackages).then(
-                  (installers) => {
-                    localInstallers.push(...installers)
-                    resolve()
-                  }
-                )
-              })()
+              this.findPkgLocalInstallers(pkg.name, pkg.version, localPackages).then(
+                (installers) => {
+                  localInstallers.push(...installers)
+                  resolve()
+                }
+              )
             })
           )
         } else {

@@ -15,7 +15,7 @@ import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { NoPackageJsonFoundError } from '../../exceptions/no-package-json-found-error.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { PackageData } from '../npm/interfaces.js'
+import { InstallingPackage, PackageData } from '../npm/interfaces.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
@@ -191,19 +191,15 @@ export class JsxScope extends Scope {
       currDir !== this.root
     ) {
       // nested installation of instrumented package found, do not explore further
+      let installingPkgs: InstallingPackage[] = []
+
       try {
-        if (
-          (
-            await findInstallingPackages(
-              containingDir,
-              currDir,
-              this.logger,
-              instrumentedPackageName
-            )
-          ).length > 0
-        ) {
-          return undefined
-        }
+        installingPkgs = await findInstallingPackages(
+          containingDir,
+          currDir,
+          this.logger,
+          instrumentedPackageName
+        )
       } catch (reason) {
         // in JsxScope we do not care about invalid package.json errors,
         // those only apply to npm scope
@@ -214,6 +210,10 @@ export class JsxScope extends Scope {
             this.logger.error(String(reason))
           }
         }
+      }
+
+      if (installingPkgs.length > 0) {
+        return undefined
       }
       currDir = currDir?.substring(0, currDir.lastIndexOf(path.sep))
       currDirPackage = await getPackageData(currDir, this.logger)

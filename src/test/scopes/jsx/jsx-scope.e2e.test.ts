@@ -252,32 +252,25 @@ describe('class: JsxScope', () => {
       expect(fileLocalInstaller).toStrictEqual(undefined)
     })
 
-    it.todo(
-      'correctly returns local installer for file that has an immediate local install of the same version'
-    )
+    it('correctly returns undefined for file that has a mid-level different local install', async () => {
+      const fixture = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'mid-level', 'nested-level', 'test.jsx')
+      )
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
+      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+      const packageJsonTree = await getPackageJsonTree(root.path, logger)
 
-    it.todo(
-      'correctly returns undefined for file that has a mid-level different local install',
-      async () => {
-        const fixture = new Fixture(
-          path.join('projects', 'complex-nesting-thingy', 'package1', 'test.jsx')
-        )
-        const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-        const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-        const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-        const packageJsonTree = await getPackageJsonTree(root.path, logger)
+      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
 
-        const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
-
-        const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
-          sourceFile,
-          'another-package',
-          packageJsonTree,
-          [localInstaller]
-        )
-        expect(fileLocalInstaller).toStrictEqual(undefined)
-      }
-    )
+      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
+        sourceFile,
+        'another-package',
+        packageJsonTree,
+        [localInstaller]
+      )
+      expect(fileLocalInstaller).toStrictEqual(undefined)
+    })
   })
 
   describe('removeIrrelevantImports', () => {

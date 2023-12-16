@@ -157,6 +157,12 @@ export class JsxScope extends Scope {
     })
   }
 
+  isLocalInstaller(localInstallers: PackageData[], packageData: PackageData) {
+    return localInstallers.some(
+      (pkg) => pkg.name === packageData.name && pkg.version === packageData.version
+    )
+  }
+
   /**
    * Find a sourcefile's local package given a pre-computed array of local installer.
    *
@@ -184,12 +190,7 @@ export class JsxScope extends Scope {
     let currDir = containingDir
 
     // go up the directory until we find the nested-most local installer in the file tree
-    while (
-      !localInstallers.some(
-        (pkg) => pkg.name === currDirPackage?.name && pkg.version === currDirPackage?.version
-      ) &&
-      currDir !== this.root
-    ) {
+    while (!this.isLocalInstaller(localInstallers, currDirPackage) && currDir !== this.root) {
       // nested installation of instrumented package found, do not explore further
       let installingPkgs: InstallingPackage[] = []
 
@@ -216,11 +217,7 @@ export class JsxScope extends Scope {
     }
 
     // file does not belong to any local installer, return undefined
-    if (
-      !localInstallers.some(
-        (pkg) => pkg.name === currDirPackage?.name && pkg.version === currDirPackage?.version
-      )
-    ) {
+    if (!this.isLocalInstaller(localInstallers, currDirPackage)) {
       return undefined
     }
 

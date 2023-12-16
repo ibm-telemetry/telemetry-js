@@ -156,7 +156,13 @@ export class JsxScope extends Scope {
       this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
     })
   }
-
+  /**
+   * Determines if a given package is a local installer given an array of local installers.
+   *
+   * @param localInstallers - Array of local packages.
+   * @param packageData - Package to compare against local installers.
+   * @returns Boolean indicating whether the supplied package is a local installer or not.
+   */
   isLocalInstaller(localInstallers: PackageData[], packageData: PackageData) {
     return localInstallers.some(
       (pkg) => pkg.name === packageData.name && pkg.version === packageData.version

@@ -204,11 +204,7 @@ export class JsxScope extends Scope {
         // in JsxScope we do not care about invalid package.json errors,
         // those only apply to npm scope
         if (!(reason instanceof NoPackageJsonFoundError)) {
-          if (reason instanceof Error) {
-            this.logger.error(reason)
-          } else {
-            this.logger.error(String(reason))
-          }
+          this.logger.error(reason instanceof Error ? reason : String(reason))
         }
       }
 

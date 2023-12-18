@@ -102,7 +102,6 @@ export class JsxScope extends Scope {
    * @param importMatchers - Matchers instances to use for import-element matching.
    * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
    */
-  @Trace()
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
     instrumentedPackageName: string,

@@ -11,6 +11,7 @@ export const NpmScopeAttributes = Object.freeze({
   RAW: 'npm.dependency.raw',
   OWNER: 'npm.dependency.owner',
   NAME: 'npm.dependency.name',
+  INSTRUMENTED: 'npm.dependency.instrumented',
 
   //
   // Semantic version attributes

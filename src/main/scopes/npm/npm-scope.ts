@@ -45,7 +45,12 @@ export class NpmScope extends Scope {
               rawName: dependency.name,
               rawVersion: dependency.version,
               installerRawName: installingPkg.name,
-              installerRawVersion: installingPkg.version
+              installerRawVersion: installingPkg.version,
+              isInstrumented:
+                dependency.name === instrumentedPkgName &&
+                dependency.version === instrumentedPkgVersion
+                  ? 'true'
+                  : 'false'
             },
             this.logger
           )

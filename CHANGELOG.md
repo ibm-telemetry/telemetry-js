@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.0.0...v1.1.0) (2023-12-18)
+
+
+### Features
+
+* **npm:** add support for querying instrumented pkg dependency metrics ([037e846](https://github.com/ibm-telemetry/telemetry-js/commit/037e8464ce05da91257e930e485a0f857354d443))
+* run telemetry collection as a background process ([#147](https://github.com/ibm-telemetry/telemetry-js/issues/147)) ([273a466](https://github.com/ibm-telemetry/telemetry-js/commit/273a466d27631bbd55002e2ef3d919cd9ef73344))
+
+
+### Bug Fixes
+
+* **jsx:** remove trace from captureFileMetrics ([fec2265](https://github.com/ibm-telemetry/telemetry-js/commit/fec2265c1a7f5072ae3307a3372e62e6fed6039e))
+
 ## [1.0.0](https://github.com/ibm-telemetry/telemetry-js/compare/v0.8.1...v1.0.0) (2023-12-14)
 
 

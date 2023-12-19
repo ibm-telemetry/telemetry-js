@@ -118,7 +118,6 @@ export class JsxScope extends Scope {
    * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
    * @param localInstallers - Array of local packages.
    */
-  @Trace()
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
     instrumentedPackageName: string,

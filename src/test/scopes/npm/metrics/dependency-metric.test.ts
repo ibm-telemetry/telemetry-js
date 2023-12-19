@@ -20,7 +20,8 @@ describe('class: DependencyMetric', () => {
         rawName: 'test-1',
         rawVersion: '0.0.1',
         installerRawName: 'test-1-installer',
-        installerRawVersion: '1.0.0'
+        installerRawVersion: '1.0.0',
+        isInstrumented: 'false'
       },
       logger
     ).attributes
@@ -30,6 +31,7 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.RAW]: 'test-1',
           [NpmScopeAttributes.OWNER]: undefined,
           [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.INSTRUMENTED]: 'false',
           [NpmScopeAttributes.VERSION_RAW]: '0.0.1',
           [NpmScopeAttributes.VERSION_MAJOR]: '0',
           [NpmScopeAttributes.VERSION_MINOR]: '0',
@@ -66,7 +68,8 @@ describe('class: DependencyMetric', () => {
         rawName: 'test-1',
         rawVersion: '0.0.1-rc.0',
         installerRawName: 'test-1-installer',
-        installerRawVersion: '1.0.0-rc.4'
+        installerRawVersion: '1.0.0-rc.4',
+        isInstrumented: 'false'
       },
       logger
     ).attributes
@@ -76,6 +79,7 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.RAW]: 'test-1',
           [NpmScopeAttributes.OWNER]: undefined,
           [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.INSTRUMENTED]: 'false',
           [NpmScopeAttributes.VERSION_RAW]: '0.0.1-rc.0',
           [NpmScopeAttributes.VERSION_MAJOR]: '0',
           [NpmScopeAttributes.VERSION_MINOR]: '0',
@@ -112,7 +116,8 @@ describe('class: DependencyMetric', () => {
         rawName: 'test-1',
         rawVersion: '0.0.1+12345',
         installerRawName: 'test-1-installer',
-        installerRawVersion: '1.0.0+9999'
+        installerRawVersion: '1.0.0+9999',
+        isInstrumented: 'false'
       },
       logger
     ).attributes
@@ -122,6 +127,7 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.RAW]: 'test-1',
           [NpmScopeAttributes.OWNER]: undefined,
           [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.INSTRUMENTED]: 'false',
           [NpmScopeAttributes.VERSION_RAW]: '0.0.1+12345',
           [NpmScopeAttributes.VERSION_MAJOR]: '0',
           [NpmScopeAttributes.VERSION_MINOR]: '0',
@@ -158,7 +164,8 @@ describe('class: DependencyMetric', () => {
         rawName: 'test-1',
         rawVersion: '0.0.1-rc.1+12345',
         installerRawName: 'test-1-installer',
-        installerRawVersion: '1.0.0-rc.0+9999'
+        installerRawVersion: '1.0.0-rc.0+9999',
+        isInstrumented: 'false'
       },
       logger
     ).attributes
@@ -169,6 +176,7 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.RAW]: 'test-1',
           [NpmScopeAttributes.OWNER]: undefined,
           [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.INSTRUMENTED]: 'false',
           [NpmScopeAttributes.VERSION_RAW]: '0.0.1-rc.1+12345',
           [NpmScopeAttributes.VERSION_MAJOR]: '0',
           [NpmScopeAttributes.VERSION_MINOR]: '0',
@@ -205,7 +213,8 @@ describe('class: DependencyMetric', () => {
         rawName: '@owner/test-1',
         rawVersion: '0.0.1-rc.0+12345',
         installerRawName: '@installer/test-1-installer',
-        installerRawVersion: '1.0.0'
+        installerRawVersion: '1.0.0',
+        isInstrumented: 'false'
       },
       logger
     ).attributes
@@ -216,6 +225,7 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.RAW]: '@owner/test-1',
           [NpmScopeAttributes.OWNER]: '@owner',
           [NpmScopeAttributes.NAME]: 'test-1',
+          [NpmScopeAttributes.INSTRUMENTED]: 'false',
           [NpmScopeAttributes.VERSION_RAW]: '0.0.1-rc.0+12345',
           [NpmScopeAttributes.VERSION_MAJOR]: '0',
           [NpmScopeAttributes.VERSION_MINOR]: '0',
@@ -252,7 +262,8 @@ describe('class: DependencyMetric', () => {
         rawName: '@owner/test-1',
         rawVersion: '0.0.1+12345',
         installerRawName: '@installer/test-1-installer',
-        installerRawVersion: '1.0.0+123456'
+        installerRawVersion: '1.0.0+123456',
+        isInstrumented: 'false'
       },
       logger
     ).attributes

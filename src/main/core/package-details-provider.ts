@@ -10,12 +10,12 @@ import { SemVer } from 'semver'
 import { Loggable } from './log/loggable.js'
 import { Trace } from './log/trace.js'
 
-interface BasicPackageData {
+interface BasicPackageDetails {
   owner: string | undefined
   name: string
 }
 
-interface FullPackageData extends BasicPackageData {
+interface FullPackageDetails extends BasicPackageDetails {
   major: number
   minor: number
   patch: number
@@ -32,7 +32,8 @@ export class PackageDetailsProvider extends Loggable {
    * @param rawPackageName - Raw name of package.
    * @returns Object containing package owner and name.
    */
-  getPackageDetails(rawPackageName: string): BasicPackageData
+  getPackageDetails(rawPackageName: string): BasicPackageDetails
+
   /**
    * Extracts atomic attributes from the given package name and version.
    *
@@ -40,13 +41,13 @@ export class PackageDetailsProvider extends Loggable {
    * @param rawPackageVersion - Raw version of package.
    * @returns Object containing package owner, name, major, minor, patch and preRelease versions.
    */
-  getPackageDetails(rawPackageName: string, rawPackageVersion: string): FullPackageData
+  getPackageDetails(rawPackageName: string, rawPackageVersion: string): FullPackageDetails
 
   @Trace()
   getPackageDetails(
     rawPackageName: string,
     rawPackageVersion?: string
-  ): BasicPackageData | FullPackageData {
+  ): BasicPackageDetails | FullPackageDetails {
     const [, owner, name] = /^(@[^/]+)\/(.+)/.exec(rawPackageName) ?? []
 
     if (rawPackageVersion !== undefined) {

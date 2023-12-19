@@ -17,6 +17,7 @@ export interface DependencyData {
   rawVersion: string
   installerRawName: string
   installerRawVersion: string
+  isInstrumented: 'true' | 'false'
 }
 
 /**
@@ -65,6 +66,7 @@ export class DependencyMetric extends ScopeMetric {
       [NpmScopeAttributes.RAW]: this.data.rawName,
       [NpmScopeAttributes.OWNER]: owner,
       [NpmScopeAttributes.NAME]: name,
+      [NpmScopeAttributes.INSTRUMENTED]: this.data.isInstrumented,
       [NpmScopeAttributes.VERSION_RAW]: this.data.rawVersion,
       [NpmScopeAttributes.VERSION_MAJOR]: major?.toString(),
       [NpmScopeAttributes.VERSION_MINOR]: minor?.toString(),

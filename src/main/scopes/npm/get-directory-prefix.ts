@@ -17,14 +17,14 @@ const cache = new Map<string, string>()
  * @param logger - Logger instance.
  * @returns A string indicating the closest (ascendent) package directory.
  */
-export async function getPackagePrefix(dirPath: string, logger: Logger): Promise<string> {
+export async function getDirectoryPrefix(dirPath: string, logger: Logger): Promise<string> {
   console.log(dirPath)
-  logger.traceEnter('', 'getPackagePrefix', [dirPath])
+  logger.traceEnter('', 'getDirectoryPrefix', [dirPath])
 
   if (cache.has(dirPath)) {
     const data = cache.get(dirPath) as string
-    logger.debug('getPackagePrefix cache hit for ' + dirPath)
-    logger.traceExit('', 'getPackagePrefix', data)
+    logger.debug('getDirectoryPrefix cache hit for ' + dirPath)
+    logger.traceExit('', 'getDirectoryPrefix', data)
     return data
   }
 
@@ -34,6 +34,6 @@ export async function getPackagePrefix(dirPath: string, logger: Logger): Promise
 
   cache.set(dirPath, result.stdout)
 
-  logger.traceExit('', 'getPackagePrefix', result.stdout)
+  logger.traceExit('', 'getDirectoryPrefix', result.stdout)
   return result.stdout
 }

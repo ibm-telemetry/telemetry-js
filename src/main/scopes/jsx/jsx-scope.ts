@@ -11,8 +11,8 @@ import type * as ts from 'typescript'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
+import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { getPackagePrefix } from '../npm/get-package-prefix.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
@@ -160,7 +160,7 @@ export class JsxScope extends Scope {
    * @param sourceFilePath - Absolute path to a sourceFile.
    */
   async resolveInvokers(accumulator: JsxElementAccumulator, sourceFilePath: string) {
-    const containingDir = await getPackagePrefix(path.dirname(sourceFilePath), this.logger)
+    const containingDir = await getDirectoryPrefix(path.dirname(sourceFilePath), this.logger)
 
     if (containingDir === undefined) {
       return

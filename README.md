@@ -150,7 +150,7 @@ collect:
 > **Note**: Though this file can live anywhere within your project, it is customary to place it at
 > the root level.
 
-### 3. Install `@ibm/telemetry-js` dependency
+### 3. Install `@ibm/telemetry-js` dependency.
 
 > **Note**: This must be installed as a regular dependency, not a dev dependency in the instrumented
 > project.
@@ -206,12 +206,12 @@ For more information on the data being collected, please see the
 
 </details>
 
-#### 6. Publish a new version of your package.
+### 6. Publish a new version of your package.
 
 Package consumers need to install a version of your package that includes both the config file and
 post-install script in order for telemetry collection to occur.
 
-#### 7. Done!
+### 7. Done!
 
 Whenever consumers pick up a version of your package that includes the config file and post-install
 script, telemetry collection will run and collect metrics.

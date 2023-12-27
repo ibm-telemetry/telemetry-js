@@ -18,7 +18,6 @@ const cache = new Map<string, string>()
  * @returns A string indicating the closest (ascendent) package directory.
  */
 export async function getDirectoryPrefix(dirPath: string, logger: Logger): Promise<string> {
-  console.log(dirPath)
   logger.traceEnter('', 'getDirectoryPrefix', [dirPath])
 
   if (cache.has(dirPath)) {

@@ -22,7 +22,7 @@ export async function getPackagePrefix(dirPath: string, logger: Logger): Promise
   logger.traceEnter('', 'getPackagePrefix', [dirPath])
 
   if (cache.has(dirPath)) {
-    const data = await (cache.get(dirPath) as string)
+    const data = cache.get(dirPath) as string
     logger.debug('getPackagePrefix cache hit for ' + dirPath)
     logger.traceExit('', 'getPackagePrefix', data)
     return data

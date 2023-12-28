@@ -27,7 +27,9 @@ export async function getDirectoryPrefix(dirPath: string, logger: Logger): Promi
     return data
   }
 
-  const result = await runCommand('npm prefix', logger, {
+  // ignoring workspaces for this command because otherwise it would always
+  // return the root for workspaced packages, this is irrelevant for non-workspace repositories
+  const result = await runCommand('npm prefix --no-workspaces', logger, {
     cwd: dirPath
   })
 

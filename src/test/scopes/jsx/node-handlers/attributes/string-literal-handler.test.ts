@@ -25,9 +25,9 @@ describe('stringLiteralHandler', () => {
       return node.parent.kind === ts.SyntaxKind.JsxAttribute
     })
 
-    expect(handler.getData(nodes[0] as ts.StringLiteral)).toStrictEqual('firstPropValue')
-    expect(handler.getData(nodes[1] as ts.StringLiteral)).toStrictEqual('stringPropValue')
-    expect(handler.getData(nodes[2] as ts.StringLiteral)).toStrictEqual('secondStringPropValue')
+    expect(handler.getData(nodes[0] as ts.StringLiteral)).toBe('firstPropValue')
+    expect(handler.getData(nodes[1] as ts.StringLiteral)).toBe('stringPropValue')
+    expect(handler.getData(nodes[2] as ts.StringLiteral)).toBe('secondStringPropValue')
     expect(nodes).toHaveLength(3)
   })
 })

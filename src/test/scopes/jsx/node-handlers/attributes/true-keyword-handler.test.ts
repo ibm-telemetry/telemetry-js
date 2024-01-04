@@ -22,6 +22,6 @@ describe('trueKeywordHandler', () => {
     const handler = new TrueKeywordHandler(sourceFile, logger)
 
     // eslint-disable-next-line vitest/prefer-to-be-truthy -- we want strict true comparison
-    expect(handler.getData(sourceFile as ts.Node)).toStrictEqual(true)
+    expect(handler.getData(sourceFile as ts.Node)).toBe(true)
   })
 })

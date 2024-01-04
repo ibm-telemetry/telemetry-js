@@ -166,6 +166,6 @@ describe('trace', () => {
     // Invoke the function
     descriptor.value('its an arg!')
 
-    expect(Reflect.getMetadata(metadataKey, descriptor.value)).toStrictEqual('wowow')
+    expect(Reflect.getMetadata(metadataKey, descriptor.value)).toBe('wowow')
   })
 })

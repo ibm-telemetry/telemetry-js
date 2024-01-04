@@ -286,8 +286,8 @@ describe('class: JsxScope', () => {
       expect(accumulator.elementImports.get(defaultElement)).toStrictEqual(defaultImport)
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
       expect(accumulator.elementImports.get(renamedElement)).toStrictEqual(renamedImport)
-      expect(accumulator.elementImports.get(unmatchedElement1)).toStrictEqual(undefined)
-      expect(accumulator.elementImports.get(unmatchedElement2)).toStrictEqual(undefined)
+      expect(accumulator.elementImports.get(unmatchedElement1)).toBeUndefined()
+      expect(accumulator.elementImports.get(unmatchedElement2)).toBeUndefined()
     })
 
     it('can accept empty array', () => {
@@ -321,8 +321,8 @@ describe('class: JsxScope', () => {
 
       await jsxScope.resolveInvokers(accumulator, fileName.path)
 
-      expect(accumulator.elementInvokers.get(element1)).toStrictEqual('basic-project')
-      expect(accumulator.elementInvokers.get(element2)).toStrictEqual('basic-project')
+      expect(accumulator.elementInvokers.get(element1)).toBe('basic-project')
+      expect(accumulator.elementInvokers.get(element2)).toBe('basic-project')
     })
   })
 })

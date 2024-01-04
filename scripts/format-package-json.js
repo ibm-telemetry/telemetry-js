@@ -141,6 +141,7 @@ const fixArgIndex = args.indexOf('--fix')
 let fix = false
 let hasError = false
 
+// Find and extract fix arg, if provided
 if (fixArgIndex >= 0) {
   fix = true
   args.splice(fixArgIndex, 1)

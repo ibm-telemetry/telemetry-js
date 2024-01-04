@@ -39,7 +39,8 @@ module.exports = {
       plugins: ['vitest'],
       extends: ['plugin:vitest/all'],
       rules: {
-        'vitest/no-hooks': 'off'
+        'vitest/no-hooks': 'off',
+        'vitest/prefer-expect-assertions': 'off'
       }
     }
   ],

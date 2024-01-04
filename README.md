@@ -150,10 +150,18 @@ collect:
 > **Note**: Though this file can live anywhere within your project, it is customary to place it at
 > the root level.
 
-### 3. Add a `postinstall` script to your `package.json` file.
+### 3. Install `@ibm/telemetry-js` dependency.
 
-> It is not necessary for your package to directly install IBM Telemetry as a dependency. Instead,
-> use `npx` to call the published collection script directly from the `@ibm/telemetry-js` package.
+> **Note**: This must be installed as a regular dependency, not a dev dependency in the instrumented
+> project.
+
+`npm install @ibm/telemetry-js`
+
+or
+
+`yarn add @ibm/telemetry-js`
+
+### 4. Add a `postinstall` script to your `package.json` file.
 
 The `postinstall` script runs telemetry collection anytime your package gets installed inside of
 another project.
@@ -162,14 +170,14 @@ another project.
 // ...
 "scripts": {
   // ...
-  "postinstall": "npx -y @ibm/telemetry-js --config=path/to/your/telemetry.yml"
+  "postinstall": "ibmtelemetry --config=path/to/your/telemetry.yml"
 }
 // ...
 ```
 
-Make sure the `--config` options points to your `telemetry.yml` file within your package.
+Make sure the `--config` option points to your `telemetry.yml` file within your package.
 
-### 4. Add telemetry collection notice to your docs.
+### 5. Add telemetry collection notice to your docs.
 
 You'll want to be as transparent as possible about telemetry collection and the data that is being
 stored. You should strongly consider adding an informational paragraph to your docs (usually the
@@ -198,12 +206,12 @@ For more information on the data being collected, please see the
 
 </details>
 
-#### 5. Publish a new version of your package.
+### 6. Publish a new version of your package.
 
 Package consumers need to install a version of your package that includes both the config file and
 post-install script in order for telemetry collection to occur.
 
-#### 6. Done!
+### 7. Done!
 
 Whenever consumers pick up a version of your package that includes the config file and post-install
 script, telemetry collection will run and collect metrics.

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.1.0...v1.1.1) (2024-01-04)
+
+
+### Bug Fixes
+
+* **deps:** upgrade devDependencies (minor) ([#159](https://github.com/ibm-telemetry/telemetry-js/issues/159)) ([1d4bc52](https://github.com/ibm-telemetry/telemetry-js/commit/1d4bc52968864cc5138a2a229be4dd81729eec27))
+* refactor some git-related commands ([4ef95b3](https://github.com/ibm-telemetry/telemetry-js/commit/4ef95b3e745d0b00a8e237d9211982bfd4d85428))
+
 ## [1.1.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.0.0...v1.1.0) (2023-12-18)
 
 

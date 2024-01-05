@@ -499,8 +499,8 @@ describe('class: JsxScope', () => {
 
       await jsxScope.resolveInvokers(accumulator, { name: 'basic-project', version: '0.0.1' })
 
-      expect(accumulator.elementInvokers.get(element1)).toStrictEqual('basic-project')
-      expect(accumulator.elementInvokers.get(element2)).toStrictEqual('basic-project')
+      expect(accumulator.elementInvokers.get(element1)).toBe('basic-project')
+      expect(accumulator.elementInvokers.get(element2)).toBe('basic-project')
     })
   })
 

@@ -7,6 +7,7 @@
 
 import * as ts from 'typescript'
 
+import { DEFAULT_IMPORT_KEY } from '../constants.js'
 import { type JsxImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
@@ -28,7 +29,7 @@ export class RenamedImportParser extends ImportParser {
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamedImports) {
       importNode.namedBindings.elements.forEach((element) => {
-        if (element.propertyName && element.propertyName.escapedText !== 'default') {
+        if (element.propertyName && element.propertyName.escapedText !== DEFAULT_IMPORT_KEY) {
           renamedImports.push({
             name: element.propertyName.escapedText.toString(),
             path: importPath,

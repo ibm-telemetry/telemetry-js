@@ -177,6 +177,11 @@ export class JsxScope extends Scope {
     instrumentedPackageName: string,
     localInstallers: PackageData[]
   ) {
+    // the file is not contained within the root, dismiss
+    if (path.relative(this.root, sourceFile.fileName).startsWith('..')) {
+      return undefined
+    }
+
     const containingDir = await getDirectoryPrefix(path.dirname(sourceFile.fileName), this.logger)
 
     if (containingDir === undefined) return undefined

@@ -61,7 +61,7 @@ describe('class: JsxScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    it('does not capture metrics for files that are not in instrumented package', async () => {
+    it("does not capture metrics for files that are not in instrumented package's installer", async () => {
       const metricReader = initializeOtelForTest()
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const cwd = new Fixture(

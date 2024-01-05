@@ -527,7 +527,7 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
 }
 `;
 
-exports[`class: JsxScope > run > does not capture metrics for files that are not in instrumented package 1`] = `
+exports[`class: JsxScope > run > does not capture metrics for files that are not in instrumented package's installer 1`] = `
 {
   "errors": [],
   "resourceMetrics": {

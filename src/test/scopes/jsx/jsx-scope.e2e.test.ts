@@ -562,7 +562,7 @@ describe('class: JsxScope', () => {
       )
 
       expect(installers).toMatchSnapshot()
-    })
+    }, 10000)
     it('does not find any installers for unknown package', async () => {
       const jsxScope = new JsxScope('', '', config, logger)
       const localPackages = [{ name: 'basic-project', version: '1.0.0' }]

@@ -20,9 +20,10 @@ import { type InstallingPackage } from './interfaces.js'
 export function findNestedDeps(
   dependencyTree: Record<string, unknown>,
   packageName: string,
-  packageVersion: string
+  packageVersion?: string
 ) {
   return objectScan([`**.dependencies.${packageName}`], {
-    filterFn: ({ value }: { value: InstallingPackage }) => value.version === packageVersion
+    filterFn: ({ value }: { value: InstallingPackage }) =>
+      packageVersion === undefined || value.version === packageVersion
   })(dependencyTree)
 }

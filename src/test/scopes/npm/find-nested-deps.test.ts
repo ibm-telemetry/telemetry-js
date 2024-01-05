@@ -55,7 +55,7 @@ describe('findNestedDeps', () => {
 
     const dependencyTree = JSON.parse(lsAllResult.stdout)
 
-    const nestedDeps = findNestedDeps(dependencyTree, 'instrumented', '1.0.0')
+    const nestedDeps = findNestedDeps(dependencyTree, 'instrumented', '2.0.0')
 
     expect(nestedDeps[0]).toMatchObject([
       'dependencies',
@@ -65,5 +65,24 @@ describe('findNestedDeps', () => {
       'dependencies',
       'instrumented'
     ])
+  })
+
+  it('finds all dependencies when no version specified', async () => {
+    const fixture = new Fixture('projects/complex-nesting-thingy')
+
+    const lsAllResult = await runCommand(
+      'npm ls --all --json',
+      logger,
+      { cwd: fixture.path },
+      false
+    )
+
+    const dependencyTree = JSON.parse(lsAllResult.stdout)
+
+    const nestedDepsWithVersion = findNestedDeps(dependencyTree, 'instrumented', '2.0.0')
+    const nestedDeps = findNestedDeps(dependencyTree, 'instrumented')
+
+    expect(nestedDepsWithVersion).toHaveLength(2)
+    expect(nestedDeps).toHaveLength(3)
   })
 })

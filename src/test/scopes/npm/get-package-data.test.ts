@@ -29,7 +29,7 @@ describe('getPackageData', () => {
     })
   })
 
-  it('throws error for non-existant directory', async () => {
+  it('throws error for non-existent directory', async () => {
     await expect(getPackageData('/made/up/directory', logger)).rejects.toThrow(Error)
   })
 })

@@ -5,8 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'node:path'
-
+import path from 'path'
 import type * as ts from 'typescript'
 
 import { findInstallingPackages } from '../../core/find-installing-packages.js'
@@ -14,6 +13,7 @@ import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { NoPackageJsonFoundError } from '../../exceptions/no-package-json-found-error.js'
+import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { InstallingPackage, PackageData } from '../npm/interfaces.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
@@ -24,7 +24,6 @@ import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import { SourceFileHandler } from './node-handlers/source-file-handler.js'
-import { findDeepestContainingDirectory } from './utils/find-deepest-containing-directory.js'
 import { getPackageJsonTree } from './utils/get-package-json-tree.js'
 import { getTrackedSourceFiles } from './utils/get-tracked-source-files.js'
 
@@ -69,6 +68,7 @@ export class JsxScope extends Scope {
       new NamedImportMatcher(),
       new RenamedImportMatcher()
     ]
+
     const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
     const instrumentedPackage = await getPackageData(this.cwd, this.logger)
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
@@ -89,7 +89,6 @@ export class JsxScope extends Scope {
           sourceFile,
           instrumentedPackage.name,
           importMatchers,
-          packageJsonTree,
           localInstallers
         )
       } else {
@@ -98,7 +97,6 @@ export class JsxScope extends Scope {
             sourceFile,
             instrumentedPackage.name,
             importMatchers,
-            packageJsonTree,
             localInstallers
           )
         )
@@ -115,20 +113,17 @@ export class JsxScope extends Scope {
    * @param sourceFile - The sourcefile node to generate metrics for.
    * @param instrumentedPackageName - Name of the instrumented package to capture metrics for.
    * @param importMatchers - Matchers instances to use for import-element matching.
-   * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
    * @param localInstallers - Array of local packages.
    */
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
     instrumentedPackageName: string,
     importMatchers: JsxElementImportMatcher[],
-    packageJsonTree: FileTree[],
     localInstallers: PackageData[]
   ) {
     const localFileInstaller = await this.findFileLocalInstaller(
       sourceFile,
       instrumentedPackageName,
-      packageJsonTree,
       localInstallers
     )
 
@@ -173,7 +168,6 @@ export class JsxScope extends Scope {
    *
    * @param sourceFile - The sourcefile to match to an installer.
    * @param instrumentedPackageName - Name of the instrumented package to match file against.
-   * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
    * @param localInstallers - Array of local packages.
    * @returns Local installer PackageData if found, undefined otherwise.
    */
@@ -181,14 +175,10 @@ export class JsxScope extends Scope {
   async findFileLocalInstaller(
     sourceFile: ts.SourceFile,
     instrumentedPackageName: string,
-    packageJsonTree: FileTree[],
     localInstallers: PackageData[]
   ) {
-    const containingDir = findDeepestContainingDirectory(
-      sourceFile.fileName,
-      packageJsonTree,
-      this.logger
-    )
+    const containingDir = await getDirectoryPrefix(path.dirname(sourceFile.fileName), this.logger)
+
     if (containingDir === undefined) return undefined
 
     let currDirPackage = await getPackageData(containingDir, this.logger)

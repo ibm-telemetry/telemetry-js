@@ -181,16 +181,12 @@ describe('class: JsxScope', () => {
       const root = new Fixture(path.join('projects', 'basic-project'))
       const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-      const packageJsonTree = await getPackageJsonTree(root.path, logger)
 
       const localInstaller = { name: 'basic-project', version: '1.0.0' }
 
-      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
-        sourceFile,
-        'instrumented',
-        packageJsonTree,
-        [localInstaller]
-      )
+      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(sourceFile, 'instrumented', [
+        localInstaller
+      ])
       expect(fileLocalInstaller).toStrictEqual(localInstaller)
     })
 
@@ -201,14 +197,12 @@ describe('class: JsxScope', () => {
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-      const packageJsonTree = await getPackageJsonTree(root.path, logger)
 
       const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
 
       const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
         sourceFile,
         'instrumented-top-level',
-        packageJsonTree,
         [localInstaller]
       )
       expect(fileLocalInstaller).toStrictEqual(localInstaller)
@@ -219,14 +213,12 @@ describe('class: JsxScope', () => {
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-      const packageJsonTree = await getPackageJsonTree(root.path, logger)
 
       const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
 
       const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
         sourceFile,
         'instrumented-top-level',
-        packageJsonTree,
         [localInstaller]
       )
       expect(fileLocalInstaller).toStrictEqual(undefined)
@@ -239,14 +231,12 @@ describe('class: JsxScope', () => {
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-      const packageJsonTree = await getPackageJsonTree(root.path, logger)
 
       const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
 
       const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
         sourceFile,
         'another-package',
-        packageJsonTree,
         [localInstaller]
       )
       expect(fileLocalInstaller).toStrictEqual(undefined)
@@ -259,14 +249,12 @@ describe('class: JsxScope', () => {
       const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
       const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
       const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-      const packageJsonTree = await getPackageJsonTree(root.path, logger)
 
       const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
 
       const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
         sourceFile,
         'another-package',
-        packageJsonTree,
         [localInstaller]
       )
       expect(fileLocalInstaller).toStrictEqual(undefined)
@@ -477,8 +465,8 @@ describe('class: JsxScope', () => {
       expect(accumulator.elementImports.get(defaultElement)).toStrictEqual(defaultImport)
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
       expect(accumulator.elementImports.get(renamedElement)).toStrictEqual(renamedImport)
-      expect(accumulator.elementImports.get(unmatchedElement1)).toStrictEqual(undefined)
-      expect(accumulator.elementImports.get(unmatchedElement2)).toStrictEqual(undefined)
+      expect(accumulator.elementImports.get(unmatchedElement1)).toBeUndefined()
+      expect(accumulator.elementImports.get(unmatchedElement2)).toBeUndefined()
     })
 
     it('can accept empty array', () => {

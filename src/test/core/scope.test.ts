@@ -38,7 +38,7 @@ describe('scope', () => {
       }
     })(logger)
 
-    expect(myScope.metrics['my-metric']).not.toBeDefined()
+    expect(myScope.metrics['my-metric']).toBeUndefined()
 
     myScope.capture(myMetric)
 

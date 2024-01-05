@@ -9,12 +9,7 @@ echo "Running eslint"
 npx eslint --fix --max-warnings=0 --ext .js,.cjs,.mjs,.jsx,.ts,.tsx .
 
 echo "Running package.json formatter"
-for file in `git ls-tree -r --name-only HEAD`; do
-  result=`ls $file 2>/dev/null`
-  if [ "$?" -eq "0" ]; then
-    echo $result
-  fi
-done | grep "package\\.json" | xargs node scripts/format-package-json.js --fix
+node scripts/format-package-json.js --fix
 
 # Lint once more to ensure no thrashing occurred
 scripts/lint

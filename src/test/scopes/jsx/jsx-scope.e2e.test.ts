@@ -221,7 +221,7 @@ describe('class: JsxScope', () => {
         'instrumented-top-level',
         [localInstaller]
       )
-      expect(fileLocalInstaller).toStrictEqual(undefined)
+      expect(fileLocalInstaller).toBeUndefined()
     })
 
     it('correctly returns undefined for file that has a different immediate local install', async () => {
@@ -239,7 +239,7 @@ describe('class: JsxScope', () => {
         'another-package',
         [localInstaller]
       )
-      expect(fileLocalInstaller).toStrictEqual(undefined)
+      expect(fileLocalInstaller).toBeUndefined()
     })
 
     it('correctly returns undefined for file that has a mid-level different local install', async () => {
@@ -257,7 +257,7 @@ describe('class: JsxScope', () => {
         'another-package',
         [localInstaller]
       )
-      expect(fileLocalInstaller).toStrictEqual(undefined)
+      expect(fileLocalInstaller).toBeUndefined()
     })
   })
 

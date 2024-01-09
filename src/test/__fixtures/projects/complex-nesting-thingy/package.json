@@ -2,7 +2,7 @@
   "name": "complex-nesting-thingy",
   "description": "",
   "version": "1.0.0",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "author": "",
   "main": "index.js",
   "workspaces": [

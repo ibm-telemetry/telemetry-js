@@ -5,22 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import path from 'path'
 import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
+import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { type FileTree, type JsxElementImportMatcher } from './interfaces.js'
+import { type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import { SourceFileHandler } from './node-handlers/source-file-handler.js'
-import { findDeepestContainingDirectory } from './utils/find-deepest-containing-directory.js'
-import { getPackageJsonTree } from './utils/get-package-json-tree.js'
 import { getTrackedSourceFiles } from './utils/get-tracked-source-files.js'
 
 /**
@@ -64,7 +64,6 @@ export class JsxScope extends Scope {
       new NamedImportMatcher(),
       new RenamedImportMatcher()
     ]
-    const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
     const instrumentedPackage = await getPackageData(this.cwd, this.logger)
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
 
@@ -72,21 +71,9 @@ export class JsxScope extends Scope {
 
     for (const sourceFile of sourceFiles) {
       if (this.runSync) {
-        await this.captureFileMetrics(
-          sourceFile,
-          instrumentedPackage.name,
-          importMatchers,
-          packageJsonTree
-        )
+        await this.captureFileMetrics(sourceFile, instrumentedPackage.name, importMatchers)
       } else {
-        promises.push(
-          this.captureFileMetrics(
-            sourceFile,
-            instrumentedPackage.name,
-            importMatchers,
-            packageJsonTree
-          )
-        )
+        promises.push(this.captureFileMetrics(sourceFile, instrumentedPackage.name, importMatchers))
       }
     }
 
@@ -100,20 +87,18 @@ export class JsxScope extends Scope {
    * @param sourceFile - The sourcefile node to generate metrics for.
    * @param instrumentedPackageName - Name of the instrumented package to capture metrics for.
    * @param importMatchers - Matchers instances to use for import-element matching.
-   * @param packageJsonTree - Pre-computed FileTree of Directory's Package.json.
    */
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
     instrumentedPackageName: string,
-    importMatchers: JsxElementImportMatcher[],
-    packageJsonTree: FileTree[]
+    importMatchers: JsxElementImportMatcher[]
   ) {
     const accumulator = new JsxElementAccumulator()
 
     this.processFile(accumulator, sourceFile)
     this.removeIrrelevantImports(accumulator, instrumentedPackageName)
     this.resolveElementImports(accumulator, importMatchers)
-    await this.resolveInvokers(accumulator, sourceFile.fileName, packageJsonTree)
+    await this.resolveInvokers(accumulator, sourceFile.fileName)
 
     accumulator.elements.forEach((jsxElement) => {
       const jsxImport = accumulator.elementImports.get(jsxElement)
@@ -173,18 +158,9 @@ export class JsxScope extends Scope {
    *
    * @param accumulator - Accumulator to store results in.
    * @param sourceFilePath - Absolute path to a sourceFile.
-   * @param packageJsonTree - Directory tree of package.json files.
    */
-  async resolveInvokers(
-    accumulator: JsxElementAccumulator,
-    sourceFilePath: string,
-    packageJsonTree: FileTree[]
-  ) {
-    const containingDir = findDeepestContainingDirectory(
-      sourceFilePath,
-      packageJsonTree,
-      this.logger
-    )
+  async resolveInvokers(accumulator: JsxElementAccumulator, sourceFilePath: string) {
+    const containingDir = await getDirectoryPrefix(path.dirname(sourceFilePath), this.logger)
 
     if (containingDir === undefined) {
       return

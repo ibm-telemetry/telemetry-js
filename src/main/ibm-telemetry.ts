@@ -13,17 +13,14 @@ import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config-validator.js'
 import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
 import { Environment } from './core/environment.js'
-import { getCommitBranches } from './core/get-commit-branches.js'
-import { getCommitTags } from './core/get-commit-tags.js'
 import { getProjectRoot } from './core/get-project-root.js'
+import { GitInfoProvider } from './core/git-info-provider.js'
 import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
 import { type Logger } from './core/log/logger.js'
 import { safeStringify } from './core/log/safe-stringify.js'
 import { Trace } from './core/log/trace.js'
 import { parseYamlFile } from './core/parse-yaml-file.js'
-import { runCommand } from './core/run-command.js'
 import { type Scope } from './core/scope.js'
-import { tokenizeRepository } from './core/tokenize-repository.js'
 import { UnknownScopeError } from './exceptions/unknown-scope-error.js'
 import { getTelemetryPackageData } from './scopes/npm/get-telemetry-package-data.js'
 import { scopeRegistry } from './scopes/scope-registry.js'
@@ -93,7 +90,7 @@ export class IbmTelemetry {
     configValidator.validate(config)
 
     const { gitOrigin, repository, commitHash, commitTags, commitBranches } =
-      await this.getGitInfo(cwd)
+      await new GitInfoProvider(cwd, this.logger).getGitInfo()
     const emitterInfo = await getTelemetryPackageData(this.logger)
 
     const metricReader = initializeOpenTelemetry(
@@ -193,17 +190,5 @@ export class IbmTelemetry {
         resolve(undefined)
       })
     })
-  }
-
-  @Trace()
-  private async getGitInfo(cwd: string) {
-    // TODO: handle non-existent remote
-    const gitOrigin = (await runCommand('git remote get-url origin', this.logger)).stdout
-    const commitHash = (await runCommand('git rev-parse HEAD', this.logger)).stdout
-    const commitBranches = await getCommitBranches(commitHash, cwd, this.logger)
-    const commitTags = await getCommitTags(commitHash, cwd, this.logger)
-    const repository = tokenizeRepository(gitOrigin)
-
-    return { gitOrigin, commitHash, commitBranches, commitTags, repository }
   }
 }

@@ -26,6 +26,6 @@ describe('numericLiteralHandler', () => {
       handler.getData(
         findNodesByType(sourceFile, ts.SyntaxKind.NumericLiteral)[0] as ts.NumericLiteral
       )
-    ).toStrictEqual(5)
+    ).toBe(5)
   })
 })

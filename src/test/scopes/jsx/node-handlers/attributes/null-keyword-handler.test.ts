@@ -21,6 +21,6 @@ describe('nullKeywordHandler', () => {
 
     const handler = new NullKeywordHandler(sourceFile, logger)
 
-    expect(handler.getData(sourceFile as ts.Node)).toStrictEqual(null)
+    expect(handler.getData(sourceFile as ts.Node)).toBeNull()
   })
 })

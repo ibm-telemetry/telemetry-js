@@ -11,7 +11,7 @@ export const NpmScopeAttributes = Object.freeze({
   RAW: 'npm.dependency.raw',
   OWNER: 'npm.dependency.owner',
   NAME: 'npm.dependency.name',
-  INSTRUMENTED: 'npm.dependency.instrumented',
+  IS_INSTRUMENTED: 'npm.dependency.isInstrumented',
 
   //
   // Semantic version attributes
@@ -20,17 +20,5 @@ export const NpmScopeAttributes = Object.freeze({
   VERSION_MAJOR: 'npm.dependency.version.major',
   VERSION_MINOR: 'npm.dependency.version.minor',
   VERSION_PATCH: 'npm.dependency.version.patch',
-  VERSION_PRE_RELEASE: 'npm.dependency.version.preRelease',
-
-  //
-  // Attributes relating to a dependency's installer
-  //
-  INSTALLER_RAW: 'npm.dependency.installer.raw',
-  INSTALLER_OWNER: 'npm.dependency.installer.owner',
-  INSTALLER_NAME: 'npm.dependency.installer.name',
-  INSTALLER_VERSION_RAW: 'npm.dependency.installer.version.raw',
-  INSTALLER_VERSION_MAJOR: 'npm.dependency.installer.version.major',
-  INSTALLER_VERSION_MINOR: 'npm.dependency.installer.version.minor',
-  INSTALLER_VERSION_PATCH: 'npm.dependency.installer.version.patch',
-  INSTALLER_VERSION_PRE_RELEASE: 'npm.dependency.installer.version.preRelease'
+  VERSION_PRE_RELEASE: 'npm.dependency.version.preRelease'
 })

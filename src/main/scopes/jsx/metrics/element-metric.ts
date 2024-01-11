@@ -13,6 +13,8 @@ import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
+import { GlobalScopeAttributes } from '../../global-scope-attributes.js'
+import { PackageData } from '../../npm/interfaces.js'
 import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../interfaces.js'
 import { JsxScopeAttributes } from '../jsx-scope-attributes.js'
 
@@ -26,6 +28,7 @@ export class ElementMetric extends ScopeMetric {
   private readonly invoker: string | undefined
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
+  private readonly instrumentedPackage: PackageData
 
   /**
    * Constructs a JsxElementMetric.
@@ -33,6 +36,7 @@ export class ElementMetric extends ScopeMetric {
    * @param jsxElement - Object containing name and version to extract data to generate metric from.
    * @param matchingImport - Import that matched the provided JsxElement in the file.
    * @param invoker - Name of the package that invoked the JsxElement.
+   * @param instrumentedPackage - Data (name and version) pertaining to instrumented package.
    * @param config - Determines which attributes name and values to collect for.
    * @param logger - Logger instance.
    */
@@ -40,6 +44,7 @@ export class ElementMetric extends ScopeMetric {
     jsxElement: JsxElement,
     matchingImport: JsxImport,
     invoker: string | undefined,
+    instrumentedPackage: PackageData,
     config: ConfigSchema,
     logger: Logger
   ) {
@@ -47,6 +52,7 @@ export class ElementMetric extends ScopeMetric {
     this.jsxElement = jsxElement
     this.matchingImport = matchingImport
     this.invoker = invoker
+    this.instrumentedPackage = instrumentedPackage
 
     this.allowedAttributeNames = config.collect.jsx?.elements?.allowedAttributeNames ?? []
     this.allowedAttributeStringValues =
@@ -82,6 +88,20 @@ export class ElementMetric extends ScopeMetric {
       this.allowedAttributeStringValues
     )
 
+    const packageDetailsProvider = new PackageDetailsProvider(this.logger)
+
+    const {
+      owner: instrumentedOwner,
+      name: instrumentedName,
+      major: instrumentedMajor,
+      minor: instrumentedMinor,
+      patch: instrumentedPatch,
+      preRelease: instrumentedPreRelease
+    } = packageDetailsProvider.getPackageDetails(
+      this.instrumentedPackage.name,
+      this.instrumentedPackage.version
+    )
+
     let metricData: Attributes = {
       [JsxScopeAttributes.NAME]: this.jsxElement.name,
       [JsxScopeAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
@@ -91,7 +111,15 @@ export class ElementMetric extends ScopeMetric {
       ),
       [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
       [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
-      [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name
+      [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name,
+      [GlobalScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
+      [GlobalScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
+      [GlobalScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
+      [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: this.instrumentedPackage.version,
+      [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: instrumentedMajor?.toString(),
+      [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
+      [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
+      [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
     }
 
     // Handle renamed elements
@@ -105,7 +133,12 @@ export class ElementMetric extends ScopeMetric {
     metricData = hash(metricData, [
       JsxScopeAttributes.INVOKER_PACKAGE_RAW,
       JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
-      JsxScopeAttributes.INVOKER_PACKAGE_NAME
+      JsxScopeAttributes.INVOKER_PACKAGE_NAME,
+      GlobalScopeAttributes.INSTRUMENTED_RAW,
+      GlobalScopeAttributes.INSTRUMENTED_OWNER,
+      GlobalScopeAttributes.INSTRUMENTED_NAME,
+      GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW,
+      GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
     ])
 
     return metricData

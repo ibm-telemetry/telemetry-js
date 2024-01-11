@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substitute } from '../../../../main/core/anonymize/substitute.js'
+import { GlobalScopeAttributes } from '../../../../main/scopes/global-scope-attributes.js'
 import {
   type JsxElement,
   JsxElementAttribute,
@@ -52,8 +53,14 @@ describe('class: ElementMetric', () => {
   }
 
   it('returns the correct attributes for a standard element', () => {
-    const attributes = new ElementMetric(jsxElement, jsxImport, 'the-library', config, logger)
-      .attributes
+    const attributes = new ElementMetric(
+      jsxElement,
+      jsxImport,
+      'the-library',
+      { name: 'instrumented', version: '1.0.0' },
+      config,
+      logger
+    ).attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, JsxElementAttribute['value']>>(
       (prev, cur) => {
         return { ...prev, [cur.name]: cur.value }
@@ -72,12 +79,25 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library',
+          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'jsx.element.invoker.package.raw',
           'jsx.element.invoker.package.owner',
-          'jsx.element.invoker.package.name'
+          'jsx.element.invoker.package.name',
+          'npm.dependency.instrumented.raw',
+          'npm.dependency.instrumented.owner',
+          'npm.dependency.instrumented.name',
+          'npm.dependency.instrumented.version.raw',
+          'npm.dependency.instrumented.version.preRelease'
         ]
       )
     )
@@ -85,8 +105,17 @@ describe('class: ElementMetric', () => {
 
   it('returns the correct attributes for a renamed element', () => {
     const renamedImport = { ...jsxImport, name: 'theActualName', rename: 'theName' }
-    const attributes = new ElementMetric(jsxElement, renamedImport, 'the-library', config, logger)
-      .attributes
+    const attributes = new ElementMetric(
+      jsxElement,
+      renamedImport,
+      'the-library',
+      {
+        name: 'instrumented',
+        version: '1.0.0-rc.4'
+      },
+      config,
+      logger
+    ).attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
@@ -102,12 +131,25 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library',
+          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.4',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.4'
         },
         [
           'jsx.element.invoker.package.raw',
           'jsx.element.invoker.package.owner',
-          'jsx.element.invoker.package.name'
+          'jsx.element.invoker.package.name',
+          'npm.dependency.instrumented.raw',
+          'npm.dependency.instrumented.owner',
+          'npm.dependency.instrumented.name',
+          'npm.dependency.instrumented.version.raw',
+          'npm.dependency.instrumented.version.preRelease'
         ]
       )
     )
@@ -115,8 +157,17 @@ describe('class: ElementMetric', () => {
 
   it('returns the correct attributes for a default element', () => {
     const defaultImport = { ...jsxImport, name: '[Default]', rename: 'theName', isDefault: true }
-    const attributes = new ElementMetric(jsxElement, defaultImport, 'the-library', config, logger)
-      .attributes
+    const attributes = new ElementMetric(
+      jsxElement,
+      defaultImport,
+      'the-library',
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      config,
+      logger
+    ).attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
@@ -132,20 +183,42 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library'
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library',
+          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+9999',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'jsx.element.invoker.package.raw',
           'jsx.element.invoker.package.owner',
-          'jsx.element.invoker.package.name'
+          'jsx.element.invoker.package.name',
+          'npm.dependency.instrumented.raw',
+          'npm.dependency.instrumented.owner',
+          'npm.dependency.instrumented.name',
+          'npm.dependency.instrumented.version.raw',
+          'npm.dependency.instrumented.version.preRelease'
         ]
       )
     )
   })
 
   it('returns the correct attributes for an element with no invoker', () => {
-    const attributes = new ElementMetric(jsxElement, jsxImport, undefined, config, logger)
-      .attributes
+    const attributes = new ElementMetric(
+      jsxElement,
+      jsxImport,
+      undefined,
+      {
+        name: 'instrumented',
+        version: '1.0.0-rc.0+9999'
+      },
+      config,
+      logger
+    ).attributes
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
@@ -161,20 +234,42 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: undefined,
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
-          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: undefined
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: undefined,
+          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.0+9999',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.0'
         },
         [
           'jsx.element.invoker.package.raw',
           'jsx.element.invoker.package.owner',
-          'jsx.element.invoker.package.name'
+          'jsx.element.invoker.package.name',
+          'npm.dependency.instrumented.raw',
+          'npm.dependency.instrumented.owner',
+          'npm.dependency.instrumented.name',
+          'npm.dependency.instrumented.version.raw',
+          'npm.dependency.instrumented.version.preRelease'
         ]
       )
     )
   })
 
   it('returns the correct attributes for an element with invoker that has owner', () => {
-    const attributes = new ElementMetric(jsxElement, jsxImport, '@owner/library', config, logger)
-      .attributes
+    const attributes = new ElementMetric(
+      jsxElement,
+      jsxImport,
+      '@owner/library',
+      {
+        name: '@instrumented/instrumented',
+        version: '1.0.0'
+      },
+      config,
+      logger
+    ).attributes
 
     const attrMap = jsxElement.attributes.reduce<Record<string, unknown>>((prev, cur) => {
       return { ...prev, [cur.name]: cur.value }
@@ -191,12 +286,25 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
-          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library'
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library',
+          [GlobalScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'jsx.element.invoker.package.raw',
           'jsx.element.invoker.package.owner',
-          'jsx.element.invoker.package.name'
+          'jsx.element.invoker.package.name',
+          'npm.dependency.instrumented.raw',
+          'npm.dependency.instrumented.owner',
+          'npm.dependency.instrumented.name',
+          'npm.dependency.instrumented.version.raw',
+          'npm.dependency.instrumented.version.preRelease'
         ]
       )
     )
@@ -228,6 +336,10 @@ describe('class: ElementMetric', () => {
       elementWithAllowedAttrs,
       jsxImport,
       '@owner/library',
+      {
+        name: '@instrumented/instrumented',
+        version: '1.0.0+123456'
+      },
       config,
       logger
     ).attributes
@@ -250,12 +362,25 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
-          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library'
+          [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library',
+          [GlobalScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+123456',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           JsxScopeAttributes.INVOKER_PACKAGE_RAW,
           JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
-          JsxScopeAttributes.INVOKER_PACKAGE_NAME
+          JsxScopeAttributes.INVOKER_PACKAGE_NAME,
+          GlobalScopeAttributes.INSTRUMENTED_RAW,
+          GlobalScopeAttributes.INSTRUMENTED_OWNER,
+          GlobalScopeAttributes.INSTRUMENTED_NAME,
+          GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW,
+          GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
         ]
       )
     )

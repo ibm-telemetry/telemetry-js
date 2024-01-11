@@ -1,6 +1,6 @@
 // @ts-nocheck
-import Accordion from 'instrumented'
+import { CoolComponent } from 'instrumented'
 
 export const MyOtherThing = () => {
-  return <Accordion secondProp='bar' />
+  return <CoolComponent secondProp='bar' />
 }

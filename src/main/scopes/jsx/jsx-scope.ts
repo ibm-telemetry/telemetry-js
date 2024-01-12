@@ -98,16 +98,16 @@ export class JsxScope extends Scope {
    */
   async findRelevantSourceFiles(instrumentedPackage: PackageData) {
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
+    const installingPackages = await findInstallingPackages(
+      this.cwd,
+      this.root,
+      instrumentedPackage,
+      this.logger
+    )
 
     const filterPromises = sourceFiles.map(async (f) => {
       const prefix = await getDirectoryPrefix(path.dirname(f.fileName), this.logger)
       const prefixPackageData = await getPackageData(prefix, this.root, this.logger)
-      const installingPackages = await findInstallingPackages(
-        this.cwd,
-        this.root,
-        instrumentedPackage,
-        this.logger
-      )
 
       return installingPackages.some(
         (dep) => dep.name === prefixPackageData?.name && dep.version === prefixPackageData?.version

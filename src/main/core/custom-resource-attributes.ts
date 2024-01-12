@@ -25,5 +25,5 @@ export const CustomResourceAttributes = Object.freeze({
   ANALYZED_REPOSITORY: 'analyzed.repository',
   ANALYZED_COMMIT: 'analyzed.commit',
   ANALYZED_REFS: 'analyzed.refs',
-  ANALYZED_SIMPLE: 'analyzed.simple'
+  ANALYZED_PATH: 'analyzed.path'
 })

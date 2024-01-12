@@ -104,20 +104,20 @@ export class IbmTelemetry {
           [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
-          [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
-          [CustomResourceAttributes.ANALYZED_SIMPLE]: `${repository.host ?? ''}/${
+          [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
             repository.owner ?? ''
           }/${repository.repository ?? ''}`,
+          [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
+          [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
           [CustomResourceAttributes.DATE]: date
         },
         [
           CustomResourceAttributes.ANALYZED_COMMIT,
           CustomResourceAttributes.ANALYZED_HOST,
           CustomResourceAttributes.ANALYZED_OWNER,
+          CustomResourceAttributes.ANALYZED_PATH,
           CustomResourceAttributes.ANALYZED_REPOSITORY,
-          CustomResourceAttributes.ANALYZED_REFS,
-          CustomResourceAttributes.ANALYZED_SIMPLE
+          CustomResourceAttributes.ANALYZED_REFS
         ]
       )
     )

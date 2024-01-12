@@ -20,10 +20,12 @@ export function initializeOtelForTest() {
     [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',
     [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: 'telemetryVersion',
     [CustomResourceAttributes.PROJECT_ID]: 'projectId',
-    [CustomResourceAttributes.ANALYZED_RAW]: 'gitOrigin',
+    [CustomResourceAttributes.ANALYZED_SIMPLE]: 'host/owner/repository',
     [CustomResourceAttributes.ANALYZED_HOST]: 'host',
     [CustomResourceAttributes.ANALYZED_OWNER]: 'owner',
     [CustomResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
+    [CustomResourceAttributes.ANALYZED_COMMIT]: 'commitHash',
+    [CustomResourceAttributes.ANALYZED_REFS]: [],
     [CustomResourceAttributes.DATE]: date
   })
 }

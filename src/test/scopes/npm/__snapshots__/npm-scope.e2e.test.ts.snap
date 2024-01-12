@@ -30,10 +30,12 @@ exports[`class: NpmScope > run > correctly captures dependency data 1`] = `
     "resource": Resource {
       "_asyncAttributesPromise": undefined,
       "_attributes": {
+        "analyzed.commit": "commitHash",
         "analyzed.host": "host",
         "analyzed.owner": "owner",
-        "analyzed.raw": "gitOrigin",
+        "analyzed.refs": [],
         "analyzed.repository": "repository",
+        "analyzed.simple": "host/owner/repository",
         "date": "1970-01-01T00:00:02.023Z",
         "project.id": "projectId",
         "service.name": "IBM Telemetry",
@@ -44,10 +46,12 @@ exports[`class: NpmScope > run > correctly captures dependency data 1`] = `
         "telemetry.sdk.version": "[omitted for test snapshot]",
       },
       "_syncAttributes": {
+        "analyzed.commit": "commitHash",
         "analyzed.host": "host",
         "analyzed.owner": "owner",
-        "analyzed.raw": "gitOrigin",
+        "analyzed.refs": [],
         "analyzed.repository": "repository",
+        "analyzed.simple": "host/owner/repository",
         "date": "1970-01-01T00:00:02.023Z",
         "project.id": "projectId",
         "service.name": "IBM Telemetry",

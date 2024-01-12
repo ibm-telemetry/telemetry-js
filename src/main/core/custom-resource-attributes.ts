@@ -20,10 +20,10 @@ export const CustomResourceAttributes = Object.freeze({
   //
   // Attributes relating to details about the analyzed repository
   //
-  ANALYZED_RAW: 'analyzed.raw',
   ANALYZED_HOST: 'analyzed.host',
   ANALYZED_OWNER: 'analyzed.owner',
   ANALYZED_REPOSITORY: 'analyzed.repository',
   ANALYZED_COMMIT: 'analyzed.commit',
-  ANALYZED_REFS: 'analyzed.refs'
+  ANALYZED_REFS: 'analyzed.refs',
+  ANALYZED_SIMPLE: 'analyzed.simple'
 })

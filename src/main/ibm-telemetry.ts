@@ -89,8 +89,10 @@ export class IbmTelemetry {
     // This will throw if config does not conform to ConfigSchema
     configValidator.validate(config)
 
-    const { gitOrigin, repository, commitHash, commitTags, commitBranches } =
-      await new GitInfoProvider(cwd, this.logger).getGitInfo()
+    const { repository, commitHash, commitTags, commitBranches } = await new GitInfoProvider(
+      cwd,
+      this.logger
+    ).getGitInfo()
     const emitterInfo = await getTelemetryPackageData(this.logger)
 
     const metricReader = initializeOpenTelemetry(
@@ -99,7 +101,9 @@ export class IbmTelemetry {
           [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
           [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
           [CustomResourceAttributes.PROJECT_ID]: config.projectId,
-          [CustomResourceAttributes.ANALYZED_RAW]: gitOrigin,
+          [CustomResourceAttributes.ANALYZED_SIMPLE]: `${repository.host ?? ''}/${
+            repository.owner ?? ''
+          }/${repository.repository ?? ''}`,
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
@@ -108,7 +112,7 @@ export class IbmTelemetry {
           [CustomResourceAttributes.DATE]: date
         },
         [
-          CustomResourceAttributes.ANALYZED_RAW,
+          CustomResourceAttributes.ANALYZED_SIMPLE,
           CustomResourceAttributes.ANALYZED_HOST,
           CustomResourceAttributes.ANALYZED_OWNER,
           CustomResourceAttributes.ANALYZED_REPOSITORY,

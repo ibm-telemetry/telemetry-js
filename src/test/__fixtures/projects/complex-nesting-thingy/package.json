@@ -8,15 +8,12 @@
   "workspaces": [
     "package1",
     "package2",
-    "package3",
-    "mid-level"
+    "package3"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "root-only": "^1.0.0",
-    "instrumented-top-level": "^1.0.0",
-    "another-package": "^1.0.0"
+    "root-only": "^1.0.0"
   }
 }

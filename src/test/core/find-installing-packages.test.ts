@@ -8,7 +8,7 @@ import path from 'path'
 import { describe, expect, it } from 'vitest'
 
 import { findInstallingPackages } from '../../main/core/find-installing-packages.js'
-import { NoPackageJsonFoundError } from '../../main/exceptions/no-package-json-found-error.js'
+import { NoNodeModulesFoundError } from '../../main/exceptions/no-node-modules-found-error.js'
 import { Fixture } from '../__utils/fixture.js'
 import { initLogger } from '../__utils/init-logger.js'
 
@@ -22,11 +22,10 @@ describe('findInstallingPackages', () => {
         await findInstallingPackages(
           fixture.path,
           path.join(fixture.path, '..', '..'),
-          logger,
-          'not-here',
-          '0.1.0'
+          { name: 'not-here', version: '0.1.0' },
+          logger
         )
-    ).rejects.toThrow(NoPackageJsonFoundError)
+    ).rejects.toThrow(NoNodeModulesFoundError)
   })
 
   it('correctly finds installing package data', async () => {
@@ -34,27 +33,9 @@ describe('findInstallingPackages', () => {
     const pkgs = await findInstallingPackages(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      logger,
-      'instrumented',
-      '0.1.0'
+      { name: 'instrumented', version: '0.1.0' },
+      logger
     )
-
-    expect(pkgs).toMatchSnapshot()
-  })
-
-  it('correctly finds installing package data for multiple versions when version is not supplied', async () => {
-    const cwd = new Fixture(
-      path.join(
-        'projects',
-        'complex-nesting-thingy',
-        'node_modules',
-        'package2',
-        'node_modules',
-        'instrumented'
-      )
-    )
-    const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-    const pkgs = await findInstallingPackages(cwd.path, root.path, logger, 'instrumented')
 
     expect(pkgs).toMatchSnapshot()
   })
@@ -64,9 +45,8 @@ describe('findInstallingPackages', () => {
     const pkgs = await findInstallingPackages(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      logger,
-      'not-here',
-      '0.1.0'
+      { name: 'not-here', version: '0.1.0' },
+      logger
     )
 
     expect(pkgs).toMatchSnapshot()
@@ -77,9 +57,8 @@ describe('findInstallingPackages', () => {
     const pkgs = await findInstallingPackages(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      logger,
-      'instrumented',
-      '0.3.0'
+      { name: 'instrumented', version: '0.3.0' },
+      logger
     )
 
     expect(pkgs).toMatchSnapshot()

@@ -4,10 +4,10 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { NoPackageJsonFoundError } from '../exceptions/no-package-json-found-error.js'
+import { NoNodeModulesFoundError } from '../exceptions/no-node-modules-found-error.js'
 import { findInstallersFromTree } from '../scopes/npm/find-installers-from-tree.js'
 import { hasNodeModulesFolder } from '../scopes/npm/has-node-modules-folder.js'
-import { InstallingPackage } from '../scopes/npm/interfaces.js'
+import { InstallingPackage, PackageData } from '../scopes/npm/interfaces.js'
 import { DirectoryEnumerator } from './directory-enumerator.js'
 import { Logger } from './log/logger.js'
 import { runCommand } from './run-command.js'
@@ -24,24 +24,22 @@ import { runCommand } from './run-command.js'
  * @param cwd - Current working directory. This must be inside of the root directory. This is an
  * absolute path.
  * @param root - Root-most directory. This is an absolute path.
+ * @param packageData - The name  and exact version of the package to search for.
  * @param logger - Logger instance.
- * @param packageName - The name of the package to search for.
- * @param packageVersion - The exact version of the package to search for.
  * @returns A possibly empty array of installing packages.
  */
 export async function findInstallingPackages(
   cwd: string,
   root: string,
-  logger: Logger,
-  packageName: string,
-  packageVersion?: string
+  packageData: PackageData,
+  logger: Logger
 ): Promise<InstallingPackage[]> {
-  logger.traceEnter('', 'findInstallingPackages', [packageName, packageVersion, cwd, root])
+  logger.traceEnter('', 'findInstallingPackages', [cwd, root, packageData])
   const dirs = await new DirectoryEnumerator(logger).find(cwd, root, hasNodeModulesFolder)
   const topMostDir = dirs.pop()
 
   if (topMostDir === undefined) {
-    throw new NoPackageJsonFoundError(cwd, root)
+    throw new NoNodeModulesFoundError(cwd, root)
   }
 
   // Allow this command to try and obtain results even if it exited with a total or partial error
@@ -49,7 +47,7 @@ export async function findInstallingPackages(
 
   const dependencyTree = JSON.parse(result.stdout)
 
-  const installers = findInstallersFromTree(dependencyTree, logger, packageName, packageVersion)
+  const installers = findInstallersFromTree(dependencyTree, packageData, logger)
 
   logger.traceExit('', 'findInstallingPackages', installers)
   return installers

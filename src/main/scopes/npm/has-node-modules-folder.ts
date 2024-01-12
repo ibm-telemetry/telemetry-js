@@ -21,7 +21,6 @@ export async function hasNodeModulesFolder(dirPath: string) {
     await access(path.join(dirPath, 'node_modules'))
   } catch (e) {
     err = e
-    // TODO: log this for good measure
   }
 
   return err === undefined

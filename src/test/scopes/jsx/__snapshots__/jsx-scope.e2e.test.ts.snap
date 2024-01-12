@@ -73,6 +73,63 @@ exports[`class: JsxScope > findPkgLocalInstallers > correctly finds installers f
 ]
 `;
 
+exports[`class: JsxScope > parseFile > correctly detects imports and elements in a given file > elements 1`] = `
+[
+  {
+    "attributes": [
+      {
+        "name": "firstProp",
+        "value": ComplexAttribute {
+          "complexValue": "1 === 5 ? 'boo' : 'baa'",
+        },
+      },
+      {
+        "name": "simple",
+        "value": "4",
+      },
+      {
+        "name": "woo",
+        "value": true,
+      },
+    ],
+    "name": "Button",
+    "prefix": undefined,
+  },
+  {
+    "attributes": [
+      {
+        "name": "firstProp",
+        "value": ComplexAttribute {
+          "complexValue": "1 === 5 ? 'boo' : 'baa'",
+        },
+      },
+      {
+        "name": "simple",
+        "value": "4",
+      },
+      {
+        "name": "woo",
+        "value": true,
+      },
+    ],
+    "name": "Button",
+    "prefix": undefined,
+  },
+]
+`;
+
+exports[`class: JsxScope > parseFile > correctly detects imports and elements in a given file > imports 1`] = `
+[
+  {
+    "isAll": false,
+    "isDefault": true,
+    "name": "[Default]",
+    "path": "instrumented",
+    "rename": "Button",
+  },
+]
+`;
+
 exports[`class: JsxScope > processFile > correctly detects imports and elements in a given file > elements 1`] = `
 [
   {

@@ -101,23 +101,23 @@ export class IbmTelemetry {
           [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
           [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
           [CustomResourceAttributes.PROJECT_ID]: config.projectId,
-          [CustomResourceAttributes.ANALYZED_SIMPLE]: `${repository.host ?? ''}/${
-            repository.owner ?? ''
-          }/${repository.repository ?? ''}`,
+          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
           [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
+          [CustomResourceAttributes.ANALYZED_SIMPLE]: `${repository.host ?? ''}/${
+            repository.owner ?? ''
+          }/${repository.repository ?? ''}`,
           [CustomResourceAttributes.DATE]: date
         },
         [
-          CustomResourceAttributes.ANALYZED_SIMPLE,
+          CustomResourceAttributes.ANALYZED_COMMIT,
           CustomResourceAttributes.ANALYZED_HOST,
           CustomResourceAttributes.ANALYZED_OWNER,
           CustomResourceAttributes.ANALYZED_REPOSITORY,
-          CustomResourceAttributes.ANALYZED_COMMIT,
-          CustomResourceAttributes.ANALYZED_REFS
+          CustomResourceAttributes.ANALYZED_REFS,
+          CustomResourceAttributes.ANALYZED_SIMPLE
         ]
       )
     )

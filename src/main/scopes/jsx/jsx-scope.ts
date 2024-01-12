@@ -4,27 +4,24 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import path from 'path'
 import type * as ts from 'typescript'
 
-import { findInstallingPackages } from '../../core/find-installing-packages.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
-import { NoPackageJsonFoundError } from '../../exceptions/no-package-json-found-error.js'
+import { findInstallingPackages } from '../npm/find-installing-packages.js'
 import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { InstallingPackage, PackageData } from '../npm/interfaces.js'
+import { PackageData } from '../npm/interfaces.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { FileTree, type JsxElementImportMatcher } from './interfaces.js'
+import { type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import { SourceFileHandler } from './node-handlers/source-file-handler.js'
-import { getPackageJsonTree } from './utils/get-package-json-tree.js'
 import { getTrackedSourceFiles } from './utils/get-tracked-source-files.js'
 
 /**
@@ -49,7 +46,7 @@ export class JsxScope extends Scope {
     Object.keys(collectorKeys).forEach((key) => {
       switch (key) {
         case 'elements':
-          promises.push(this.captureElementMetrics())
+          promises.push(this.captureAllMetrics())
           break
       }
     })
@@ -62,48 +59,65 @@ export class JsxScope extends Scope {
    * directory's project.
    */
   @Trace()
-  async captureElementMetrics(): Promise<void> {
+  async captureAllMetrics(): Promise<void> {
     const importMatchers = [
       new AllImportMatcher(),
       new NamedImportMatcher(),
       new RenamedImportMatcher()
     ]
+    const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
+    const sourceFiles = await this.findRelevantSourceFiles(instrumentedPackage)
 
-    const packageJsonTree = await getPackageJsonTree(this.root, this.logger)
-    const instrumentedPackage = await getPackageData(this.cwd, this.logger)
-    const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
-
-    const localPackages = await this.findLocalPackages(packageJsonTree)
-
-    const localInstallers = await this.findPkgLocalInstallers(
-      instrumentedPackage.name,
-      instrumentedPackage.version,
-      localPackages
-    )
+    this.logger.debug('Filtered source files: ' + sourceFiles.map((f) => f.fileName))
 
     const promises: Promise<void>[] = []
 
     for (const sourceFile of sourceFiles) {
+      const resultPromise = this.captureFileMetrics(
+        sourceFile,
+        instrumentedPackage.name,
+        importMatchers
+      )
+
       if (this.runSync) {
-        await this.captureFileMetrics(
-          sourceFile,
-          instrumentedPackage.name,
-          importMatchers,
-          localInstallers
-        )
+        await resultPromise
       } else {
-        promises.push(
-          this.captureFileMetrics(
-            sourceFile,
-            instrumentedPackage.name,
-            importMatchers,
-            localInstallers
-          )
-        )
+        promises.push(resultPromise)
       }
     }
 
     await Promise.allSettled(promises)
+  }
+
+  /**
+   * Finds tracked source files and then filters them based on ones that appear in a  project which
+   * depends on the in-context instrumented package/version.
+   *
+   * @param instrumentedPackage - Data about the instrumented package to use during filtering.
+   * @returns A (possibly empty) array of source files.
+   */
+  async findRelevantSourceFiles(instrumentedPackage: PackageData) {
+    const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
+
+    const filterPromises = sourceFiles.map(async (f) => {
+      const prefix = await getDirectoryPrefix(path.dirname(f.fileName), this.logger)
+      const prefixPackageData = await getPackageData(prefix, this.root, this.logger)
+      const installingPackages = await findInstallingPackages(
+        this.cwd,
+        this.root,
+        instrumentedPackage,
+        this.logger
+      )
+
+      return installingPackages.some(
+        (dep) => dep.name === prefixPackageData?.name && dep.version === prefixPackageData?.version
+      )
+    })
+    const filterData = await Promise.all(filterPromises)
+
+    return sourceFiles.filter((_, index) => {
+      return filterData[index]
+    })
   }
 
   /**
@@ -113,31 +127,18 @@ export class JsxScope extends Scope {
    * @param sourceFile - The sourcefile node to generate metrics for.
    * @param instrumentedPackageName - Name of the instrumented package to capture metrics for.
    * @param importMatchers - Matchers instances to use for import-element matching.
-   * @param localInstallers - Array of local packages.
    */
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
     instrumentedPackageName: string,
-    importMatchers: JsxElementImportMatcher[],
-    localInstallers: PackageData[]
+    importMatchers: JsxElementImportMatcher[]
   ) {
-    const localFileInstaller = await this.findFileLocalInstaller(
-      sourceFile,
-      instrumentedPackageName,
-      localInstallers
-    )
-
-    // file does not belong to a local installer
-    if (localFileInstaller === undefined) {
-      return
-    }
-
     const accumulator = new JsxElementAccumulator()
 
     this.processFile(accumulator, sourceFile)
     this.removeIrrelevantImports(accumulator, instrumentedPackageName)
     this.resolveElementImports(accumulator, importMatchers)
-    await this.resolveInvokers(accumulator, localFileInstaller)
+    await this.resolveInvokers(accumulator, sourceFile.fileName)
 
     accumulator.elements.forEach((jsxElement) => {
       const jsxImport = accumulator.elementImports.get(jsxElement)
@@ -149,79 +150,6 @@ export class JsxScope extends Scope {
 
       this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
     })
-  }
-  /**
-   * Determines if a given package is a local installer given an array of local installers.
-   *
-   * @param localInstallers - Array of local packages.
-   * @param packageData - Package to compare against local installers.
-   * @returns Boolean indicating whether the supplied package is a local installer or not.
-   */
-  isLocalInstaller(localInstallers: PackageData[], packageData: PackageData) {
-    return localInstallers.some(
-      (pkg) => pkg.name === packageData.name && pkg.version === packageData.version
-    )
-  }
-
-  /**
-   * Find a sourcefile's local package given a pre-computed array of local installer.
-   *
-   * @param sourceFile - The sourcefile to match to an installer.
-   * @param instrumentedPackageName - Name of the instrumented package to match file against.
-   * @param localInstallers - Array of local packages.
-   * @returns Local installer PackageData if found, undefined otherwise.
-   */
-  @Trace()
-  async findFileLocalInstaller(
-    sourceFile: ts.SourceFile,
-    instrumentedPackageName: string,
-    localInstallers: PackageData[]
-  ) {
-    // the file is not contained within the root, dismiss
-    if (path.relative(this.root, sourceFile.fileName).startsWith('..')) {
-      return undefined
-    }
-
-    const containingDir = await getDirectoryPrefix(path.dirname(sourceFile.fileName), this.logger)
-
-    if (containingDir === undefined) return undefined
-
-    let currDirPackage = await getPackageData(containingDir, this.logger)
-    let currDir = containingDir
-
-    // go up the directory until we find the nested-most local installer in the file tree
-    while (!this.isLocalInstaller(localInstallers, currDirPackage) && currDir !== this.root) {
-      // nested installation of instrumented package found, do not explore further
-      let installingPkgs: InstallingPackage[] = []
-
-      try {
-        installingPkgs = await findInstallingPackages(
-          containingDir,
-          currDir,
-          this.logger,
-          instrumentedPackageName
-        )
-      } catch (reason) {
-        // in JsxScope we do not care about invalid package.json errors,
-        // those only apply to npm scope
-        if (!(reason instanceof NoPackageJsonFoundError)) {
-          this.logger.error(reason instanceof Error ? reason : String(reason))
-        }
-      }
-
-      if (installingPkgs.length > 0) {
-        return undefined
-      }
-      currDir = currDir?.substring(0, currDir.lastIndexOf(path.sep))
-      currDirPackage = await getPackageData(currDir, this.logger)
-    }
-
-    // file does not belong to any local installer, return undefined
-    if (!this.isLocalInstaller(localInstallers, currDirPackage)) {
-      return undefined
-    }
-
-    return currDirPackage
   }
 
   /**
@@ -240,33 +168,14 @@ export class JsxScope extends Scope {
     handler.handle(sourceFile, sourceFile)
   }
 
-  /**
-   * Given an accumulator containing imports, removes all imports
-   * that don't belong to the given instrumented package .
-   *
-   * @param accumulator - The accumulator in which the imports are stored.
-   * @param instrumentedPackageName - Name of instrumented package.
-   */
   removeIrrelevantImports(accumulator: JsxElementAccumulator, instrumentedPackageName: string) {
     const imports = accumulator.imports.filter((jsxImport) => {
-      return (
-        jsxImport.path === instrumentedPackageName ||
-        jsxImport.path.startsWith(`${instrumentedPackageName}${path.sep}`)
-      )
+      return jsxImport.path.startsWith(instrumentedPackageName)
     })
 
     accumulator.imports.splice(0, accumulator.imports.length, ...imports)
   }
 
-  /**
-   * Given an accumulator containing imports and elements,
-   *  populates the accumulators' `elementImports`
-   * with the corresponding element-import matches.
-   *
-   * @param accumulator - The accumulator in which the imports and elements are stored.
-   * @param elementMatchers - List of pre-instantiated JsxElementImportMatchers
-   * to match elements against.
-   */
   resolveElementImports(
     accumulator: JsxElementAccumulator,
     elementMatchers: JsxElementImportMatcher[]
@@ -287,97 +196,31 @@ export class JsxScope extends Scope {
   /**
    * Adds data to the accumulator for each package that invokes the jsx elements in the accumulator.
    *
-   * @param accumulator - Accumulator where element data is stored in.
-   * @param invoker - Package the accumulator data belongs to.
+   * @param accumulator - Accumulator to store results in.
+   * @param sourceFilePath - Absolute path to a sourceFile.
    */
-  async resolveInvokers(accumulator: JsxElementAccumulator, invoker: PackageData) {
-    accumulator.elements.forEach((jsxElement) => {
-      accumulator.elementInvokers.set(jsxElement, invoker.name)
-    })
-  }
+  async resolveInvokers(accumulator: JsxElementAccumulator, sourceFilePath: string) {
+    const containingDir = await getDirectoryPrefix(path.dirname(sourceFilePath), this.logger)
 
-  /**
-   * Resolves the PackageData for all file directories contained in the given FileTree.
-   *
-   * @param trees - FileTree[] to resolve packages for.
-   * @returns Array of PackageData for obtained packages.
-   */
-  async findLocalPackages(trees: FileTree[]) {
-    const localPackages: PackageData[] = []
-
-    const resolveBranchPackages = async (branch: FileTree) => {
-      try {
-        localPackages.push(await getPackageData(branch.path, this.logger))
-      } catch (err) {
-        if (err instanceof Error) {
-          this.logger.error(err)
-        } else {
-          this.logger.error(String(err))
-        }
-      }
-      const promises: Promise<PackageData[]>[] = []
-      branch.children.forEach((child) => {
-        ;(async () => {
-          promises.push(resolveBranchPackages(child))
-        })()
-      })
-      return new Promise<PackageData[]>((resolve) => {
-        ;(() => Promise.allSettled(promises).then(() => resolve(localPackages)))()
-      })
+    if (containingDir === undefined) {
+      return
     }
 
-    await Promise.allSettled(trees.map((tree) => resolveBranchPackages(tree)))
+    const containingPackageData = await getPackageData(containingDir, this.root, this.logger)
 
-    return localPackages
-  }
-
-  /**
-   * Find the list of local packages that installed (nested or not) a given package
-   * at a specific version.
-   *
-   * @param pkgName - Name of package to find.
-   * @param pkgVersion - Version of package to find.
-   * @param localPackages - Precomputed list of local packages.
-   * @returns List of local installers for the given package name/version.
-   */
-  async findPkgLocalInstallers(pkgName: string, pkgVersion: string, localPackages: PackageData[]) {
-    const localInstallers: PackageData[] = []
-    const installingPackages = await findInstallingPackages(
-      this.cwd,
-      this.root,
-      this.logger,
-      pkgName,
-      pkgVersion
-    )
-    const promises: Promise<void>[] = []
-    installingPackages.forEach((pkg) => {
-      ;(async () => {
-        if (!this.isLocalInstaller(localPackages, pkg)) {
-          promises.push(
-            new Promise<void>((resolve) => {
-              this.findPkgLocalInstallers(pkg.name, pkg.version, localPackages).then(
-                (installers) => {
-                  localInstallers.push(...installers)
-                  resolve()
-                }
-              )
-            })
-          )
-        } else {
-          localInstallers.push(pkg)
-        }
-      })()
+    accumulator.elements.forEach((jsxElement) => {
+      accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
-    await Promise.allSettled(promises)
-    return localInstallers
   }
 
   /**
-   * For testing purposes only. Makes the JsxScope collection run "synchronously"
-   * (one source file at a time).
+   * **For testing purposes only.**
+   * Makes the JsxScope collection run "synchronously" (one source file at a time). Defaults to
+   * `false`.
    *
+   * @param runSync - Boolean of whether or not to run synchronously.
    */
-  setRunSync() {
-    this.runSync = true
+  setRunSync(runSync: boolean) {
+    this.runSync = runSync
   }
 }

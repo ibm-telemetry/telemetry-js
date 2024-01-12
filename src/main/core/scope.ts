@@ -5,12 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import opentelemetry, { type Counter, type Meter, ValueType } from '@opentelemetry/api'
+import { type Counter, type Meter, ValueType } from '@opentelemetry/api'
 
 import { deNull } from './de-null.js'
 import { Loggable } from './log/loggable.js'
 import { type Logger } from './log/logger.js'
 import { Trace } from './log/trace.js'
+import { OpenTelemetryContext } from './open-telemetry-context.js'
 import { type ScopeMetric } from './scope-metric.js'
 
 /**
@@ -70,7 +71,7 @@ export abstract class Scope extends Loggable {
   public capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
     if (this.scopeMeter === undefined) {
-      this.scopeMeter = opentelemetry.metrics.getMeter(this.name)
+      this.scopeMeter = OpenTelemetryContext.getInstance().getMeterProvider().getMeter(this.name)
     }
 
     // Ensure a counter exists

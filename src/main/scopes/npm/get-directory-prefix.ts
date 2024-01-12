@@ -7,7 +7,7 @@
 import { type Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 
-const cache = new Map<string, string>()
+const cache = new Map<string, Promise<string>>()
 
 /**
  * Given a directory path, get the directory of the package it belongs to.
@@ -15,26 +15,30 @@ const cache = new Map<string, string>()
  * @param dirPath - A directory to find containing package for. It may or may not include a
  * package.json file directly in it. This is an absolute path.
  * @param logger - Logger instance.
- * @returns A string indicating the closest (ascendent) package directory.
+ * @returns A string indicating the closest (parent) package directory.
  */
 export async function getDirectoryPrefix(dirPath: string, logger: Logger): Promise<string> {
   logger.traceEnter('', 'getDirectoryPrefix', [dirPath])
 
   if (cache.has(dirPath)) {
-    const data = cache.get(dirPath) as string
     logger.debug('getDirectoryPrefix cache hit for ' + dirPath)
+    const data = await (cache.get(dirPath) as Promise<string>)
     logger.traceExit('', 'getDirectoryPrefix', data)
     return data
   }
 
-  // ignoring workspaces for this command because otherwise it would always
-  // return the root for workspaced packages, this is irrelevant for non-workspace repositories
-  const result = await runCommand('npm prefix --no-workspaces', logger, {
-    cwd: dirPath
-  })
+  const createResultPromise = async () => {
+    // ignoring workspaces for this command because otherwise it would always
+    // return the root for workspaced packages, this is irrelevant for non-workspace repositories
+    const result = await runCommand('npm prefix --no-workspaces', logger, {
+      cwd: dirPath
+    })
 
-  cache.set(dirPath, result.stdout)
+    return result.stdout
+  }
+  cache.set(dirPath, createResultPromise())
 
-  logger.traceExit('', 'getDirectoryPrefix', result.stdout)
-  return result.stdout
+  const result = await (cache.get(dirPath) as Promise<string>)
+  logger.traceExit('', 'getDirectoryPrefix', result)
+  return result
 }

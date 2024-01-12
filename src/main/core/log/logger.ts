@@ -89,7 +89,7 @@ export class Logger {
    * @param args - The arguments passed to the method/function.
    */
   public traceEnter(targetName: string, methodName: string, args: unknown[]) {
-    const stringArgs = String(args.map(safeStringify))
+    const stringArgs = args.map(safeStringify).join(', ')
 
     this.debug(`--> ${targetName}::${methodName}(${stringArgs})`)
   }
@@ -130,7 +130,7 @@ export class Logger {
   }
 
   /**
-   * Logs a given message to the log file and (if in development mode) to the console.
+   * Logs a given message to the log file.
    *
    * @param level - 'debug' or 'error'.
    * @param msg - Message to log.

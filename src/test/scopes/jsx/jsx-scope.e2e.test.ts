@@ -14,10 +14,8 @@ import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import { AllImportMatcher } from '../../../main/scopes/jsx/import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/renamed-import-matcher.js'
-import { FileTree } from '../../../main/scopes/jsx/interfaces.js'
 import { JsxElementAccumulator } from '../../../main/scopes/jsx/jsx-element-accumulator.js'
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
-import { getPackageJsonTree } from '../../../main/scopes/jsx/utils/get-package-json-tree.js'
 import { getTrackedSourceFiles } from '../../../main/scopes/jsx/utils/get-tracked-source-files.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
@@ -43,97 +41,14 @@ describe('class: JsxScope', () => {
   const logger = initLogger()
   describe('run', () => {
     it('correctly captures jsx element metric data', async () => {
-      const metricReader = initializeOtelForTest()
+      const metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
-      jsxScope.setRunSync()
-      await jsxScope.run()
-
-      const results = await metricReader.collect()
-
-      clearTelemetrySdkVersion(results)
-      clearDataPointTimes(results)
-
-      expect(results).toMatchSnapshot()
-    })
-
-    it("does not capture metrics for files that are not in instrumented package's installer", async () => {
-      const metricReader = initializeOtelForTest()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented')
-      )
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-
-      jsxScope.setRunSync()
-      await jsxScope.run()
-
-      const results = await metricReader.collect()
-
-      clearTelemetrySdkVersion(results)
-      clearDataPointTimes(results)
-
-      expect(results).toMatchSnapshot()
-    })
-
-    it('captures metrics when instrumented package is installed in intermediate package', async () => {
-      const metricReader = initializeOtelForTest()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join(
-          'projects',
-          'complex-nesting-thingy',
-          'node_modules',
-          'intermediate',
-          'node_modules',
-          'instrumented'
-        )
-      )
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-
-      jsxScope.setRunSync()
-      await jsxScope.run()
-
-      const results = await metricReader.collect()
-
-      clearTelemetrySdkVersion(results)
-      clearDataPointTimes(results)
-
-      expect(results).toMatchSnapshot()
-    })
-
-    it('captures metrics for nested files when instrumented package is installed in top-level package', async () => {
-      const metricReader = initializeOtelForTest()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented-top-level')
-      )
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-
-      jsxScope.setRunSync()
-      await jsxScope.run()
-
-      const results = await metricReader.collect()
-
-      clearTelemetrySdkVersion(results)
-      clearDataPointTimes(results)
-
-      expect(results).toMatchSnapshot()
-    })
-
-    it('does not capture metrics for nested files when local package has installed a more specific version of the instrumented package', async () => {
-      const metricReader = initializeOtelForTest()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'another-package')
-      )
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-
-      jsxScope.setRunSync()
+      jsxScope.setRunSync(true)
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -145,23 +60,58 @@ describe('class: JsxScope', () => {
     })
 
     it('throws EmptyScopeError if no collector has been defined', async () => {
-      const fixture = new Fixture(
-        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
-      )
-      const jsxScope = new JsxScope(
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const scope = new JsxScope(
         fixture.path,
         path.join(fixture.path, '..', '..'),
         { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
 
-      jsxScope.setRunSync()
-      await expect(jsxScope.run()).rejects.toThrow(EmptyScopeError)
+      scope.setRunSync(true)
+      await expect(scope.run()).rejects.toThrow(EmptyScopeError)
+    })
+
+    it('only captures metrics for the instrumented package/version', async () => {
+      let metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'multiple-versions-of-instrumented-dep'))
+      const pkgA = new Fixture(
+        path.join(
+          'projects',
+          'multiple-versions-of-instrumented-dep',
+          'node_modules',
+          'instrumented'
+        )
+      )
+      const pkgB = new Fixture(
+        path.join(
+          'projects',
+          'multiple-versions-of-instrumented-dep',
+          'b',
+          'node_modules',
+          'instrumented'
+        )
+      )
+
+      let jsxScope = new JsxScope(pkgA.path, root.path, config, logger)
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+      const resultsA = await metricReader.collect()
+
+      metricReader = initializeOtelForTest().getMetricReader()
+
+      jsxScope = new JsxScope(pkgB.path, root.path, config, logger)
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+      const resultsB = await metricReader.collect()
+
+      expect(resultsA.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(1)
+      expect(resultsB.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(2)
     })
   })
 
-  describe('processFile', () => {
-    const fixture = new Fixture(path.join('projects', 'basic-project', 'test.jsx'))
+  describe('parseFile', () => {
+    const fixture = new Fixture('projects/basic-project/test.jsx')
     const root = new Fixture(path.join('projects', 'basic-project'))
     const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
 
@@ -172,92 +122,6 @@ describe('class: JsxScope', () => {
       jsxScope.processFile(accumulator, sourceFile)
       expect(accumulator.elements).toMatchSnapshot('elements')
       expect(accumulator.imports).toMatchSnapshot('imports')
-    })
-  })
-
-  describe('findFileLocalInstaller', () => {
-    it('correctly finds direct installer for file', async () => {
-      const fixture = new Fixture(path.join('projects', 'basic-project', 'test.jsx'))
-      const root = new Fixture(path.join('projects', 'basic-project'))
-      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-
-      const localInstaller = { name: 'basic-project', version: '1.0.0' }
-
-      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(sourceFile, 'instrumented', [
-        localInstaller
-      ])
-      expect(fileLocalInstaller).toStrictEqual(localInstaller)
-    })
-
-    it('correctly finds top-level installer for file', async () => {
-      const fixture = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'package1', 'test.jsx')
-      )
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-
-      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
-
-      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
-        sourceFile,
-        'instrumented-top-level',
-        [localInstaller]
-      )
-      expect(fileLocalInstaller).toStrictEqual(localInstaller)
-    })
-
-    it('correctly returns undefined for file with no local installer', async () => {
-      const fixture = new Fixture(path.join('projects', 'basic-project', 'test.jsx'))
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-
-      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
-
-      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
-        sourceFile,
-        'instrumented-top-level',
-        [localInstaller]
-      )
-      expect(fileLocalInstaller).toBeUndefined()
-    })
-
-    it('correctly returns undefined for file that has a different immediate local install', async () => {
-      const fixture = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'package1', 'test.jsx')
-      )
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-
-      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
-
-      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
-        sourceFile,
-        'another-package',
-        [localInstaller]
-      )
-      expect(fileLocalInstaller).toBeUndefined()
-    })
-
-    it('correctly returns undefined for file that has a mid-level different local install', async () => {
-      const fixture = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'mid-level', 'nested-level', 'test.jsx')
-      )
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-
-      const localInstaller = { name: 'complex-nesting-thingy', version: '1.0.0' }
-
-      const fileLocalInstaller = await jsxScope.findFileLocalInstaller(
-        sourceFile,
-        'another-package',
-        [localInstaller]
-      )
-      expect(fileLocalInstaller).toBeUndefined()
     })
   })
 
@@ -282,13 +146,7 @@ describe('class: JsxScope', () => {
         isDefault: false,
         isAll: true
       })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'instrumented-bla',
-        isDefault: false,
-        isAll: true
-      })
-      expect(accumulator.imports).toHaveLength(4)
+      expect(accumulator.imports).toHaveLength(3)
       const jsxScope = new JsxScope('', '', config, logger)
       jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
       expect(accumulator.imports).toHaveLength(2)
@@ -492,88 +350,22 @@ describe('class: JsxScope', () => {
       attributes: []
     }
 
-    it('correctly sets invoker name for elements', async () => {
+    // TODO: This test currently fails because of this bug:
+    // https://github.com/nodejs/node/issues/47928
+    // This could be solved by mocking runCommand to return a hard-coded value, but this is less
+    // than useful for an end-to-end test which strives to hit as much of the underlying
+    // infrastructure as possible.
+    // eslint-disable-next-line vitest/no-disabled-tests -- See above
+    it.skip('correctly sets invoker name for elements', async () => {
+      const fileName = new Fixture('projects/basic-project/test.jsx')
       const accumulator = new JsxElementAccumulator()
       accumulator.elements.push(element1)
       accumulator.elements.push(element2)
 
-      await jsxScope.resolveInvokers(accumulator, { name: 'basic-project', version: '0.0.1' })
+      await jsxScope.resolveInvokers(accumulator, fileName.path)
 
       expect(accumulator.elementInvokers.get(element1)).toBe('basic-project')
       expect(accumulator.elementInvokers.get(element2)).toBe('basic-project')
-    })
-  })
-
-  describe('findLocalPackages', () => {
-    const jsxScope = new JsxScope('', '', config, logger)
-    it('correctly finds local packages', async () => {
-      const packagesRoot = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const tree = await getPackageJsonTree(packagesRoot.path, logger)
-
-      await expect(jsxScope.findLocalPackages(tree)).resolves.toMatchSnapshot()
-    })
-    it('can tolerate packages that do not exist', async () => {
-      const trees: FileTree[] = [
-        {
-          path: 'does/not/exist',
-          children: []
-        }
-      ]
-
-      await expect(jsxScope.findLocalPackages(trees)).resolves.toStrictEqual([])
-    })
-  })
-
-  describe('findPkgLocalInstallers', () => {
-    it('correctly finds installers for a top-level package', async () => {
-      const root = new Fixture(path.join('projects', 'basic-project'))
-      const cwd = new Fixture(path.join('projects', 'basic-project'))
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-      const localPackages = [{ name: 'basic-project', version: '1.0.0' }]
-
-      const installers = await jsxScope.findPkgLocalInstallers('foo', '1.0.0', localPackages)
-
-      expect(installers).toMatchSnapshot()
-    })
-    it('correctly finds installers for a given package that was installed in an intermediate package', async () => {
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join(
-          'projects',
-          'complex-nesting-thingy',
-          'node_modules',
-          'intermediate',
-          'node_modules',
-          'instrumented'
-        )
-      )
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-      const localPackages = [
-        { name: 'package1', version: '1.0.0' },
-        { name: 'package2', version: '1.0.0' },
-        { name: 'package3', version: '1.0.0' },
-        { name: 'complex-nesting-thingy', version: '1.0.0' }
-      ]
-
-      const installers = await jsxScope.findPkgLocalInstallers(
-        'instrumented',
-        '2.0.0',
-        localPackages
-      )
-
-      expect(installers).toMatchSnapshot()
-    }, 10000)
-    it('does not find any installers for unknown package', async () => {
-      const jsxScope = new JsxScope('', '', config, logger)
-      const localPackages = [{ name: 'basic-project', version: '1.0.0' }]
-
-      const installers = await jsxScope.findPkgLocalInstallers(
-        'non-existent',
-        '1.0.0',
-        localPackages
-      )
-
-      expect(installers).toStrictEqual([])
     })
   })
 })

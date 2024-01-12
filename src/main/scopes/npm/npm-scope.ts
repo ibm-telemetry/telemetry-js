@@ -4,10 +4,10 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { findInstallingPackages } from '../../core/find-installing-packages.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
+import { findInstallingPackages } from './find-installing-packages.js'
 import { getPackageData } from './get-package-data.js'
 import { DependencyMetric } from './metrics/dependency-metric.js'
 
@@ -23,16 +23,12 @@ export class NpmScope extends Scope {
    */
   @Trace()
   private async collectDependencies(): Promise<void> {
-    const { name: instrumentedPkgName, version: instrumentedPkgVersion } = await getPackageData(
-      this.cwd,
-      this.logger
-    )
+    const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
     const installingPackages = await findInstallingPackages(
       this.cwd,
       this.root,
-      this.logger,
-      instrumentedPkgName,
-      instrumentedPkgVersion
+      instrumentedPackage,
+      this.logger
     )
 
     installingPackages.forEach((installingPkg) => {
@@ -45,8 +41,8 @@ export class NpmScope extends Scope {
               installerRawName: installingPkg.name,
               installerRawVersion: installingPkg.version,
               isInstrumented:
-                dependency.name === instrumentedPkgName &&
-                dependency.version === instrumentedPkgVersion
+                dependency.name === instrumentedPackage.name &&
+                dependency.version === instrumentedPackage.version
                   ? 'true'
                   : 'false'
             },

@@ -6,11 +6,11 @@
  */
 
 /**
- * Exception thrown when no package.json files were found between the specified root directory and
+ * Exception thrown when no node_modules folders were found between the specified root directory and
  * current directory.
  */
-export class NoPackageJsonFoundError extends Error {
+export class NoNodeModulesFoundError extends Error {
   constructor(cwd: string, root: string) {
-    super(`No package.json files found between ${root} and ${cwd}`)
+    super(`No node_modules folders found between ${root} and ${cwd}`)
   }
 }

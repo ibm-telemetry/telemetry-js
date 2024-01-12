@@ -31,7 +31,7 @@ describe('class: NpmScope', () => {
         logger
       )
 
-      const metricReader = initializeOtelForTest()
+      const metricReader = initializeOtelForTest().getMetricReader()
 
       await scope.run()
 

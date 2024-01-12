@@ -17,30 +17,34 @@ describe('findNestedDeps', () => {
   const logger = initLogger()
 
   it('returns empty array if there are no matches', () => {
-    expect(findNestedDeps(testDependencyTree, 'not-there', '1.0.0')).toStrictEqual([])
+    expect(
+      findNestedDeps(testDependencyTree, { name: 'not-there', version: '1.0.0' })
+    ).toStrictEqual([])
   })
 
   it('returns for a single match', () => {
-    expect(findNestedDeps(testDependencyTree, 'two', '1.0.0')).toStrictEqual([
+    expect(findNestedDeps(testDependencyTree, { name: 'two', version: '1.0.0' })).toStrictEqual([
       ['dependencies', 'two']
     ])
   })
 
   it('returns for multiple matches', () => {
-    expect(findNestedDeps(testDependencyTree, 'three', '1.0.0')).toStrictEqual([
+    expect(findNestedDeps(testDependencyTree, { name: 'three', version: '1.0.0' })).toStrictEqual([
       ['dependencies', 'three'],
       ['dependencies', 'two', 'dependencies', 'three']
     ])
   })
 
   it('only picks up correct version', () => {
-    expect(findNestedDeps(testDependencyTree, 'four', '1.0.1')).toStrictEqual([
+    expect(findNestedDeps(testDependencyTree, { name: 'four', version: '1.0.1' })).toStrictEqual([
       ['dependencies', 'two', 'dependencies', 'three', 'dependencies', 'four']
     ])
   })
 
   it('disregards other versions', () => {
-    expect(findNestedDeps(testDependencyTree, 'four', 'not-there')).toStrictEqual([])
+    expect(
+      findNestedDeps(testDependencyTree, { name: 'four', version: 'not-there' })
+    ).toStrictEqual([])
   })
 
   it("finds a deeply nested dependency's entire path", async () => {
@@ -55,7 +59,7 @@ describe('findNestedDeps', () => {
 
     const dependencyTree = JSON.parse(lsAllResult.stdout)
 
-    const nestedDeps = findNestedDeps(dependencyTree, 'instrumented', '2.0.0')
+    const nestedDeps = findNestedDeps(dependencyTree, { name: 'instrumented', version: '1.0.0' })
 
     expect(nestedDeps[0]).toMatchObject([
       'dependencies',
@@ -65,24 +69,5 @@ describe('findNestedDeps', () => {
       'dependencies',
       'instrumented'
     ])
-  })
-
-  it('finds all dependencies when no version specified', async () => {
-    const fixture = new Fixture('projects/complex-nesting-thingy')
-
-    const lsAllResult = await runCommand(
-      'npm ls --all --json',
-      logger,
-      { cwd: fixture.path },
-      false
-    )
-
-    const dependencyTree = JSON.parse(lsAllResult.stdout)
-
-    const nestedDepsWithVersion = findNestedDeps(dependencyTree, 'instrumented', '2.0.0')
-    const nestedDeps = findNestedDeps(dependencyTree, 'instrumented')
-
-    expect(nestedDepsWithVersion).toHaveLength(2)
-    expect(nestedDeps).toHaveLength(3)
   })
 })

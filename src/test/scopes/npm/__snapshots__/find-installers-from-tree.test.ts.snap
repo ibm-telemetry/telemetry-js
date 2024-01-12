@@ -15,39 +15,6 @@ exports[`findInstallersFromTree > only picks up correct version 1`] = `
 ]
 `;
 
-exports[`findInstallersFromTree > returns all instances when version is not specified 1`] = `
-[
-  {
-    "dependencies": [
-      {
-        "name": "two",
-        "version": "1.0.0",
-      },
-      {
-        "name": "four",
-        "version": "1.0.0",
-      },
-      {
-        "name": "three",
-        "version": "1.0.0",
-      },
-    ],
-    "name": "one",
-    "version": "1.0.0",
-  },
-  {
-    "dependencies": [
-      {
-        "name": "four",
-        "version": "1.0.1",
-      },
-    ],
-    "name": "three",
-    "version": "1.0.0",
-  },
-]
-`;
-
 exports[`findInstallersFromTree > returns for a single installer 1`] = `
 [
   {

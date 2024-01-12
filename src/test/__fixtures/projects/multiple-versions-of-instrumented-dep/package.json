@@ -1,16 +1,16 @@
 {
   "name": "multiple-versions-of-instrumented-dep",
-  "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
+  "version": "1.0.0",
+  "license": "UNLICENSED",
   "author": "",
+  "keywords": [],
+  "main": "index.js",
   "workspaces": [
     "a",
     "b"
   ],
-  "license": "UNLICENSED"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }

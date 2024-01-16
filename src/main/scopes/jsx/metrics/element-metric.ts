@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { JsxScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { Attributes } from '@opentelemetry/api'
 
@@ -13,10 +14,8 @@ import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { GlobalScopeAttributes } from '../../global-scope-attributes.js'
 import { PackageData } from '../../npm/interfaces.js'
 import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../interfaces.js'
-import { JsxScopeAttributes } from '../jsx-scope-attributes.js'
 
 /**
  * JSX scope metric that generates a jsx.element individual metric for a given element.
@@ -112,14 +111,14 @@ export class ElementMetric extends ScopeMetric {
       [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
       [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
       [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name,
-      [GlobalScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
-      [GlobalScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
-      [GlobalScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
-      [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: this.instrumentedPackage.version,
-      [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: instrumentedMajor?.toString(),
-      [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
-      [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
-      [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
+      [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
+      [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
+      [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: this.instrumentedPackage.version,
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: instrumentedMajor?.toString(),
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
     }
 
     // Handle renamed elements
@@ -134,11 +133,11 @@ export class ElementMetric extends ScopeMetric {
       JsxScopeAttributes.INVOKER_PACKAGE_RAW,
       JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
       JsxScopeAttributes.INVOKER_PACKAGE_NAME,
-      GlobalScopeAttributes.INSTRUMENTED_RAW,
-      GlobalScopeAttributes.INSTRUMENTED_OWNER,
-      GlobalScopeAttributes.INSTRUMENTED_NAME,
-      GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW,
-      GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
+      NpmScopeAttributes.INSTRUMENTED_RAW,
+      NpmScopeAttributes.INSTRUMENTED_OWNER,
+      NpmScopeAttributes.INSTRUMENTED_NAME,
+      NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
+      NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
     ])
 
     return metricData

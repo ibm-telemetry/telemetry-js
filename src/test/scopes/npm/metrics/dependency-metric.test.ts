@@ -4,12 +4,11 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { GlobalScopeAttributes } from '../../../../main/scopes/global-scope-attributes.js'
 import { DependencyMetric } from '../../../../main/scopes/npm/metrics/dependency-metric.js'
-import { NpmScopeAttributes } from '../../../../main/scopes/npm/npm-scope-attributes.js'
 import { initLogger } from '../../../__utils/init-logger.js'
 
 describe('class: DependencyMetric', () => {
@@ -40,14 +39,14 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.VERSION_MINOR]: '0',
           [NpmScopeAttributes.VERSION_PATCH]: '1',
           [NpmScopeAttributes.VERSION_PRE_RELEASE]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'npm.dependency.raw',
@@ -90,14 +89,14 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.VERSION_MINOR]: '0',
           [NpmScopeAttributes.VERSION_PATCH]: '1',
           [NpmScopeAttributes.VERSION_PRE_RELEASE]: 'rc.0',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.4',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.4'
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.4',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.4'
         },
         [
           'npm.dependency.raw',
@@ -140,14 +139,14 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.VERSION_MINOR]: '0',
           [NpmScopeAttributes.VERSION_PATCH]: '1',
           [NpmScopeAttributes.VERSION_PRE_RELEASE]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+9999',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+9999',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'npm.dependency.raw',
@@ -191,14 +190,14 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.VERSION_MINOR]: '0',
           [NpmScopeAttributes.VERSION_PATCH]: '1',
           [NpmScopeAttributes.VERSION_PRE_RELEASE]: 'rc.1',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.0+9999',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.0'
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.0+9999',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.0'
         },
         [
           'npm.dependency.raw',
@@ -242,14 +241,14 @@ describe('class: DependencyMetric', () => {
           [NpmScopeAttributes.VERSION_MINOR]: '0',
           [NpmScopeAttributes.VERSION_PATCH]: '1',
           [NpmScopeAttributes.VERSION_PRE_RELEASE]: 'rc.0',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'test-1-instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'npm.dependency.raw',
@@ -282,6 +281,6 @@ describe('class: DependencyMetric', () => {
     ).attributes
 
     expect(attributes[NpmScopeAttributes.VERSION_PRE_RELEASE]).toBeUndefined()
-    expect(attributes[GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]).toBeUndefined()
+    expect(attributes[NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]).toBeUndefined()
   })
 })

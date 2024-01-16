@@ -4,18 +4,17 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { JsxScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substitute } from '../../../../main/core/anonymize/substitute.js'
-import { GlobalScopeAttributes } from '../../../../main/scopes/global-scope-attributes.js'
 import {
   type JsxElement,
   JsxElementAttribute,
   type JsxImport
 } from '../../../../main/scopes/jsx/interfaces.js'
-import { JsxScopeAttributes } from '../../../../main/scopes/jsx/jsx-scope-attributes.js'
 import { ElementMetric } from '../../../../main/scopes/jsx/metrics/element-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
 
@@ -80,14 +79,14 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'jsx.element.invoker.package.raw',
@@ -132,14 +131,14 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.4',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.4'
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.4',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.4'
         },
         [
           'jsx.element.invoker.package.raw',
@@ -184,14 +183,14 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: 'the-library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'the-library',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+9999',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+9999',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'jsx.element.invoker.package.raw',
@@ -235,14 +234,14 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: undefined,
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: undefined,
           [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: undefined,
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.0+9999',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.0'
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0-rc.0+9999',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: 'rc.0'
         },
         [
           'jsx.element.invoker.package.raw',
@@ -287,14 +286,14 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
           [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           'jsx.element.invoker.package.raw',
@@ -363,24 +362,24 @@ describe('class: ElementMetric', () => {
           [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: '@owner/library',
           [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: '@owner',
           [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: 'library',
-          [GlobalScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+123456',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: '1.0.0+123456',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
         },
         [
           JsxScopeAttributes.INVOKER_PACKAGE_RAW,
           JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
           JsxScopeAttributes.INVOKER_PACKAGE_NAME,
-          GlobalScopeAttributes.INSTRUMENTED_RAW,
-          GlobalScopeAttributes.INSTRUMENTED_OWNER,
-          GlobalScopeAttributes.INSTRUMENTED_NAME,
-          GlobalScopeAttributes.INSTRUMENTED_VERSION_RAW,
-          GlobalScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
+          NpmScopeAttributes.INSTRUMENTED_RAW,
+          NpmScopeAttributes.INSTRUMENTED_OWNER,
+          NpmScopeAttributes.INSTRUMENTED_NAME,
+          NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
+          NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
         ]
       )
     )

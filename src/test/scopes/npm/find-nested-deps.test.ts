@@ -59,7 +59,9 @@ describe('findNestedDeps', () => {
 
     const dependencyTree = JSON.parse(lsAllResult.stdout)
 
-    const nestedDeps = findNestedDeps(dependencyTree, { name: 'instrumented', version: '1.0.0' })
+    const nestedDeps = findNestedDeps(dependencyTree, { name: 'instrumented', version: '2.0.0' })
+
+    expect(nestedDeps)
 
     expect(nestedDeps[0]).toMatchObject([
       'dependencies',

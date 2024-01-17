@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
 import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
@@ -11,7 +12,6 @@ import { type Schema } from 'ajv'
 
 import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config-validator.js'
-import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
 import { Environment } from './core/environment.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { GitInfoProvider } from './core/git-info-provider.js'

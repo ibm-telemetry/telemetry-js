@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
 import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
@@ -11,7 +12,6 @@ import { type Schema } from 'ajv'
 
 import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config-validator.js'
-import { CustomResourceAttributes } from './core/custom-resource-attributes.js'
 import { Environment } from './core/environment.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { GitInfoProvider } from './core/git-info-provider.js'
@@ -89,8 +89,10 @@ export class IbmTelemetry {
     // This will throw if config does not conform to ConfigSchema
     configValidator.validate(config)
 
-    const { gitOrigin, repository, commitHash, commitTags, commitBranches } =
-      await new GitInfoProvider(cwd, this.logger).getGitInfo()
+    const { repository, commitHash, commitTags, commitBranches } = await new GitInfoProvider(
+      cwd,
+      this.logger
+    ).getGitInfo()
     const emitterInfo = await getTelemetryPackageData(this.logger)
     const otelContext = OpenTelemetryContext.getInstance()
 
@@ -100,20 +102,22 @@ export class IbmTelemetry {
           [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
           [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
           [CustomResourceAttributes.PROJECT_ID]: config.projectId,
-          [CustomResourceAttributes.ANALYZED_RAW]: gitOrigin,
+          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
           [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
           [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
+          [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
+            repository.owner ?? ''
+          }/${repository.repository ?? ''}`,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
           [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
           [CustomResourceAttributes.DATE]: date
         },
         [
-          CustomResourceAttributes.ANALYZED_RAW,
+          CustomResourceAttributes.ANALYZED_COMMIT,
           CustomResourceAttributes.ANALYZED_HOST,
           CustomResourceAttributes.ANALYZED_OWNER,
+          CustomResourceAttributes.ANALYZED_PATH,
           CustomResourceAttributes.ANALYZED_REPOSITORY,
-          CustomResourceAttributes.ANALYZED_COMMIT,
           CustomResourceAttributes.ANALYZED_REFS
         ]
       )

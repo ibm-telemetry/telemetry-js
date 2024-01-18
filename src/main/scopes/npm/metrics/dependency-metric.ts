@@ -4,19 +4,18 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { NpmScopeAttributes } from '../npm-scope-attributes.js'
+import { PackageData } from '../interfaces.js'
 
 export interface DependencyData {
   rawName: string
   rawVersion: string
-  installerRawName: string
-  installerRawVersion: string
   isInstrumented: 'true' | 'false'
 }
 
@@ -27,16 +26,19 @@ export class DependencyMetric extends ScopeMetric {
   public override name = 'npm.dependency' as const
 
   private readonly data: DependencyData
+  private readonly instrumentedPackage: PackageData
 
   /**
    * Constructs a DependencyMetric.
    *
    * @param data - Object containing name and version to extract data to generate metric from.
+   * @param instrumentedPackage - Data (name and version) pertaining to instrumented package.
    * @param logger - The logger instance to use.
    */
-  public constructor(data: DependencyData, logger: Logger) {
+  public constructor(data: DependencyData, instrumentedPackage: PackageData, logger: Logger) {
     super(logger)
     this.data = data
+    this.instrumentedPackage = instrumentedPackage
   }
 
   /**
@@ -51,35 +53,35 @@ export class DependencyMetric extends ScopeMetric {
       packageDetailsProvider.getPackageDetails(this.data.rawName, this.data.rawVersion)
 
     const {
-      owner: installerOwner,
-      name: installerName,
-      major: installerMajor,
-      minor: installerMinor,
-      patch: installerPatch,
-      preRelease: installerPreRelease
+      owner: instrumentedOwner,
+      name: instrumentedName,
+      major: instrumentedMajor,
+      minor: instrumentedMinor,
+      patch: instrumentedPatch,
+      preRelease: instrumentedPreRelease
     } = packageDetailsProvider.getPackageDetails(
-      this.data.installerRawName,
-      this.data.installerRawVersion
+      this.instrumentedPackage.name,
+      this.instrumentedPackage.version
     )
 
     const metricData: Attributes = {
       [NpmScopeAttributes.RAW]: this.data.rawName,
       [NpmScopeAttributes.OWNER]: owner,
       [NpmScopeAttributes.NAME]: name,
-      [NpmScopeAttributes.INSTRUMENTED]: this.data.isInstrumented,
+      [NpmScopeAttributes.IS_INSTRUMENTED]: this.data.isInstrumented,
       [NpmScopeAttributes.VERSION_RAW]: this.data.rawVersion,
       [NpmScopeAttributes.VERSION_MAJOR]: major?.toString(),
       [NpmScopeAttributes.VERSION_MINOR]: minor?.toString(),
       [NpmScopeAttributes.VERSION_PATCH]: patch?.toString(),
       [NpmScopeAttributes.VERSION_PRE_RELEASE]: preRelease?.join('.'),
-      [NpmScopeAttributes.INSTALLER_RAW]: this.data.installerRawName,
-      [NpmScopeAttributes.INSTALLER_OWNER]: installerOwner,
-      [NpmScopeAttributes.INSTALLER_NAME]: installerName,
-      [NpmScopeAttributes.INSTALLER_VERSION_RAW]: this.data.installerRawVersion,
-      [NpmScopeAttributes.INSTALLER_VERSION_MAJOR]: installerMajor?.toString(),
-      [NpmScopeAttributes.INSTALLER_VERSION_MINOR]: installerMinor?.toString(),
-      [NpmScopeAttributes.INSTALLER_VERSION_PATCH]: installerPatch?.toString(),
-      [NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE]: installerPreRelease?.join('.')
+      [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
+      [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
+      [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: this.instrumentedPackage.version,
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: instrumentedMajor?.toString(),
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
     }
 
     return hash(metricData, [
@@ -88,11 +90,11 @@ export class DependencyMetric extends ScopeMetric {
       NpmScopeAttributes.NAME,
       NpmScopeAttributes.VERSION_RAW,
       NpmScopeAttributes.VERSION_PRE_RELEASE,
-      NpmScopeAttributes.INSTALLER_RAW,
-      NpmScopeAttributes.INSTALLER_OWNER,
-      NpmScopeAttributes.INSTALLER_NAME,
-      NpmScopeAttributes.INSTALLER_VERSION_RAW,
-      NpmScopeAttributes.INSTALLER_VERSION_PRE_RELEASE
+      NpmScopeAttributes.INSTRUMENTED_RAW,
+      NpmScopeAttributes.INSTRUMENTED_OWNER,
+      NpmScopeAttributes.INSTRUMENTED_NAME,
+      NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
+      NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
     ])
   }
 }

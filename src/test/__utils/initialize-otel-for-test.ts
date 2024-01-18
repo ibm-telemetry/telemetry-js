@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { CustomResourceAttributes } from '../../main/core/custom-resource-attributes.js'
+import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
+
 import { OpenTelemetryContext } from '../../main/core/open-telemetry-context.js'
 
 /**
@@ -26,10 +27,12 @@ export function initializeOtelForTest() {
     [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',
     [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: 'telemetryVersion',
     [CustomResourceAttributes.PROJECT_ID]: 'projectId',
-    [CustomResourceAttributes.ANALYZED_RAW]: 'gitOrigin',
     [CustomResourceAttributes.ANALYZED_HOST]: 'host',
     [CustomResourceAttributes.ANALYZED_OWNER]: 'owner',
+    [CustomResourceAttributes.ANALYZED_PATH]: 'host/owner/repository',
     [CustomResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
+    [CustomResourceAttributes.ANALYZED_COMMIT]: 'commitHash',
+    [CustomResourceAttributes.ANALYZED_REFS]: [],
     [CustomResourceAttributes.DATE]: date
   })
 

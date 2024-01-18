@@ -75,11 +75,7 @@ export class JsxScope extends Scope {
     const promises: Promise<void>[] = []
 
     for (const sourceFile of sourceFiles) {
-      const resultPromise = this.captureFileMetrics(
-        sourceFile,
-        instrumentedPackage.name,
-        importMatchers
-      )
+      const resultPromise = this.captureFileMetrics(sourceFile, instrumentedPackage, importMatchers)
 
       if (this.runSync) {
         await resultPromise
@@ -182,18 +178,19 @@ export class JsxScope extends Scope {
    * in the supplied SourceFile node.
    *
    * @param sourceFile - The sourcefile node to generate metrics for.
-   * @param instrumentedPackageName - Name of the instrumented package to capture metrics for.
+   * @param instrumentedPackage - Name and version of the instrumented package
+   * to capture metrics for.
    * @param importMatchers - Matchers instances to use for import-element matching.
    */
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
-    instrumentedPackageName: string,
+    instrumentedPackage: PackageData,
     importMatchers: JsxElementImportMatcher[]
   ) {
     const accumulator = new JsxElementAccumulator()
 
     this.processFile(accumulator, sourceFile)
-    this.removeIrrelevantImports(accumulator, instrumentedPackageName)
+    this.removeIrrelevantImports(accumulator, instrumentedPackage.name)
     this.resolveElementImports(accumulator, importMatchers)
     await this.resolveInvokers(accumulator, sourceFile.fileName)
 
@@ -205,7 +202,16 @@ export class JsxScope extends Scope {
         return
       }
 
-      this.capture(new ElementMetric(jsxElement, jsxImport, invoker, this.config, this.logger))
+      this.capture(
+        new ElementMetric(
+          jsxElement,
+          jsxImport,
+          invoker,
+          instrumentedPackage,
+          this.config,
+          this.logger
+        )
+      )
     })
   }
 

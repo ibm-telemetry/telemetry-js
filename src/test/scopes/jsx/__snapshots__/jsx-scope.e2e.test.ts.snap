@@ -64,9 +64,11 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
     "resource": Resource {
       "_asyncAttributesPromise": undefined,
       "_attributes": {
+        "analyzed.commit": "commitHash",
         "analyzed.host": "host",
         "analyzed.owner": "owner",
-        "analyzed.raw": "gitOrigin",
+        "analyzed.path": "host/owner/repository",
+        "analyzed.refs": [],
         "analyzed.repository": "repository",
         "date": "1970-01-01T00:00:02.023Z",
         "project.id": "projectId",
@@ -78,9 +80,11 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
         "telemetry.sdk.version": "[omitted for test snapshot]",
       },
       "_syncAttributes": {
+        "analyzed.commit": "commitHash",
         "analyzed.host": "host",
         "analyzed.owner": "owner",
-        "analyzed.raw": "gitOrigin",
+        "analyzed.path": "host/owner/repository",
+        "analyzed.refs": [],
         "analyzed.repository": "repository",
         "date": "1970-01-01T00:00:02.023Z",
         "project.id": "projectId",

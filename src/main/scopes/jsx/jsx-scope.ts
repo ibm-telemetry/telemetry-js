@@ -11,6 +11,8 @@ import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findInstallingPackages } from '../npm/find-installing-packages.js'
+import { findNestedDeps } from '../npm/find-nested-deps.js'
+import { getDependencyTree } from '../npm/get-dependency-tree.js'
 import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { PackageData } from '../npm/interfaces.js'
@@ -101,17 +103,72 @@ export class JsxScope extends Scope {
     const installingPackages = await findInstallingPackages(
       this.cwd,
       this.root,
-      instrumentedPackage,
+      instrumentedPackage.name,
+      null, // find ALL versions
       this.logger
     )
+
+    const dependencyTree = await getDependencyTree(this.cwd, this.root, this.logger)
 
     const filterPromises = sourceFiles.map(async (f) => {
       const prefix = await getDirectoryPrefix(path.dirname(f.fileName), this.logger)
       const prefixPackageData = await getPackageData(prefix, this.root, this.logger)
 
-      return installingPackages.some(
-        (dep) => dep.name === prefixPackageData?.name && dep.version === prefixPackageData?.version
+      // prefixPackageData is an installer of the instrumented package
+      const prefixInstaller = installingPackages.find((pkg) => pkg.name === prefixPackageData.name)
+      if (prefixInstaller !== undefined) {
+        const installedInstrumentedVersion = prefixInstaller.dependencies.find(
+          (d) => d.name === instrumentedPackage.name
+        )?.version
+        // if the package has the same instrumented version installed capture metrics, else skip
+        return installedInstrumentedVersion === instrumentedPackage.version
+      }
+
+      const prefixPackageDataPaths = findNestedDeps(
+        dependencyTree,
+        prefixPackageData.name,
+        ({ value }) => value.version === prefixPackageData.version
+      ).map((path) => [dependencyTree['name'], ...path].join('.'))
+
+      // a "parent" of the file's package has installed
+      // the instrumented package at a different version
+      const differentVersionInstalledUpstream = installingPackages.some(
+        (pkg) =>
+          pkg.dependencies.find((p) => p.name === instrumentedPackage.name)?.version !==
+            instrumentedPackage.version &&
+          prefixPackageDataPaths.some((dataPath) => dataPath.includes(pkg.path.join('.')))
       )
+
+      if (differentVersionInstalledUpstream) {
+        return false
+      }
+
+      // a dependency has installed a different version of the instrumented package
+      const differentVersionInstalledDownstream = installingPackages.some(
+        (pkg) =>
+          pkg.dependencies.find((p) => p.name === instrumentedPackage.name)?.version !==
+            instrumentedPackage.version &&
+          prefixPackageDataPaths.some((dataPath) =>
+            pkg.path.join('.').includes(`${dataPath}.dependencies`)
+          )
+      )
+
+      // if there is a different version (of the instrumented package) installed downstream
+      // we do not want to capture, unless there is an exact version installed aswell.
+      if (differentVersionInstalledDownstream) {
+        // a dependency has installed an exact version of the instrumented package
+        const exactVersionInstalledDownstream = installingPackages.some(
+          (pkg) =>
+            pkg.dependencies.find((p) => p.name === instrumentedPackage.name)?.version ===
+              instrumentedPackage.version &&
+            prefixPackageDataPaths.some((dataPath) =>
+              pkg.path.join('.').includes(`${dataPath}.dependencies`)
+            )
+        )
+        return exactVersionInstalledDownstream
+      }
+      // if no exception condition is met, we want to capture
+      return true
     })
     const filterData = await Promise.all(filterPromises)
 
@@ -170,7 +227,10 @@ export class JsxScope extends Scope {
 
   removeIrrelevantImports(accumulator: JsxElementAccumulator, instrumentedPackageName: string) {
     const imports = accumulator.imports.filter((jsxImport) => {
-      return jsxImport.path.startsWith(instrumentedPackageName)
+      return (
+        jsxImport.path === instrumentedPackageName ||
+        jsxImport.path.startsWith(`${instrumentedPackageName}/`)
+      )
     })
 
     accumulator.imports.splice(0, accumulator.imports.length, ...imports)

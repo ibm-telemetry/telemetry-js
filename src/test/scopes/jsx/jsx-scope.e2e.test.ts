@@ -108,6 +108,85 @@ describe('class: JsxScope', () => {
       expect(resultsA.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(1)
       expect(resultsB.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(2)
     })
+
+    it("does not capture metrics for files that are not in instrumented package's installer", async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('captures metrics when instrumented package is installed in intermediate package', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join(
+          'projects',
+          'complex-nesting-thingy',
+          'node_modules',
+          'intermediate',
+          'node_modules',
+          'instrumented'
+        )
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('captures metrics for nested files when instrumented package is installed in top-level package', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented-top-level')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('throws EmptyScopeError if no collector has been defined', async () => {
+      const fixture = new Fixture(
+        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
+      )
+      const jsxScope = new JsxScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
+        logger
+      )
+
+      jsxScope.setRunSync(true)
+      await expect(jsxScope.run()).rejects.toThrow(EmptyScopeError)
+    })
   })
 
   describe('parseFile', () => {

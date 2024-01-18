@@ -27,7 +27,8 @@ export class NpmScope extends Scope {
     const installingPackages = await findInstallingPackages(
       this.cwd,
       this.root,
-      instrumentedPackage,
+      instrumentedPackage.name,
+      instrumentedPackage.version,
       this.logger
     )
 

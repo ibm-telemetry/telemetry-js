@@ -24,7 +24,8 @@ describe('findInstallingPackages', () => {
         await findInstallingPackages(
           fixture.path,
           path.join(fixture.path, '..', '..'),
-          { name: 'not-here', version: '0.1.0' },
+          'not-here',
+          '0.1.0',
           logger
         )
     ).rejects.toThrow(NoNodeModulesFoundError)
@@ -35,7 +36,8 @@ describe('findInstallingPackages', () => {
     const pkgs = await findInstallingPackages(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      { name: 'instrumented', version: '0.1.0' },
+      'instrumented',
+      '0.1.0',
       logger
     )
 
@@ -47,7 +49,8 @@ describe('findInstallingPackages', () => {
     const pkgs = await findInstallingPackages(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      { name: 'not-here', version: '0.1.0' },
+      'not-here',
+      '0.1.0',
       logger
     )
 
@@ -59,7 +62,23 @@ describe('findInstallingPackages', () => {
     const pkgs = await findInstallingPackages(
       fixture.path,
       path.join(fixture.path, '..', '..'),
-      { name: 'instrumented', version: '0.3.0' },
+      'instrumented',
+      '0.3.0',
+      logger
+    )
+
+    expect(pkgs).toMatchSnapshot()
+  })
+
+  it('finds all installers when no version is specified', async () => {
+    const fixture = new Fixture(
+      path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented')
+    )
+    const pkgs = await findInstallingPackages(
+      fixture.path,
+      path.join(fixture.path, '..', '..'),
+      'instrumented',
+      null,
       logger
     )
 

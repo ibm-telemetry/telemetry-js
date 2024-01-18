@@ -6,18 +6,23 @@
  */
 import objectScan from 'object-scan'
 
-import { type InstallingPackage, PackageData } from './interfaces.js'
+import { type InstallingPackage } from './interfaces.js'
 
 /**
  * Given a dependency tree, package name, and package version, finds all object keys within the tree
  * which represent the package name/version combo as a dependency of another package.
  *
  * @param dependencyTree - The tree to search.
- * @param packageData - The name and specific version of the package for which to search.
+ * @param packageName - The name of the package for which to search.
+ * @param filterFn - Function to filter results by.
  * @returns An array of results, returned by the object-scan library.
  */
-export function findNestedDeps(dependencyTree: Record<string, unknown>, packageData: PackageData) {
-  return objectScan([`**.dependencies.${packageData.name}`], {
-    filterFn: ({ value }: { value: InstallingPackage }) => value.version === packageData.version
+export function findNestedDeps(
+  dependencyTree: Record<string, unknown>,
+  packageName: string,
+  filterFn: ({ value }: { value: InstallingPackage }) => boolean
+) {
+  return objectScan([`**.dependencies.${packageName}`], {
+    filterFn
   })(dependencyTree)
 }

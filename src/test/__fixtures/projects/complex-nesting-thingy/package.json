@@ -14,6 +14,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "root-only": "^1.0.0"
+    "root-only": "^1.0.0",
+    "instrumented-top-level": "^1.0.0"
   }
 }

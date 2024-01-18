@@ -8,7 +8,7 @@
 import { type Logger } from '../../core/log/logger.js'
 import { findNestedDeps } from './find-nested-deps.js'
 import { getPackageSubTree } from './get-package-sub-tree.js'
-import { type InstallingPackage, PackageData } from './interfaces.js'
+import { type InstallingPackage } from './interfaces.js'
 
 /*
  * Nested dependency considerations:
@@ -36,21 +36,25 @@ import { type InstallingPackage, PackageData } from './interfaces.js'
  * installers were found.
  *
  * @param dependencyTree - The tree to search.
- * @param packageData - The name and specific version of the package for which to search.
+ * @param packageName - The name of the package for which to search.
+ * @param packageVersion - The (optional) version of the package for which to search.
  * @param logger - A logger instance.
  * @returns An array of results.
  */
 export function findInstallersFromTree(
   dependencyTree: Record<string, unknown>,
-  packageData: PackageData,
+  packageName: string,
+  packageVersion: string | null,
   logger: Logger
 ) {
-  logger.traceEnter('', 'findInstallersFromTree', [dependencyTree, packageData])
+  logger.traceEnter('', 'findInstallersFromTree', [dependencyTree, packageName, packageVersion])
 
   let results: InstallingPackage[] = []
 
   // Matches come back as something like: [..., parentPkgName, dependencies, instrumentedPackage]
-  const matches = findNestedDeps(dependencyTree, packageData)
+  const matches = findNestedDeps(dependencyTree, packageName, ({ value }) =>
+    packageVersion !== null ? value.version === packageVersion : true
+  )
 
   if (matches.length >= 1) {
     // We want to ignore last 2 pieces to get the parent's info, not the child's

@@ -12,4 +12,5 @@ export interface PackageData {
 
 export interface InstallingPackage extends PackageData {
   dependencies: PackageData[]
+  path: string[]
 }

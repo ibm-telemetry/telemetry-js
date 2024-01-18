@@ -10,6 +10,13 @@ exports[`findInstallersFromTree > only picks up correct version 1`] = `
       },
     ],
     "name": "three",
+    "path": [
+      "one",
+      "dependencies",
+      "two",
+      "dependencies",
+      "three",
+    ],
     "version": "1.0.0",
   },
 ]
@@ -33,6 +40,9 @@ exports[`findInstallersFromTree > returns for a single installer 1`] = `
       },
     ],
     "name": "one",
+    "path": [
+      "one",
+    ],
     "version": "1.0.0",
   },
 ]
@@ -56,6 +66,9 @@ exports[`findInstallersFromTree > returns for multiple installers 1`] = `
       },
     ],
     "name": "one",
+    "path": [
+      "one",
+    ],
     "version": "1.0.0",
   },
   {
@@ -66,6 +79,11 @@ exports[`findInstallersFromTree > returns for multiple installers 1`] = `
       },
     ],
     "name": "two",
+    "path": [
+      "one",
+      "dependencies",
+      "two",
+    ],
     "version": "1.0.0",
   },
 ]

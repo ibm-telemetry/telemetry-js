@@ -28,13 +28,10 @@ export class NpmScope extends Scope {
    */
   @Trace()
   private async collectDependencies(): Promise<void> {
-    const { name: instrumentedPkgName, version: instrumentedPkgVersion } = await getPackageData(
-      this.cwd,
-      this.logger
-    )
+    const instrumentedPkg = await getPackageData(this.cwd, this.logger)
     const installingPackages = await this.findInstallingPackages(
-      instrumentedPkgName,
-      instrumentedPkgVersion
+      instrumentedPkg.name,
+      instrumentedPkg.version
     )
 
     installingPackages.forEach((installingPkg) => {
@@ -44,14 +41,13 @@ export class NpmScope extends Scope {
             {
               rawName: dependency.name,
               rawVersion: dependency.version,
-              installerRawName: installingPkg.name,
-              installerRawVersion: installingPkg.version,
               isInstrumented:
-                dependency.name === instrumentedPkgName &&
-                dependency.version === instrumentedPkgVersion
+                dependency.name === instrumentedPkg.name &&
+                dependency.version === instrumentedPkg.version
                   ? 'true'
                   : 'false'
             },
+            instrumentedPkg,
             this.logger
           )
         )

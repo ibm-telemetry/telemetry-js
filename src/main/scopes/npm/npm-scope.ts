@@ -28,7 +28,7 @@ export class NpmScope extends Scope {
       this.cwd,
       this.root,
       instrumentedPackage.name,
-      instrumentedPackage.version,
+      ({ value }) => value.version === instrumentedPackage.version,
       this.logger
     )
 

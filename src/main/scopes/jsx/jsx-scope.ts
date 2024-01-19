@@ -100,7 +100,7 @@ export class JsxScope extends Scope {
       this.cwd,
       this.root,
       instrumentedPackage.name,
-      null, // find ALL versions
+      () => true,
       this.logger
     )
 

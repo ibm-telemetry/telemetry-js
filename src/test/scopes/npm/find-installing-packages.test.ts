@@ -25,7 +25,7 @@ describe('findInstallingPackages', () => {
           fixture.path,
           path.join(fixture.path, '..', '..'),
           'not-here',
-          '0.1.0',
+          ({ value }) => value.version === '0.1.0',
           logger
         )
     ).rejects.toThrow(NoNodeModulesFoundError)
@@ -37,7 +37,7 @@ describe('findInstallingPackages', () => {
       fixture.path,
       path.join(fixture.path, '..', '..'),
       'instrumented',
-      '0.1.0',
+      ({ value }) => value.version === '0.1.0',
       logger
     )
 
@@ -50,7 +50,7 @@ describe('findInstallingPackages', () => {
       fixture.path,
       path.join(fixture.path, '..', '..'),
       'not-here',
-      '0.1.0',
+      ({ value }) => value.version === '0.1.0',
       logger
     )
 
@@ -63,7 +63,7 @@ describe('findInstallingPackages', () => {
       fixture.path,
       path.join(fixture.path, '..', '..'),
       'instrumented',
-      '0.3.0',
+      ({ value }) => value.version === '0.3.0',
       logger
     )
 
@@ -78,7 +78,7 @@ describe('findInstallingPackages', () => {
       fixture.path,
       path.join(fixture.path, '..', '..'),
       'instrumented',
-      null,
+      () => true,
       logger
     )
 

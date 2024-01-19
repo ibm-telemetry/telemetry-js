@@ -9,8 +9,6 @@ import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { getDependencyTree } from './get-dependency-tree.js'
 import { InstallingPackage } from './interfaces.js'
 
-const cache = new Map<string, Promise<InstallingPackage[]>>()
-
 /**
  * Finds all packages within the project that installed the specified package at the specified
  * version. This is done by finding the root-most project directory containing a node modules folder
@@ -22,7 +20,7 @@ const cache = new Map<string, Promise<InstallingPackage[]>>()
  * absolute path.
  * @param root - Root-most directory. This is an absolute path.
  * @param packageName - The name of the package for which to search.
- * @param packageVersion - The (optional) version of the package for which to search.
+ * @param filterFn - Function to filter results by.
  * @param logger - Logger instance.
  * @returns A possibly empty array of installing packages.
  */
@@ -30,31 +28,14 @@ export async function findInstallingPackages(
   cwd: string,
   root: string,
   packageName: string,
-  packageVersion: string | null,
+  filterFn: ({ value }: { value: InstallingPackage }) => boolean,
   logger: Logger
 ): Promise<InstallingPackage[]> {
-  logger.traceEnter('', 'findInstallingPackages', [packageName, packageVersion, cwd, root])
+  logger.traceEnter('', 'findInstallingPackages', [packageName, filterFn, cwd, root])
 
-  const cacheKey = `${cwd} ${root} ${packageName} ${packageVersion}`
+  const dependencyTree = await getDependencyTree(cwd, root, logger)
+  const installers = findInstallersFromTree(dependencyTree, packageName, filterFn, logger)
 
-  if (cache.has(cacheKey)) {
-    logger.debug('findInstallingPackages cache hit for ' + cacheKey)
-    const data = await (cache.get(cacheKey) as Promise<InstallingPackage[]>)
-    logger.traceExit('', 'findInstallingPackages', data)
-    return data
-  }
-
-  const getInstallers = async () => {
-    const dependencyTree = await getDependencyTree(cwd, root, logger)
-    const installers = findInstallersFromTree(dependencyTree, packageName, packageVersion, logger)
-
-    logger.traceExit('', 'findInstallingPackages inner promise', installers)
-    return installers
-  }
-
-  cache.set(cacheKey, getInstallers())
-
-  const data = await (cache.get(cacheKey) as Promise<InstallingPackage[]>)
-  logger.traceExit('', 'findInstallingPackages', data)
-  return data
+  logger.traceExit('', 'findInstallingPackages', installers)
+  return installers
 }

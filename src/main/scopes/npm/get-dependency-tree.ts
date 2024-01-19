@@ -11,6 +11,8 @@ import { runCommand } from '../../core/run-command.js'
 import { NoNodeModulesFoundError } from '../../exceptions/no-node-modules-found-error.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
 
+const cache = new Map<string, Promise<Record<string, unknown>>>()
+
 /**
  * Obtains data relating to package info and dependencies recursively,
  * starting from the root-most package.
@@ -26,16 +28,41 @@ export async function getDependencyTree(
   root: string,
   logger: Logger
 ): Promise<Record<string, unknown>> {
-  const dirs = await new DirectoryEnumerator(logger).find(cwd, root, hasNodeModulesFolder)
-  const topMostDir = dirs.pop()
+  const cacheKey = `${cwd} ${root}`
 
-  if (topMostDir === undefined) {
-    throw new NoNodeModulesFoundError(cwd, root)
+  if (cache.has(cacheKey)) {
+    logger.debug('getDependencyTree cache hit for ' + cacheKey)
+    const data = await (cache.get(cacheKey) as Promise<Record<string, unknown>>)
+    logger.traceExit('', 'getDependencyTree', data)
+    return data
+  }
+
+  const getNpmTree = async () => {
+    const dirs = await new DirectoryEnumerator(logger).find(cwd, root, hasNodeModulesFolder)
+    const topMostDir = dirs.pop()
+
+    if (topMostDir === undefined) {
+      throw new NoNodeModulesFoundError(cwd, root)
+    }
+
+    const commandResult = await runCommand(
+      'npm ls --all --json',
+      logger,
+      { cwd: topMostDir },
+      false
+    )
+
+    const npmTree = JSON.parse(commandResult.stdout)
+
+    logger.traceExit('', 'getDependencyTree inner promise', npmTree)
+    return npmTree
   }
 
   // Allow this command to try and obtain results even if it exited with a total or partial
   // error
-  const commandResult = await runCommand('npm ls --all --json', logger, { cwd: topMostDir }, false)
+  cache.set(cacheKey, getNpmTree())
 
-  return JSON.parse(commandResult.stdout)
+  const data = await (cache.get(cacheKey) as Promise<Record<string, unknown>>)
+
+  return data
 }

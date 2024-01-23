@@ -8,6 +8,7 @@
 import getPropertyByPath from 'lodash/get.js'
 
 import { InvalidObjectPathError } from '../../exceptions/invalid-object-path-error.js'
+import { DependencyTree } from '../jsx/interfaces.js'
 import { type InstallingPackage, type PackageData } from './interfaces.js'
 
 /**
@@ -20,7 +21,7 @@ import { type InstallingPackage, type PackageData } from './interfaces.js'
  * @returns An object containing package information.
  */
 export function getPackageSubTree(
-  dependencyTree: Record<string, unknown>,
+  dependencyTree: DependencyTree,
   objectPath: string[]
 ): InstallingPackage {
   const tree =

@@ -9,9 +9,10 @@ import { DirectoryEnumerator } from '../../core/directory-enumerator.js'
 import { Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 import { NoNodeModulesFoundError } from '../../exceptions/no-node-modules-found-error.js'
+import { DependencyTree } from '../jsx/interfaces.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
 
-const cache = new Map<string, Promise<Record<string, unknown>>>()
+const cache = new Map<string, Promise<DependencyTree>>()
 
 /**
  * Obtains data relating to package info and dependencies recursively,
@@ -27,12 +28,12 @@ export async function getDependencyTree(
   cwd: string,
   root: string,
   logger: Logger
-): Promise<Record<string, unknown>> {
+): Promise<DependencyTree> {
   const cacheKey = `${cwd} ${root}`
 
   if (cache.has(cacheKey)) {
     logger.debug('getDependencyTree cache hit for ' + cacheKey)
-    const data = await (cache.get(cacheKey) as Promise<Record<string, unknown>>)
+    const data = await (cache.get(cacheKey) as Promise<DependencyTree>)
     logger.traceExit('', 'getDependencyTree', data)
     return data
   }
@@ -62,7 +63,7 @@ export async function getDependencyTree(
   // error
   cache.set(cacheKey, getNpmTree())
 
-  const data = await (cache.get(cacheKey) as Promise<Record<string, unknown>>)
+  const data = await (cache.get(cacheKey) as Promise<DependencyTree>)
 
   return data
 }

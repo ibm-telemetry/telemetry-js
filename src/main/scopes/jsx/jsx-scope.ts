@@ -4,13 +4,14 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import getPropertyByPath from 'lodash/get.js'
+import { ObjectPath } from 'object-scan'
 import path from 'path'
 import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
-import { findInstallingPackages } from '../npm/find-installing-packages.js'
 import { findNestedDeps } from '../npm/find-nested-deps.js'
 import { getDependencyTree } from '../npm/get-dependency-tree.js'
 import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
@@ -19,7 +20,7 @@ import { PackageData } from '../npm/interfaces.js'
 import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
 import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
 import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
-import { type JsxElementImportMatcher } from './interfaces.js'
+import { DependencyTree, type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
@@ -87,6 +88,59 @@ export class JsxScope extends Scope {
     await Promise.allSettled(promises)
   }
 
+  // TODO
+  getTreePredecessor(dependencyTree: DependencyTree, path: ObjectPath): DependencyTree | undefined {
+    // already at the root
+    if (path.length === 0) return undefined
+
+    if (path.length === 2) return { path: [], ...dependencyTree }
+
+    return { path: path.slice(0, -2), ...getPropertyByPath(dependencyTree, path.slice(0, -2)) }
+  }
+
+  // TODO
+  getPackageTrees(dependencyTree: DependencyTree, pkg: PackageData): DependencyTree[] {
+    if (dependencyTree.name === pkg.name && dependencyTree.version === pkg.version) {
+      dependencyTree['path'] = []
+      return [dependencyTree]
+    }
+
+    // TODOASKJOE: this could return more than one, how do I know which one is the one that belongs specifically to the file?
+    const prefixPackagePaths = findNestedDeps(
+      dependencyTree,
+      pkg.name,
+      ({ value }) => value.version === pkg.version
+    )
+
+    if (prefixPackagePaths.length > 0) {
+      return prefixPackagePaths.map((path) => ({
+        path,
+        ...getPropertyByPath(dependencyTree, path)
+      }))
+    }
+
+    return []
+  }
+
+  // TODO
+  getInstalledVersions(tree: DependencyTree, pkgName: string) {
+    // find all versions, sort by shortest paths
+    const instrumentedInstallPaths = findNestedDeps(tree, pkgName, () => true).sort((a, b) => {
+      if (a.length === b.length) return 0
+      return a.length < b.length ? -1 : 1
+    })
+
+    if (instrumentedInstallPaths.length > 0) {
+      // get all paths of same length
+      const shortestPaths = instrumentedInstallPaths.filter(
+        (path) => path.length === instrumentedInstallPaths[0]?.length
+      )
+
+      return shortestPaths.map((path) => getPropertyByPath(tree, path)['version'])
+    }
+    return []
+  }
+
   /**
    * Finds tracked source files and then filters them based on ones that appear in a  project which
    * depends on the in-context instrumented package/version.
@@ -96,13 +150,6 @@ export class JsxScope extends Scope {
    */
   async findRelevantSourceFiles(instrumentedPackage: PackageData) {
     const sourceFiles = await getTrackedSourceFiles(this.root, this.logger)
-    const installingPackages = await findInstallingPackages(
-      this.cwd,
-      this.root,
-      instrumentedPackage.name,
-      () => true,
-      this.logger
-    )
 
     const dependencyTree = await getDependencyTree(this.cwd, this.root, this.logger)
 
@@ -110,61 +157,30 @@ export class JsxScope extends Scope {
       const prefix = await getDirectoryPrefix(path.dirname(f.fileName), this.logger)
       const prefixPackageData = await getPackageData(prefix, this.root, this.logger)
 
-      // prefixPackageData is an installer of the instrumented package
-      const prefixInstaller = installingPackages.find((pkg) => pkg.name === prefixPackageData.name)
-      if (prefixInstaller !== undefined) {
-        const installedInstrumentedVersion = prefixInstaller.dependencies.find(
-          (d) => d.name === instrumentedPackage.name
-        )?.version
-        // if the package has the same instrumented version installed capture metrics, else skip
-        return installedInstrumentedVersion === instrumentedPackage.version
-      }
+      // potentially more than one at this point (can't just pick whichever one because as I go upstream, this matters)
+      let packageTrees = this.getPackageTrees(dependencyTree, prefixPackageData)
 
-      const prefixPackageDataPaths = findNestedDeps(
-        dependencyTree,
-        prefixPackageData.name,
-        ({ value }) => value.version === prefixPackageData.version
-      ).map((path) => [dependencyTree['name'], ...path].join('.'))
-
-      // a "parent" of the file's package has installed
-      // the instrumented package at a different version
-      const differentVersionInstalledUpstream = installingPackages.some(
-        (pkg) =>
-          pkg.dependencies.find((p) => p.name === instrumentedPackage.name)?.version !==
-            instrumentedPackage.version &&
-          prefixPackageDataPaths.some((dataPath) => dataPath.includes(pkg.path.join('.')))
-      )
-
-      if (differentVersionInstalledUpstream) {
-        return false
-      }
-
-      // a dependency has installed a different version of the instrumented package
-      const differentVersionInstalledDownstream = installingPackages.some(
-        (pkg) =>
-          pkg.dependencies.find((p) => p.name === instrumentedPackage.name)?.version !==
-            instrumentedPackage.version &&
-          prefixPackageDataPaths.some((dataPath) =>
-            pkg.path.join('.').includes(`${dataPath}.dependencies`)
+      let shouldCollect = undefined
+      do {
+        // looking at all for now
+        for (const tree of packageTrees) {
+          const instrumentedInstallVersions = this.getInstalledVersions(
+            tree,
+            instrumentedPackage.name
           )
-      )
-
-      // if there is a different version (of the instrumented package) installed downstream
-      // we do not want to capture, unless there is an exact version installed aswell.
-      if (differentVersionInstalledDownstream) {
-        // a dependency has installed an exact version of the instrumented package
-        const exactVersionInstalledDownstream = installingPackages.some(
-          (pkg) =>
-            pkg.dependencies.find((p) => p.name === instrumentedPackage.name)?.version ===
-              instrumentedPackage.version &&
-            prefixPackageDataPaths.some((dataPath) =>
-              pkg.path.join('.').includes(`${dataPath}.dependencies`)
+          if (instrumentedInstallVersions.length > 0) {
+            shouldCollect = instrumentedInstallVersions.some(
+              (version) => version === instrumentedPackage.version
             )
-        )
-        return exactVersionInstalledDownstream
-      }
-      // if no exception condition is met, we want to capture
-      return true
+          }
+        }
+        // did not find, go up one level for all packages
+        packageTrees = packageTrees
+          .map((tree) => this.getTreePredecessor(dependencyTree, tree['path'] as ObjectPath))
+          .filter((tree) => tree !== undefined) as DependencyTree[]
+      } while (shouldCollect === undefined && packageTrees.length > 0)
+
+      return shouldCollect
     })
     const filterData = await Promise.all(filterPromises)
 

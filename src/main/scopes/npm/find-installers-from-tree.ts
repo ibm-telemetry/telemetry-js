@@ -6,6 +6,7 @@
  */
 
 import { type Logger } from '../../core/log/logger.js'
+import { DependencyTree } from '../jsx/interfaces.js'
 import { findNestedDeps } from './find-nested-deps.js'
 import { getPackageSubTree } from './get-package-sub-tree.js'
 import { type InstallingPackage } from './interfaces.js'
@@ -42,7 +43,7 @@ import { type InstallingPackage } from './interfaces.js'
  * @returns An array of results.
  */
 export function findInstallersFromTree(
-  dependencyTree: Record<string, unknown>,
+  dependencyTree: DependencyTree,
   packageName: string,
   filterFn: ({ value }: { value: InstallingPackage }) => boolean,
   logger: Logger

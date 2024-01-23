@@ -14,9 +14,6 @@ exports[`findInstallingPackages > correctly finds installing package data 1`] = 
       },
     ],
     "name": "basic-project",
-    "path": [
-      "basic-project",
-    ],
     "version": "1.0.0",
   },
 ]
@@ -32,13 +29,6 @@ exports[`findInstallingPackages > finds all installers when no version is specif
       },
     ],
     "name": "intermediate",
-    "path": [
-      "complex-nesting-thingy",
-      "dependencies",
-      "package3",
-      "dependencies",
-      "intermediate",
-    ],
     "version": "1.0.0",
   },
   {
@@ -49,11 +39,6 @@ exports[`findInstallingPackages > finds all installers when no version is specif
       },
     ],
     "name": "package2",
-    "path": [
-      "complex-nesting-thingy",
-      "dependencies",
-      "package2",
-    ],
     "version": "1.0.0",
   },
   {
@@ -64,11 +49,6 @@ exports[`findInstallingPackages > finds all installers when no version is specif
       },
     ],
     "name": "package1",
-    "path": [
-      "complex-nesting-thingy",
-      "dependencies",
-      "package1",
-    ],
     "version": "1.0.0",
   },
 ]

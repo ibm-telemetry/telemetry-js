@@ -9,11 +9,6 @@ exports[`getPackageSubTree > correctly parses nested dependency 1`] = `
     },
   ],
   "name": "two",
-  "path": [
-    "one",
-    "dependencies",
-    "two",
-  ],
   "version": "1.0.0",
 }
 `;
@@ -35,9 +30,6 @@ exports[`getPackageSubTree > correctly parses top-level-dependency 1`] = `
     },
   ],
   "name": "one",
-  "path": [
-    "one",
-  ],
   "version": "1.0.0",
 }
 `;

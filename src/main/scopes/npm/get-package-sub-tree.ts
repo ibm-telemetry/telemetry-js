@@ -43,7 +43,6 @@ export function getPackageSubTree(
         name: key,
         version: (value as PackageData).version
       }
-    }),
-    path: [dependencyTree['name'] as string, ...objectPath]
+    })
   }
 }

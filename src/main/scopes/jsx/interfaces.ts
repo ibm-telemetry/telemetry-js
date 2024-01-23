@@ -55,13 +55,13 @@ type AttributeNodeHandlerProducer = new (
 export type AttributeNodeHandlerMap = Partial<Record<ts.SyntaxKind, AttributeNodeHandlerProducer>>
 
 export interface DependencyTreeDependency {
-  version: string,
+  version: string
   dependencies: Record<string, DependencyTreeDependency>
 }
 
 export interface DependencyTree extends PackageData {
   name: string
   version: string
-  dependencies: Record<string,DependencyTreeDependency>
+  dependencies: Record<string, DependencyTreeDependency>
   [key: string]: unknown
 }

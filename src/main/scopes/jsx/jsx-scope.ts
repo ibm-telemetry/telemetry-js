@@ -105,7 +105,8 @@ export class JsxScope extends Scope {
       return [dependencyTree]
     }
 
-    // TODOASKJOE: this could return more than one, how do I know which one is the one that belongs specifically to the file?
+    // TODOASKJOE: this could return more than one
+    // how do I know which one is the one that belongs specifically to the file?
     const prefixPackagePaths = findNestedDeps(
       dependencyTree,
       pkg.name,
@@ -157,7 +158,8 @@ export class JsxScope extends Scope {
       const prefix = await getDirectoryPrefix(path.dirname(f.fileName), this.logger)
       const prefixPackageData = await getPackageData(prefix, this.root, this.logger)
 
-      // potentially more than one at this point (can't just pick whichever one because as I go upstream, this matters)
+      // potentially more than one at this point
+      //(can't just pick whichever one because as I go upstream, this matters)
       let packageTrees = this.getPackageTrees(dependencyTree, prefixPackageData)
 
       let shouldCollect = undefined

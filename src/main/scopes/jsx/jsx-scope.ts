@@ -88,17 +88,37 @@ export class JsxScope extends Scope {
     await Promise.allSettled(promises)
   }
 
-  // TODO
-  getTreePredecessor(dependencyTree: DependencyTree, path: ObjectPath): DependencyTree | undefined {
+  /**
+   * Retrieves a tree rooted at the parent of a package given it's dependencyTree path.
+   *
+   * @param dependencyTree - The tree to search.
+   * @param packagePath - Path to the package to get parent tree for in the dependencyTree.
+   * @returns A dependency tree rooted at the package's parent
+   * or undefined if the package is already the root.
+   */
+  getTreePredecessor(
+    dependencyTree: DependencyTree,
+    packagePath: ObjectPath
+  ): DependencyTree | undefined {
     // already at the root
-    if (path.length === 0) return undefined
+    if (packagePath.length === 0) return undefined
 
-    if (path.length === 2) return { path: [], ...dependencyTree }
+    if (packagePath.length === 2) return { path: [], ...dependencyTree }
 
-    return { path: path.slice(0, -2), ...getPropertyByPath(dependencyTree, path.slice(0, -2)) }
+    return {
+      path: packagePath.slice(0, -2),
+      ...getPropertyByPath(dependencyTree, packagePath.slice(0, -2))
+    }
   }
 
-  // TODO
+  /**
+   * Finds all dependency sub-trees rooted at the desired package/version
+   * given a bigger dependency tree.
+   *
+   * @param dependencyTree - The tree to search.
+   * @param pkg - Package to find rooted trees for.
+   * @returns A (possibly empty) array of dependency trees rooted at the pkg param.
+   */
   getPackageTrees(dependencyTree: DependencyTree, pkg: PackageData): DependencyTree[] {
     if (dependencyTree.name === pkg.name && dependencyTree.version === pkg.version) {
       dependencyTree['path'] = []
@@ -123,13 +143,22 @@ export class JsxScope extends Scope {
     return []
   }
 
-  // TODO
-  getInstalledVersions(tree: DependencyTree, pkgName: string) {
+  /**
+   * Finds all installed versions of a given package within a dependency tree
+   * and returns the direct-most version(s).
+   *
+   * @param dependencyTree - The tree to search.
+   * @param pkgName - The tree to search.
+   * @returns A (possibly empty) array of raw versions as strings.
+   */
+  getInstalledVersions(dependencyTree: DependencyTree, pkgName: string) {
     // find all versions, sort by shortest paths
-    const instrumentedInstallPaths = findNestedDeps(tree, pkgName, () => true).sort((a, b) => {
-      if (a.length === b.length) return 0
-      return a.length < b.length ? -1 : 1
-    })
+    const instrumentedInstallPaths = findNestedDeps(dependencyTree, pkgName, () => true).sort(
+      (a, b) => {
+        if (a.length === b.length) return 0
+        return a.length < b.length ? -1 : 1
+      }
+    )
 
     if (instrumentedInstallPaths.length > 0) {
       // get all paths of same length
@@ -137,7 +166,7 @@ export class JsxScope extends Scope {
         (path) => path.length === instrumentedInstallPaths[0]?.length
       )
 
-      return shortestPaths.map((path) => getPropertyByPath(tree, path)['version'])
+      return shortestPaths.map((path) => getPropertyByPath(dependencyTree, path)['version'])
     }
     return []
   }

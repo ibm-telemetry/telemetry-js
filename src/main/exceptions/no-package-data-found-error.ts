@@ -6,7 +6,7 @@
  */
 
 /**
- * Exception thrown when no package date could be obtained for a given directory.
+ * Exception thrown when no package data could be obtained for a given directory.
  */
 export class NoPackageDataFoundError extends Error {
   constructor(dir: string) {

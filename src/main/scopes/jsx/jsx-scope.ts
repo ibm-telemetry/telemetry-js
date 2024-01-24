@@ -12,6 +12,7 @@ import type * as ts from 'typescript'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
+import { NoInstallationFoundError } from '../../exceptions/no-installation-found-error.js'
 import { findNestedDeps } from '../npm/find-nested-deps.js'
 import { getDependencyTree } from '../npm/get-dependency-tree.js'
 import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
@@ -145,13 +146,13 @@ export class JsxScope extends Scope {
 
   /**
    * Finds all installed versions of a given package within a dependency tree
-   * and returns the direct-most version(s).
+   * and returns the direct-most paths.
    *
    * @param dependencyTree - The tree to search.
    * @param pkgName - The tree to search.
-   * @returns A (possibly empty) array of raw versions as strings.
+   * @returns A (possibly empty) array of paths.
    */
-  getInstalledVersions(dependencyTree: DependencyTree, pkgName: string) {
+  getInstalledVersionPaths(dependencyTree: DependencyTree, pkgName: string) {
     // find all versions, sort by shortest paths
     const instrumentedInstallPaths = findNestedDeps(dependencyTree, pkgName, () => true).sort(
       (a, b) => {
@@ -161,12 +162,10 @@ export class JsxScope extends Scope {
     )
 
     if (instrumentedInstallPaths.length > 0) {
-      // get all paths of same length
-      const shortestPaths = instrumentedInstallPaths.filter(
+      // return all paths with shortest length
+      return instrumentedInstallPaths.filter(
         (path) => path.length === instrumentedInstallPaths[0]?.length
       )
-
-      return shortestPaths.map((path) => getPropertyByPath(dependencyTree, path)['version'])
     }
     return []
   }
@@ -191,27 +190,35 @@ export class JsxScope extends Scope {
       //(can't just pick whichever one because as I go upstream, this matters)
       let packageTrees = this.getPackageTrees(dependencyTree, prefixPackageData)
 
-      let shouldCollect = undefined
+      let instrumentedInstallVersions: string[] | undefined = undefined
+      let shortestPathLength: number | undefined = undefined
       do {
-        // looking at all for now
         for (const tree of packageTrees) {
-          const instrumentedInstallVersions = this.getInstalledVersions(
+          const instrumentedInstallPaths = this.getInstalledVersionPaths(
             tree,
             instrumentedPackage.name
           )
-          if (instrumentedInstallVersions.length > 0) {
-            shouldCollect = instrumentedInstallVersions.some(
-              (version) => version === instrumentedPackage.version
-            )
+          if (instrumentedInstallPaths.length > 0) {
+            const pathsLength = instrumentedInstallPaths[0]?.length ?? 0
+            if (shortestPathLength === undefined || pathsLength < shortestPathLength) {
+              instrumentedInstallVersions = instrumentedInstallPaths.map(
+                (path) => getPropertyByPath(tree, path)['version']
+              )
+              shortestPathLength = pathsLength
+            }
           }
         }
         // did not find, go up one level for all packages
         packageTrees = packageTrees
           .map((tree) => this.getTreePredecessor(dependencyTree, tree['path'] as ObjectPath))
           .filter((tree) => tree !== undefined) as DependencyTree[]
-      } while (shouldCollect === undefined && packageTrees.length > 0)
+      } while (shortestPathLength === undefined && packageTrees.length > 0)
 
-      return shouldCollect
+      if (instrumentedInstallVersions === undefined) {
+        throw new NoInstallationFoundError(instrumentedPackage.name)
+      }
+
+      return instrumentedInstallVersions.some((version) => version === instrumentedPackage.version)
     })
     const filterData = await Promise.all(filterPromises)
 

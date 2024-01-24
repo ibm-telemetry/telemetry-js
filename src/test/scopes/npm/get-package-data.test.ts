@@ -15,7 +15,7 @@ describe('getPackageData', () => {
 
   it('correctly reads name and version', async () => {
     const fixture = new Fixture('projects/basic-project')
-    await expect(getPackageData(fixture.path, logger)).resolves.toStrictEqual({
+    await expect(getPackageData(fixture.path, fixture.path, logger)).resolves.toStrictEqual({
       name: 'basic-project',
       version: '1.0.0'
     })
@@ -23,13 +23,14 @@ describe('getPackageData', () => {
 
   it('correctly reads name and version for a workspace project', async () => {
     const fixture = new Fixture('projects/complex-nesting-thingy/package1')
-    await expect(getPackageData(fixture.path, logger)).resolves.toStrictEqual({
+    const root = new Fixture('projects/complex-nesting-thingy')
+    await expect(getPackageData(fixture.path, root.path, logger)).resolves.toStrictEqual({
       name: 'package1',
       version: '1.0.0'
     })
   })
 
-  it('throws error for non-existant directory', async () => {
-    await expect(getPackageData('/made/up/directory', logger)).rejects.toThrow(Error)
+  it('throws error for non-existent directory', async () => {
+    await expect(getPackageData('/made/up/directory', '/made/up', logger)).rejects.toThrow(Error)
   })
 })

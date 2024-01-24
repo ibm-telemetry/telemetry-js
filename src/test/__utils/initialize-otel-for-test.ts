@@ -7,7 +7,7 @@
 
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 
-import { initializeOpenTelemetry } from '../../main/core/initialize-open-telemetry.js'
+import { OpenTelemetryContext } from '../../main/core/open-telemetry-context.js'
 
 /**
  * Initializes the OpenTelemetry package with test values.
@@ -17,7 +17,13 @@ import { initializeOpenTelemetry } from '../../main/core/initialize-open-telemet
 export function initializeOtelForTest() {
   const date = new Date(2023).toISOString()
 
-  return initializeOpenTelemetry({
+  // Force re-initialization on next use
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- See above
+  ;(OpenTelemetryContext as any).instance = undefined
+
+  const otelContext = OpenTelemetryContext.getInstance()
+
+  otelContext.setAttributes({
     [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',
     [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: 'telemetryVersion',
     [CustomResourceAttributes.PROJECT_ID]: 'projectId',
@@ -29,4 +35,6 @@ export function initializeOtelForTest() {
     [CustomResourceAttributes.ANALYZED_REFS]: [],
     [CustomResourceAttributes.DATE]: date
   })
+
+  return otelContext
 }

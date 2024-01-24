@@ -16,26 +16,57 @@ describe('findInstallersFromTree', () => {
   const logger = initLogger()
 
   it('returns empty array if dependency does not exist', () => {
-    expect(findInstallersFromTree(testDependencyTree, 'not-there', '1.0.0', logger)).toStrictEqual(
-      []
-    )
+    expect(
+      findInstallersFromTree(
+        testDependencyTree,
+        'not-there',
+        ({ value }) => value.version === '1.0.0',
+        logger
+      )
+    ).toStrictEqual([])
   })
 
   it('returns for a single installer', () => {
-    expect(findInstallersFromTree(testDependencyTree, 'two', '1.0.0', logger)).toMatchSnapshot()
+    expect(
+      findInstallersFromTree(
+        testDependencyTree,
+        'two',
+        ({ value }) => value.version === '1.0.0',
+        logger
+      )
+    ).toMatchSnapshot()
   })
 
   it('returns for multiple installers', () => {
-    expect(findInstallersFromTree(testDependencyTree, 'three', '1.0.0', logger)).toMatchSnapshot()
+    expect(
+      findInstallersFromTree(
+        testDependencyTree,
+        'three',
+        ({ value }) => value.version === '1.0.0',
+        logger
+      )
+    ).toMatchSnapshot()
   })
 
   it('only picks up correct version', () => {
-    expect(findInstallersFromTree(testDependencyTree, 'four', '1.0.1', logger)).toMatchSnapshot()
+    expect(
+      findInstallersFromTree(
+        testDependencyTree,
+        'four',
+        ({ value }) => value.version === '1.0.1',
+        logger
+      )
+    ).toMatchSnapshot()
   })
 
   it('disregards other versions', () => {
-    expect(findInstallersFromTree(testDependencyTree, 'four', 'not-there', logger)).toStrictEqual(
-      []
-    )
+    expect(
+      findInstallersFromTree(
+        testDependencyTree,
+        'four',
+        ({ value }) => value.version === 'not-there',
+        logger
+      )
+    ).toStrictEqual([])
   })
 })

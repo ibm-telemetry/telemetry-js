@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getDependencyTree > correctly obtains dependency tree 1`] = `
+{
+  "dependencies": {
+    "instrumented-top-level": {
+      "overridden": false,
+      "version": "1.0.0",
+    },
+    "package1": {
+      "dependencies": {
+        "instrumented": {
+          "overridden": false,
+          "version": "1.0.0",
+        },
+      },
+      "overridden": false,
+      "resolved": "file:../package1",
+      "version": "1.0.0",
+    },
+    "package2": {
+      "dependencies": {
+        "instrumented": {
+          "overridden": false,
+          "version": "2.0.0",
+        },
+      },
+      "overridden": false,
+      "resolved": "file:../package2",
+      "version": "1.0.0",
+    },
+    "package3": {
+      "dependencies": {
+        "intermediate": {
+          "dependencies": {
+            "instrumented": {
+              "overridden": false,
+              "version": "2.0.0",
+            },
+          },
+          "overridden": false,
+          "version": "1.0.0",
+        },
+      },
+      "overridden": false,
+      "resolved": "file:../package3",
+      "version": "1.0.0",
+    },
+    "root-only": {
+      "overridden": false,
+      "version": "1.0.0",
+    },
+  },
+  "name": "complex-nesting-thingy",
+  "version": "1.0.0",
+}
+`;

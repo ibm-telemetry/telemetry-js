@@ -4,16 +4,11 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { DirectoryEnumerator } from '../../core/directory-enumerator.js'
 import { Trace } from '../../core/log/trace.js'
-import { runCommand } from '../../core/run-command.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
-import { NoPackageJsonFoundError } from '../../exceptions/no-package-json-found-error.js'
-import { findInstallersFromTree } from './find-installers-from-tree.js'
+import { findInstallingPackages } from './find-installing-packages.js'
 import { getPackageData } from './get-package-data.js'
-import { hasNodeModulesFolder } from './has-node-modules-folder.js'
-import { type InstallingPackage } from './interfaces.js'
 import { DependencyMetric } from './metrics/dependency-metric.js'
 
 /**
@@ -28,10 +23,13 @@ export class NpmScope extends Scope {
    */
   @Trace()
   private async collectDependencies(): Promise<void> {
-    const instrumentedPkg = await getPackageData(this.cwd, this.logger)
-    const installingPackages = await this.findInstallingPackages(
-      instrumentedPkg.name,
-      instrumentedPkg.version
+    const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
+    const installingPackages = await findInstallingPackages(
+      this.cwd,
+      this.root,
+      instrumentedPackage.name,
+      ({ value }) => value.version === instrumentedPackage.version,
+      this.logger
     )
 
     installingPackages.forEach((installingPkg) => {
@@ -42,12 +40,12 @@ export class NpmScope extends Scope {
               rawName: dependency.name,
               rawVersion: dependency.version,
               isInstrumented:
-                dependency.name === instrumentedPkg.name &&
-                dependency.version === instrumentedPkg.version
+                dependency.name === instrumentedPackage.name &&
+                dependency.version === instrumentedPackage.version
                   ? 'true'
                   : 'false'
             },
-            instrumentedPkg,
+            instrumentedPackage,
             this.logger
           )
         )
@@ -76,42 +74,5 @@ export class NpmScope extends Scope {
     })
 
     await Promise.allSettled(promises)
-  }
-
-  /**
-   * Finds all packages within the project that installed the specified package at the specified
-   * version. This is done by starting at the current directory and traversing up the directory
-   * structure until an `npm ls` command on one of those directories returns a non-empty list of
-   * installers.
-   *
-   * If no installers were found after the root-most project directory was searched, an empty array
-   * is returned.
-   *
-   * @param packageName - The name of the package to search for.
-   * @param packageVersion - The exact version of the package to search for.
-   * @returns A possibly empty array of installing packages.
-   */
-  @Trace()
-  public async findInstallingPackages(
-    packageName: string,
-    packageVersion: string
-  ): Promise<InstallingPackage[]> {
-    const dirs = await new DirectoryEnumerator(this.logger).find(
-      this.cwd,
-      this.root,
-      hasNodeModulesFolder
-    )
-    const topMostDir = dirs.pop()
-
-    if (topMostDir === undefined) {
-      throw new NoPackageJsonFoundError(this.cwd, this.root)
-    }
-
-    // Allow this command to try and obtain results even if it exited with a total or partial error
-    const result = await runCommand('npm ls --all --json', this.logger, { cwd: topMostDir }, false)
-
-    const dependencyTree = JSON.parse(result.stdout)
-
-    return findInstallersFromTree(dependencyTree, packageName, packageVersion, this.logger)
   }
 }

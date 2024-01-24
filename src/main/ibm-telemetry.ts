@@ -15,10 +15,10 @@ import { ConfigValidator } from './core/config-validator.js'
 import { Environment } from './core/environment.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { GitInfoProvider } from './core/git-info-provider.js'
-import { initializeOpenTelemetry } from './core/initialize-open-telemetry.js'
 import { type Logger } from './core/log/logger.js'
 import { safeStringify } from './core/log/safe-stringify.js'
 import { Trace } from './core/log/trace.js'
+import { OpenTelemetryContext } from './core/open-telemetry-context.js'
 import { parseYamlFile } from './core/parse-yaml-file.js'
 import { type Scope } from './core/scope.js'
 import { UnknownScopeError } from './exceptions/unknown-scope-error.js'
@@ -94,8 +94,9 @@ export class IbmTelemetry {
       this.logger
     ).getGitInfo()
     const emitterInfo = await getTelemetryPackageData(this.logger)
+    const otelContext = OpenTelemetryContext.getInstance()
 
-    const metricReader = initializeOpenTelemetry(
+    otelContext.setAttributes(
       hash(
         {
           [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
@@ -126,7 +127,7 @@ export class IbmTelemetry {
 
     await Promise.allSettled(promises)
 
-    const results = await metricReader.collect()
+    const results = await otelContext.getMetricReader().collect()
 
     this.logger.debug('Collection results:')
     this.logger.debug(JSON.stringify(results, undefined, 2))

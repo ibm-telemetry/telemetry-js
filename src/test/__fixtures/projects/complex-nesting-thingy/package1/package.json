@@ -2,7 +2,7 @@
   "name": "package1",
   "description": "",
   "version": "1.0.0",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "author": "",
   "main": "index.js",
   "scripts": {

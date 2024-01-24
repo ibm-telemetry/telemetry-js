@@ -41,14 +41,14 @@ describe('class: JsxScope', () => {
   const logger = initLogger()
   describe('run', () => {
     it('correctly captures jsx element metric data', async () => {
-      const metricReader = initializeOtelForTest()
+      const metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
-      jsxScope.setRunSync()
+      jsxScope.setRunSync(true)
       await jsxScope.run()
 
       const results = await metricReader.collect()
@@ -68,8 +68,124 @@ describe('class: JsxScope', () => {
         logger
       )
 
-      scope.setRunSync()
+      scope.setRunSync(true)
       await expect(scope.run()).rejects.toThrow(EmptyScopeError)
+    })
+
+    it('only captures metrics for the instrumented package/version', async () => {
+      let metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'multiple-versions-of-instrumented-dep'))
+      const pkgA = new Fixture(
+        path.join(
+          'projects',
+          'multiple-versions-of-instrumented-dep',
+          'node_modules',
+          'instrumented'
+        )
+      )
+      const pkgB = new Fixture(
+        path.join(
+          'projects',
+          'multiple-versions-of-instrumented-dep',
+          'b',
+          'node_modules',
+          'instrumented'
+        )
+      )
+
+      let jsxScope = new JsxScope(pkgA.path, root.path, config, logger)
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+      const resultsA = await metricReader.collect()
+
+      metricReader = initializeOtelForTest().getMetricReader()
+
+      jsxScope = new JsxScope(pkgB.path, root.path, config, logger)
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+      const resultsB = await metricReader.collect()
+
+      expect(resultsA.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(1)
+      expect(resultsB.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(2)
+    })
+
+    it("does not capture metrics for files that are not in instrumented package's installer", async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('captures metrics when instrumented package is installed in intermediate package', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join(
+          'projects',
+          'complex-nesting-thingy',
+          'node_modules',
+          'intermediate',
+          'node_modules',
+          'instrumented'
+        )
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('captures metrics for nested files when instrumented package is installed in top-level package', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const cwd = new Fixture(
+        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented-top-level')
+      )
+      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+
+      jsxScope.setRunSync(true)
+      await jsxScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('throws EmptyScopeError if no collector has been defined', async () => {
+      const fixture = new Fixture(
+        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
+      )
+      const jsxScope = new JsxScope(
+        fixture.path,
+        path.join(fixture.path, '..', '..'),
+        { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
+        logger
+      )
+
+      jsxScope.setRunSync(true)
+      await expect(jsxScope.run()).rejects.toThrow(EmptyScopeError)
     })
   })
 
@@ -313,7 +429,13 @@ describe('class: JsxScope', () => {
       attributes: []
     }
 
-    it('correctly sets invoker name for elements', async () => {
+    // TODO: This test currently fails because of this bug:
+    // https://github.com/nodejs/node/issues/47928
+    // This could be solved by mocking runCommand to return a hard-coded value, but this is less
+    // than useful for an end-to-end test which strives to hit as much of the underlying
+    // infrastructure as possible.
+    // eslint-disable-next-line vitest/no-disabled-tests -- See above
+    it.skip('correctly sets invoker name for elements', async () => {
       const fileName = new Fixture('projects/basic-project/test.jsx')
       const accumulator = new JsxElementAccumulator()
       accumulator.elements.push(element1)

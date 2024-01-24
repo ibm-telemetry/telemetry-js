@@ -17,30 +17,36 @@ describe('findNestedDeps', () => {
   const logger = initLogger()
 
   it('returns empty array if there are no matches', () => {
-    expect(findNestedDeps(testDependencyTree, 'not-there', '1.0.0')).toStrictEqual([])
+    expect(
+      findNestedDeps(testDependencyTree, 'not-there', ({ value }) => value.version === '1.0.0')
+    ).toStrictEqual([])
   })
 
   it('returns for a single match', () => {
-    expect(findNestedDeps(testDependencyTree, 'two', '1.0.0')).toStrictEqual([
-      ['dependencies', 'two']
-    ])
+    expect(
+      findNestedDeps(testDependencyTree, 'two', ({ value }) => value.version === '1.0.0')
+    ).toStrictEqual([['dependencies', 'two']])
   })
 
   it('returns for multiple matches', () => {
-    expect(findNestedDeps(testDependencyTree, 'three', '1.0.0')).toStrictEqual([
+    expect(
+      findNestedDeps(testDependencyTree, 'three', ({ value }) => value.version === '1.0.0')
+    ).toStrictEqual([
       ['dependencies', 'three'],
       ['dependencies', 'two', 'dependencies', 'three']
     ])
   })
 
   it('only picks up correct version', () => {
-    expect(findNestedDeps(testDependencyTree, 'four', '1.0.1')).toStrictEqual([
-      ['dependencies', 'two', 'dependencies', 'three', 'dependencies', 'four']
-    ])
+    expect(
+      findNestedDeps(testDependencyTree, 'four', ({ value }) => value.version === '1.0.1')
+    ).toStrictEqual([['dependencies', 'two', 'dependencies', 'three', 'dependencies', 'four']])
   })
 
   it('disregards other versions', () => {
-    expect(findNestedDeps(testDependencyTree, 'four', 'not-there')).toStrictEqual([])
+    expect(
+      findNestedDeps(testDependencyTree, 'four', ({ value }) => value.version === 'not-there')
+    ).toStrictEqual([])
   })
 
   it("finds a deeply nested dependency's entire path", async () => {
@@ -55,7 +61,13 @@ describe('findNestedDeps', () => {
 
     const dependencyTree = JSON.parse(lsAllResult.stdout)
 
-    const nestedDeps = findNestedDeps(dependencyTree, 'instrumented', '1.0.0')
+    const nestedDeps = findNestedDeps(
+      dependencyTree,
+      'instrumented',
+      ({ value }) => value.version === '2.0.0'
+    )
+
+    expect(nestedDeps)
 
     expect(nestedDeps[0]).toMatchObject([
       'dependencies',

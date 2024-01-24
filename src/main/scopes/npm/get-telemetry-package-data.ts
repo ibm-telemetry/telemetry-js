@@ -22,5 +22,5 @@ export async function getTelemetryPackageData(logger: Logger) {
 
   logger.debug('getTelemetryPackageData: Current file directory discovered as: ' + currentFileDir)
 
-  return await getPackageData(currentFileDir, logger)
+  return await getPackageData(currentFileDir, currentFileDir, logger)
 }

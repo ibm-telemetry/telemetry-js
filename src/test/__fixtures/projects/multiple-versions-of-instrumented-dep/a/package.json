@@ -1,0 +1,14 @@
+{
+  "name": "a",
+  "description": "",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "author": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "instrumented": "^1.0.0"
+  }
+}

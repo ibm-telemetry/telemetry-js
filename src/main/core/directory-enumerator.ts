@@ -16,7 +16,8 @@ import { Trace } from './log/trace.js'
  */
 export class DirectoryEnumerator extends Loggable {
   /**
-   * Finds directories between leaf and root (inclusive) which satisfy the predicate.
+   * Finds directories between leaf and root (inclusive) which satisfy the predicate. The
+   * directories are returned ordered from most-nested to least-nested.
    *
    * @param leaf - Leaf-most directory. This must be inside of the root directory. This is an
    * absolute path.

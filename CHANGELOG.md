@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.1.0...v1.2.0) (2024-01-24)
+
+
+### Features
+
+* add combined repository key to metrics ([#170](https://github.com/ibm-telemetry/telemetry-js/issues/170)) ([ffc53af](https://github.com/ibm-telemetry/telemetry-js/commit/ffc53af388802d42348e56ac3ce6e94243201ec8))
+* add new keys to element and dependency metrics ([#169](https://github.com/ibm-telemetry/telemetry-js/issues/169)) ([10ddf21](https://github.com/ibm-telemetry/telemetry-js/commit/10ddf2167e115b2a0a968df18f401349a7dfa0e1))
+* JsxScope - Capture metrics only for files contained within local package ([#146](https://github.com/ibm-telemetry/telemetry-js/issues/146)) ([c4da537](https://github.com/ibm-telemetry/telemetry-js/commit/c4da537746a2b3b7bd53a50b96e6f559c4e17366))
+
+
+### Bug Fixes
+
+* **deps:** upgrade dependency vite to v5.0.12 [SECURITY] ([#172](https://github.com/ibm-telemetry/telemetry-js/issues/172)) ([c2d7a62](https://github.com/ibm-telemetry/telemetry-js/commit/c2d7a62c12aa7a8b240e43b9aa61145c27a31325))
+* **deps:** upgrade devDependencies (minor) ([#159](https://github.com/ibm-telemetry/telemetry-js/issues/159)) ([1d4bc52](https://github.com/ibm-telemetry/telemetry-js/commit/1d4bc52968864cc5138a2a229be4dd81729eec27))
+* **deps:** upgrade devDependencies (minor) ([#168](https://github.com/ibm-telemetry/telemetry-js/issues/168)) ([348fee2](https://github.com/ibm-telemetry/telemetry-js/commit/348fee2ae5fee5547ffab285483d8213195aa8a7))
+* refactor some git-related commands ([4ef95b3](https://github.com/ibm-telemetry/telemetry-js/commit/4ef95b3e745d0b00a8e237d9211982bfd4d85428))
+* update copyrights to 2024 ([#176](https://github.com/ibm-telemetry/telemetry-js/issues/176)) ([7632e30](https://github.com/ibm-telemetry/telemetry-js/commit/7632e30b56da7760742207cf874ac8d25878266a))
+
 ## [1.1.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.0.0...v1.1.0) (2023-12-18)
 
 

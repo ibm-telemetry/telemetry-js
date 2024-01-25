@@ -155,10 +155,7 @@ export class JsxScope extends Scope {
   getInstalledVersionPaths(dependencyTree: DependencyTree, pkgName: string) {
     // find all versions, sort by shortest paths
     const instrumentedInstallPaths = findNestedDeps(dependencyTree, pkgName, () => true).sort(
-      (a, b) => {
-        if (a.length === b.length) return 0
-        return a.length < b.length ? -1 : 1
-      }
+      (a, b) => a.length - b.length
     )
 
     if (instrumentedInstallPaths.length > 0) {

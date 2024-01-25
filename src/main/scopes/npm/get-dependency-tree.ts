@@ -46,6 +46,8 @@ export async function getDependencyTree(
       throw new NoNodeModulesFoundError(cwd, root)
     }
 
+    // Allow this command to try and obtain results even if it exited with a total or partial
+    // error
     const commandResult = await runCommand(
       'npm ls --all --json',
       logger,
@@ -59,8 +61,6 @@ export async function getDependencyTree(
     return npmTree
   }
 
-  // Allow this command to try and obtain results even if it exited with a total or partial
-  // error
   cache.set(cacheKey, getNpmTree())
 
   const data = await (cache.get(cacheKey) as Promise<DependencyTree>)

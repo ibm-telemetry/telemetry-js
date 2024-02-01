@@ -150,6 +150,11 @@ collect:
 > **Note**: Though this file can live anywhere within your project, it is customary to place it at
 > the root level.
 
+Optionally, use the
+[IBM Telemetry Js Config Generator](https://www.npmjs.com/package/@ibm/telemetry-js-config-generator)
+script to automatically generate the config file. Remember to verify that the generated output is
+correct before using the config file.
+
 ### 3. Install `@ibm/telemetry-js` dependency.
 
 > **Note**: This must be installed as a regular dependency, not a dev dependency in the instrumented

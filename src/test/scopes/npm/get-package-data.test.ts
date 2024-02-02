@@ -22,8 +22,8 @@ describe('getPackageData', () => {
   })
 
   it('correctly reads name and version for a workspace project', async () => {
-    const fixture = new Fixture('projects/complex-nesting-thingy/package1')
-    const root = new Fixture('projects/complex-nesting-thingy')
+    const fixture = new Fixture('projects/basic-monorepo/package1')
+    const root = new Fixture('projects/basic-monorepo')
     await expect(getPackageData(fixture.path, root.path, logger)).resolves.toStrictEqual({
       name: 'package1',
       version: '1.0.0'

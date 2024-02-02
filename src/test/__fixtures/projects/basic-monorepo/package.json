@@ -1,15 +1,15 @@
 {
-  "name": "package2",
+  "name": "basic-monorepo",
   "description": "",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "author": "",
-  "keywords": [],
   "main": "index.js",
+  "workspaces": [
+    "package1",
+    "package2"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "instrumented": "^2.0.0"
   }
 }

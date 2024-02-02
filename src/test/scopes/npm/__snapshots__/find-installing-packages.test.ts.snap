@@ -28,17 +28,7 @@ exports[`findInstallingPackages > finds all installers when no version is specif
         "version": "2.0.0",
       },
     ],
-    "name": "intermediate",
-    "version": "1.0.0",
-  },
-  {
-    "dependencies": [
-      {
-        "name": "instrumented",
-        "version": "2.0.0",
-      },
-    ],
-    "name": "package2",
+    "name": "b",
     "version": "1.0.0",
   },
   {
@@ -48,7 +38,7 @@ exports[`findInstallingPackages > finds all installers when no version is specif
         "version": "1.0.0",
       },
     ],
-    "name": "package1",
+    "name": "a",
     "version": "1.0.0",
   },
 ]

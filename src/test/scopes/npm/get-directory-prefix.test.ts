@@ -19,18 +19,16 @@ describe('getDirectoryPrefix', () => {
     expect(directory.endsWith('src/test/__fixtures/projects/basic-project')).toBeTruthy()
   })
 
-  it('correctly returns directory for nested file', async () => {
+  it('correctly returns directory for nested directory', async () => {
     const fixture = new Fixture('projects/nested-project-files/nested/deeply-nested')
     const directory = await getDirectoryPrefix(fixture.path, logger)
     expect(directory.endsWith('telemetry-js')).toBeTruthy()
   })
 
   it('correctly returns directory for a workspace project', async () => {
-    const fixture = new Fixture('projects/complex-nesting-thingy/package1')
+    const fixture = new Fixture('projects/basic-monorepo/package1')
 
     const directory = await getDirectoryPrefix(fixture.path, logger)
-    expect(
-      directory.endsWith('src/test/__fixtures/projects/complex-nesting-thingy/package1')
-    ).toBeTruthy()
+    expect(directory.endsWith('src/test/__fixtures/projects/basic-monorepo/package1')).toBeTruthy()
   })
 })

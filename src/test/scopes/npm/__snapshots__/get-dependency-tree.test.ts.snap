@@ -3,10 +3,6 @@
 exports[`getDependencyTree > correctly obtains dependency tree 1`] = `
 {
   "dependencies": {
-    "instrumented-top-level": {
-      "overridden": false,
-      "version": "1.0.0",
-    },
     "package1": {
       "dependencies": {
         "instrumented": {
@@ -19,23 +15,26 @@ exports[`getDependencyTree > correctly obtains dependency tree 1`] = `
       "version": "1.0.0",
     },
     "package2": {
-      "dependencies": {
-        "instrumented": {
-          "overridden": false,
-          "version": "2.0.0",
-        },
-      },
       "overridden": false,
       "resolved": "file:../package2",
       "version": "1.0.0",
     },
-    "package3": {
+  },
+  "name": "basic-monorepo",
+  "version": "1.0.0",
+}
+`;
+
+exports[`getDependencyTree > correctly obtains dependency tree for nested dep 1`] = `
+{
+  "dependencies": {
+    "intermediate": {
       "dependencies": {
-        "intermediate": {
+        "deeply-nested": {
           "dependencies": {
             "instrumented": {
               "overridden": false,
-              "version": "2.0.0",
+              "version": "1.0.0",
             },
           },
           "overridden": false,
@@ -43,15 +42,10 @@ exports[`getDependencyTree > correctly obtains dependency tree 1`] = `
         },
       },
       "overridden": false,
-      "resolved": "file:../package3",
-      "version": "1.0.0",
-    },
-    "root-only": {
-      "overridden": false,
       "version": "1.0.0",
     },
   },
-  "name": "complex-nesting-thingy",
+  "name": "hoisted-deeply-nested-deps",
   "version": "1.0.0",
 }
 `;

@@ -4,8 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'node:path'
-
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import type * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
@@ -42,10 +40,8 @@ describe('class: JsxScope', () => {
   describe('run', () => {
     it('correctly captures jsx element metric data', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
-      const root = new Fixture(path.join('projects', 'basic-project'))
-      const cwd = new Fixture(
-        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
-      )
+      const root = new Fixture('projects/basic-project')
+      const cwd = new Fixture('projects/basic-project/node_modules/instrumented')
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
       jsxScope.setRunSync(true)
@@ -61,9 +57,10 @@ describe('class: JsxScope', () => {
 
     it('throws EmptyScopeError if no collector has been defined', async () => {
       const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const root = new Fixture('projects/basic-project')
       const scope = new JsxScope(
         fixture.path,
-        path.join(fixture.path, '..', '..'),
+        root.path,
         { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
@@ -74,23 +71,12 @@ describe('class: JsxScope', () => {
 
     it('only captures metrics for the instrumented package/version', async () => {
       let metricReader = initializeOtelForTest().getMetricReader()
-      const root = new Fixture(path.join('projects', 'multiple-versions-of-instrumented-dep'))
+      const root = new Fixture('projects/multiple-versions-of-instrumented-dep')
       const pkgA = new Fixture(
-        path.join(
-          'projects',
-          'multiple-versions-of-instrumented-dep',
-          'node_modules',
-          'instrumented'
-        )
+        'projects/multiple-versions-of-instrumented-dep/node_modules/instrumented'
       )
       const pkgB = new Fixture(
-        path.join(
-          'projects',
-          'multiple-versions-of-instrumented-dep',
-          'b',
-          'node_modules',
-          'instrumented'
-        )
+        'projects/multiple-versions-of-instrumented-dep/b/node_modules/instrumented'
       )
 
       let jsxScope = new JsxScope(pkgA.path, root.path, config, logger)
@@ -109,38 +95,10 @@ describe('class: JsxScope', () => {
       expect(resultsB.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(2)
     })
 
-    it("does not capture metrics for files that are not in instrumented package's installer", async () => {
-      const metricReader = initializeOtelForTest().getMetricReader()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented')
-      )
-      const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
-
-      jsxScope.setRunSync(true)
-      await jsxScope.run()
-
-      const results = await metricReader.collect()
-
-      clearTelemetrySdkVersion(results)
-      clearDataPointTimes(results)
-
-      expect(results).toMatchSnapshot()
-    })
-
     it('captures metrics when instrumented package is installed in intermediate package', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
-      const cwd = new Fixture(
-        path.join(
-          'projects',
-          'complex-nesting-thingy',
-          'node_modules',
-          'intermediate',
-          'node_modules',
-          'instrumented'
-        )
-      )
+      const root = new Fixture('projects/hoisted-deeply-nested-deps')
+      const cwd = new Fixture('projects/hoisted-deeply-nested-deps/node_modules/instrumented')
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
       jsxScope.setRunSync(true)
@@ -154,11 +112,11 @@ describe('class: JsxScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    it('captures metrics for nested files when instrumented package is installed in top-level package', async () => {
+    it('captures metrics for workspace files when instrumented package is installed by root package', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
-      const root = new Fixture(path.join('projects', 'complex-nesting-thingy'))
+      const root = new Fixture('projects/workspace-files-governed-by-root-dep')
       const cwd = new Fixture(
-        path.join('projects', 'complex-nesting-thingy', 'node_modules', 'instrumented-top-level')
+        'projects/workspace-files-governed-by-root-dep/node_modules/instrumented-top-level'
       )
       const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
 
@@ -174,12 +132,11 @@ describe('class: JsxScope', () => {
     })
 
     it('throws EmptyScopeError if no collector has been defined', async () => {
-      const fixture = new Fixture(
-        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
-      )
+      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
+      const root = new Fixture('projects/basic-project')
       const jsxScope = new JsxScope(
         fixture.path,
-        path.join(fixture.path, '..', '..'),
+        root.path,
         { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
         logger
       )
@@ -191,7 +148,7 @@ describe('class: JsxScope', () => {
 
   describe('parseFile', () => {
     const fixture = new Fixture('projects/basic-project/test.jsx')
-    const root = new Fixture(path.join('projects', 'basic-project'))
+    const root = new Fixture('projects/basic-project')
     const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
 
     it('correctly detects imports and elements in a given file', async () => {

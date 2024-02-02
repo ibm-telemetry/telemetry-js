@@ -15,13 +15,11 @@ describe('getTrackedSourceFiles', () => {
   const logger = initLogger()
 
   it('correctly returns all tracked source files', async () => {
-    const root = new Fixture('projects/nested-project-files')
+    const root = new Fixture('projects/all-extensions')
 
     const sourceFiles = await getTrackedSourceFiles(root.path, logger)
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([
-      path.join(root.path, 'nested/deeply-nested/test.js'),
-      path.join(root.path, 'nested/test.js'),
       path.join(root.path, 'test.cjs'),
       path.join(root.path, 'test.js'),
       path.join(root.path, 'test.jsx'),
@@ -31,7 +29,7 @@ describe('getTrackedSourceFiles', () => {
   })
 
   it('correctly includes root', async () => {
-    const root = new Fixture('projects/nested-project-files/test.js')
+    const root = new Fixture('projects/all-extensions/test.js')
 
     const sourceFiles = await getTrackedSourceFiles(root.path, logger)
 
@@ -39,9 +37,7 @@ describe('getTrackedSourceFiles', () => {
   })
 
   it('correctly returns empty tracked files array when no files match the desired extensions', async () => {
-    const root = new Fixture(
-      'projects/nested-project-files/nested/deeply-nested/irrelevant-nested-files'
-    )
+    const root = new Fixture('projects/all-extensions/nested/deeply-nested/irrelevant-nested-files')
 
     const sourceFiles = await getTrackedSourceFiles(root.path, logger)
 
@@ -49,7 +45,7 @@ describe('getTrackedSourceFiles', () => {
   })
 
   it('correctly returns empty tracked files array when directory does not exist', async () => {
-    const root = new Fixture('scopes/jsx/get-tracked-source-files/does-not-exist')
+    const root = new Fixture('scopes/jsx/not-a-real-directory')
 
     const sourceFiles = await getTrackedSourceFiles(root.path, logger)
 

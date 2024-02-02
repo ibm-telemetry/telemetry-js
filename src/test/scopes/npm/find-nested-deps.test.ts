@@ -50,7 +50,7 @@ describe('findNestedDeps', () => {
   })
 
   it("finds a deeply nested dependency's entire path", async () => {
-    const fixture = new Fixture('projects/complex-nesting-thingy')
+    const fixture = new Fixture('projects/hoisted-deeply-nested-deps')
 
     const lsAllResult = await runCommand(
       'npm ls --all --json',
@@ -64,16 +64,16 @@ describe('findNestedDeps', () => {
     const nestedDeps = findNestedDeps(
       dependencyTree,
       'instrumented',
-      ({ value }) => value.version === '2.0.0'
+      ({ value }) => value.version === '1.0.0'
     )
 
     expect(nestedDeps)
 
     expect(nestedDeps[0]).toMatchObject([
       'dependencies',
-      'package3',
-      'dependencies',
       'intermediate',
+      'dependencies',
+      'deeply-nested',
       'dependencies',
       'instrumented'
     ])

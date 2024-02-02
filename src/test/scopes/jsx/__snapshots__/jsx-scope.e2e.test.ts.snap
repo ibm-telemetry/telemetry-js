@@ -57,7 +57,7 @@ exports[`class: JsxScope > parseFile > correctly detects imports and elements in
 ]
 `;
 
-exports[`class: JsxScope > run > captures metrics for nested files when instrumented package is installed in top-level package 1`] = `
+exports[`class: JsxScope > run > captures metrics for workspace files when instrumented package is installed by root package 1`] = `
 {
   "errors": [],
   "resourceMetrics": {
@@ -119,73 +119,7 @@ exports[`class: JsxScope > run > captures metrics for nested files when instrume
                   "jsx.element.invoker.package.name": "73893d30923f338108486f1a6388bac31603db30e1b954a1ab6a77b1ab9d148d",
                   "jsx.element.invoker.package.raw": "73893d30923f338108486f1a6388bac31603db30e1b954a1ab6a77b1ab9d148d",
                   "jsx.element.module.specifier": "instrumented-top-level",
-                  "jsx.element.name": "Package1Comp2",
-                  "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
-                  "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
-                  "npm.dependency.instrumented.version.major": "1",
-                  "npm.dependency.instrumented.version.minor": "0",
-                  "npm.dependency.instrumented.version.patch": "0",
-                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 2,
-              },
-              {
-                "attributes": {
-                  "jsx.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "jsx.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "jsx.element.invoker.package.name": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
-                  "jsx.element.invoker.package.raw": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
-                  "jsx.element.module.specifier": "instrumented-top-level",
-                  "jsx.element.name": "Package2Comp2",
-                  "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
-                  "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
-                  "npm.dependency.instrumented.version.major": "1",
-                  "npm.dependency.instrumented.version.minor": "0",
-                  "npm.dependency.instrumented.version.patch": "0",
-                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 2,
-              },
-              {
-                "attributes": {
-                  "jsx.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "jsx.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "jsx.element.invoker.package.name": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
-                  "jsx.element.invoker.package.raw": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
-                  "jsx.element.module.specifier": "instrumented-top-level",
-                  "jsx.element.name": "Package3Comp2",
+                  "jsx.element.name": "PackageComp",
                   "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
                   "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
                   "npm.dependency.instrumented.version.major": "1",
@@ -285,49 +219,16 @@ exports[`class: JsxScope > run > captures metrics when instrumented package is i
                     "[redacted3]",
                     "[redacted5]",
                   ],
-                  "jsx.element.invoker.package.name": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
-                  "jsx.element.invoker.package.raw": "670c9cf71fecc89e91575d9e471595d52f98622435069e0cfcb4c0772947dc80",
+                  "jsx.element.invoker.package.name": "5937e73b5c979346b88f6dbdccf669c11ad505927df9a05557d336a15d1d7433",
+                  "jsx.element.invoker.package.raw": "5937e73b5c979346b88f6dbdccf669c11ad505927df9a05557d336a15d1d7433",
                   "jsx.element.module.specifier": "instrumented",
-                  "jsx.element.name": "Package2Comp",
+                  "jsx.element.name": "PackageComp",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.version.major": "2",
+                  "npm.dependency.instrumented.version.major": "1",
                   "npm.dependency.instrumented.version.minor": "0",
                   "npm.dependency.instrumented.version.patch": "0",
-                  "npm.dependency.instrumented.version.raw": "f22abd6773ab232869321ad4b1e47ac0c908febf4f3a2bd10c8066140f741261",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 2,
-              },
-              {
-                "attributes": {
-                  "jsx.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "jsx.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "jsx.element.invoker.package.name": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
-                  "jsx.element.invoker.package.raw": "b344e64a89a17da4d80e8b247566c6ec1e0ddde22214d2c4579053d9266db166",
-                  "jsx.element.module.specifier": "instrumented",
-                  "jsx.element.name": "Package3Comp",
-                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.version.major": "2",
-                  "npm.dependency.instrumented.version.minor": "0",
-                  "npm.dependency.instrumented.version.patch": "0",
-                  "npm.dependency.instrumented.version.raw": "f22abd6773ab232869321ad4b1e47ac0c908febf4f3a2bd10c8066140f741261",
+                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
                 },
                 "endTime": [
                   0,
@@ -484,109 +385,6 @@ exports[`class: JsxScope > run > correctly captures jsx element metric data 1`] 
                   0,
                 ],
                 "value": 1,
-              },
-            ],
-            "descriptor": {
-              "advice": {},
-              "description": "",
-              "name": "jsx.element",
-              "type": "COUNTER",
-              "unit": "",
-              "valueType": 0,
-            },
-            "isMonotonic": true,
-          },
-        ],
-        "scope": {
-          "name": "jsx",
-          "schemaUrl": undefined,
-          "version": "",
-        },
-      },
-    ],
-  },
-}
-`;
-
-exports[`class: JsxScope > run > does not capture metrics for files that are not in instrumented package's installer 1`] = `
-{
-  "errors": [],
-  "resourceMetrics": {
-    "resource": Resource {
-      "_asyncAttributesPromise": undefined,
-      "_attributes": {
-        "analyzed.commit": "commitHash",
-        "analyzed.host": "host",
-        "analyzed.owner": "owner",
-        "analyzed.path": "host/owner/repository",
-        "analyzed.refs": [],
-        "analyzed.repository": "repository",
-        "date": "1970-01-01T00:00:02.023Z",
-        "project.id": "projectId",
-        "service.name": "IBM Telemetry",
-        "telemetry.emitter.name": "telemetryName",
-        "telemetry.emitter.version": "telemetryVersion",
-        "telemetry.sdk.language": "nodejs",
-        "telemetry.sdk.name": "opentelemetry",
-        "telemetry.sdk.version": "[omitted for test snapshot]",
-      },
-      "_syncAttributes": {
-        "analyzed.commit": "commitHash",
-        "analyzed.host": "host",
-        "analyzed.owner": "owner",
-        "analyzed.path": "host/owner/repository",
-        "analyzed.refs": [],
-        "analyzed.repository": "repository",
-        "date": "1970-01-01T00:00:02.023Z",
-        "project.id": "projectId",
-        "service.name": "IBM Telemetry",
-        "telemetry.emitter.name": "telemetryName",
-        "telemetry.emitter.version": "telemetryVersion",
-        "telemetry.sdk.language": "nodejs",
-        "telemetry.sdk.name": "opentelemetry",
-        "telemetry.sdk.version": "[omitted for test snapshot]",
-      },
-      "asyncAttributesPending": false,
-    },
-    "scopeMetrics": [
-      {
-        "metrics": [
-          {
-            "aggregationTemporality": 1,
-            "dataPointType": 3,
-            "dataPoints": [
-              {
-                "attributes": {
-                  "jsx.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "jsx.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "jsx.element.invoker.package.name": "73893d30923f338108486f1a6388bac31603db30e1b954a1ab6a77b1ab9d148d",
-                  "jsx.element.invoker.package.raw": "73893d30923f338108486f1a6388bac31603db30e1b954a1ab6a77b1ab9d148d",
-                  "jsx.element.module.specifier": "instrumented",
-                  "jsx.element.name": "Package1Comp",
-                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.version.major": "1",
-                  "npm.dependency.instrumented.version.minor": "0",
-                  "npm.dependency.instrumented.version.patch": "0",
-                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 2,
               },
             ],
             "descriptor": {

@@ -54,6 +54,8 @@ know about how that works:
   reading.
 - Though IBM Telemetry is installed as a regular dependency in the instrumented package, it has no
   exports and therefore **does not impact your project's source code or build output in any way.**
+  Said differently: This is not a runtime package. It has no "shippable code". It is static source
+  code analysis performed during builds and nothing more.
 
 The point of capturing this data is to help the open source and inner source maintainers within IBM
 by giving them meaningful insights and metrics based on actual data. IBM Telemetry's purpose is to

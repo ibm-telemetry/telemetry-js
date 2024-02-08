@@ -40,10 +40,25 @@ best describes your use case:
 
 ## IBM Telemetry collection basics
 
-When your project installs an IBM Telemetry-enabled (instrumented) package, IBM Telemetry performs
-source code analysis on your project to identify package and component usage. This helps IBM
-generate meaningful insights into exactly how much and in what ways the package code is being used
-across teams and projects.
+If you're reading this section, you're likely using a package and have noticed that it is collecting
+telemetry data using IBM Telemetry. We call that an "instrumented package". Here's what you need to
+know about how that works:
+
+- Telemetry data collection runs on CI servers, like GitHub Actions, Travis CI, or Jenkins. It never
+  runs locally on a developer's machine.
+- When `npm install` (or equivalent) is run on the CI server (resulting in the instrumented package
+  getting installed), IBM Telemetry gets installed too and runs a script which analyzes your source
+  code and captures data about your usage of the instrumented package.
+- This data is fully anonymized and reported back to a server at IBM.
+- Fore more details about exactly what is captured and how sensitive data is anonymized, keep
+  reading.
+- Though IBM Telemetry is installed as a regular dependency in the instrumented package, it has no
+  exports and therefore **does not impact your project's source code or build output in any way.**
+
+The point of capturing this data is to help the open source and inner source maintainers within IBM
+by giving them meaningful insights and metrics based on actual data. IBM Telemetry's purpose is to
+enable data-driven decision-making to enable maintainers to focus on features that are actually used
+by developers like you.
 
 ### What data gets collected?
 
@@ -55,6 +70,7 @@ may capture the following data about your project:
 - Date and time of collection
 - A de-identified version of your project's git repository URL
 - A de-identified version of your project's most recent Git commit hash
+- De-identified versions of the branches and tags associated with that commit hash
 
 **NPM data**
 

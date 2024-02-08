@@ -50,7 +50,7 @@ know about how that works:
   getting installed), IBM Telemetry gets installed too and runs a script which analyzes your source
   code and captures data about your usage of the instrumented package.
 - This data is fully anonymized and reported back to a server at IBM.
-- Fore more details about exactly what is captured and how sensitive data is anonymized, keep
+- For more details about exactly what is captured and how sensitive data is anonymized, keep
   reading.
 - Though IBM Telemetry is installed as a regular dependency in the instrumented package, it has no
   exports and therefore **does not impact your project's source code or build output in any way.**

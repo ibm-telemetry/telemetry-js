@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.2.0...v1.2.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* add clarity and transparency to the readme ([#188](https://github.com/ibm-telemetry/telemetry-js/issues/188)) ([20db3d6](https://github.com/ibm-telemetry/telemetry-js/commit/20db3d62edff3572fc84e6eb3382bc6b0192b492))
+* minor enhancements ([#178](https://github.com/ibm-telemetry/telemetry-js/issues/178)) ([3fec8cc](https://github.com/ibm-telemetry/telemetry-js/commit/3fec8cc7bc8f27220e6eeff4265354f671d751f4))
+
 ## [1.2.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.1.0...v1.2.0) (2024-01-24)
 
 

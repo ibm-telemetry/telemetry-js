@@ -7,6 +7,7 @@
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
 import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
 import { type Schema } from 'ajv'
 
@@ -185,7 +186,8 @@ export class IbmTelemetry {
   private async emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
     const exporter = new OTLPMetricExporter({
       url: config.endpoint,
-      temporalityPreference: AggregationTemporality.DELTA
+      temporalityPreference: AggregationTemporality.DELTA,
+      compression: CompressionAlgorithm.GZIP
     })
 
     return await new Promise((resolve) => {

@@ -24,7 +24,6 @@ export class ElementMetric extends ScopeMetric {
   public override name = 'jsx.element' as const
   private readonly jsxElement: JsxElement
   private readonly matchingImport: JsxImport
-  private readonly invoker: string | undefined
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
   private readonly instrumentedPackage: PackageData
@@ -34,7 +33,6 @@ export class ElementMetric extends ScopeMetric {
    *
    * @param jsxElement - Object containing name and version to extract data to generate metric from.
    * @param matchingImport - Import that matched the provided JsxElement in the file.
-   * @param invoker - Name of the package that invoked the JsxElement.
    * @param instrumentedPackage - Data (name and version) pertaining to instrumented package.
    * @param config - Determines which attributes name and values to collect for.
    * @param logger - Logger instance.
@@ -42,7 +40,6 @@ export class ElementMetric extends ScopeMetric {
   public constructor(
     jsxElement: JsxElement,
     matchingImport: JsxImport,
-    invoker: string | undefined,
     instrumentedPackage: PackageData,
     config: ConfigSchema,
     logger: Logger
@@ -50,7 +47,6 @@ export class ElementMetric extends ScopeMetric {
     super(logger)
     this.jsxElement = jsxElement
     this.matchingImport = matchingImport
-    this.invoker = invoker
     this.instrumentedPackage = instrumentedPackage
 
     this.allowedAttributeNames = config.collect.jsx?.elements?.allowedAttributeNames ?? []
@@ -64,14 +60,6 @@ export class ElementMetric extends ScopeMetric {
    * @returns OpenTelemetry compliant attributes, anonymized and substituted where necessary.
    */
   public override get attributes(): Attributes {
-    let invokingPackageDetails
-
-    if (this.invoker !== undefined) {
-      invokingPackageDetails = new PackageDetailsProvider(this.logger).getPackageDetails(
-        this.invoker
-      )
-    }
-
     const attrMap = deNull(
       this.jsxElement.attributes.reduce<Record<string, JsxElementAttribute['value']>>(
         (prev, cur) => {
@@ -108,9 +96,6 @@ export class ElementMetric extends ScopeMetric {
       [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
         String(attr)
       ),
-      [JsxScopeAttributes.INVOKER_PACKAGE_RAW]: this.invoker,
-      [JsxScopeAttributes.INVOKER_PACKAGE_OWNER]: invokingPackageDetails?.owner,
-      [JsxScopeAttributes.INVOKER_PACKAGE_NAME]: invokingPackageDetails?.name,
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
@@ -130,9 +115,6 @@ export class ElementMetric extends ScopeMetric {
     }
 
     metricData = hash(metricData, [
-      JsxScopeAttributes.INVOKER_PACKAGE_RAW,
-      JsxScopeAttributes.INVOKER_PACKAGE_OWNER,
-      JsxScopeAttributes.INVOKER_PACKAGE_NAME,
       NpmScopeAttributes.INSTRUMENTED_RAW,
       NpmScopeAttributes.INSTRUMENTED_OWNER,
       NpmScopeAttributes.INSTRUMENTED_NAME,

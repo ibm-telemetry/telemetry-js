@@ -7,11 +7,11 @@
 
 import type * as ts from 'typescript'
 
-import { type JsxImport } from '../interfaces.js'
+import { type JsImport } from '../interfaces.js'
 
 /**
  * Defines API to construct JsxImportElements from ImportClause nodes.
  */
 export abstract class ImportParser {
-  abstract parse(importNode: ts.ImportClause, importPath: string): JsxImport[]
+  abstract parse(importNode: ts.ImportClause, importPath: string): JsImport[]
 }

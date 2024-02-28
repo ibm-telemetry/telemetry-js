@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type JsxElement, type JsxElementImportMatcher, type JsxImport } from '../interfaces.js'
+import { type JsImport, type JsxElement, type JsxElementImportMatcher } from '../interfaces.js'
 
 /**
  * Identifies JsxElements that have been imported as renamed imports.
  */
-export class RenamedImportMatcher implements JsxElementImportMatcher {
+export class JsxElementRenamedImportMatcher implements JsxElementImportMatcher {
   /**
    * Determines if a given JsxElement is a renamed import
    * (e.g.: `import {something as somethingElse} from 'package'`)
@@ -21,7 +21,7 @@ export class RenamedImportMatcher implements JsxElementImportMatcher {
    * @returns Corresponding JsxImport if element was imported as a renamed import,
    * undefined otherwise.
    */
-  findMatch(element: JsxElement, imports: JsxImport[]) {
+  findMatch(element: JsxElement, imports: JsImport[]) {
     if (element.prefix !== undefined) {
       return imports.find((i) => i.rename === element.prefix)
     } else {

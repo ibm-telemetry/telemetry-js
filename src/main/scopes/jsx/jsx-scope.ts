@@ -18,9 +18,9 @@ import { getDependencyTree } from '../npm/get-dependency-tree.js'
 import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { PackageData } from '../npm/interfaces.js'
-import { AllImportMatcher } from './import-matchers/all-import-matcher.js'
-import { NamedImportMatcher } from './import-matchers/named-import-matcher.js'
-import { RenamedImportMatcher } from './import-matchers/renamed-import-matcher.js'
+import { JsxElementAllImportMatcher } from './import-matchers/jsx-element-all-import-matcher.js'
+import { JsxElementNamedImportMatcher } from './import-matchers/jsx-element-named-import-matcher.js'
+import { JsxElementRenamedImportMatcher } from './import-matchers/jsx-element-renamed-import-matcher.js'
 import { DependencyTree, type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
@@ -65,9 +65,9 @@ export class JsxScope extends Scope {
   @Trace()
   async captureAllMetrics(): Promise<void> {
     const importMatchers = [
-      new AllImportMatcher(),
-      new NamedImportMatcher(),
-      new RenamedImportMatcher()
+      new JsxElementAllImportMatcher(),
+      new JsxElementNamedImportMatcher(),
+      new JsxElementRenamedImportMatcher()
     ]
     const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
     const sourceFiles = await this.findRelevantSourceFiles(instrumentedPackage)
@@ -126,8 +126,6 @@ export class JsxScope extends Scope {
       return [dependencyTree]
     }
 
-    // TODOASKJOE: this could return more than one
-    // how do I know which one is the one that belongs specifically to the file?
     const prefixPackagePaths = findNestedDeps(
       dependencyTree,
       pkg.name,

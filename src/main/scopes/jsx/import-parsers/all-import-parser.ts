@@ -7,7 +7,7 @@
 
 import * as ts from 'typescript'
 
-import { type JsxImport } from '../interfaces.js'
+import { type JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
 /**
@@ -24,7 +24,7 @@ export class AllImportParser extends ImportParser {
    * @returns Array of JsxImport.
    */
   parse(importNode: ts.ImportClause, importPath: string) {
-    const allImports: JsxImport[] = []
+    const allImports: JsImport[] = []
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamespaceImport) {
       allImports.push({

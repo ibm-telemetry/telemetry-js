@@ -15,7 +15,7 @@ import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import { PackageData } from '../../npm/interfaces.js'
-import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../interfaces.js'
+import { type JsImport, type JsxElement, type JsxElementAttribute } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.element individual metric for a given element.
@@ -23,7 +23,7 @@ import { type JsxElement, type JsxElementAttribute, type JsxImport } from '../in
 export class ElementMetric extends ScopeMetric {
   public override name = 'jsx.element' as const
   private readonly jsxElement: JsxElement
-  private readonly matchingImport: JsxImport
+  private readonly matchingImport: JsImport
   private readonly invoker: string | undefined
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
@@ -41,7 +41,7 @@ export class ElementMetric extends ScopeMetric {
    */
   public constructor(
     jsxElement: JsxElement,
-    matchingImport: JsxImport,
+    matchingImport: JsImport,
     invoker: string | undefined,
     instrumentedPackage: PackageData,
     config: ConfigSchema,

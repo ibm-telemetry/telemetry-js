@@ -10,7 +10,7 @@ import { AllImportParser } from '../../import-parsers/all-import-parser.js'
 import { DefaultImportParser } from '../../import-parsers/default-import-parser.js'
 import { NamedImportParser } from '../../import-parsers/named-import-parser.js'
 import { RenamedImportParser } from '../../import-parsers/renamed-import-parser.js'
-import { type JsxImport } from '../../interfaces.js'
+import { type JsImport } from '../../interfaces.js'
 import { type JsxElementAccumulator } from '../../jsx-element-accumulator.js'
 import { ElementNodeHandler } from './element-node-handler.js'
 
@@ -18,7 +18,7 @@ import { ElementNodeHandler } from './element-node-handler.js'
  * Holds logic to construct a JsxImport object given an ImportDeclaration node.
  *
  */
-export class ImportNodeHandler extends ElementNodeHandler<JsxImport[]> {
+export class ImportNodeHandler extends ElementNodeHandler<JsImport[]> {
   /**
    * Processes an ImportDeclaration node data and adds it to the given accumulator.
    *
@@ -35,7 +35,7 @@ export class ImportNodeHandler extends ElementNodeHandler<JsxImport[]> {
    * @param node - Node element to process.
    * @returns Constructed JsxImport object.
    */
-  getData(node: ts.ImportDeclaration): JsxImport[] {
+  getData(node: ts.ImportDeclaration): JsImport[] {
     const importParsers = [
       new AllImportParser(),
       new DefaultImportParser(),
@@ -43,7 +43,7 @@ export class ImportNodeHandler extends ElementNodeHandler<JsxImport[]> {
       new RenamedImportParser()
     ]
 
-    const results: JsxImport[] = []
+    const results: JsImport[] = []
 
     const importClause = node.importClause
     // This has quotes on it which need to be removed

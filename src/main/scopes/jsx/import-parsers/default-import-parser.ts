@@ -8,7 +8,7 @@
 import * as ts from 'typescript'
 
 import { DEFAULT_ELEMENT_NAME, DEFAULT_IMPORT_KEY } from '../constants.js'
-import { type JsxImport } from '../interfaces.js'
+import { type JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
 /**
@@ -25,7 +25,7 @@ export class DefaultImportParser extends ImportParser {
    * @returns Array of JsxImportElement.
    */
   parse(importNode: ts.ImportClause, importPath: string) {
-    const defaultImports: JsxImport[] = []
+    const defaultImports: JsImport[] = []
 
     if (importNode.namedBindings?.kind === ts.SyntaxKind.NamedImports) {
       importNode.namedBindings.elements.forEach((element) => {

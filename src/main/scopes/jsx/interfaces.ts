@@ -17,7 +17,7 @@ export interface JsxElementAttribute {
   value: string | number | boolean | ComplexAttribute | null | undefined
 }
 
-export interface JsxImport {
+export interface JsImport {
   name: string
   path: string
   isDefault: boolean
@@ -37,7 +37,7 @@ export interface FileTree {
 }
 
 export interface JsxElementImportMatcher {
-  findMatch: (element: JsxElement, imports: JsxImport[]) => JsxImport | undefined
+  findMatch: (element: JsxElement, imports: JsImport[]) => JsImport | undefined
 }
 
 type ElementNodeHandlerClass<DataType> = new (

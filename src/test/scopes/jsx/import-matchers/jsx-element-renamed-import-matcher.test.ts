@@ -7,36 +7,36 @@
 import { describe, expect, it } from 'vitest'
 
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
-import { NamedImportMatcher } from '../../../../main/scopes/jsx/import-matchers/named-import-matcher.js'
-import { type JsxElement, type JsxImport } from '../../../../main/scopes/jsx/interfaces.js'
+import { JsxElementRenamedImportMatcher } from '../../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
+import { type JsImport, type JsxElement } from '../../../../main/scopes/jsx/interfaces.js'
 
-describe('class: NamedImportMatcher', () => {
-  const namedImportMatcher = new NamedImportMatcher()
+describe('class: RenamedImportMatcher', () => {
+  const renamedImportMatcher = new JsxElementRenamedImportMatcher()
   const element: JsxElement = {
     name: 'theElement',
     prefix: 'prefix',
     attributes: []
   }
-  const allImport: JsxImport = {
+  const allImport: JsImport = {
     name: 'prefix',
     path: '@library/something',
     isAll: true,
     isDefault: false
   }
-  const defaultImport: JsxImport = {
+  const defaultImport: JsImport = {
     name: DEFAULT_ELEMENT_NAME,
     path: '@library/something',
     rename: 'theElement',
     isDefault: true,
     isAll: false
   }
-  const namedImport: JsxImport = {
+  const namedImport: JsImport = {
     name: 'theElement',
     path: '@library/something',
     isDefault: false,
     isAll: false
   }
-  const renamedImport: JsxImport = {
+  const renamedImport: JsImport = {
     name: 'Button',
     path: '@library/something',
     rename: 'theElement',
@@ -46,19 +46,21 @@ describe('class: NamedImportMatcher', () => {
   const imports = [allImport, namedImport, renamedImport, defaultImport]
   it('correctly finds an import match with element name', () => {
     const elementWithoutPrefix = { ...element, prefix: undefined }
-    expect(namedImportMatcher.findMatch(elementWithoutPrefix, imports)).toStrictEqual(namedImport)
+    expect(renamedImportMatcher.findMatch(elementWithoutPrefix, imports)).toStrictEqual(
+      renamedImport
+    )
   })
 
   it('correctly finds an import match with element prefix', () => {
     const elementWithMatchingPrefix = { ...element, name: 'throwaway', prefix: 'theElement' }
-    expect(namedImportMatcher.findMatch(elementWithMatchingPrefix, imports)).toStrictEqual(
-      namedImport
+    expect(renamedImportMatcher.findMatch(elementWithMatchingPrefix, imports)).toStrictEqual(
+      renamedImport
     )
   })
 
   it('returns undefined if no imports match element', () => {
     expect(
-      namedImportMatcher.findMatch(element, [allImport, renamedImport, defaultImport])
+      renamedImportMatcher.findMatch(element, [allImport, namedImport, defaultImport])
     ).toBeUndefined()
   })
 })

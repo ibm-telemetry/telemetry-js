@@ -9,9 +9,9 @@ import type * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
-import { AllImportMatcher } from '../../../main/scopes/jsx/import-matchers/all-import-matcher.js'
-import { NamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/named-import-matcher.js'
-import { RenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/renamed-import-matcher.js'
+import { JsxElementAllImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-all-import-matcher.js'
+import { JsxElementNamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-named-import-matcher.js'
+import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
 import { JsxElementAccumulator } from '../../../main/scopes/jsx/jsx-element-accumulator.js'
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
 import { getTrackedSourceFiles } from '../../../main/scopes/jsx/utils/get-tracked-source-files.js'
@@ -314,9 +314,9 @@ describe('class: JsxScope', () => {
       accumulator.elements.push(renamedElement)
 
       jsxScope.resolveElementImports(accumulator, [
-        new AllImportMatcher(),
-        new NamedImportMatcher(),
-        new RenamedImportMatcher()
+        new JsxElementAllImportMatcher(),
+        new JsxElementNamedImportMatcher(),
+        new JsxElementRenamedImportMatcher()
       ])
 
       expect(accumulator.elementImports.get(defaultElement)).toStrictEqual(defaultImport)
@@ -351,9 +351,9 @@ describe('class: JsxScope', () => {
 
       const jsxScope = new JsxScope('', '', config, logger)
       jsxScope.resolveElementImports(accumulator, [
-        new AllImportMatcher(),
-        new NamedImportMatcher(),
-        new RenamedImportMatcher()
+        new JsxElementAllImportMatcher(),
+        new JsxElementNamedImportMatcher(),
+        new JsxElementRenamedImportMatcher()
       ])
 
       expect(accumulator.elementImports.get(defaultElement)).toStrictEqual(defaultImport)

@@ -31,7 +31,7 @@ import { ElementMetric } from './metrics/element-metric.js'
 export class JsxScope extends Scope {
   public override name = 'jsx' as const
   private runSync = false
-  public static fileExtensions = ['.js', '.mjs', '.cjs', '.jsx', '.tsx']
+  public static readonly fileExtensions = ['.js', '.mjs', '.cjs', '.jsx', '.tsx']
 
   /**
    * Entry point for the scope. All scopes run asynchronously.

@@ -31,3 +31,7 @@ export type NodeValue = string | number | boolean | ComplexValue | null | undefi
 type NodeValueHandlerProducer = new (node: ts.SourceFile, logger: Logger) => NodeValueHandler
 
 export type NodeValueHandlerMap = Partial<Record<ts.SyntaxKind, NodeValueHandlerProducer>>
+
+export interface JsImportMatcher<Element> {
+  findMatch: (element: Element, imports: JsImport[]) => JsImport | undefined
+}

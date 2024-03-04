@@ -6,8 +6,7 @@
  */
 import objectScan from 'object-scan'
 
-import { DependencyTree } from '../jsx/interfaces.js'
-import { type InstallingPackage } from './interfaces.js'
+import { DependencyTree, type InstallingPackage } from './interfaces.js'
 
 /**
  * Given a dependency tree, package name, and package version, finds all object keys within the tree

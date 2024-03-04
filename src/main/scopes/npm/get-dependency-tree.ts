@@ -9,8 +9,8 @@ import { DirectoryEnumerator } from '../../core/directory-enumerator.js'
 import { Logger } from '../../core/log/logger.js'
 import { runCommand } from '../../core/run-command.js'
 import { NoNodeModulesFoundError } from '../../exceptions/no-node-modules-found-error.js'
-import { DependencyTree } from '../jsx/interfaces.js'
 import { hasNodeModulesFolder } from './has-node-modules-folder.js'
+import { DependencyTree } from './interfaces.js'
 
 const cache = new Map<string, Promise<DependencyTree>>()
 

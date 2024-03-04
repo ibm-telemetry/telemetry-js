@@ -9,30 +9,35 @@ import path from 'node:path'
 
 import * as ts from 'typescript'
 
-import { type Logger } from '../../../core/log/logger.js'
-import { TrackedFileEnumerator } from '../../../core/tracked-file-enumerator.js'
+import { type Logger } from './log/logger.js'
+import { TrackedFileEnumerator } from './tracked-file-enumerator.js'
 
 /**
- * Gets all tracked source files to consider for data collection.
+ * Gets all tracked source files to consider for data collection,
+ * filtered by supplied file extension array.
  *
  * @param root - Root directory in which to search for tracked source files. This is an absolute
  * path.
  * @param logger - Logger instance to use.
+ * @param fileExtensions - List of file extensions to filter files by.
  * @returns An array of source file objects.
  */
-export async function getTrackedSourceFiles(root: string, logger: Logger) {
-  logger.traceEnter('', 'getTrackedSourceFiles', [root])
+export async function getTrackedSourceFiles(
+  root: string,
+  logger: Logger,
+  fileExtensions: string[]
+) {
+  logger.traceEnter('', 'getTrackedSourceFiles', [root, fileExtensions])
 
   const fileEnumerator = new TrackedFileEnumerator(logger)
-  const allowedExtensions = ['.js', '.mjs', '.cjs', '.jsx', '.tsx']
   const files = []
 
   // If a file is passed instead of a directory, avoid the `git ls-tree` call
-  if (allowedExtensions.includes(path.extname(root))) {
+  if (fileExtensions.includes(path.extname(root))) {
     files.push(root)
   } else {
     files.push(
-      ...(await fileEnumerator.find(root, (file) => allowedExtensions.includes(path.extname(file))))
+      ...(await fileEnumerator.find(root, (file) => fileExtensions.includes(path.extname(file))))
     )
   }
 

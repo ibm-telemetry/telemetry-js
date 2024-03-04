@@ -5,19 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { JsImport } from '../js/interfaces.js'
+import { JsAccumulator } from '../js/js-accumulator.js'
 import { type JsxElement } from './interfaces.js'
 
 /**
  * Responsible for maintaining an aggregated state of imports and elements.
  */
-export class JsxElementAccumulator {
-  public readonly imports: JsImport[]
+export class JsxElementAccumulator extends JsAccumulator {
   public readonly elements: JsxElement[]
   public readonly elementImports: Map<JsxElement, JsImport>
   public readonly elementInvokers: Map<JsxElement, string>
 
   constructor() {
-    this.imports = []
+    super()
     this.elements = []
     this.elementImports = new Map()
     this.elementInvokers = new Map()

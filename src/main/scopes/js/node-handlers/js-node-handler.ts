@@ -9,7 +9,7 @@ import type * as ts from 'typescript'
 
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'
-import { type JsxElementAccumulator } from '../../jsx/jsx-element-accumulator.js'
+import { JsAccumulator } from '../js-accumulator.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
@@ -25,7 +25,7 @@ export abstract class JsNodeHandler<DataType> extends Loggable {
     this.sourceFile = sourceFile
   }
 
-  abstract handle(node: ts.Node, accumulator: JsxElementAccumulator): void
+  abstract handle(node: ts.Node, accumulator: JsAccumulator): void
 
   abstract getData(node: ts.Node): DataType
 }

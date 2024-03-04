@@ -6,17 +6,17 @@
  */
 import * as ts from 'typescript'
 
-import { Loggable } from '../../../core/log/loggable.js'
-import { type Logger } from '../../../core/log/logger.js'
-import { JsNodeHandlerMap } from '../../js/interfaces.js'
-import { type JsxElementAccumulator } from '../jsx-element-accumulator.js'
+import { Loggable } from '../../core/log/loggable.js'
+import { type Logger } from '../../core/log/logger.js'
+import { JsNodeHandlerMap } from './interfaces.js'
+import { JsAccumulator } from './js-accumulator.js'
 
 /**
  * Class to handle traversing through a node's children and calling appropriate handlers.
  *
  */
 export class SourceFileHandler extends Loggable {
-  private readonly accumulator: JsxElementAccumulator
+  private readonly accumulator: JsAccumulator
   private readonly nodeHandlerMap: JsNodeHandlerMap
 
   /**
@@ -27,11 +27,7 @@ export class SourceFileHandler extends Loggable {
    * the found node types.
    * @param logger - Logger instance to use.
    */
-  constructor(
-    accumulator: JsxElementAccumulator,
-    nodeHandlerMap: JsNodeHandlerMap,
-    logger: Logger
-  ) {
+  constructor(accumulator: JsAccumulator, nodeHandlerMap: JsNodeHandlerMap, logger: Logger) {
     super(logger)
 
     this.accumulator = accumulator

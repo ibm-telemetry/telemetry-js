@@ -7,8 +7,9 @@
 import type * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
+import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-source-files.js'
 import { FalseKeywordHandler } from '../../../../../main/scopes/js/node-handlers/value-handlers/false-keyword-handler.js'
-import { getTrackedSourceFiles } from '../../../../../main/scopes/jsx/utils/get-tracked-source-files.js'
+import { JsxScope } from '../../../../../main/scopes/jsx/jsx-scope.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
@@ -17,7 +18,9 @@ describe('falseKeywordHandler', () => {
 
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
-    const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
+    const sourceFile = (
+      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
+    )[0] as ts.SourceFile
 
     const handler = new FalseKeywordHandler(sourceFile, logger)
 

@@ -13,3 +13,15 @@ export interface PackageData {
 export interface InstallingPackage extends PackageData {
   dependencies: PackageData[]
 }
+
+export interface DependencyTreeDependency {
+  version: string
+  dependencies: Record<string, DependencyTreeDependency>
+}
+
+export interface DependencyTree extends PackageData {
+  name: string
+  version: string
+  dependencies: Record<string, DependencyTreeDependency>
+  [key: string]: unknown
+}

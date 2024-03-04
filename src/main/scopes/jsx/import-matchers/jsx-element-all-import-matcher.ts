@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type JsImport, type JsxElement, type JsxElementImportMatcher } from '../interfaces.js'
+import { JsImport } from '../../js/interfaces.js'
+import { type JsxElement, type JsxElementImportMatcher } from '../interfaces.js'
 
 /**
  * Identifies JsxElements that have been imported as all imports,

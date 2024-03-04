@@ -23,7 +23,7 @@ import { JsxElementNamedImportMatcher } from './import-matchers/jsx-element-name
 import { JsxElementRenamedImportMatcher } from './import-matchers/jsx-element-renamed-import-matcher.js'
 import { DependencyTree, type JsxElementImportMatcher } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
-import { jsxNodeHandlerMap } from './maps/jsx-node-handler-map.js'
+import { jsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import { SourceFileHandler } from './node-handlers/source-file-handler.js'
 import { getTrackedSourceFiles } from './utils/get-tracked-source-files.js'

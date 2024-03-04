@@ -49,19 +49,19 @@ exports[`class: JsxSelfClosingElementNodeHandler > correctly returns the JsxElem
       },
       {
         "name": "attr11",
-        "value": ComplexAttribute {
+        "value": ComplexValue {
           "complexValue": "variable",
         },
       },
       {
         "name": "attr12",
-        "value": ComplexAttribute {
+        "value": ComplexValue {
           "complexValue": "element[access]",
         },
       },
       {
         "name": "attr13",
-        "value": ComplexAttribute {
+        "value": ComplexValue {
           "complexValue": "{key: 'value', key2: 10}",
         },
       },

@@ -14,8 +14,9 @@ import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
+import { JsImport } from '../../js/interfaces.js'
 import { PackageData } from '../../npm/interfaces.js'
-import { type JsImport, type JsxElement, type JsxElementAttribute } from '../interfaces.js'
+import { type JsxElement, type JsxElementAttribute } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.element individual metric for a given element.

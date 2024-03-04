@@ -8,7 +8,7 @@ import * as ts from 'typescript'
 
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'
-import { type ElementNodeHandlerMap } from '../interfaces.js'
+import { JsNodeHandlerMap } from '../../js/interfaces.js'
 import { type JsxElementAccumulator } from '../jsx-element-accumulator.js'
 
 /**
@@ -17,7 +17,7 @@ import { type JsxElementAccumulator } from '../jsx-element-accumulator.js'
  */
 export class SourceFileHandler extends Loggable {
   private readonly accumulator: JsxElementAccumulator
-  private readonly nodeHandlerMap: ElementNodeHandlerMap
+  private readonly nodeHandlerMap: JsNodeHandlerMap
 
   /**
    * Instantiates a new SourceFileHandler.
@@ -29,7 +29,7 @@ export class SourceFileHandler extends Loggable {
    */
   constructor(
     accumulator: JsxElementAccumulator,
-    nodeHandlerMap: ElementNodeHandlerMap,
+    nodeHandlerMap: JsNodeHandlerMap,
     logger: Logger
   ) {
     super(logger)

@@ -6,9 +6,10 @@
  */
 import { describe, expect, it } from 'vitest'
 
+import { JsImport } from '../../../../main/scopes/js/interfaces.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import { JsxElementRenamedImportMatcher } from '../../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
-import { type JsImport, type JsxElement } from '../../../../main/scopes/jsx/interfaces.js'
+import { type JsxElement } from '../../../../main/scopes/jsx/interfaces.js'
 
 describe('class: RenamedImportMatcher', () => {
   const renamedImportMatcher = new JsxElementRenamedImportMatcher()

@@ -21,7 +21,7 @@ export class NamedImportParser extends ImportParser {
    *
    * @param importNode - Node to evaluate.
    * @param importPath - Module from which the import was imported.
-   * @returns Array of JsxImportElement.
+   * @returns Array of JsImport.
    */
   parse(importNode: ts.ImportClause, importPath: string) {
     const namedImports: JsImport[] = []

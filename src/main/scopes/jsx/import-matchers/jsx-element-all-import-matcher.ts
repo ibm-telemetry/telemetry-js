@@ -20,7 +20,7 @@ export class JsxElementAllImportMatcher implements JsImportMatcher<JsxElement> {
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns Corresponding JsxImportElement if element was imported as an all import,
+   * @returns Corresponding JsImport if element was imported as an all import,
    * undefined otherwise.
    */
   findMatch(element: JsxElement, imports: JsImport[]) {

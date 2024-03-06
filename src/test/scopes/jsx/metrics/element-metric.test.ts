@@ -41,7 +41,7 @@ describe('class: ElementMetric', () => {
       }
     ]
   }
-  const jsxImport: JsImport = {
+  const jsImport: JsImport = {
     name: 'theName',
     path: 'path',
     isDefault: false,
@@ -51,7 +51,7 @@ describe('class: ElementMetric', () => {
   it('returns the correct attributes for a standard element', () => {
     const attributes = new ElementMetric(
       jsxElement,
-      jsxImport,
+      jsImport,
       'the-library',
       { name: 'instrumented', version: '1.0.0' },
       config,
@@ -100,7 +100,7 @@ describe('class: ElementMetric', () => {
   })
 
   it('returns the correct attributes for a renamed element', () => {
-    const renamedImport = { ...jsxImport, name: 'theActualName', rename: 'theName' }
+    const renamedImport = { ...jsImport, name: 'theActualName', rename: 'theName' }
     const attributes = new ElementMetric(
       jsxElement,
       renamedImport,
@@ -152,7 +152,7 @@ describe('class: ElementMetric', () => {
   })
 
   it('returns the correct attributes for a default element', () => {
-    const defaultImport = { ...jsxImport, name: '[Default]', rename: 'theName', isDefault: true }
+    const defaultImport = { ...jsImport, name: '[Default]', rename: 'theName', isDefault: true }
     const attributes = new ElementMetric(
       jsxElement,
       defaultImport,
@@ -206,7 +206,7 @@ describe('class: ElementMetric', () => {
   it('returns the correct attributes for an element with no invoker', () => {
     const attributes = new ElementMetric(
       jsxElement,
-      jsxImport,
+      jsImport,
       undefined,
       {
         name: 'instrumented',
@@ -257,7 +257,7 @@ describe('class: ElementMetric', () => {
   it('returns the correct attributes for an element with invoker that has owner', () => {
     const attributes = new ElementMetric(
       jsxElement,
-      jsxImport,
+      jsImport,
       '@owner/library',
       {
         name: '@instrumented/instrumented',
@@ -330,7 +330,7 @@ describe('class: ElementMetric', () => {
     }
     const attributes = new ElementMetric(
       elementWithAllowedAttrs,
-      jsxImport,
+      jsImport,
       '@owner/library',
       {
         name: '@instrumented/instrumented',

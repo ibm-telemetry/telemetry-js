@@ -23,7 +23,7 @@ describe('class: ImportNodeHandler', async () => {
   )[0] as ts.SourceFile
   const accumulator = new JsxElementAccumulator()
   const handler = new ImportNodeHandler(sourceFile, logger)
-  it('correctly returns the JsxImports for a complex fixture', () => {
+  it('correctly returns the JsImports for a complex fixture', () => {
     const importDeclarations = findNodesByType(sourceFile, ts.SyntaxKind.ImportDeclaration)
 
     importDeclarations.forEach((importDeclaration) => {

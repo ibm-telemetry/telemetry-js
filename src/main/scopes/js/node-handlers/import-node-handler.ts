@@ -15,7 +15,7 @@ import { JsImport } from '../interfaces.js'
 import { JsNodeHandler } from './js-node-handler.js'
 
 /**
- * Holds logic to construct a JsxImport object given an ImportDeclaration node.
+ * Holds logic to construct a JsImport object given an ImportDeclaration node.
  *
  */
 export class ImportNodeHandler extends JsNodeHandler<JsImport[]> {
@@ -30,10 +30,10 @@ export class ImportNodeHandler extends JsNodeHandler<JsImport[]> {
   }
 
   /**
-   * Constructs a JsxImport object from a given ImportDeclaration type AST node.
+   * Constructs a JsImport object from a given ImportDeclaration type AST node.
    *
    * @param node - Node element to process.
-   * @returns Constructed JsxImport object.
+   * @returns Constructed JsImport object.
    */
   getData(node: ts.ImportDeclaration): JsImport[] {
     const importParsers = [

@@ -115,17 +115,17 @@ export class JsxScope extends Scope {
     await this.resolveInvokers(accumulator, sourceFile.fileName)
 
     accumulator.elements.forEach((jsxElement) => {
-      const jsxImport = accumulator.elementImports.get(jsxElement)
+      const jsImport = accumulator.elementImports.get(jsxElement)
       const invoker = accumulator.elementInvokers.get(jsxElement)
 
-      if (jsxImport === undefined) {
+      if (jsImport === undefined) {
         return
       }
 
       this.capture(
         new ElementMetric(
           jsxElement,
-          jsxImport,
+          jsImport,
           invoker,
           instrumentedPackage,
           this.config,
@@ -140,15 +140,15 @@ export class JsxScope extends Scope {
     elementMatchers: JsImportMatcher<JsxElement>[]
   ) {
     accumulator.elements.forEach((jsxElement) => {
-      const jsxImport = elementMatchers
+      const jsImport = elementMatchers
         .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.imports))
-        .find((jsxImport) => jsxImport !== undefined)
+        .find((jsImport) => jsImport !== undefined)
 
-      if (jsxImport === undefined) {
+      if (jsImport === undefined) {
         return
       }
 
-      accumulator.elementImports.set(jsxElement, jsxImport)
+      accumulator.elementImports.set(jsxElement, jsImport)
     })
   }
 

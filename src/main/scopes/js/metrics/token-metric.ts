@@ -64,8 +64,8 @@ export class TokenMetric extends ScopeMetric {
     )
 
     let metricData: Attributes = {
-      [JsScopeAttributes.TOKEN.NAME]: this.jsToken.name,
-      [JsScopeAttributes.TOKEN.ACCESS_PATH]: this.jsToken.accessPath,
+      [JsScopeAttributes.TOKEN_NAME]: this.jsToken.name,
+      [JsScopeAttributes.TOKEN_ACCESS_PATH]: this.jsToken.accessPath,
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,

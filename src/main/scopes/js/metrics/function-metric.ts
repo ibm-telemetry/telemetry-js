@@ -84,9 +84,9 @@ export class FunctionMetric extends ScopeMetric {
     )
 
     let metricData: Attributes = {
-      [JsScopeAttributes.FUNCTION.NAME]: this.jsFunction.name,
-      [JsScopeAttributes.FUNCTION.ACCESS_PATH]: this.jsFunction.accessPath,
-      [JsScopeAttributes.FUNCTION.ARGUMENT_VALUES]: Object.values(anonymizedArguments).map((arg) =>
+      [JsScopeAttributes.FUNCTION_NAME]: this.jsFunction.name,
+      [JsScopeAttributes.FUNCTION_ACCESS_PATH]: this.jsFunction.accessPath,
+      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(anonymizedArguments).map((arg) =>
         String(arg)
       ),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,

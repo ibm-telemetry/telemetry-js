@@ -370,38 +370,4 @@ describe('class: JsxScope', () => {
       }).not.toThrow()
     })
   })
-
-  describe('resolveInvokers', () => {
-    const jsxScope = new JsxScope('', '', config, logger)
-    const element1 = {
-      name: 'elName',
-      prefix: undefined,
-      raw: '',
-      attributes: []
-    }
-    const element2 = {
-      name: 'elName2',
-      prefix: undefined,
-      raw: '',
-      attributes: []
-    }
-
-    // TODO: This test currently fails because of this bug:
-    // https://github.com/nodejs/node/issues/47928
-    // This could be solved by mocking runCommand to return a hard-coded value, but this is less
-    // than useful for an end-to-end test which strives to hit as much of the underlying
-    // infrastructure as possible.
-    // eslint-disable-next-line vitest/no-disabled-tests -- See above
-    it.skip('correctly sets invoker name for elements', async () => {
-      const fileName = new Fixture('projects/basic-project/test.jsx')
-      const accumulator = new JsxElementAccumulator()
-      accumulator.elements.push(element1)
-      accumulator.elements.push(element2)
-
-      await jsxScope.resolveInvokers(accumulator, fileName.path)
-
-      expect(accumulator.elementInvokers.get(element1)).toBe('basic-project')
-      expect(accumulator.elementInvokers.get(element2)).toBe('basic-project')
-    })
-  })
 })

@@ -243,25 +243,16 @@ export class JsxScope extends Scope {
     this.processFile(accumulator, sourceFile)
     this.removeIrrelevantImports(accumulator, instrumentedPackage.name)
     this.resolveElementImports(accumulator, importMatchers)
-    await this.resolveInvokers(accumulator, sourceFile.fileName)
 
     accumulator.elements.forEach((jsxElement) => {
       const jsxImport = accumulator.elementImports.get(jsxElement)
-      const invoker = accumulator.elementInvokers.get(jsxElement)
 
       if (jsxImport === undefined) {
         return
       }
 
       this.capture(
-        new ElementMetric(
-          jsxElement,
-          jsxImport,
-          invoker,
-          instrumentedPackage,
-          this.config,
-          this.logger
-        )
+        new ElementMetric(jsxElement, jsxImport, instrumentedPackage, this.config, this.logger)
       )
     })
   }
@@ -307,26 +298,6 @@ export class JsxScope extends Scope {
       }
 
       accumulator.elementImports.set(jsxElement, jsxImport)
-    })
-  }
-
-  /**
-   * Adds data to the accumulator for each package that invokes the jsx elements in the accumulator.
-   *
-   * @param accumulator - Accumulator to store results in.
-   * @param sourceFilePath - Absolute path to a sourceFile.
-   */
-  async resolveInvokers(accumulator: JsxElementAccumulator, sourceFilePath: string) {
-    const containingDir = await getDirectoryPrefix(path.dirname(sourceFilePath), this.logger)
-
-    if (containingDir === undefined) {
-      return
-    }
-
-    const containingPackageData = await getPackageData(containingDir, this.root, this.logger)
-
-    accumulator.elements.forEach((jsxElement) => {
-      accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
   }
 

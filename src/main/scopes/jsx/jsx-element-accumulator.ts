@@ -13,12 +13,10 @@ export class JsxElementAccumulator {
   public readonly imports: JsxImport[]
   public readonly elements: JsxElement[]
   public readonly elementImports: Map<JsxElement, JsxImport>
-  public readonly elementInvokers: Map<JsxElement, string>
 
   constructor() {
     this.imports = []
     this.elements = []
     this.elementImports = new Map()
-    this.elementInvokers = new Map()
   }
 }

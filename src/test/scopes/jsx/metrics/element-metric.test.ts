@@ -10,11 +10,8 @@ import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substitute } from '../../../../main/core/anonymize/substitute.js'
-import {
-  type JsxElement,
-  JsxElementAttribute,
-  type JsxImport
-} from '../../../../main/scopes/jsx/interfaces.js'
+import { JsImport } from '../../../../main/scopes/js/interfaces.js'
+import { type JsxElement, JsxElementAttribute } from '../../../../main/scopes/jsx/interfaces.js'
 import { ElementMetric } from '../../../../main/scopes/jsx/metrics/element-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
 
@@ -44,7 +41,7 @@ describe('class: ElementMetric', () => {
       }
     ]
   }
-  const jsxImport: JsxImport = {
+  const jsxImport: JsImport = {
     name: 'theName',
     path: 'path',
     isDefault: false,

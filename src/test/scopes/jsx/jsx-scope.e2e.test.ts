@@ -5,16 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import type * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
-import { AllImportMatcher } from '../../../main/scopes/jsx/import-matchers/all-import-matcher.js'
-import { NamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/named-import-matcher.js'
-import { RenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/renamed-import-matcher.js'
+import { JsxElementAllImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-all-import-matcher.js'
+import { JsxElementNamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-named-import-matcher.js'
+import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
 import { JsxElementAccumulator } from '../../../main/scopes/jsx/jsx-element-accumulator.js'
 import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
-import { getTrackedSourceFiles } from '../../../main/scopes/jsx/utils/get-tracked-source-files.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
 import { Fixture } from '../../__utils/fixture.js'
@@ -146,109 +144,6 @@ describe('class: JsxScope', () => {
     })
   })
 
-  describe('parseFile', () => {
-    const fixture = new Fixture('projects/basic-project/test.jsx')
-    const root = new Fixture('projects/basic-project')
-    const jsxScope = new JsxScope(fixture.path, root.path, config, logger)
-
-    it('correctly detects imports and elements in a given file', async () => {
-      const accumulator = new JsxElementAccumulator()
-      const sourceFile = (await getTrackedSourceFiles(fixture.path, logger))[0] as ts.SourceFile
-
-      jsxScope.processFile(accumulator, sourceFile)
-      expect(accumulator.elements).toMatchSnapshot('elements')
-      expect(accumulator.imports).toMatchSnapshot('imports')
-    })
-  })
-
-  describe('removeIrrelevantImports', () => {
-    it('correctly removes unwanted imports', () => {
-      const accumulator = new JsxElementAccumulator()
-      accumulator.imports.push({
-        name: 'name',
-        path: 'path',
-        isDefault: false,
-        isAll: false
-      })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'instrumented',
-        isDefault: true,
-        isAll: false
-      })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'instrumented/bla',
-        isDefault: false,
-        isAll: true
-      })
-      expect(accumulator.imports).toHaveLength(3)
-      const jsxScope = new JsxScope('', '', config, logger)
-      jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
-      expect(accumulator.imports).toHaveLength(2)
-    })
-
-    it('removes all imports if no imports match instrumented package', () => {
-      const accumulator = new JsxElementAccumulator()
-      accumulator.imports.push({
-        name: 'name',
-        path: 'path',
-        isDefault: false,
-        isAll: false
-      })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'not-instrumented',
-        isDefault: true,
-        isAll: false
-      })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'not-instrumented/bla',
-        isDefault: false,
-        isAll: true
-      })
-      expect(accumulator.imports).toHaveLength(3)
-      const jsxScope = new JsxScope('', '', config, logger)
-      jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
-      expect(accumulator.imports).toHaveLength(0)
-    })
-
-    it("does not remove imports if there aren't any to remove", () => {
-      const accumulator = new JsxElementAccumulator()
-      accumulator.imports.push({
-        name: 'name',
-        path: 'instrumented/1',
-        isDefault: false,
-        isAll: false
-      })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'instrumented',
-        isDefault: true,
-        isAll: false
-      })
-      accumulator.imports.push({
-        name: 'name',
-        path: 'instrumented/bla',
-        isDefault: false,
-        isAll: true
-      })
-      expect(accumulator.imports).toHaveLength(3)
-      const jsxScope = new JsxScope('', '', config, logger)
-      jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
-      expect(accumulator.imports).toHaveLength(3)
-    })
-
-    it('can accept empty array', () => {
-      const accumulator = new JsxElementAccumulator()
-      expect(accumulator.imports).toHaveLength(0)
-      const jsxScope = new JsxScope('', '', config, logger)
-      jsxScope.removeIrrelevantImports(accumulator, 'instrumented')
-      expect(accumulator.imports).toHaveLength(0)
-    })
-  })
-
   describe('resolveElementImports', () => {
     const jsxScope = new JsxScope('', '', config, logger)
     const defaultImport = {
@@ -314,9 +209,9 @@ describe('class: JsxScope', () => {
       accumulator.elements.push(renamedElement)
 
       jsxScope.resolveElementImports(accumulator, [
-        new AllImportMatcher(),
-        new NamedImportMatcher(),
-        new RenamedImportMatcher()
+        new JsxElementAllImportMatcher(),
+        new JsxElementNamedImportMatcher(),
+        new JsxElementRenamedImportMatcher()
       ])
 
       expect(accumulator.elementImports.get(defaultElement)).toStrictEqual(defaultImport)
@@ -351,9 +246,9 @@ describe('class: JsxScope', () => {
 
       const jsxScope = new JsxScope('', '', config, logger)
       jsxScope.resolveElementImports(accumulator, [
-        new AllImportMatcher(),
-        new NamedImportMatcher(),
-        new RenamedImportMatcher()
+        new JsxElementAllImportMatcher(),
+        new JsxElementNamedImportMatcher(),
+        new JsxElementRenamedImportMatcher()
       ])
 
       expect(accumulator.elementImports.get(defaultElement)).toStrictEqual(defaultImport)

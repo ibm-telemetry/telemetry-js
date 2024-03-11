@@ -8,15 +8,15 @@ import * as ts from 'typescript'
 
 import { Trace } from '../../../../core/log/trace.js'
 import { NoAttributeExpressionFoundError } from '../../../../exceptions/no-attribute-expression-found-error.js'
+import { JsNodeHandler } from '../../../js/node-handlers/js-node-handler.js'
+import { getNodeValueHandler } from '../../../js/node-value-handler-map.js'
 import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
-import { getAttributeNodeHandler } from '../../maps/attribute-node-handler-map.js'
-import { ElementNodeHandler } from './element-node-handler.js'
 
 /**
  * Holds node handling logic to be inherited by Jsx node handlers.
  *
  */
-export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
+export abstract class JsxNodeHandler extends JsNodeHandler<JsxElement> {
   /**
    * Given a TagName node representing a JsxElement, obtains the name and prefix values.
    *
@@ -52,7 +52,7 @@ export abstract class JsxNodeHandler extends ElementNodeHandler<JsxElement> {
       try {
         attrs.push({
           name: attr.name.escapedText.toString(),
-          value: getAttributeNodeHandler(attr.kind, this.sourceFile, this.logger).getData(attr)
+          value: getNodeValueHandler(attr.kind, this.sourceFile, this.logger).getData(attr)
         })
       } catch (e) {
         if (e instanceof NoAttributeExpressionFoundError) {

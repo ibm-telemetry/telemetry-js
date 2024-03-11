@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: JsxExpressionHandler > correctly returns node text 1`] = `
+[
+  5,
+  undefined,
+  null,
+  ComplexValue {
+    "complexValue": "{key: 'value'}",
+  },
+  true,
+  false,
+  ComplexValue {
+    "complexValue": "obj['accessKey']",
+  },
+  ComplexValue {
+    "complexValue": "someIdentifier",
+  },
+  ComplexValue {
+    "complexValue": "1 === 5 ? 'expression lhs' : 'expression rhs'",
+  },
+]
+`;

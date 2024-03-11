@@ -6,10 +6,9 @@
  */
 
 import { type Logger } from '../../core/log/logger.js'
-import { DependencyTree } from '../jsx/interfaces.js'
 import { findNestedDeps } from './find-nested-deps.js'
 import { getPackageSubTree } from './get-package-sub-tree.js'
-import { type InstallingPackage } from './interfaces.js'
+import { DependencyTree, type InstallingPackage } from './interfaces.js'
 
 /*
  * Nested dependency considerations:

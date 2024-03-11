@@ -133,8 +133,12 @@ export class JsScope extends Scope {
     instrumentedPackage: PackageData,
     tokenImportMatchers: JsImportMatcher<JsToken>[],
     functionImportMatchers: JsImportMatcher<JsFunction>[],
-    collectorKeys: ConfigSchema['collect']['js'] // TODO: should be fixed when configschema updates
+    collectorKeys: ConfigSchema['collect']['js']
   ) {
+    if (collectorKeys === undefined) {
+      return
+    }
+
     const accumulator = new JsFunctionTokenAccumulator()
 
     processFile(accumulator, sourceFile, jsNodeHandlerMap, this.logger)

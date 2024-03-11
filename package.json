@@ -28,7 +28,7 @@
     "ibmtelemetry": "dist/collect.js"
   },
   "engines": {
-    "node": ">=16",
+    "node": ">=20.11.1",
     "npm": ">=8"
   },
   "files": [

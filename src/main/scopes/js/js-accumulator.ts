@@ -8,7 +8,7 @@ import { JsImport } from '../js/interfaces.js'
 
 /**
  * Base class for all JS Accumulators.
- *  Responsible for maintaining an aggregated state of imports and other elements.
+ * Responsible for maintaining an aggregated state of imports and other elements.
  */
 export abstract class JsAccumulator {
   public readonly imports: JsImport[]

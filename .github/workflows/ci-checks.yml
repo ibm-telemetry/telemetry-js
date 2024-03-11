@@ -84,7 +84,7 @@ jobs:
         run: npm run test
 
       - name: Upload test coverage reports 🛫
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-coverage
           path: '**/.test-coverage/lcov.info'
@@ -103,7 +103,7 @@ jobs:
           fetch-depth: 0 # Disable shallow clones for better relevancy of analysis
 
       - name: Download test coverage reports 🛬
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-coverage
 

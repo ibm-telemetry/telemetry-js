@@ -14,12 +14,10 @@ import { type JsxElement } from './interfaces.js'
 export class JsxElementAccumulator extends JsAccumulator {
   public readonly elements: JsxElement[]
   public readonly elementImports: Map<JsxElement, JsImport>
-  public readonly elementInvokers: Map<JsxElement, string>
 
   constructor() {
     super()
     this.elements = []
     this.elementImports = new Map()
-    this.elementInvokers = new Map()
   }
 }

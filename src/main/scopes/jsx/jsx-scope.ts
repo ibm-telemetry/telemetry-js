@@ -4,7 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'path'
 import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
@@ -14,7 +13,6 @@ import { findRelevantSourceFiles } from '../js/find-relevant-source-files.js'
 import { JsImportMatcher } from '../js/interfaces.js'
 import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
-import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { PackageData } from '../npm/interfaces.js'
 import { JsxElementAllImportMatcher } from './import-matchers/jsx-element-all-import-matcher.js'
@@ -112,25 +110,16 @@ export class JsxScope extends Scope {
     processFile(accumulator, sourceFile, jsxNodeHandlerMap, this.logger)
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
     this.resolveElementImports(accumulator, importMatchers)
-    await this.resolveInvokers(accumulator, sourceFile.fileName)
 
     accumulator.elements.forEach((jsxElement) => {
       const jsImport = accumulator.elementImports.get(jsxElement)
-      const invoker = accumulator.elementInvokers.get(jsxElement)
 
       if (jsImport === undefined) {
         return
       }
 
       this.capture(
-        new ElementMetric(
-          jsxElement,
-          jsImport,
-          invoker,
-          instrumentedPackage,
-          this.config,
-          this.logger
-        )
+        new ElementMetric(jsxElement, jsImport, instrumentedPackage, this.config, this.logger)
       )
     })
   }
@@ -149,26 +138,6 @@ export class JsxScope extends Scope {
       }
 
       accumulator.elementImports.set(jsxElement, jsImport)
-    })
-  }
-
-  /**
-   * Adds data to the accumulator for each package that invokes the jsx elements in the accumulator.
-   *
-   * @param accumulator - Accumulator to store results in.
-   * @param sourceFilePath - Absolute path to a sourceFile.
-   */
-  async resolveInvokers(accumulator: JsxElementAccumulator, sourceFilePath: string) {
-    const containingDir = await getDirectoryPrefix(path.dirname(sourceFilePath), this.logger)
-
-    if (containingDir === undefined) {
-      return
-    }
-
-    const containingPackageData = await getPackageData(containingDir, this.root, this.logger)
-
-    accumulator.elements.forEach((jsxElement) => {
-      accumulator.elementInvokers.set(jsxElement, containingPackageData.name)
     })
   }
 

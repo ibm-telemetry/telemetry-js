@@ -78,7 +78,7 @@ export class TokenMetric extends ScopeMetric {
 
     // Handle renamed tokens
     if (this.matchingImport.rename !== undefined) {
-      metricData[JsScopeAttributes.NAME] = this.jsToken.name.replace(
+      metricData[JsScopeAttributes.TOKEN_NAME] = this.jsToken.name.replace(
         this.matchingImport.rename,
         this.matchingImport.name
       )

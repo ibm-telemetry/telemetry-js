@@ -21,16 +21,21 @@ interface CommandLineOptions {
  * Sets up Commander, registers the command action, and invokes the action.
  */
 function run() {
-  const program = new Command()
-    .description('Collect telemetry data for a package.')
-    .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
-    .option('--log <log-path>', 'Path to temp log file')
-    .action(collect)
+  try {
+    const program = new Command()
+      .description('Collect telemetry data for a package.')
+      .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
+      .option('--log <log-path>', 'Path to temp log file')
+      .action(collect)
 
-  program.parseAsync().catch((err) => {
-    // As a failsafe, this catches any uncaught exception, prints it to stderr, and silently exits
+    program.parseAsync().catch((err) => {
+      // As a failsafe, catch any uncaught exception, print it to stderr, and silently exit
+      console.error(err)
+    })
+  } catch (err) {
+    // As a failsafe, catch any uncaught exception, print it to stderr, and silently exit
     console.error(err)
-  })
+  }
 }
 
 /**

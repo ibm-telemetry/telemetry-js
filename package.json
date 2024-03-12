@@ -27,19 +27,18 @@
   "bin": {
     "ibmtelemetry": "dist/collect.js"
   },
-  "engines": {
-    "node": ">=16",
-    "npm": ">=8"
-  },
   "files": [
     "dist/background-process.js",
-    "dist/collect.js"
+    "dist/collect.js",
+    "dist/spawn-background-process.js"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build": "npm run clean && npm run compile && npm run compile:collect && npm run bundle",
     "bundle": "node esbuild.js",
     "clean": "rimraf dist .test-coverage",
+    "compile": "tsc",
+    "compile:collect": "tsc --project ./tsconfig.collect.json",
+    "compile:watch": "tsc --watch",
     "lint": "scripts/lint",
     "lint:fix": "scripts/lint_and_fix",
     "prepare": "husky install",
@@ -85,7 +84,6 @@
     "reflect-metadata": "^0.2.1",
     "rimraf": "^5.0.5",
     "semver": "^7.6.0",
-    "tmp-promise": "^3.0.3",
     "ts-json-schema-generator": "^1.5.0",
     "typescript": "^5.4.2",
     "vite": "^5.1.5",

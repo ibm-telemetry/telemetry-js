@@ -13,24 +13,37 @@ const banner = `#!/usr/bin/env node
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
- */
-const require = (await import("node:module")).createRequire(import.meta.url);
-const __filename = (await import("node:url")).fileURLToPath(import.meta.url);
-const __dirname = (await import("node:path")).dirname(__filename);`
+ */`
 
+// collect is the main entrypoint. It calls spawn-background-process
 await build({
   banner: {
     js: banner
   },
-  bundle: true,
+  bundle: false,
   entryPoints: [path.join('dist', 'main', 'collect.js')],
   format: 'esm',
   minify: true,
   outfile: path.join('dist', 'collect.js'),
   platform: 'node',
+  target: 'es6'
+})
+
+// spawn-background-process spawns a new background-process process
+await build({
+  banner: {
+    js: banner
+  },
+  bundle: true,
+  entryPoints: [path.join('dist', 'main', 'spawn-background-process.js')],
+  format: 'esm',
+  minify: true,
+  outfile: path.join('dist', 'spawn-background-process.js'),
+  platform: 'node',
   target: 'es2021'
 })
 
+// background-process is the main logic of the telemetry tooling
 await build({
   banner: {
     js: banner

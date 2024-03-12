@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, sep } from 'node:path'
+
 /**
  * Creates a valid filename that can be used in the temp folder of the file system.
  *
@@ -12,9 +16,6 @@
  * @returns A string representing an unused filename in the temp directory.
  */
 export function createLogFilePath(date: string): string {
-  // TODO ASK FRANCINE: :)
-  return date + 'wowtempfile.log'
-  // return tmpNameSync({
-  //   template: `ibmtelemetry-${date.replace(/[:.-]/g, '')}-XXXXXX.log`
-  // })
+  const tempDir = mkdtempSync(`${tmpdir}${sep}`)
+  return join(tempDir, `ibmtelemetry-${date.replace(/[:.-]/g, '')}.log`)
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js' // TODO: should be fixed when telemetryAttributes  updates
+import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { ConfigSchema } from '@ibm/telemetry-config-schema'
 import { Attributes } from '@opentelemetry/api'
 
@@ -48,7 +48,7 @@ export class FunctionMetric extends ScopeMetric {
     this.instrumentedPackage = instrumentedPackage
 
     this.allowedArgumentStringValues =
-      config.collect.js?.functions?.allowedArgumentStringValues ?? [] // TODO: should be fixed when configSchema updates
+      config.collect.js?.functions?.allowedArgumentStringValues ?? []
   }
 
   /**

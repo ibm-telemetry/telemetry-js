@@ -31,7 +31,7 @@ import { TokenMetric } from './metrics/token-metric.js'
  * Scope class dedicated to data collection from a jsx environment.
  */
 export class JsScope extends Scope {
-  public override name = 'js' as const // TODO: should be fixed when configschema updates
+  public override name = 'js' as const
   private runSync = false
   public static readonly fileExtensions = [
     '.jsx',
@@ -53,7 +53,7 @@ export class JsScope extends Scope {
    */
   @Trace()
   public override async run(): Promise<void> {
-    const collectorKeys = this.config.collect[this.name] // TODO: should be fixed when configschema updates
+    const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
       throw new EmptyScopeError(this.name)
     }
@@ -67,7 +67,7 @@ export class JsScope extends Scope {
    */
   @Trace()
   async captureAllMetrics(): Promise<void> {
-    const collectorKeys = this.config.collect[this.name] // TODO: should be fixed when configschema updates
+    const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
       throw new EmptyScopeError(this.name)
     }

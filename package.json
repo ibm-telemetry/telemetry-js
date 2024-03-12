@@ -78,7 +78,7 @@
     "eslint-plugin-vitest": "^0.3.24",
     "husky": "^9.0.11",
     "js-yaml": "^4.1.0",
-    "lint-staged": "^14.0.1",
+    "lint-staged": "^15.2.2",
     "lodash": "^4.17.21",
     "object-scan": "^19.0.5",
     "prettier": "^3.2.5",

@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath from 'lodash/get.js'
+import getPropertyByPath = require('lodash/get.js')
+import * as path from 'node:path'
+
 import { ObjectPath } from 'object-scan'
-import path from 'path'
 
 import { getTrackedSourceFiles } from '../../core/get-tracked-source-files.js'
 import { Logger } from '../../core/log/logger.js'

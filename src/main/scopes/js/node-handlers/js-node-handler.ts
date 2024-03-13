@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type * as ts from 'typescript'
+import ts = require('typescript')
 
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'

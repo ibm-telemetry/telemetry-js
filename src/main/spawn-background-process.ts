@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 async function spawnBackgroundProcess() {
-  const childProcess = await import('child_process')
-  const path = await import('path')
-  const { dirname } = path
-  const { fileURLToPath } = await import('url')
+  const childProcess = await import('node:child_process')
+  const path = await import('node:path')
+  const { fileURLToPath } = await import('node:url')
 
   const { createLogFilePath } = await import('./core/log/create-log-file-path.js')
 
@@ -21,7 +20,7 @@ async function spawnBackgroundProcess() {
     .spawn(
       process.argv0,
       [
-        path.join(dirname(fileURLToPath(import.meta.url)), 'background-process.js'),
+        path.join(path.dirname(fileURLToPath(import.meta.url)), 'background-process.js'),
         `--log=${logFilePath}`,
         ...process.argv.slice(2)
       ],

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath from 'lodash/get.js'
+import getPropertyByPath = require('lodash/get.js')
 
 import { InvalidObjectPathError } from '../../exceptions/invalid-object-path-error.js'
 import { DependencyTree, type InstallingPackage, type PackageData } from './interfaces.js'

@@ -4,8 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
-import { Command } from 'commander'
+import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
+import commander = require('commander')
 
 import { Environment } from './core/environment.js'
 import { createLogFilePath } from './core/log/create-log-file-path.js'
@@ -16,6 +16,8 @@ interface CommandLineOptions {
   config: string
   log?: string
 }
+
+const { Command } = commander
 
 /**
  * Sets up Commander, registers the command action, and invokes the action.

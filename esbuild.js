@@ -4,8 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import path from 'node:path'
+
 import { build } from 'esbuild'
-import path from 'path'
 
 const banner = `#!/usr/bin/env node
 /*
@@ -20,7 +21,7 @@ await build({
   banner: {
     js: banner
   },
-  bundle: false,
+  bundle: false, // Do not include other esbuild output in this file
   entryPoints: [path.join('dist', 'main', 'collect.js')],
   format: 'esm',
   minify: true,

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import ajv, { type Schema, type ValidateFunction } from 'ajv'
+import ajv = require('ajv')
 
 import { ConfigValidationError } from '../exceptions/config-validation-error.js'
 import { Loggable } from './log/loggable.js'
@@ -19,7 +19,7 @@ const Ajv = ajv.default
  * to analyze more than one config file. Instead, create new instances for separate validations.
  */
 export class ConfigValidator extends Loggable {
-  private readonly ajvValidate: ValidateFunction<ConfigSchema>
+  private readonly ajvValidate: ajv.ValidateFunction<ConfigSchema>
 
   /**
    * Constructs a new config file validator based on the provided config file schema.
@@ -27,7 +27,7 @@ export class ConfigValidator extends Loggable {
    * @param schema - Config file schema object.
    * @param logger - A logger instance.
    */
-  public constructor(schema: Schema, logger: Logger) {
+  public constructor(schema: ajv.Schema, logger: Logger) {
     super(logger)
     this.ajvValidate = new Ajv({ allErrors: true, verbose: true }).compile(schema)
   }

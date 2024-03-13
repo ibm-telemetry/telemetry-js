@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as ts from 'typescript'
+import ts = require('typescript')
 
 import { type Logger } from '../../core/log/logger.js'
 import { NodeValueHandlerMap } from './interfaces.js'

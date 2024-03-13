@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { access } from 'fs/promises'
-import path from 'path'
+import { access } from 'node:fs/promises'
+import * as path from 'node:path'
 
 /**
  * Given a directory path, determines if a node_modules folder exists directly inside of it.

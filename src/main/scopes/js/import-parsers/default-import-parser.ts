@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as ts from 'typescript'
+import ts = require('typescript')
 
 import { DEFAULT_ELEMENT_NAME, DEFAULT_IMPORT_KEY } from '../../jsx/constants.js'
 import { JsImport } from '../interfaces.js'

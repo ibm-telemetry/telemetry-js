@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { readFile } from 'node:fs/promises'
-import path from 'node:path'
+import * as path from 'node:path'
 
-import * as ts from 'typescript'
+import ts = require('typescript')
 
 import { type Logger } from './log/logger.js'
 import { TrackedFileEnumerator } from './tracked-file-enumerator.js'

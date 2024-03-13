@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { isCI } from 'ci-info'
+import ciInfo = require('ci-info')
 
 interface EnvironmentConfig {
   isCI?: boolean
@@ -33,7 +33,7 @@ export class Environment {
   readonly isTelemetryEnabled: boolean
 
   constructor(config?: EnvironmentConfig) {
-    this.isCI = isCI
+    this.isCI = ciInfo.isCI
     this.isExportEnabled = process.env['IBM_TELEMETRY_EXPORT_DISABLED'] !== 'true'
     this.isTelemetryEnabled = process.env['IBM_TELEMETRY_DISABLED'] !== 'true'
 

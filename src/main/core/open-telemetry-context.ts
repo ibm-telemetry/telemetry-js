@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type Attributes } from '@opentelemetry/api'
-import { Resource } from '@opentelemetry/resources'
-import { MeterProvider, MetricReader } from '@opentelemetry/sdk-metrics'
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
+import Resources = require('@opentelemetry/resources')
+import SdkMetrics = require('@opentelemetry/sdk-metrics')
+import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
 
 import { ManualMetricReader } from './manual-metric-reader.js'
 
 interface InitializedOpenTelemetryContext {
-  metricReader: MetricReader
-  meterProvider: MeterProvider
+  metricReader: SdkMetrics.MetricReader
+  meterProvider: SdkMetrics.MeterProvider
 }
 
 /**
@@ -36,8 +36,8 @@ export class OpenTelemetryContext {
   }
 
   // Protected is used so the `this` type can assert these as non-null
-  protected metricReader?: MetricReader
-  protected meterProvider?: MeterProvider
+  protected metricReader?: SdkMetrics.MetricReader
+  protected meterProvider?: SdkMetrics.MeterProvider
 
   private attributes?: Attributes
   private isInitialized: boolean = false
@@ -49,17 +49,15 @@ export class OpenTelemetryContext {
       return
     }
 
-    const resource = Resource.default().merge(
-      new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: 'IBM Telemetry',
+    const resource = Resources.Resource.default().merge(
+      new Resources.Resource({
+        [SEMRESATTRS_SERVICE_NAME]: 'IBM Telemetry',
         ...this.attributes
       })
     )
 
     this.metricReader = new ManualMetricReader()
-    this.meterProvider = new MeterProvider({ resource })
-
-    this.meterProvider.addMetricReader(this.metricReader)
+    this.meterProvider = new SdkMetrics.MeterProvider({ resource, readers: [this.metricReader] })
 
     this.isInitialized = true
   }
@@ -78,7 +76,7 @@ export class OpenTelemetryContext {
    *
    * @returns The metric reader.
    */
-  public getMetricReader(): MetricReader {
+  public getMetricReader(): SdkMetrics.MetricReader {
     this.initialize()
 
     return this.metricReader
@@ -89,7 +87,7 @@ export class OpenTelemetryContext {
    *
    * @returns The meter provider.
    */
-  public getMeterProvider(): MeterProvider {
+  public getMeterProvider(): SdkMetrics.MeterProvider {
     this.initialize()
 
     return this.meterProvider

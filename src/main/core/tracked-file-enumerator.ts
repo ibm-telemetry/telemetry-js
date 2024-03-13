@@ -4,8 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { access } from 'fs/promises'
-import path from 'path'
+import { access } from 'node:fs/promises'
+import * as path from 'node:path'
 
 import { InvalidRootPathError } from '../exceptions/invalid-root-path-error.js'
 import { Loggable } from './log/loggable.js'

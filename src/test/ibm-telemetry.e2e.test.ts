@@ -4,9 +4,10 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import * as path from 'node:path'
+
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
-import path from 'path'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'

@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { SemVer } from 'semver'
+import semver = require('semver')
+
+const { SemVer } = semver
 
 import { Loggable } from './log/loggable.js'
 import { Trace } from './log/trace.js'

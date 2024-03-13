@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath from 'lodash/get.js'
+import getPropertyByPath = require('lodash/get.js')
 
 import { findNestedDeps } from './find-nested-deps.js'
 import { DependencyTree, PackageData } from './interfaces.js'

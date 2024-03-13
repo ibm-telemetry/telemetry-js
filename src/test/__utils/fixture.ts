@@ -6,7 +6,7 @@
  */
 
 import { readFile } from 'node:fs/promises'
-import path from 'node:path'
+import * as path from 'node:path'
 
 import { parseYamlFile } from '../../main/core/parse-yaml-file.js'
 

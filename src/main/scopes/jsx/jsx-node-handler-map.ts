@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import ts = require('typescript')
 
 import { JsNodeHandlerMap } from '../js/interfaces.js'
 import { ImportNodeHandler } from '../js/node-handlers/import-node-handler.js'

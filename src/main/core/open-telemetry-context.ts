@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type Attributes } from '@opentelemetry/api'
-import Resources = require('@opentelemetry/resources')
-import SdkMetrics = require('@opentelemetry/sdk-metrics')
+import { Resource } from '@opentelemetry/resources'
+import { MeterProvider, MetricReader } from '@opentelemetry/sdk-metrics'
 import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
 
 import { ManualMetricReader } from './manual-metric-reader.js'
 
 interface InitializedOpenTelemetryContext {
-  metricReader: SdkMetrics.MetricReader
-  meterProvider: SdkMetrics.MeterProvider
+  metricReader: MetricReader
+  meterProvider: MeterProvider
 }
 
 /**
@@ -36,8 +36,8 @@ export class OpenTelemetryContext {
   }
 
   // Protected is used so the `this` type can assert these as non-null
-  protected metricReader?: SdkMetrics.MetricReader
-  protected meterProvider?: SdkMetrics.MeterProvider
+  protected metricReader?: MetricReader
+  protected meterProvider?: MeterProvider
 
   private attributes?: Attributes
   private isInitialized: boolean = false
@@ -49,15 +49,15 @@ export class OpenTelemetryContext {
       return
     }
 
-    const resource = Resources.Resource.default().merge(
-      new Resources.Resource({
+    const resource = Resource.default().merge(
+      new Resource({
         [SEMRESATTRS_SERVICE_NAME]: 'IBM Telemetry',
         ...this.attributes
       })
     )
 
     this.metricReader = new ManualMetricReader()
-    this.meterProvider = new SdkMetrics.MeterProvider({ resource, readers: [this.metricReader] })
+    this.meterProvider = new MeterProvider({ resource, readers: [this.metricReader] })
 
     this.isInitialized = true
   }
@@ -76,7 +76,7 @@ export class OpenTelemetryContext {
    *
    * @returns The metric reader.
    */
-  public getMetricReader(): SdkMetrics.MetricReader {
+  public getMetricReader(): MetricReader {
     this.initialize()
 
     return this.metricReader
@@ -87,7 +87,7 @@ export class OpenTelemetryContext {
    *
    * @returns The meter provider.
    */
-  public getMeterProvider(): SdkMetrics.MeterProvider {
+  public getMeterProvider(): MeterProvider {
     this.initialize()
 
     return this.meterProvider

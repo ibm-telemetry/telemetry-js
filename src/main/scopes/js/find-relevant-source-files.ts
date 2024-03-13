@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath = require('lodash/get.js')
 import * as path from 'node:path'
 
+import lodashGet from 'lodash/get.js'
 import { ObjectPath } from 'object-scan'
 
 import { getTrackedSourceFiles } from '../../core/get-tracked-source-files.js'
@@ -60,7 +60,7 @@ export async function findRelevantSourceFiles(
           const pathsLength = instrumentedInstallPaths[0]?.length ?? 0
           if (shortestPathLength === undefined || pathsLength < shortestPathLength) {
             instrumentedInstallVersions = instrumentedInstallPaths.map(
-              (path) => getPropertyByPath(tree, path)['version']
+              (path) => lodashGet(tree, path)['version']
             )
             shortestPathLength = pathsLength
           }

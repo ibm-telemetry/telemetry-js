@@ -46,6 +46,17 @@ await build({
 // background-process is the main logic of the telemetry tooling
 await build({
   ...baseConfig,
+  banner: {
+    // Require, __filename, and __dirname are polyfilled here to support the bundling of commonjs
+    // modules.
+    js:
+      banner +
+      `
+const require = (await import("node:module")).createRequire(import.meta.url);
+const __filename = (await import("node:url")).fileURLToPath(import.meta.url);
+const __dirname = (await import("node:path")).dirname(__filename);
+`
+  },
   entryPoints: [path.join('dist', 'main', 'background-process.js')],
   outfile: path.join('dist', 'background-process.js')
 })

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import ts = require('typescript')
+import * as ts from 'typescript'
 
 import { JsImport } from '../interfaces.js'
 

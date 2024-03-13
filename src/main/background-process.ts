@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
-import commander = require('commander')
+import * as commander from 'commander'
 
 import { Environment } from './core/environment.js'
 import { createLogFilePath } from './core/log/create-log-file-path.js'

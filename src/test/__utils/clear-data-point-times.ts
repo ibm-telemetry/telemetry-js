@@ -4,14 +4,14 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import SdkMetrics = require('@opentelemetry/sdk-metrics')
+import { CollectionResult } from '@opentelemetry/sdk-metrics'
 
 /**
  * Metric timestamps change every run. This function changes them to a fixed value  of zero.
  *
  * @param results - The collection results to consider.
  */
-export function clearDataPointTimes(results: SdkMetrics.CollectionResult) {
+export function clearDataPointTimes(results: CollectionResult) {
   results.resourceMetrics.scopeMetrics.forEach((scopeMetric) => {
     scopeMetric.metrics.forEach((metric) => {
       metric.dataPoints.forEach((dataPoint) => {

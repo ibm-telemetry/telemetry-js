@@ -7,7 +7,7 @@
 import { readFile } from 'node:fs/promises'
 import * as path from 'node:path'
 
-import ts = require('typescript')
+import * as ts from 'typescript'
 
 import { type Logger } from './log/logger.js'
 import { TrackedFileEnumerator } from './tracked-file-enumerator.js'

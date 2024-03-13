@@ -6,9 +6,9 @@
  */
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import ExporterMetricsOtlpHttp = require('@opentelemetry/exporter-metrics-otlp-http')
-import SdkMetrics = require('@opentelemetry/sdk-metrics')
-import OtlpExporterBase = require('@opentelemetry/otlp-exporter-base')
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
+import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
 import { type Schema } from 'ajv'
 
 import { hash } from './core/anonymize/hash.js'
@@ -183,11 +183,11 @@ export class IbmTelemetry {
   }
 
   @Trace()
-  private async emitMetrics(metrics: SdkMetrics.ResourceMetrics, config: ConfigSchema) {
-    const exporter = new ExporterMetricsOtlpHttp.OTLPMetricExporter({
+  private async emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
+    const exporter = new OTLPMetricExporter({
       url: config.endpoint,
-      temporalityPreference: SdkMetrics.AggregationTemporality.DELTA,
-      compression: OtlpExporterBase.CompressionAlgorithm.GZIP
+      temporalityPreference: AggregationTemporality.DELTA,
+      compression: CompressionAlgorithm.GZIP
     })
 
     return await new Promise((resolve) => {

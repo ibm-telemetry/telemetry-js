@@ -16,44 +16,36 @@ const banner = `#!/usr/bin/env node
  * LICENSE file in the root directory of this source tree.
  */`
 
-// collect is the main entrypoint. It calls spawn-background-process
-await build({
+const baseConfig = {
   banner: {
     js: banner
   },
-  bundle: false, // Do not include other esbuild output in this file
-  entryPoints: [path.join('dist', 'main', 'collect.js')],
+  bundle: true,
   format: 'esm',
   minify: true,
-  outfile: path.join('dist', 'collect.js'),
   platform: 'node',
+  target: 'es2021'
+}
+
+// collect is the main entrypoint. It calls spawn-background-process
+await build({
+  ...baseConfig,
+  bundle: false, // Do not include other esbuild output in this file
+  entryPoints: [path.join('dist', 'main', 'collect.js')],
+  outfile: path.join('dist', 'collect.js'),
   target: 'es6'
 })
 
 // spawn-background-process spawns a new background-process process
 await build({
-  banner: {
-    js: banner
-  },
-  bundle: true,
+  ...baseConfig,
   entryPoints: [path.join('dist', 'main', 'spawn-background-process.js')],
-  format: 'esm',
-  minify: true,
-  outfile: path.join('dist', 'spawn-background-process.js'),
-  platform: 'node',
-  target: 'es2021'
+  outfile: path.join('dist', 'spawn-background-process.js')
 })
 
 // background-process is the main logic of the telemetry tooling
 await build({
-  banner: {
-    js: banner
-  },
-  bundle: true,
+  ...baseConfig,
   entryPoints: [path.join('dist', 'main', 'background-process.js')],
-  format: 'esm',
-  minify: true,
-  outfile: path.join('dist', 'background-process.js'),
-  platform: 'node',
-  target: 'es2021'
+  outfile: path.join('dist', 'background-process.js')
 })

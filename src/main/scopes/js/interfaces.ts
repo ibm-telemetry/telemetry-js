@@ -38,11 +38,15 @@ export interface JsImportMatcher<Element> {
 
 export interface JsFunction {
   name: string
-  accessPath: string
+  accessPath: string[]
   arguments: Array<string | number | boolean | ComplexValue | null | undefined>
+  startPos: number
+  endPos: number
 }
 
 export interface JsToken {
   name: string
-  accessPath: string
+  accessPath: string[]
+  startPos: number
+  endPos: number
 }

@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: ElementAccessExpressionNodeHandler > correctly returns the JsTokens for a complex fixture 1`] = `
+[
+  {
+    "accessPath": [
+      "blue",
+      "60",
+    ],
+    "endPos": 203,
+    "name": "60",
+    "startPos": 0,
+  },
+  {
+    "accessPath": [
+      "blue",
+      "60.4",
+    ],
+    "endPos": 219,
+    "name": "60.4",
+    "startPos": 203,
+  },
+  {
+    "accessPath": [
+      "colors",
+      "blue",
+      "property",
+    ],
+    "endPos": 259,
+    "name": "property",
+    "startPos": 234,
+  },
+  {
+    "accessPath": [
+      "blue",
+      "60",
+    ],
+    "endPos": 273,
+    "name": "60",
+    "startPos": 259,
+  },
+  {
+    "accessPath": [
+      "blue",
+      "60",
+      "THE_CONSTANT",
+      "bloop",
+    ],
+    "endPos": 327,
+    "name": "bloop",
+    "startPos": 288,
+  },
+  {
+    "accessPath": [
+      "anObject",
+      "BLA",
+      "property",
+      "anotherProperty",
+    ],
+    "endPos": 426,
+    "name": "anotherProperty",
+    "startPos": 355,
+  },
+]
+`;

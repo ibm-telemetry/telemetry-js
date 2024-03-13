@@ -29,15 +29,18 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
   /**
    * Constructs a JsToken object from a given Identifier type AST node.
    *
-   * @param _node - Node element to process.
+   * @param node - Node element to process.
    * @returns Constructed JsToken object.
    */
-  getData(_node: ts.Identifier): JsToken {
+  getData(node: ts.Identifier): JsToken {
     // TODO: implement, how to know this is not a part of a
     // CallExpression, PropertyAccessExpression or ElementAccessExpression?
+    // TODO: test
     return {
-      name: 'dummyToken',
-      accessPath: 'dummyAccess'
+      name: node.escapedText.toString(),
+      accessPath: [node.escapedText.toString()],
+      startPos: node.pos,
+      endPos: node.end
     }
   }
 }

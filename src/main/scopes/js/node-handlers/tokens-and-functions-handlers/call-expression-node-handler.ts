@@ -4,10 +4,12 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
+import * as ts from 'typescript'
 
+import getAccessPath from '../../get-access-path.js'
 import { JsFunction } from '../../interfaces.js'
 import { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
+import { getNodeValueHandler } from '../../node-value-handler-map.js'
 import { JsNodeHandler } from '../js-node-handler.js'
 
 /**
@@ -23,21 +25,58 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
    * that holds the aggregated functions state.
    */
   handle(node: ts.CallExpression, accumulator: JsFunctionTokenAccumulator) {
-    accumulator.functions.push(this.getData(node))
+    const jsFunction = this.getData(node)
+    // do not double capture, ex: function().anotherFunction() generates only 1 JsFunction
+    const functionExists = accumulator.functions.some(
+      (f) =>
+        f.startPos <= jsFunction.startPos &&
+        f.endPos >= jsFunction.endPos &&
+        f.accessPath.join('.').includes(jsFunction.accessPath.join('.'))
+    )
+
+    if (functionExists) {
+      return
+    }
+
+    accumulator.functions.push(jsFunction)
   }
 
   /**
    * Constructs a JsFunction object from a given CallExpression type AST node.
    *
-   * @param _node - Node element to process.
+   * @param node - Node element to process.
    * @returns Constructed JsFunction object.
    */
-  getData(_node: ts.CallExpression): JsFunction {
-    // TODO: implement
-    return {
-      name: 'dummyFunction',
-      accessPath: 'dummyAccess',
-      arguments: []
+  getData(node: ts.CallExpression): JsFunction {
+    const jsFunction: JsFunction = {
+      name: '',
+      accessPath: [],
+      arguments: [],
+      startPos: node.pos,
+      endPos: node.end
     }
+    switch (node.expression.kind) {
+      case ts.SyntaxKind.Identifier:
+        jsFunction.name = (node.expression as ts.Identifier).escapedText.toString()
+        break
+      case ts.SyntaxKind.PropertyAccessExpression:
+        jsFunction.name = (
+          node.expression as ts.PropertyAccessExpression
+        ).name.escapedText.toString()
+        break
+      case ts.SyntaxKind.ElementAccessExpression:
+        jsFunction.name = (
+          node.expression as ts.ElementAccessExpression
+        ).argumentExpression.getText(this.sourceFile)
+        break
+    }
+
+    jsFunction.arguments = node.arguments.map((arg) =>
+      getNodeValueHandler(arg.kind, this.sourceFile, this.logger).getData(arg)
+    )
+
+    jsFunction.accessPath = getAccessPath(node, this.sourceFile, this.logger)
+
+    return jsFunction
   }
 }

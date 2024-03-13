@@ -4,21 +4,21 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findRelevantSourceFiles } from '../js/find-relevant-source-files.js'
-import { JsImportMatcher } from '../js/interfaces.js'
+import type { JsImportMatcher } from '../js/interfaces.js'
 import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { PackageData } from '../npm/interfaces.js'
+import type { PackageData } from '../npm/interfaces.js'
 import { JsxElementAllImportMatcher } from './import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from './import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from './import-matchers/jsx-element-renamed-import-matcher.js'
-import { JsxElement } from './interfaces.js'
+import type { JsxElement } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'

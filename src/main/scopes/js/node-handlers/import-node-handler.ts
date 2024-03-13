@@ -4,14 +4,14 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
 import { type JsxElementAccumulator } from '../../jsx/jsx-element-accumulator.js'
 import { AllImportParser } from '../import-parsers/all-import-parser.js'
 import { DefaultImportParser } from '../import-parsers/default-import-parser.js'
 import { NamedImportParser } from '../import-parsers/named-import-parser.js'
 import { RenamedImportParser } from '../import-parsers/renamed-import-parser.js'
-import { JsImport } from '../interfaces.js'
+import type { JsImport } from '../interfaces.js'
 import { JsNodeHandler } from './js-node-handler.js'
 
 /**

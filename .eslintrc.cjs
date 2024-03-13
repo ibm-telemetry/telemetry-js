@@ -53,6 +53,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'jsdoc', 'notice', 'simple-import-sort'],
   root: true,
   rules: {
+    '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-unused-vars': ['warn', noUnusedVarsOptions],

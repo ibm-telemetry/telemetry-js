@@ -8,7 +8,7 @@
 import lodashGet from 'lodash/get.js'
 
 import { findNestedDeps } from './find-nested-deps.js'
-import { DependencyTree, PackageData } from './interfaces.js'
+import type { DependencyTree, PackageData } from './interfaces.js'
 
 /**
  * Finds all dependency sub-trees rooted at the desired package/version

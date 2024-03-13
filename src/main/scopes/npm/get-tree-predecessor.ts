@@ -6,9 +6,9 @@
  */
 
 import lodashGet from 'lodash/get.js'
-import { ObjectPath } from 'object-scan'
+import type { ObjectPath } from 'object-scan'
 
-import { DependencyTree } from './interfaces.js'
+import type { DependencyTree } from './interfaces.js'
 /**
  * Retrieves a tree rooted at the parent of a package given it's dependencyTree path.
  *

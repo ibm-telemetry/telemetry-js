@@ -4,10 +4,10 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Logger } from '../../core/log/logger.js'
+import type { Logger } from '../../core/log/logger.js'
 import { findInstallersFromTree } from './find-installers-from-tree.js'
 import { getDependencyTree } from './get-dependency-tree.js'
-import { InstallingPackage } from './interfaces.js'
+import type { InstallingPackage } from './interfaces.js'
 
 /**
  * Finds all packages within the project that installed the specified package at the specified

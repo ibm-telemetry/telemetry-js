@@ -6,7 +6,8 @@
  */
 import { type Attributes } from '@opentelemetry/api'
 import { Resource } from '@opentelemetry/resources'
-import { MeterProvider, MetricReader } from '@opentelemetry/sdk-metrics'
+import type { MetricReader } from '@opentelemetry/sdk-metrics'
+import { MeterProvider } from '@opentelemetry/sdk-metrics'
 import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
 
 import { ManualMetricReader } from './manual-metric-reader.js'

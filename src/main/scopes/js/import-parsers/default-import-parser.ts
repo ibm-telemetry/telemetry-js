@@ -8,7 +8,7 @@
 import * as ts from 'typescript'
 
 import { DEFAULT_ELEMENT_NAME, DEFAULT_IMPORT_KEY } from '../../jsx/constants.js'
-import { JsImport } from '../interfaces.js'
+import type { JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
 /**

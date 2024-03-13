@@ -8,7 +8,8 @@
 import lodashGet from 'lodash/get.js'
 
 import { InvalidObjectPathError } from '../../exceptions/invalid-object-path-error.js'
-import { DependencyTree, type InstallingPackage, type PackageData } from './interfaces.js'
+import type { DependencyTree } from './interfaces.js'
+import { type InstallingPackage, type PackageData } from './interfaces.js'
 
 /**
  * Given a dependency tree and an object path within that tree, return an object containing name,

@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { CollectionResult } from '@opentelemetry/sdk-metrics'
+import type { CollectionResult } from '@opentelemetry/sdk-metrics'
 import { SEMRESATTRS_TELEMETRY_SDK_VERSION } from '@opentelemetry/semantic-conventions'
 
 /**

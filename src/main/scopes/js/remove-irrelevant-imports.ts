@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JsAccumulator } from './js-accumulator.js'
+import type { JsAccumulator } from './js-accumulator.js'
 
 /**
  * Give a JsAccumulator with previously computed imports, discards all import objects

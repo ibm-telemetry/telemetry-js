@@ -4,12 +4,12 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
-import { Logger } from '../../core/log/logger.js'
-import { ComplexValue } from './complex-value.js'
-import { JsNodeHandler } from './node-handlers/js-node-handler.js'
-import { NodeValueHandler } from './node-handlers/value-handlers/node-value-handler.js'
+import type { Logger } from '../../core/log/logger.js'
+import type { ComplexValue } from './complex-value.js'
+import type { JsNodeHandler } from './node-handlers/js-node-handler.js'
+import type { NodeValueHandler } from './node-handlers/value-handlers/node-value-handler.js'
 
 export interface JsImport {
   name: string

@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { JsImport } from '../../../../main/scopes/js/interfaces.js'
+import type { JsImport } from '../../../../main/scopes/js/interfaces.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import { JsxElementAllImportMatcher } from '../../../../main/scopes/jsx/import-matchers/jsx-element-all-import-matcher.js'
 import { type JsxElement } from '../../../../main/scopes/jsx/interfaces.js'

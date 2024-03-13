@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
-import { JsImport } from '../interfaces.js'
+import type { JsImport } from '../interfaces.js'
 
 /**
  * Defines API to construct JsxImportElements from ImportClause nodes.

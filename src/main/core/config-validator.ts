@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import ajv, { Schema, ValidateFunction } from 'ajv'
+import type { Schema, ValidateFunction } from 'ajv'
+import ajv from 'ajv'
 
 import { ConfigValidationError } from '../exceptions/config-validation-error.js'
 import { Loggable } from './log/loggable.js'

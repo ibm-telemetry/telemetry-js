@@ -8,10 +8,10 @@
 import * as path from 'node:path'
 
 import lodashGet from 'lodash/get.js'
-import { ObjectPath } from 'object-scan'
+import type { ObjectPath } from 'object-scan'
 
 import { getTrackedSourceFiles } from '../../core/get-tracked-source-files.js'
-import { Logger } from '../../core/log/logger.js'
+import type { Logger } from '../../core/log/logger.js'
 import { NoInstallationFoundError } from '../../exceptions/no-installation-found-error.js'
 import { getDependencyTree } from '../npm/get-dependency-tree.js'
 import { getDirectoryPrefix } from '../npm/get-directory-prefix.js'
@@ -19,7 +19,7 @@ import { getInstalledVersionPaths } from '../npm/get-installed-version-paths.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import { getPackageTrees } from '../npm/get-package-trees.js'
 import { getTreePredecessor } from '../npm/get-tree-predecessor.js'
-import { DependencyTree, PackageData } from '../npm/interfaces.js'
+import type { DependencyTree, PackageData } from '../npm/interfaces.js'
 
 /**
  * Finds tracked source files and then filters them based on ones that appear in a  project which

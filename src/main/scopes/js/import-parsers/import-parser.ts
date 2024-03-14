@@ -7,7 +7,7 @@
 
 import type * as ts from 'typescript'
 
-import { JsImport } from '../interfaces.js'
+import type { JsImport } from '../interfaces.js'
 
 /**
  * Defines API to construct JsxImportElements from ImportClause nodes.

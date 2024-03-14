@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath from 'lodash/get.js'
+import lodashGet from 'lodash/get.js'
 
 import { InvalidObjectPathError } from '../../exceptions/invalid-object-path-error.js'
-import { DependencyTree, type InstallingPackage, type PackageData } from './interfaces.js'
+import type { DependencyTree, InstallingPackage, PackageData } from './interfaces.js'
 
 /**
  * Given a dependency tree and an object path within that tree, return an object containing name,
@@ -23,8 +23,7 @@ export function getPackageSubTree(
   dependencyTree: DependencyTree,
   objectPath: string[]
 ): InstallingPackage {
-  const tree =
-    objectPath.length === 0 ? dependencyTree : getPropertyByPath(dependencyTree, objectPath)
+  const tree = objectPath.length === 0 ? dependencyTree : lodashGet(dependencyTree, objectPath)
 
   if (tree === undefined) {
     throw new InvalidObjectPathError()

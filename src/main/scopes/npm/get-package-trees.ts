@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath from 'lodash/get.js'
+import lodashGet from 'lodash/get.js'
 
 import { findNestedDeps } from './find-nested-deps.js'
-import { DependencyTree, PackageData } from './interfaces.js'
+import type { DependencyTree, PackageData } from './interfaces.js'
 
 /**
  * Finds all dependency sub-trees rooted at the desired package/version
@@ -36,7 +36,7 @@ export function getPackageTrees(
   if (prefixPackagePaths.length > 0) {
     return prefixPackagePaths.map((path) => ({
       path,
-      ...getPropertyByPath(dependencyTree, path)
+      ...lodashGet(dependencyTree, path)
     }))
   }
 

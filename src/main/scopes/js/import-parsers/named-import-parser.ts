@@ -7,7 +7,7 @@
 
 import * as ts from 'typescript'
 
-import { JsImport } from '../interfaces.js'
+import type { JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
 /**

@@ -6,8 +6,9 @@
  */
 import { type Attributes } from '@opentelemetry/api'
 import { Resource } from '@opentelemetry/resources'
-import { MeterProvider, MetricReader } from '@opentelemetry/sdk-metrics'
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
+import type { MetricReader } from '@opentelemetry/sdk-metrics'
+import { MeterProvider } from '@opentelemetry/sdk-metrics'
+import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
 
 import { ManualMetricReader } from './manual-metric-reader.js'
 
@@ -51,15 +52,13 @@ export class OpenTelemetryContext {
 
     const resource = Resource.default().merge(
       new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: 'IBM Telemetry',
+        [SEMRESATTRS_SERVICE_NAME]: 'IBM Telemetry',
         ...this.attributes
       })
     )
 
     this.metricReader = new ManualMetricReader()
-    this.meterProvider = new MeterProvider({ resource })
-
-    this.meterProvider.addMetricReader(this.metricReader)
+    this.meterProvider = new MeterProvider({ resource, readers: [this.metricReader] })
 
     this.isInitialized = true
   }

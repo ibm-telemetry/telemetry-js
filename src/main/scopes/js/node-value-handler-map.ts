@@ -8,7 +8,7 @@
 import * as ts from 'typescript'
 
 import { type Logger } from '../../core/log/logger.js'
-import { NodeValueHandlerMap } from './interfaces.js'
+import type { NodeValueHandlerMap } from './interfaces.js'
 import { DefaultHandler } from './node-handlers/value-handlers/default-handler.js'
 import { FalseKeywordHandler } from './node-handlers/value-handlers/false-keyword-handler.js'
 import { IdentifierHandler } from './node-handlers/value-handlers/identifier-handler.js'

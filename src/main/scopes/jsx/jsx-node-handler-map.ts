@@ -6,7 +6,7 @@
  */
 import * as ts from 'typescript'
 
-import { JsNodeHandlerMap } from '../js/interfaces.js'
+import type { JsNodeHandlerMap } from '../js/interfaces.js'
 import { ImportNodeHandler } from '../js/node-handlers/import-node-handler.js'
 import { JsxElementNodeHandler } from './node-handlers/elements/jsx-element-node-handler.js'
 import { JsxSelfClosingElementNodeHandler } from './node-handlers/elements/jsx-self-closing-element-node-handler.js'

@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const path = require('path')
+const path = require('node:path')
 
 const noUnusedVarsOptions = { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
 
@@ -53,6 +53,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'jsdoc', 'notice', 'simple-import-sort'],
   root: true,
   rules: {
+    '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-unused-vars': ['warn', noUnusedVarsOptions],

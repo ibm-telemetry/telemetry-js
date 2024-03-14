@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ComplexValue } from '../js/complex-value.js'
+import type { ComplexValue } from '../js/complex-value.js'
 
 export interface JsxElementAttribute {
   name: string

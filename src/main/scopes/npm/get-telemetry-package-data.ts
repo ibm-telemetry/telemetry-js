@@ -4,8 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import path from 'node:path'
-import url from 'node:url'
+import * as path from 'node:path'
+import * as url from 'node:url'
 
 import { type Logger } from '../../core/log/logger.js'
 import { getPackageData } from './get-package-data.js'

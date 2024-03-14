@@ -6,7 +6,7 @@
  */
 
 import { findNestedDeps } from './find-nested-deps.js'
-import { DependencyTree } from './interfaces.js'
+import type { DependencyTree } from './interfaces.js'
 
 /**
  * Finds all installed versions of a given package within a dependency tree

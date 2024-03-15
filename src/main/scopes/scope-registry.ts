@@ -13,7 +13,7 @@ import { JsxScope } from './jsx/jsx-scope.js'
 import { NpmScope } from './npm/npm-scope.js'
 
 export const scopeRegistry: Record<keyof ConfigSchema['collect'], typeof Scope | undefined> = {
+  js: JsScope,
   jsx: JsxScope,
-  npm: NpmScope,
-  js: JsScope
+  npm: NpmScope
 }

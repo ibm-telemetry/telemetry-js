@@ -58,19 +58,17 @@ export class JsScope extends Scope {
       throw new EmptyScopeError(this.name)
     }
 
-    await this.captureAllMetrics()
+    await this.captureAllMetrics(collectorKeys)
   }
 
   /**
    * Generates metrics for all discovered instrumented js functions and tokens
    * found in the current working directory's project, depending on config.
+   *
+   * @param collectorKeys - Keys for JS collection as defined by the current config.
    */
   @Trace()
-  async captureAllMetrics(): Promise<void> {
-    const collectorKeys = this.config.collect[this.name]
-    if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
-      throw new EmptyScopeError(this.name)
-    }
+  async captureAllMetrics(collectorKeys: ConfigSchema['collect']['js']): Promise<void> {
     // TODO: these might end up becoming one and the same (same matchers for functions and tokens)
     const functionImportMatchers: JsImportMatcher<JsFunction>[] = [
       new JsFunctionAllImportMatcher(),

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`class: ImportNodeHandler > correctly returns the JsxImports for a complex fixture 1`] = `
+exports[`class: ImportNodeHandler > correctly returns the JsImports for a complex fixture 1`] = `
 [
   {
     "isAll": false,

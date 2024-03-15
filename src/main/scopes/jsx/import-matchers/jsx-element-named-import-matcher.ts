@@ -18,7 +18,7 @@ export class JsxElementNamedImportMatcher implements JsImportMatcher<JsxElement>
    *
    * @param element - JsxElement to evaluate.
    * @param imports - Import elements to use for comparison.
-   * @returns Corresponding JsxImport if element was imported as a name import,
+   * @returns Corresponding JsImport if element was imported as a name import,
    * undefined otherwise.
    */
   findMatch(element: JsxElement, imports: JsImport[]) {

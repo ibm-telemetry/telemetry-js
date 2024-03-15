@@ -35,3 +35,14 @@ export type NodeValueHandlerMap = Partial<Record<ts.SyntaxKind, NodeValueHandler
 export interface JsImportMatcher<Element> {
   findMatch: (element: Element, imports: JsImport[]) => JsImport | undefined
 }
+
+export interface JsFunction {
+  name: string
+  accessPath: string
+  arguments: Array<string | number | boolean | ComplexValue | null | undefined>
+}
+
+export interface JsToken {
+  name: string
+  accessPath: string
+}

@@ -27,7 +27,17 @@ import { ElementMetric } from './metrics/element-metric.js'
  * Scope class dedicated to data collection from a jsx environment.
  */
 export class JsxScope extends Scope {
-  public static readonly fileExtensions = ['.js', '.mjs', '.cjs', '.jsx', '.tsx']
+  public static readonly fileExtensions = [
+    '.js',
+    '.mjs',
+    '.cjs',
+    '.jsx',
+    '.tsx',
+    '.mjsx',
+    '.cjsx',
+    '.mtsx',
+    '.ctsx'
+  ]
 
   public override name = 'jsx' as const
   private runSync = false
@@ -113,14 +123,14 @@ export class JsxScope extends Scope {
     this.resolveElementImports(accumulator, importMatchers)
 
     accumulator.elements.forEach((jsxElement) => {
-      const jsxImport = accumulator.elementImports.get(jsxElement)
+      const jsImport = accumulator.elementImports.get(jsxElement)
 
-      if (jsxImport === undefined) {
+      if (jsImport === undefined) {
         return
       }
 
       this.capture(
-        new ElementMetric(jsxElement, jsxImport, instrumentedPackage, this.config, this.logger)
+        new ElementMetric(jsxElement, jsImport, instrumentedPackage, this.config, this.logger)
       )
     })
   }
@@ -130,15 +140,15 @@ export class JsxScope extends Scope {
     elementMatchers: JsImportMatcher<JsxElement>[]
   ) {
     accumulator.elements.forEach((jsxElement) => {
-      const jsxImport = elementMatchers
+      const jsImport = elementMatchers
         .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.imports))
-        .find((jsxImport) => jsxImport !== undefined)
+        .find((jsImport) => jsImport !== undefined)
 
-      if (jsxImport === undefined) {
+      if (jsImport === undefined) {
         return
       }
 
-      accumulator.elementImports.set(jsxElement, jsxImport)
+      accumulator.elementImports.set(jsxElement, jsImport)
     })
   }
 

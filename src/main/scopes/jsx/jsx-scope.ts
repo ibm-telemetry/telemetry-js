@@ -27,7 +27,17 @@ import { ElementMetric } from './metrics/element-metric.js'
  * Scope class dedicated to data collection from a jsx environment.
  */
 export class JsxScope extends Scope {
-  public static readonly fileExtensions = ['.js', '.mjs', '.cjs', '.jsx', '.tsx']
+  public static readonly fileExtensions = [
+    '.js',
+    '.mjs',
+    '.cjs',
+    '.jsx',
+    '.tsx',
+    '.mjsx',
+    '.cjsx',
+    '.mtsx',
+    '.ctsx'
+  ]
 
   public override name = 'jsx' as const
   private runSync = false

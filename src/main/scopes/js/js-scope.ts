@@ -68,7 +68,9 @@ export class JsScope extends Scope {
    * @param collectorKeys - Keys for JS collection as defined by the current config.
    */
   @Trace()
-  async captureAllMetrics(collectorKeys: ConfigSchema['collect']['js']): Promise<void> {
+  async captureAllMetrics(
+    collectorKeys: NonNullable<ConfigSchema['collect']['js']>
+  ): Promise<void> {
     // TODO: these might end up becoming one and the same (same matchers for functions and tokens)
     const functionImportMatchers: JsImportMatcher<JsFunction>[] = [
       new JsFunctionAllImportMatcher(),
@@ -131,12 +133,8 @@ export class JsScope extends Scope {
     instrumentedPackage: PackageData,
     tokenImportMatchers: JsImportMatcher<JsToken>[],
     functionImportMatchers: JsImportMatcher<JsFunction>[],
-    collectorKeys: ConfigSchema['collect']['js']
+    collectorKeys: NonNullable<ConfigSchema['collect']['js']>
   ) {
-    if (collectorKeys === undefined) {
-      return
-    }
-
     const accumulator = new JsFunctionTokenAccumulator()
 
     processFile(accumulator, sourceFile, jsNodeHandlerMap, this.logger)

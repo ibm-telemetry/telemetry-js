@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
-import { ConfigSchema } from '@ibm/telemetry-config-schema'
-import { Attributes } from '@opentelemetry/api'
+import type { ConfigSchema } from '@ibm/telemetry-config-schema'
+import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substitute } from '../../../core/anonymize/substitute.js'
-import { Logger } from '../../../core/log/logger.js'
+import type { Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { PackageData } from '../../npm/interfaces.js'
-import { JsFunction, JsImport } from '../interfaces.js'
+import type { PackageData } from '../../npm/interfaces.js'
+import type { JsFunction, JsImport } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.function individual metric for a given function.
@@ -86,8 +86,7 @@ export class FunctionMetric extends ScopeMetric {
     let metricData: Attributes = {
       [JsScopeAttributes.FUNCTION_NAME]: this.jsFunction.name,
       [JsScopeAttributes.FUNCTION_ACCESS_PATH]: this.jsFunction.accessPath,
-      // TODO: fix
-      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUESt]: Object.values(anonymizedArguments).map((arg) =>
+      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(anonymizedArguments).map((arg) =>
         String(arg)
       ),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,

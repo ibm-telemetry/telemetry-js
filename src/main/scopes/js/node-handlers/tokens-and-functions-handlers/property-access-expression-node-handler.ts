@@ -6,8 +6,8 @@
  */
 import type * as ts from 'typescript'
 
-import { JsToken } from '../../interfaces.js'
-import { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
+import type { JsToken } from '../../interfaces.js'
+import type { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
 import { JsNodeHandler } from '../js-node-handler.js'
 
 /**

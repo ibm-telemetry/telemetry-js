@@ -6,7 +6,7 @@
  */
 import * as ts from 'typescript'
 
-import { JsNodeHandlerMap } from '../js/interfaces.js'
+import type { JsNodeHandlerMap } from '../js/interfaces.js'
 import { ImportNodeHandler } from '../js/node-handlers/import-node-handler.js'
 import { CallExpressionNodeHandler } from './node-handlers/tokens-and-functions-handlers/call-expression-node-handler.js'
 import { ElementAccessExpressionNodeHandler } from './node-handlers/tokens-and-functions-handlers/element-access-expression-node-handler.js'

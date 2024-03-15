@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
-import { Attributes } from '@opentelemetry/api'
+import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
-import { Logger } from '../../../core/log/logger.js'
+import type { Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { PackageData } from '../../npm/interfaces.js'
-import { JsImport, JsToken } from '../interfaces.js'
+import type { PackageData } from '../../npm/interfaces.js'
+import type { JsImport, JsToken } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.token individual metric for a given token.

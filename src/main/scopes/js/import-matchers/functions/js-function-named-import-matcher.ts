@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { JsFunction, JsImport, JsImportMatcher } from '../../interfaces.js'
+import type { JsFunction, JsImport, JsImportMatcher } from '../../interfaces.js'
 
 /**
  * Identifies JsFunctions that have been imported as named imports,

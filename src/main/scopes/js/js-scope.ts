@@ -4,18 +4,18 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ConfigSchema } from '@ibm/telemetry-config-schema'
+import type { ConfigSchema } from '@ibm/telemetry-config-schema'
 import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findRelevantSourceFiles } from '../js/find-relevant-source-files.js'
-import { JsFunction, JsImportMatcher, JsToken } from '../js/interfaces.js'
+import type { JsFunction, JsImportMatcher, JsToken } from '../js/interfaces.js'
 import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { PackageData } from '../npm/interfaces.js'
+import type { PackageData } from '../npm/interfaces.js'
 import { JsFunctionAllImportMatcher } from './import-matchers/functions/js-function-all-import-matcher.js'
 import { JsFunctionNamedImportMatcher } from './import-matchers/functions/js-function-named-import-matcher.js'
 import { JsFunctionRenamedImportMatcher } from './import-matchers/functions/js-function-renamed-import-matcher.js'

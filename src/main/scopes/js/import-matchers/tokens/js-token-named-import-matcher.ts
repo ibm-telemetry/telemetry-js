@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { JsImport, JsImportMatcher, JsToken } from '../../interfaces.js'
+import type { JsImport, JsImportMatcher, JsToken } from '../../interfaces.js'
 
 /**
  * Identifies JsTokens that have been imported as named imports,

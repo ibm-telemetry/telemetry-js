@@ -23,6 +23,7 @@ export default defineConfig({
         'src/main/**/interfaces.ts',
         'src/main/background-process.ts',
         'src/main/collect.ts',
+        'src/main/spawn-background-process.ts',
         'src/main/core/run-command.ts'
       ]
     }

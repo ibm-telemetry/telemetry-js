@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
 import { getTrackedSourceFiles } from '../../../main/core/get-tracked-source-files.js'

@@ -9,7 +9,7 @@ import type * as ts from 'typescript'
 
 import { Loggable } from '../../../../core/log/loggable.js'
 import { type Logger } from '../../../../core/log/logger.js'
-import { NodeValue } from '../../interfaces.js'
+import type { NodeValue } from '../../interfaces.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.

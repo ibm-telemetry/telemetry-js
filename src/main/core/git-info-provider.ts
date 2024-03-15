@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { Logger } from './log/logger.js'
+import type { Logger } from './log/logger.js'
 import { Trace } from './log/trace.js'
 import { runCommand } from './run-command.js'
 import { tokenizeRepository } from './tokenize-repository.js'

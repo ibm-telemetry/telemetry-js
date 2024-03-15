@@ -6,7 +6,7 @@
  */
 import { JsxScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import { Attributes } from '@opentelemetry/api'
+import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substitute } from '../../../core/anonymize/substitute.js'
@@ -14,8 +14,8 @@ import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { JsImport } from '../../js/interfaces.js'
-import { PackageData } from '../../npm/interfaces.js'
+import type { JsImport } from '../../js/interfaces.js'
+import type { PackageData } from '../../npm/interfaces.js'
 import { type JsxElement, type JsxElementAttribute } from '../interfaces.js'
 
 /**

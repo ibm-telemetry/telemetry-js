@@ -4,8 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import path from 'node:path'
+
 import { build } from 'esbuild'
-import path from 'path'
 
 const banner = `#!/usr/bin/env node
 /*
@@ -13,33 +14,49 @@ const banner = `#!/usr/bin/env node
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
- */
-const require = (await import("node:module")).createRequire(import.meta.url);
-const __filename = (await import("node:url")).fileURLToPath(import.meta.url);
-const __dirname = (await import("node:path")).dirname(__filename);`
+ */`
 
-await build({
+const baseConfig = {
   banner: {
     js: banner
   },
   bundle: true,
-  entryPoints: [path.join('dist', 'main', 'collect.js')],
   format: 'esm',
   minify: true,
-  outfile: path.join('dist', 'collect.js'),
   platform: 'node',
   target: 'es2021'
+}
+
+// collect is the main entrypoint. It calls spawn-background-process
+await build({
+  ...baseConfig,
+  bundle: false, // Do not include other esbuild output in this file
+  entryPoints: [path.join('dist', 'main', 'collect.js')],
+  outfile: path.join('dist', 'collect.js'),
+  target: 'es6'
 })
 
+// spawn-background-process spawns a new background-process process
 await build({
+  ...baseConfig,
+  entryPoints: [path.join('dist', 'main', 'spawn-background-process.js')],
+  outfile: path.join('dist', 'spawn-background-process.js')
+})
+
+// background-process is the main logic of the telemetry tooling
+await build({
+  ...baseConfig,
   banner: {
-    js: banner
+    // Require, __filename, and __dirname are polyfilled here to support the bundling of commonjs
+    // modules.
+    js:
+      banner +
+      `
+const require = (await import("node:module")).createRequire(import.meta.url);
+const __filename = (await import("node:url")).fileURLToPath(import.meta.url);
+const __dirname = (await import("node:path")).dirname(__filename);
+`
   },
-  bundle: true,
   entryPoints: [path.join('dist', 'main', 'background-process.js')],
-  format: 'esm',
-  minify: true,
-  outfile: path.join('dist', 'background-process.js'),
-  platform: 'node',
-  target: 'es2021'
+  outfile: path.join('dist', 'background-process.js')
 })

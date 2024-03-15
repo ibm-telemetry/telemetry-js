@@ -7,9 +7,9 @@
 
 import type * as ts from 'typescript'
 
-import { Logger } from '../../core/log/logger.js'
-import { JsNodeHandlerMap } from './interfaces.js'
-import { JsAccumulator } from './js-accumulator.js'
+import type { Logger } from '../../core/log/logger.js'
+import type { JsNodeHandlerMap } from './interfaces.js'
+import type { JsAccumulator } from './js-accumulator.js'
 import { SourceFileHandler } from './source-file-handler.js'
 
 /**

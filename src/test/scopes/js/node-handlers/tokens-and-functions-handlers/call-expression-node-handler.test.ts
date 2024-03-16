@@ -21,9 +21,9 @@ describe('class: CallExpressionNodeHandler', async () => {
   const sourceFile = (
     await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
   )[0] as ts.SourceFile
-  const accumulator = new JsFunctionTokenAccumulator()
   const handler = new CallExpressionNodeHandler(sourceFile, logger)
   it('correctly returns the JsFunctions for a complex fixture', async () => {
+    const accumulator = new JsFunctionTokenAccumulator()
     const callExpressions = findNodesByType(sourceFile, ts.SyntaxKind.CallExpression)
 
     callExpressions.forEach((callExpression) => {
@@ -33,5 +33,20 @@ describe('class: CallExpressionNodeHandler', async () => {
     expect(accumulator.functions).toMatchSnapshot()
   })
 
-  it.todo('does not capture JsFunctions if they have already been captured')
+  it('does not capture JsFunctions if they have already been captured', async () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const callExpressions = findNodesByType(sourceFile, ts.SyntaxKind.CallExpression)
+
+    callExpressions.forEach((callExpression) => {
+      handler.handle(callExpression as ts.CallExpression, accumulator)
+    })
+
+    expect(accumulator.functions).toHaveLength(8)
+
+    callExpressions.forEach((callExpression) => {
+      handler.handle(callExpression as ts.CallExpression, accumulator)
+    })
+
+    expect(accumulator.functions).toHaveLength(8)
+  })
 })

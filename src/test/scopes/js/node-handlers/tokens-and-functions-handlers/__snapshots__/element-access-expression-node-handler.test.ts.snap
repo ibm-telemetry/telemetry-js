@@ -52,6 +52,25 @@ exports[`class: ElementAccessExpressionNodeHandler > correctly returns the JsTok
   },
   {
     "accessPath": [
+      "blue",
+      "60",
+      "THE_CONSTANT",
+    ],
+    "endPos": 316,
+    "name": "THE_CONSTANT",
+    "startPos": 288,
+  },
+  {
+    "accessPath": [
+      "blue",
+      "60",
+    ],
+    "endPos": 302,
+    "name": "60",
+    "startPos": 288,
+  },
+  {
+    "accessPath": [
       "anObject",
       "BLA",
       "property",
@@ -60,6 +79,25 @@ exports[`class: ElementAccessExpressionNodeHandler > correctly returns the JsTok
     "endPos": 426,
     "name": "anotherProperty",
     "startPos": 355,
+  },
+  {
+    "accessPath": [
+      "anObject",
+      "BLA",
+      "property",
+    ],
+    "endPos": 407,
+    "name": "property",
+    "startPos": 355,
+  },
+  {
+    "accessPath": [
+      "BLA",
+      "property",
+    ],
+    "endPos": 406,
+    "name": "property",
+    "startPos": 391,
   },
 ]
 `;

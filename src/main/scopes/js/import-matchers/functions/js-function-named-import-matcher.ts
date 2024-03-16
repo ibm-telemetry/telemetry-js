@@ -15,13 +15,14 @@ export class JsFunctionNamedImportMatcher implements JsImportMatcher<JsFunction>
   /**
    * Determines if a given JsFunction is a named import (e.g.: `import {something} from 'package'`).
    *
-   * @param _function - JsFunction to evaluate.
-   * @param _imports - Import elements to use for comparison.
+   * @param jsFunction - JsFunction to evaluate.
+   * @param imports - Import elements to use for comparison.
    * @returns Corresponding JsImport if function was imported as a name import,
    * undefined otherwise.
    */
-  findMatch(_function: JsFunction, _imports: JsImport[]) {
-    // TODO: implement
-    return undefined
+  // TODOASKJOE: matching strategy: for a function, are we only matching the "beginning"
+  // (the object it comes from, or the function itself)
+  findMatch(jsFunction: JsFunction, imports: JsImport[]) {
+    return imports.find((i) => !i.isDefault && !i.isAll && i.name === jsFunction.accessPath[0])
   }
 }

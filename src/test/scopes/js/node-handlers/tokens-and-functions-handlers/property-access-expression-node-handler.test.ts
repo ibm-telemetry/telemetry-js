@@ -36,6 +36,4 @@ describe('class: PropertyAccessExpressionNodeHandler', async () => {
 
     expect(accumulator.tokens).toMatchSnapshot()
   })
-
-  it.todo('does not capture JsTokens if they have already been captured')
 })

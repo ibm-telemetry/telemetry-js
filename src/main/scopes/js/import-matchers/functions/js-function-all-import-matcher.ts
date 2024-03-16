@@ -17,13 +17,16 @@ export class JsFunctionAllImportMatcher implements JsImportMatcher<JsFunction> {
    * (.e.g: import * as something from 'package')
    * that matches the supplied list of import elements.
    *
-   * @param _function - JsFunction to evaluate.
-   * @param _imports - Import elements to use for comparison.
+   * @param jsFunction - JsFunction to evaluate.
+   * @param imports - Import elements to use for comparison.
    * @returns Corresponding JsImport element if function was imported as an all import,
    * undefined otherwise.
    */
-  findMatch(_function: JsFunction, _imports: JsImport[]) {
-    // TODO: implement
-    return undefined
+  // TODOASKJOE: matching strategy: for a function, are we only matching the "beginning"
+  // (the object it comes from, or the function itself)
+  findMatch(jsFunction: JsFunction, imports: JsImport[]) {
+    return jsFunction.accessPath.length >= 2
+      ? imports.find((i) => i.isAll && i.name === jsFunction.accessPath[0])
+      : undefined
   }
 }

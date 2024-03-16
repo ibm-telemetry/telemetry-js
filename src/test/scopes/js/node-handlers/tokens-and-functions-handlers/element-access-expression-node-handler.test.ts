@@ -22,9 +22,11 @@ describe('class: ElementAccessExpressionNodeHandler', async () => {
   const sourceFile = (
     await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
   )[0] as ts.SourceFile
-  const accumulator = new JsFunctionTokenAccumulator()
+
   const handler = new ElementAccessExpressionNodeHandler(sourceFile, logger)
+
   it('correctly returns the JsTokens for a complex fixture', async () => {
+    const accumulator = new JsFunctionTokenAccumulator()
     const elementAccessExpressions = findNodesByType(
       sourceFile,
       ts.SyntaxKind.ElementAccessExpression
@@ -36,6 +38,4 @@ describe('class: ElementAccessExpressionNodeHandler', async () => {
 
     expect(accumulator.tokens).toMatchSnapshot()
   })
-
-  it.todo('does not capture JsTokens if they have already been captured')
 })

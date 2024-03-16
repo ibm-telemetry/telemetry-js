@@ -24,35 +24,7 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
    * that holds the aggregated tokens state.
    */
   handle(node: ts.PropertyAccessExpression, accumulator: JsFunctionTokenAccumulator) {
-    const jsToken = this.getData(node)
-
-    // do not double capture, ex: object['property'].anotherFunction()
-    // generates only 1 JsFunction and no JsToken
-    const functionExists = accumulator.functions.some(
-      (f) =>
-        f.startPos <= jsToken.startPos &&
-        f.endPos >= jsToken.endPos &&
-        f.accessPath.join('.').includes(jsToken.accessPath.join('.'))
-    )
-
-    if (functionExists) {
-      return
-    }
-
-    // do not double capture, ex: object['property'].anotherProperty['prop']
-    // generates only 1 JsToken
-    const tokenExists = accumulator.tokens.some(
-      (t) =>
-        t.startPos <= jsToken.startPos &&
-        t.endPos >= jsToken.endPos &&
-        t.accessPath.join('.').includes(jsToken.accessPath.join('.'))
-    )
-
-    if (tokenExists) {
-      return
-    }
-
-    accumulator.tokens.push(jsToken)
+    accumulator.tokens.push(this.getData(node))
   }
 
   /**
@@ -66,7 +38,7 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
       name: node.name.escapedText.toString(),
       accessPath: getAccessPath(node, this.sourceFile, this.logger),
       startPos: node.pos,
-      endPos: node.pos
+      endPos: node.end
     }
   }
 }

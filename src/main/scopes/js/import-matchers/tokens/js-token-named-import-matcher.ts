@@ -15,13 +15,18 @@ export class JsTokenNamedImportMatcher implements JsImportMatcher<JsToken> {
   /**
    * Determines if a given JsToken is a named import (e.g.: `import {something} from 'package'`).
    *
-   * @param _token - JsToken to evaluate.
-   * @param _imports - Import elements to use for comparison.
+   * @param jsToken - JsToken to evaluate.
+   * @param imports - Import elements to use for comparison.
    * @returns Corresponding JsImport if token was imported as a name import,
    * undefined otherwise.
    */
-  findMatch(_token: JsToken, _imports: JsImport[]) {
-    // TODO: implement
-    return undefined
+  findMatch(jsToken: JsToken, imports: JsImport[]) {
+    // TODOASKJOE: matching strategy: if beginning or token name belongs to import
+    // but if it's only the token name, should we ignore (remove) the accesspath?
+    // ^^ should we take only the token name and no access path?
+    return imports.find(
+      (i) =>
+        !i.isDefault && !i.isAll && (i.name === jsToken.accessPath[0] || i.name === jsToken.name)
+    )
   }
 }

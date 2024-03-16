@@ -10,7 +10,16 @@ import type { Logger } from '../../core/log/logger.js'
 import { ComplexValue } from './complex-value.js'
 import { getNodeValueHandler } from './node-value-handler-map.js'
 
-// TODO: docs
+/**
+ * Constructs a JsToken object from a given Identifier type AST node.
+ *
+ * @param node - TS node to retrieve access path for.
+ * @param sourceFile - Root AST node.
+ * @param logger - A logger instance.
+ * @param currAccessPath - For internal use only, tracks current constructed access path.
+ * @param topLevel - For internal use only, tracks top level function call.
+ * @returns Access path to node represented as string array (chunks).
+ */
 export default function getAccessPath(
   node: ts.Node,
   sourceFile: ts.SourceFile,

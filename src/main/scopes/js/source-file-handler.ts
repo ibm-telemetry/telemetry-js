@@ -8,8 +8,8 @@ import * as ts from 'typescript'
 
 import { Loggable } from '../../core/log/loggable.js'
 import { type Logger } from '../../core/log/logger.js'
-import { JsNodeHandlerMap } from './interfaces.js'
-import { JsAccumulator } from './js-accumulator.js'
+import type { JsNodeHandlerMap } from './interfaces.js'
+import type { JsAccumulator } from './js-accumulator.js'
 
 /**
  * Class to handle traversing through a node's children and calling appropriate handlers.

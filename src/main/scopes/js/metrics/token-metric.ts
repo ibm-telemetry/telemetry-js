@@ -1,18 +1,18 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2024, 2024
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js' // TODO: should be fixed when telemetryAttributes updates
-import { Attributes } from '@opentelemetry/api'
+import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
+import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
-import { Logger } from '../../../core/log/logger.js'
+import type { Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { PackageData } from '../../npm/interfaces.js'
-import { JsImport, JsToken } from '../interfaces.js'
+import type { PackageData } from '../../npm/interfaces.js'
+import type { JsImport, JsToken } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.token individual metric for a given token.
@@ -78,7 +78,7 @@ export class TokenMetric extends ScopeMetric {
 
     // Handle renamed tokens
     if (this.matchingImport.rename !== undefined) {
-      metricData[JsScopeAttributes.NAME] = this.jsToken.name.replace(
+      metricData[JsScopeAttributes.TOKEN_NAME] = this.jsToken.name.replace(
         this.matchingImport.rename,
         this.matchingImport.name
       )

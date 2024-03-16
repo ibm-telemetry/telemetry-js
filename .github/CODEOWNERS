@@ -1,5 +1,5 @@
 # Default global
 * @ibm-telemetry/telemetry-devs
 
-package-lock.json @jdharvey-ibm
-package.json @jdharvey-ibm
+package-lock.json @jdharvey-ibm @francinelucca
+package.json @jdharvey-ibm @francinelucca

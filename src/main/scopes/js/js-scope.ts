@@ -1,21 +1,21 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2024, 2024
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ConfigSchema } from '@ibm/telemetry-config-schema'
+import type { ConfigSchema } from '@ibm/telemetry-config-schema'
 import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findRelevantSourceFiles } from '../js/find-relevant-source-files.js'
-import { JsFunction, JsImportMatcher, JsToken } from '../js/interfaces.js'
+import type { JsFunction, JsImportMatcher, JsToken } from '../js/interfaces.js'
 import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
-import { PackageData } from '../npm/interfaces.js'
+import type { PackageData } from '../npm/interfaces.js'
 import { JsFunctionAllImportMatcher } from './import-matchers/functions/js-function-all-import-matcher.js'
 import { JsFunctionNamedImportMatcher } from './import-matchers/functions/js-function-named-import-matcher.js'
 import { JsFunctionRenamedImportMatcher } from './import-matchers/functions/js-function-renamed-import-matcher.js'
@@ -31,7 +31,7 @@ import { TokenMetric } from './metrics/token-metric.js'
  * Scope class dedicated to data collection from a jsx environment.
  */
 export class JsScope extends Scope {
-  public override name = 'js' as const // TODO: should be fixed when configschema updates
+  public override name = 'js' as const
   private runSync = false
   public static readonly fileExtensions = [
     '.jsx',
@@ -53,24 +53,24 @@ export class JsScope extends Scope {
    */
   @Trace()
   public override async run(): Promise<void> {
-    const collectorKeys = this.config.collect[this.name] // TODO: should be fixed when configschema updates
+    const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
       throw new EmptyScopeError(this.name)
     }
 
-    await this.captureAllMetrics()
+    await this.captureAllMetrics(collectorKeys)
   }
 
   /**
    * Generates metrics for all discovered instrumented js functions and tokens
    * found in the current working directory's project, depending on config.
+   *
+   * @param collectorKeys - Keys for JS collection as defined by the current config.
    */
   @Trace()
-  async captureAllMetrics(): Promise<void> {
-    const collectorKeys = this.config.collect[this.name] // TODO: should be fixed when configschema updates
-    if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
-      throw new EmptyScopeError(this.name)
-    }
+  async captureAllMetrics(
+    collectorKeys: NonNullable<ConfigSchema['collect']['js']>
+  ): Promise<void> {
     // TODO: these might end up becoming one and the same (same matchers for functions and tokens)
     const functionImportMatchers: JsImportMatcher<JsFunction>[] = [
       new JsFunctionAllImportMatcher(),
@@ -133,7 +133,7 @@ export class JsScope extends Scope {
     instrumentedPackage: PackageData,
     tokenImportMatchers: JsImportMatcher<JsToken>[],
     functionImportMatchers: JsImportMatcher<JsFunction>[],
-    collectorKeys: ConfigSchema['collect']['js'] // TODO: should be fixed when configschema updates
+    collectorKeys: NonNullable<ConfigSchema['collect']['js']>
   ) {
     const accumulator = new JsFunctionTokenAccumulator()
 

@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2024, 2024
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +8,8 @@ import type * as ts from 'typescript'
 
 import { ComplexValue } from '../../complex-value.js'
 import getAccessPath from '../../get-access-path.js'
-import { JsToken } from '../../interfaces.js'
-import { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
+import type { JsToken } from '../../interfaces.js'
+import type { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
 import { getNodeValueHandler } from '../../node-value-handler-map.js'
 import { JsNodeHandler } from '../js-node-handler.js'
 

@@ -4,8 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
-import { Command } from 'commander'
+import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
+import * as commander from 'commander'
 
 import { Environment } from './core/environment.js'
 import { createLogFilePath } from './core/log/create-log-file-path.js'
@@ -17,20 +17,27 @@ interface CommandLineOptions {
   log?: string
 }
 
+const { Command } = commander
+
 /**
  * Sets up Commander, registers the command action, and invokes the action.
  */
 function run() {
-  const program = new Command()
-    .description('Collect telemetry data for a package.')
-    .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
-    .option('--log <log-path>', 'Path to temp log file')
-    .action(collect)
+  try {
+    const program = new Command()
+      .description('Collect telemetry data for a package.')
+      .requiredOption('--config <config-path>', 'Path to a telemetry configuration file')
+      .option('--log <log-path>', 'Path to temp log file')
+      .action(collect)
 
-  program.parseAsync().catch((err) => {
-    // As a failsafe, this catches any uncaught exception, prints it to stderr, and silently exits
+    program.parseAsync().catch((err) => {
+      // As a failsafe, catch any uncaught exception, print it to stderr, and silently exit
+      console.error(err)
+    })
+  } catch (err) {
+    // As a failsafe, catch any uncaught exception, print it to stderr, and silently exit
     console.error(err)
-  })
+  }
 }
 
 /**

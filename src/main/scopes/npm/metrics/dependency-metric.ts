@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
-import { Attributes } from '@opentelemetry/api'
+import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { PackageData } from '../interfaces.js'
+import type { PackageData } from '../interfaces.js'
 
 export interface DependencyData {
   rawName: string

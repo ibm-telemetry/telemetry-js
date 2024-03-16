@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.3.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.2.1...v1.3.0) (2024-03-14)
+
+
+### Features
+
+* js-scope refactor ([#195](https://github.com/ibm-telemetry/telemetry-js/issues/195)) ([dc4da39](https://github.com/ibm-telemetry/telemetry-js/commit/dc4da3991b8ff67cd953a0bd7b6ca6cea455e469))
+
+
+### Bug Fixes
+
+* add gzip compression to outgoing metrics requests ([a9f6929](https://github.com/ibm-telemetry/telemetry-js/commit/a9f69297d17fce7114c4472e0dbbb205f6d782a3))
+* **deps:** upgrade actions/checkout action to v4 ([#201](https://github.com/ibm-telemetry/telemetry-js/issues/201)) ([925e3ee](https://github.com/ibm-telemetry/telemetry-js/commit/925e3ee86ca835247752960b0eefc20f3fea45f7))
+* **deps:** upgrade actions/setup-node action to v4 ([#202](https://github.com/ibm-telemetry/telemetry-js/issues/202)) ([2723b90](https://github.com/ibm-telemetry/telemetry-js/commit/2723b901b76113091e3be1fab42abfec6d615618))
+* **deps:** upgrade commitlint monorepo to v19 ([#203](https://github.com/ibm-telemetry/telemetry-js/issues/203)) ([06e32cc](https://github.com/ibm-telemetry/telemetry-js/commit/06e32cc1896065fee197fd4c3fab1cfe7a7a8c9e))
+* **deps:** upgrade dependency eslint-plugin-jsdoc to v48 ([#206](https://github.com/ibm-telemetry/telemetry-js/issues/206)) ([f0572b9](https://github.com/ibm-telemetry/telemetry-js/commit/f0572b97faed4098019c710bc5e228f6675e539c))
+* **deps:** upgrade dependency eslint-plugin-simple-import-sort to v12 ([#207](https://github.com/ibm-telemetry/telemetry-js/issues/207)) ([d9edcfe](https://github.com/ibm-telemetry/telemetry-js/commit/d9edcfeb8f2eb6c4d8ced81c0e3e1b2bbe81d906))
+* **deps:** upgrade dependency husky to v9 ([#208](https://github.com/ibm-telemetry/telemetry-js/issues/208)) ([e0ac62b](https://github.com/ibm-telemetry/telemetry-js/commit/e0ac62b70b504b3b24dc335b54744da1890f3e15))
+* **deps:** upgrade dependency lint-staged to v15 ([#209](https://github.com/ibm-telemetry/telemetry-js/issues/209)) ([6b11ba6](https://github.com/ibm-telemetry/telemetry-js/commit/6b11ba6f1f4305e165fae3a80e18706c014fa9eb))
+* **deps:** upgrade devDependencies (minor) ([4509f35](https://github.com/ibm-telemetry/telemetry-js/commit/4509f35a90711a36c6ccaa1167597d3b71c443b6))
+* **deps:** upgrade devDependencies (minor) ([#180](https://github.com/ibm-telemetry/telemetry-js/issues/180)) ([1e9aded](https://github.com/ibm-telemetry/telemetry-js/commit/1e9adeda5cd5b15dd3e6bdd50055ccfbaa25afdf))
+* **deps:** upgrade devDependencies (minor) ([#191](https://github.com/ibm-telemetry/telemetry-js/issues/191)) ([ebdd792](https://github.com/ibm-telemetry/telemetry-js/commit/ebdd792dac0de92a898f5f63b880c581a0c6ac3e))
+* **deps:** upgrade GitHub Artifact Actions to v4 ([#199](https://github.com/ibm-telemetry/telemetry-js/issues/199)) ([3e88814](https://github.com/ibm-telemetry/telemetry-js/commit/3e88814ef033e5828c26d73b38e7ba49b954b9d9))
+* **deps:** upgrade typescript-eslint monorepo to v7 ([#212](https://github.com/ibm-telemetry/telemetry-js/issues/212)) ([e041294](https://github.com/ibm-telemetry/telemetry-js/commit/e0412942ef6677f51203bcbd292fa7cb02c4d1c9))
+* increase stability when running in legacy environments ([#215](https://github.com/ibm-telemetry/telemetry-js/issues/215)) ([14212fd](https://github.com/ibm-telemetry/telemetry-js/commit/14212fd93d41c00755ac3f1e270e12b5893466ef))
+* remove invoker attributes from jsx scope ([#194](https://github.com/ibm-telemetry/telemetry-js/issues/194)) ([6c2d122](https://github.com/ibm-telemetry/telemetry-js/commit/6c2d1229181a96eee60550227b420ad6fd76049d))
+
 ## [1.2.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.2.0...v1.2.1) (2024-02-08)
 
 

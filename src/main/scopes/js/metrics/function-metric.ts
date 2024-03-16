@@ -1,20 +1,20 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2024, 2024
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js' // TODO: should be fixed when telemetryAttributes  updates
-import { ConfigSchema } from '@ibm/telemetry-config-schema'
-import { Attributes } from '@opentelemetry/api'
+import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
+import type { ConfigSchema } from '@ibm/telemetry-config-schema'
+import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substitute } from '../../../core/anonymize/substitute.js'
-import { Logger } from '../../../core/log/logger.js'
+import type { Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
-import { PackageData } from '../../npm/interfaces.js'
-import { JsFunction, JsImport } from '../interfaces.js'
+import type { PackageData } from '../../npm/interfaces.js'
+import type { JsFunction, JsImport } from '../interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.function individual metric for a given function.
@@ -48,7 +48,7 @@ export class FunctionMetric extends ScopeMetric {
     this.instrumentedPackage = instrumentedPackage
 
     this.allowedArgumentStringValues =
-      config.collect.js?.functions?.allowedArgumentStringValues ?? [] // TODO: should be fixed when configSchema updates
+      config.collect.js?.functions?.allowedArgumentStringValues ?? []
   }
 
   /**
@@ -101,7 +101,7 @@ export class FunctionMetric extends ScopeMetric {
 
     // Handle renamed functions
     if (this.matchingImport.rename !== undefined) {
-      metricData[JsScopeAttributes.NAME] = this.jsFunction.name.replace(
+      metricData[JsScopeAttributes.FUNCTION_NAME] = this.jsFunction.name.replace(
         this.matchingImport.rename,
         this.matchingImport.name
       )

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type SpawnOptions } from 'child_process'
+import { type SpawnOptions } from 'node:child_process'
 
 import { type RunCommandResult } from '../core/run-command.js'
 

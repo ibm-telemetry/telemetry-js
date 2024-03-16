@@ -5,11 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getPropertyByPath from 'lodash/get.js'
-import { ObjectPath } from 'object-scan'
+import lodashGet from 'lodash/get.js'
+import type { ObjectPath } from 'object-scan'
 
-import { DependencyTree } from './interfaces.js'
-
+import type { DependencyTree } from './interfaces.js'
 /**
  * Retrieves a tree rooted at the parent of a package given it's dependencyTree path.
  *
@@ -29,6 +28,6 @@ export function getTreePredecessor(
 
   return {
     path: packagePath.slice(0, -2),
-    ...getPropertyByPath(dependencyTree, packagePath.slice(0, -2))
+    ...lodashGet(dependencyTree, packagePath.slice(0, -2))
   }
 }

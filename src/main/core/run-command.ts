@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import childProcess from 'node:child_process'
+import * as childProcess from 'node:child_process'
 
 import { RunCommandError } from '../exceptions/run-command-error.js'
 import { guardShell } from './guard-shell.js'

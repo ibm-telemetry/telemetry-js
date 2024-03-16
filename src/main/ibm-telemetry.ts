@@ -13,7 +13,7 @@ import { type Schema } from 'ajv'
 
 import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config-validator.js'
-import { Environment } from './core/environment.js'
+import type { Environment } from './core/environment.js'
 import { getProjectRoot } from './core/get-project-root.js'
 import { GitInfoProvider } from './core/git-info-provider.js'
 import { type Logger } from './core/log/logger.js'

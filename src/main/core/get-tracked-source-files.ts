@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { readFile } from 'node:fs/promises'
-import path from 'node:path'
+import * as path from 'node:path'
 
 import * as ts from 'typescript'
 

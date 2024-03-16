@@ -6,7 +6,7 @@
  */
 import * as ts from 'typescript'
 
-import { Logger } from '../../core/log/logger.js'
+import type { Logger } from '../../core/log/logger.js'
 import { ComplexValue } from './complex-value.js'
 import { getNodeValueHandler } from './node-value-handler-map.js'
 
@@ -46,16 +46,17 @@ export default function getAccessPath(
       break
   }
 
-  const accessPath =
-    'expression' in node
-      ? getAccessPath(
-          node.expression as ts.PropertyAccessExpression | ts.ElementAccessExpression,
-          sourceFile,
-          logger,
-          currAccessPath,
-          false
-      )
-      : currAccessPath
+  let accessPath = currAccessPath
+
+  if ('expression' in node) {
+    accessPath = getAccessPath(
+      node.expression as ts.PropertyAccessExpression | ts.ElementAccessExpression,
+      sourceFile,
+      logger,
+      currAccessPath,
+      false
+    )
+  }
 
   return topLevel ? accessPath.reverse() : accessPath
 }

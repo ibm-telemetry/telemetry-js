@@ -33,7 +33,7 @@ export default function getAccessPath(
     case ts.SyntaxKind.PropertyAccessExpression:
       currAccessPath.push((node as ts.PropertyAccessExpression).name.escapedText.toString())
       break
-    case ts.SyntaxKind.ElementAccessExpression:
+    case ts.SyntaxKind.ElementAccessExpression: {
       const argumentExpression = (node as ts.ElementAccessExpression).argumentExpression
       const data = getNodeValueHandler(argumentExpression.kind, sourceFile, logger).getData(
         argumentExpression
@@ -47,13 +47,14 @@ export default function getAccessPath(
         currAccessPath.push(data?.toString() ?? '')
       }
       break
+    }
   }
 
   let accessPath = currAccessPath
 
   if ('expression' in node) {
     accessPath = getAccessPath(
-      node.expression as ts.PropertyAccessExpression | ts.ElementAccessExpression,
+      node.expression as ts.Node,
       sourceFile,
       logger,
       currAccessPath,

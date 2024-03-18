@@ -41,13 +41,7 @@ export default function getAccessPath(
       if (data instanceof ComplexValue) {
         currAccessPath = [
           ...currAccessPath,
-          ...getAccessPath(
-            argumentExpression as ts.PropertyAccessExpression | ts.ElementAccessExpression,
-            sourceFile,
-            logger,
-            [],
-            false
-          )
+          ...getAccessPath(argumentExpression, sourceFile, logger, [], false)
         ]
       } else {
         currAccessPath.push(data?.toString() ?? '')

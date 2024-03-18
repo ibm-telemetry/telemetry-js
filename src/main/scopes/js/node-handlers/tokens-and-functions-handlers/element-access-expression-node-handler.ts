@@ -36,7 +36,7 @@ export class ElementAccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
    * @returns Constructed JsToken object.
    */
   getData(node: ts.ElementAccessExpression): JsToken {
-    const argumentExpression = (node as ts.ElementAccessExpression).argumentExpression
+    const argumentExpression = node.argumentExpression
     const data = getNodeValueHandler(argumentExpression.kind, this.sourceFile, this.logger).getData(
       argumentExpression
     )

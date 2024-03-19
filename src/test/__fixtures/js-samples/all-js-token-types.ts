@@ -20,5 +20,6 @@ blue['60'][THE_CONSTANT]?.['bloop']
   
 const bla = THE_CONSTANT
 
-// TODOASKJOE: 1 metric?
 anObject[BLA['property']]['anotherProperty']
+
+[BLA['property']][A_CONSTANT]

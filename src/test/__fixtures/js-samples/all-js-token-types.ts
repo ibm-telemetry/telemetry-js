@@ -22,4 +22,6 @@ const bla = THE_CONSTANT
 
 anObject[BLA['property']]['anotherProperty']
 
+anObject[BLA.property]['anotherProperty']
+
 BLA['property'][A_CONSTANT]

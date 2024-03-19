@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
+import * as ts from 'typescript'
 
 import getAccessPath from '../../get-access-path.js'
 import type { JsToken } from '../../interfaces.js'
@@ -24,6 +24,18 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
    * that holds the aggregated tokens state.
    */
   handle(node: ts.PropertyAccessExpression, accumulator: JsFunctionTokenAccumulator) {
+    // expression is nested, do not capture unless it's a "simple" token
+    if (node.parent.kind === ts.SyntaxKind.ElementAccessExpression) {
+      // // expression is complex
+      if ((node.parent as ts.ElementAccessExpression).argumentExpression !== node) {
+        return
+      }
+    }
+
+    // expression is nested, do not capture (will be captured by parent)
+    if (node.parent.kind === ts.SyntaxKind.PropertyAccessExpression) {
+      return
+    }
     accumulator.tokens.push(this.getData(node))
   }
 

@@ -71,8 +71,7 @@ exports[`class: CallExpressionNodeHandler > correctly returns the JsFunctions fo
   {
     "accessPath": [
       "anObject",
-      "BLA",
-      "property",
+      "BLA.property",
       "aFunction",
     ],
     "arguments": [

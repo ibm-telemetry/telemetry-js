@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
+import * as ts from 'typescript'
 
 import type { JsToken } from '../../interfaces.js'
 import type { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
@@ -23,6 +23,15 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
    * that holds the aggregated tokens state.
    */
   handle(node: ts.Identifier, accumulator: JsFunctionTokenAccumulator) {
+    // do not double capture and ignore variable declaration
+    if (
+      node.parent.kind === ts.SyntaxKind.ElementAccessExpression ||
+      node.parent.kind === ts.SyntaxKind.PropertyAccessExpression ||
+      (node.parent.kind === ts.SyntaxKind.VariableDeclaration &&
+        (node.parent as ts.VariableDeclaration).name === node)
+    ) {
+      return
+    }
     accumulator.tokens.push(this.getData(node))
   }
 

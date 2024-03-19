@@ -13,15 +13,6 @@ exports[`class: PropertyAccessExpressionNodeHandler > correctly returns the JsTo
   },
   {
     "accessPath": [
-      "colors",
-      "blue",
-    ],
-    "endPos": 247,
-    "name": "blue",
-    "startPos": 234,
-  },
-  {
-    "accessPath": [
       "blue",
       "60",
       "gradient",
@@ -33,13 +24,12 @@ exports[`class: PropertyAccessExpressionNodeHandler > correctly returns the JsTo
   },
   {
     "accessPath": [
-      "blue",
-      "60",
-      "gradient",
+      "BLA",
+      "property",
     ],
-    "endPos": 283,
-    "name": "gradient",
-    "startPos": 259,
+    "endPos": 424,
+    "name": "property",
+    "startPos": 412,
   },
 ]
 `;

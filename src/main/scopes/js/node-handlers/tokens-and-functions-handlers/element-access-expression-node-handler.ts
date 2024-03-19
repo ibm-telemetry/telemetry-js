@@ -26,8 +26,6 @@ export class ElementAccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
    * that holds the aggregated tokens state.
    */
   handle(node: ts.ElementAccessExpression, accumulator: JsFunctionTokenAccumulator) {
-    const jsToken = this.getData(node)
-
     // expression is nested, do not capture unless it's a "simple" token
     if (node.parent.kind === ts.SyntaxKind.ElementAccessExpression) {
       // // expression is complex
@@ -41,7 +39,7 @@ export class ElementAccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
       return
     }
 
-    accumulator.tokens.push(jsToken)
+    accumulator.tokens.push(this.getData(node))
   }
 
   /**

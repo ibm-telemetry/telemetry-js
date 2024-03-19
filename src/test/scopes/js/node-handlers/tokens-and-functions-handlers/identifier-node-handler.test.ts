@@ -10,30 +10,26 @@ import { describe, expect, it } from 'vitest'
 import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-source-files.js'
 import { JsFunctionTokenAccumulator } from '../../../../../main/scopes/js/js-function-token-accumulator.js'
 import { JsScope } from '../../../../../main/scopes/js/js-scope.js'
-// eslint-disable-next-line max-len -- ...
-import { ElementAccessExpressionNodeHandler } from '../../../../../main/scopes/js/node-handlers/tokens-and-functions-handlers/element-access-expression-node-handler.js'
+import { IdentifierNodeHandler } from '../../../../../main/scopes/js/node-handlers/tokens-and-functions-handlers/identifier-node-handler.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
-describe('class: ElementAccessExpressionNodeHandler', async () => {
+describe('class: IdentifierNodeHandler', async () => {
   const logger = initLogger()
   const fixture = new Fixture('js-samples/all-js-token-types.ts')
   const sourceFile = (
     await getTrackedSourceFiles(fixture.path, logger, JsScope.fileExtensions)
   )[0] as ts.SourceFile
 
-  const handler = new ElementAccessExpressionNodeHandler(sourceFile, logger)
+  const handler = new IdentifierNodeHandler(sourceFile, logger)
 
   it('correctly returns the JsTokens for a complex fixture', async () => {
     const accumulator = new JsFunctionTokenAccumulator()
-    const elementAccessExpressions = findNodesByType(
-      sourceFile,
-      ts.SyntaxKind.ElementAccessExpression
-    )
+    const identifiers = findNodesByType(sourceFile, ts.SyntaxKind.Identifier)
 
-    elementAccessExpressions.forEach((elementAccessExpression) => {
-      handler.handle(elementAccessExpression as ts.ElementAccessExpression, accumulator)
+    identifiers.forEach((identifier) => {
+      handler.handle(identifier as ts.Identifier, accumulator)
     })
 
     expect(accumulator.tokens).toMatchSnapshot()

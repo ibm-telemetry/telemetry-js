@@ -105,6 +105,12 @@ export class FunctionMetric extends ScopeMetric {
         this.matchingImport.rename,
         this.matchingImport.name
       )
+      // replace the import name in access path
+      this.jsFunction.accessPath.splice(
+        this.jsFunction.accessPath.length - 1,
+        1,
+        this.matchingImport.name
+      )
     }
 
     metricData = hash(metricData, [

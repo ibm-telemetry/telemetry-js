@@ -33,9 +33,8 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
    * @returns Constructed JsToken object.
    */
   getData(node: ts.Identifier): JsToken {
-    // TODO: implement, how to know this is not a part of a
+    // TODOASKJOE: implement, how to know this is not a part of a
     // CallExpression, PropertyAccessExpression or ElementAccessExpression?
-    // TODO: test
     return {
       name: node.escapedText.toString(),
       accessPath: [node.escapedText.toString()],

@@ -41,7 +41,7 @@ export default function getAccessPath(
       if (data instanceof ComplexValue) {
         currAccessPath = [
           ...currAccessPath,
-          ...getAccessPath(argumentExpression, sourceFile, logger, [], false)
+          getAccessPath(argumentExpression, sourceFile, logger, [], false).reverse().join('.')
         ]
       } else {
         currAccessPath.push(data?.toString() ?? '')

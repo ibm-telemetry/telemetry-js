@@ -9,18 +9,18 @@ import { describe, expect, it } from 'vitest'
 
 import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-source-files.js'
 import { JsFunctionTokenAccumulator } from '../../../../../main/scopes/js/js-function-token-accumulator.js'
+import { JsScope } from '../../../../../main/scopes/js/js-scope.js'
 // eslint-disable-next-line max-len -- ...
 import { PropertyAccessExpressionNodeHandler } from '../../../../../main/scopes/js/node-handlers/tokens-and-functions-handlers/property-access-expression-node-handler.js'
-import { JsxScope } from '../../../../../main/scopes/jsx/jsx-scope.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
 describe('class: PropertyAccessExpressionNodeHandler', async () => {
   const logger = initLogger()
-  const fixture = new Fixture('js-samples/all-js-token-types.tsx')
+  const fixture = new Fixture('js-samples/all-js-token-types.ts')
   const sourceFile = (
-    await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
+    await getTrackedSourceFiles(fixture.path, logger, JsScope.fileExtensions)
   )[0] as ts.SourceFile
   const accumulator = new JsFunctionTokenAccumulator()
   const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)

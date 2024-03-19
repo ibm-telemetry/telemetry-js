@@ -8,6 +8,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
+import { DEFAULT_ELEMENT_NAME } from '../../../main/scopes/jsx/constants.js'
 import { JsxElementAllImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
@@ -147,7 +148,7 @@ describe('class: JsxScope', () => {
   describe('resolveElementImports', () => {
     const jsxScope = new JsxScope('', '', config, logger)
     const defaultImport = {
-      name: '[Default]',
+      name: DEFAULT_ELEMENT_NAME,
       rename: 'nameDefault',
       path: 'instrumented',
       isDefault: true,

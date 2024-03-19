@@ -82,6 +82,12 @@ export class TokenMetric extends ScopeMetric {
         this.matchingImport.rename,
         this.matchingImport.name
       )
+      // replace import name in access path
+      this.jsToken.accessPath.splice(
+        this.jsToken.accessPath.length - 1,
+        1,
+        this.matchingImport.name
+      )
     }
 
     metricData = hash(metricData, [

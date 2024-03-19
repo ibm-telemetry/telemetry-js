@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
+import * as ts from 'typescript'
 
 import { ComplexValue } from '../../complex-value.js'
 import getAccessPath from '../../get-access-path.js'
@@ -26,7 +26,22 @@ export class ElementAccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
    * that holds the aggregated tokens state.
    */
   handle(node: ts.ElementAccessExpression, accumulator: JsFunctionTokenAccumulator) {
-    accumulator.tokens.push(this.getData(node))
+    const jsToken = this.getData(node)
+
+    // expression is nested, do not capture unless it's a "simple" token
+    if (node.parent.kind === ts.SyntaxKind.ElementAccessExpression) {
+      // // expression is complex
+      if ((node.parent as ts.ElementAccessExpression).argumentExpression !== node) {
+        return
+      }
+    }
+
+    // expression is nested, do not capture (will be captured by parent)
+    if (node.parent.kind === ts.SyntaxKind.PropertyAccessExpression) {
+      return
+    }
+
+    accumulator.tokens.push(jsToken)
   }
 
   /**

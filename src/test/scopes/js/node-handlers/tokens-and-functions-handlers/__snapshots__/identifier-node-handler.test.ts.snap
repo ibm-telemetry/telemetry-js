@@ -6,9 +6,7 @@ exports[`class: IdentifierNodeHandler > correctly returns the JsTokens for a com
     "accessPath": [
       "THE_CONSTANT",
     ],
-    "endPos": 355,
     "name": "THE_CONSTANT",
-    "startPos": 342,
   },
 ]
 `;

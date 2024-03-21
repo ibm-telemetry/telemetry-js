@@ -59,9 +59,7 @@ export class ElementAccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
         data instanceof ComplexValue
           ? getAccessPath(argumentExpression, this.sourceFile, this.logger).slice(-1)[0] ?? ''
           : data?.toString() ?? '',
-      accessPath: getAccessPath(node, this.sourceFile, this.logger),
-      startPos: node.pos,
-      endPos: node.end
+      accessPath: getAccessPath(node, this.sourceFile, this.logger)
     }
   }
 }

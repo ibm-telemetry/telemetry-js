@@ -47,6 +47,4 @@ export interface JsFunction {
 export interface JsToken {
   name: string
   accessPath: string[]
-  startPos: number
-  endPos: number
 }

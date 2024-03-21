@@ -32,10 +32,14 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
       }
     }
 
-    // expression is nested, do not capture (will be captured by parent)
-    if (node.parent.kind === ts.SyntaxKind.PropertyAccessExpression) {
+    // expression is nested, do not capture
+    if (
+      node.parent.kind === ts.SyntaxKind.PropertyAccessExpression ||
+      node.parent.kind === ts.SyntaxKind.CallExpression
+    ) {
       return
     }
+
     accumulator.tokens.push(this.getData(node))
   }
 
@@ -48,9 +52,7 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
   getData(node: ts.PropertyAccessExpression): JsToken {
     return {
       name: node.name.escapedText.toString(),
-      accessPath: getAccessPath(node, this.sourceFile, this.logger),
-      startPos: node.pos,
-      endPos: node.end
+      accessPath: getAccessPath(node, this.sourceFile, this.logger)
     }
   }
 }

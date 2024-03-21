@@ -54,5 +54,12 @@ exports[`processFile > correctly detects imports and elements in a given file > 
     "path": "instrumented",
     "rename": "Button",
   },
+  {
+    "isAll": false,
+    "isDefault": true,
+    "name": "[Default]",
+    "path": "instrumented",
+    "rename": "BLE",
+  },
 ]
 `;

@@ -26,8 +26,7 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
    */
   handle(node: ts.CallExpression, accumulator: JsFunctionTokenAccumulator) {
     const jsFunction = this.getData(node)
-    // TODOASKJOE
-    // do not double capture, ex: function().anotherFunction() generates only 1 JsFunction
+
     const functionExists = accumulator.functions.some(
       (f) =>
         f.startPos <= jsFunction.startPos &&

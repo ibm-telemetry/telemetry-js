@@ -23,10 +23,19 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
    * that holds the aggregated tokens state.
    */
   handle(node: ts.Identifier, accumulator: JsFunctionTokenAccumulator) {
+    // TODOASKJOE
     // do not double capture and ignore variable declaration
     if (
-      node.parent.kind === ts.SyntaxKind.ElementAccessExpression ||
-      node.parent.kind === ts.SyntaxKind.PropertyAccessExpression ||
+      [
+        ts.SyntaxKind.ElementAccessExpression,
+        ts.SyntaxKind.PropertyAccessExpression,
+        ts.SyntaxKind.JsxSelfClosingElement,
+        ts.SyntaxKind.JsxOpeningElement,
+        ts.SyntaxKind.JsxClosingElement,
+        ts.SyntaxKind.ImportClause,
+        ts.SyntaxKind.ImportDeclaration,
+        ts.SyntaxKind.ImportSpecifier
+      ].includes(node.parent.kind) ||
       (node.parent.kind === ts.SyntaxKind.VariableDeclaration &&
         (node.parent as ts.VariableDeclaration).name === node)
     ) {
@@ -42,13 +51,9 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
    * @returns Constructed JsToken object.
    */
   getData(node: ts.Identifier): JsToken {
-    // TODOASKJOE: implement, how to know this is not a part of a
-    // CallExpression, PropertyAccessExpression or ElementAccessExpression?
     return {
       name: node.escapedText.toString(),
-      accessPath: [node.escapedText.toString()],
-      startPos: node.pos,
-      endPos: node.end
+      accessPath: [node.escapedText.toString()]
     }
   }
 }

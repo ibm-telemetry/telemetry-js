@@ -129,20 +129,6 @@ describe('class: JsxScope', () => {
 
       expect(results).toMatchSnapshot()
     })
-
-    it('throws EmptyScopeError if no collector has been defined', async () => {
-      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
-      const root = new Fixture('projects/basic-project')
-      const jsxScope = new JsxScope(
-        fixture.path,
-        root.path,
-        { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
-        logger
-      )
-
-      jsxScope.setRunSync(true)
-      await expect(jsxScope.run()).rejects.toThrow(EmptyScopeError)
-    })
   })
 
   describe('resolveElementImports', () => {

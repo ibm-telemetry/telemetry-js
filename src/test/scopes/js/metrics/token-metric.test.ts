@@ -17,9 +17,7 @@ describe('class: TokenMetric', () => {
   const logger = initLogger()
   const jsToken: JsToken = {
     name: 'theToken',
-    accessPath: ['access1', 'access2', 'theToken'],
-    startPos: 0,
-    endPos: 10
+    accessPath: ['access1', 'access2', 'theToken']
   }
   const jsImport: JsImport = {
     name: 'theToken',

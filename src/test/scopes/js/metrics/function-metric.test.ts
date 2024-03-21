@@ -160,7 +160,6 @@ describe('class: FunctionMetric', () => {
       hash(
         {
           [JsScopeAttributes.FUNCTION_NAME]: DEFAULT_ELEMENT_NAME,
-          // TODOASKJOE
           [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['access1', 'access2', DEFAULT_ELEMENT_NAME],
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)

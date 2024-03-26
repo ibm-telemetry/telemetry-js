@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.3.0...v1.4.0) (2024-03-26)
+
+
+### Features
+
+* js scope layout ([#198](https://github.com/ibm-telemetry/telemetry-js/issues/198)) ([2c95b43](https://github.com/ibm-telemetry/telemetry-js/commit/2c95b436256b6b03fb7a28803129b6927533e7fa))
+
+
+### Bug Fixes
+
+* **deps:** upgrade contributor-assistant/github-action action to v2.3.2 ([#221](https://github.com/ibm-telemetry/telemetry-js/issues/221)) ([9484631](https://github.com/ibm-telemetry/telemetry-js/commit/9484631118966d8bf8429628fba2c7a3de21ab18))
+* **deps:** upgrade devDependencies (minor) ([#219](https://github.com/ibm-telemetry/telemetry-js/issues/219)) ([2203fd8](https://github.com/ibm-telemetry/telemetry-js/commit/2203fd8ccba048e527faa3645d4d082b693f16f1))
+* **deps:** upgrade devDependencies (minor) ([#222](https://github.com/ibm-telemetry/telemetry-js/issues/222)) ([2bcc4bd](https://github.com/ibm-telemetry/telemetry-js/commit/2bcc4bda5cc2525059c537bf86d87e1f095edc90))
+* **deps:** upgrade vitest monorepo to v1 ([#213](https://github.com/ibm-telemetry/telemetry-js/issues/213)) ([a09332e](https://github.com/ibm-telemetry/telemetry-js/commit/a09332e43cb402b2d82726caefaa6ec9ccd387ae))
+
 ## [1.3.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.2.1...v1.3.0) (2024-03-14)
 
 

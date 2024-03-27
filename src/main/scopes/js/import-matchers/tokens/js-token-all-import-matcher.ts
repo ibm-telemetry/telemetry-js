@@ -23,9 +23,6 @@ export class JsTokenAllImportMatcher implements JsImportMatcher<JsToken> {
    * undefined otherwise.
    */
   findMatch(jsToken: JsToken, imports: JsImport[]) {
-    // TODOASKJOE: matching strategy: if beginning or token name belongs to import
-    // but if it's only the token name, should we ignore (remove) the accesspath?
-    // ^^ should we take only the token name and no access path?
     return jsToken.accessPath.length >= 2
       ? imports.find((i) => i.isAll && i.name === jsToken.accessPath[0])
       : undefined

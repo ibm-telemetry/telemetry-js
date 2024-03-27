@@ -71,6 +71,53 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
                 ],
                 "value": 1,
               },
+              {
+                "attributes": {
+                  "js.token.accessPath": [
+                    "BLE",
+                    "[Default]",
+                  ],
+                  "js.token.name": "property",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "0",
+                  "npm.dependency.instrumented.version.minor": "1",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "js.token.accessPath": [
+                    "[Default]",
+                  ],
+                  "js.token.name": "[Default]",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "0",
+                  "npm.dependency.instrumented.version.minor": "1",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 2,
+              },
             ],
             "descriptor": {
               "advice": {},
@@ -103,6 +150,35 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
                     "[redacted2]",
                   ],
                   "js.function.name": "someFunction",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "0",
+                  "npm.dependency.instrumented.version.minor": "1",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "js.function.accessPath": [
+                    "BLE",
+                    "property",
+                    "[Default]",
+                  ],
+                  "js.function.arguments.values": [
+                    "[redacted3]",
+                    "[redacted4]",
+                  ],
+                  "js.function.name": "aFunction",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",

@@ -4,9 +4,117 @@ exports[`class: IdentifierNodeHandler > correctly returns the JsTokens for a com
 [
   {
     "accessPath": [
+      "blue",
+    ],
+    "name": "blue",
+  },
+  {
+    "accessPath": [
+      "blue",
+    ],
+    "name": "blue",
+  },
+  {
+    "accessPath": [
+      "colors",
+    ],
+    "name": "colors",
+  },
+  {
+    "accessPath": [
+      "blue",
+    ],
+    "name": "blue",
+  },
+  {
+    "accessPath": [
+      "colors",
+    ],
+    "name": "colors",
+  },
+  {
+    "accessPath": [
+      "blue",
+    ],
+    "name": "blue",
+  },
+  {
+    "accessPath": [
+      "blue",
+    ],
+    "name": "blue",
+  },
+  {
+    "accessPath": [
+      "gradient",
+    ],
+    "name": "gradient",
+  },
+  {
+    "accessPath": [
+      "big",
+    ],
+    "name": "big",
+  },
+  {
+    "accessPath": [
+      "blue",
+    ],
+    "name": "blue",
+  },
+  {
+    "accessPath": [
       "THE_CONSTANT",
     ],
     "name": "THE_CONSTANT",
+  },
+  {
+    "accessPath": [
+      "THE_CONSTANT",
+    ],
+    "name": "THE_CONSTANT",
+  },
+  {
+    "accessPath": [
+      "anObject",
+    ],
+    "name": "anObject",
+  },
+  {
+    "accessPath": [
+      "BLA",
+    ],
+    "name": "BLA",
+  },
+  {
+    "accessPath": [
+      "anObject",
+    ],
+    "name": "anObject",
+  },
+  {
+    "accessPath": [
+      "BLA",
+    ],
+    "name": "BLA",
+  },
+  {
+    "accessPath": [
+      "property",
+    ],
+    "name": "property",
+  },
+  {
+    "accessPath": [
+      "BLA",
+    ],
+    "name": "BLA",
+  },
+  {
+    "accessPath": [
+      "A_CONSTANT",
+    ],
+    "name": "A_CONSTANT",
   },
 ]
 `;

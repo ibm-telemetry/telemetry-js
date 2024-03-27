@@ -23,15 +23,9 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
    * that holds the aggregated tokens state.
    */
   handle(node: ts.Identifier, accumulator: JsFunctionTokenAccumulator) {
-    // TODOASKJOE
-    // do not double capture and ignore variable declaration
+    // TODO: filter out upstream if included in another token
     if (
       [
-        ts.SyntaxKind.ElementAccessExpression,
-        ts.SyntaxKind.PropertyAccessExpression,
-        ts.SyntaxKind.JsxSelfClosingElement,
-        ts.SyntaxKind.JsxOpeningElement,
-        ts.SyntaxKind.JsxClosingElement,
         ts.SyntaxKind.ImportClause,
         ts.SyntaxKind.ImportDeclaration,
         ts.SyntaxKind.ImportSpecifier
@@ -43,7 +37,8 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
     }
     accumulator.tokens.push(this.getData(node))
   }
-
+ 
+// TODO: remove commented code
   /**
    * Constructs a JsToken object from a given Identifier type AST node.
    *
@@ -53,7 +48,9 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
   getData(node: ts.Identifier): JsToken {
     return {
       name: node.escapedText.toString(),
-      accessPath: [node.escapedText.toString()]
+      // accessPath: [node.escapedText.toString()],
+      // startPos: node.pos, 
+      // endPos: node.end
     }
   }
 }

@@ -7,33 +7,105 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
-import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-source-files.js'
 import { JsFunctionTokenAccumulator } from '../../../../../main/scopes/js/js-function-token-accumulator.js'
-import { JsScope } from '../../../../../main/scopes/js/js-scope.js'
-// eslint-disable-next-line max-len -- ...
+// eslint-disable-next-line max-len -- It's a long import
 import { PropertyAccessExpressionNodeHandler } from '../../../../../main/scopes/js/node-handlers/tokens-and-functions-handlers/property-access-expression-node-handler.js'
+import { createSourceFileFromText } from '../../../../__utils/create-source-file-from-text.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
-import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
+
+function findNodes(file: ts.SourceFile) {
+  return findNodesByType(
+    file,
+    ts.SyntaxKind.PropertyAccessExpression
+  ) as ts.PropertyAccessExpression[]
+}
 
 describe('class: PropertyAccessExpressionNodeHandler', async () => {
   const logger = initLogger()
-  const fixture = new Fixture('js-samples/all-js-token-types.ts')
-  const sourceFile = (
-    await getTrackedSourceFiles(fixture.path, logger, JsScope.fileExtensions)
-  )[0] as ts.SourceFile
-  const accumulator = new JsFunctionTokenAccumulator()
-  const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
-  it('correctly returns the JsTokens for a complex fixture', async () => {
-    const propertyAccessExpressions = findNodesByType(
-      sourceFile,
-      ts.SyntaxKind.PropertyAccessExpression
-    )
 
-    propertyAccessExpressions.forEach((propertyAccessExpression) => {
-      handler.handle(propertyAccessExpression as ts.PropertyAccessExpression, accumulator)
+  it('captures a basic token usage by property access', () => {
+    const sourceFile = createSourceFileFromText('foo.bar.baz')
+    const nodes = findNodes(sourceFile)
+    const accumulator = new JsFunctionTokenAccumulator()
+    const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
     })
 
-    expect(accumulator.tokens).toMatchSnapshot()
+    expect(accumulator.tokens).toHaveLength(1)
+    expect(accumulator.tokens[0]).toMatchObject({
+      name: 'foo.bar.baz'
+    })
+  })
+
+  it('does not capture a token metric inside of a call expression', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo.bar.baz()')
+    const nodes = findNodes(sourceFile)
+    const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
+  })
+
+  it('does not capture a token metric inside of a call expression', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo')
+    const nodes = findNodes(sourceFile)
+    const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
+  })
+
+  it('todo', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo["asdf"]')
+    const nodes = findNodes(sourceFile)
+    const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
+  })
+
+
+  it('todo', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo["asdf"].bar')
+    const nodes = findNodes(sourceFile)
+    const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(1)
+    expect(accumulator.tokens[0]).toMatchObject({
+      name: 'foo["asdf"].bar'
+    })
+  })
+
+  it('todo', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo()')
+    const nodes = findNodes(sourceFile)
+    const handler = new PropertyAccessExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
   })
 })

@@ -20,8 +20,6 @@ export class JsFunctionNamedImportMatcher implements JsImportMatcher<JsFunction>
    * @returns Corresponding JsImport if function was imported as a name import,
    * undefined otherwise.
    */
-  // TODOASKJOE: matching strategy: for a function, are we only matching the "beginning"
-  // (the object it comes from, or the function itself)
   findMatch(jsFunction: JsFunction, imports: JsImport[]) {
     return imports.find((i) => !i.isDefault && !i.isAll && i.name === jsFunction.accessPath[0])
   }

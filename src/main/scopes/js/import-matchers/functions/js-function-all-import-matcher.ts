@@ -22,8 +22,6 @@ export class JsFunctionAllImportMatcher implements JsImportMatcher<JsFunction> {
    * @returns Corresponding JsImport element if function was imported as an all import,
    * undefined otherwise.
    */
-  // TODOASKJOE: matching strategy: for a function, are we only matching the "beginning"
-  // (the object it comes from, or the function itself)
   findMatch(jsFunction: JsFunction, imports: JsImport[]) {
     return jsFunction.accessPath.length >= 2
       ? imports.find((i) => i.isAll && i.name === jsFunction.accessPath[0])

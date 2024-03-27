@@ -44,7 +44,10 @@ export interface JsFunction {
   endPos: number
 }
 
+// TODO: remove commented code
 export interface JsToken {
   name: string
-  accessPath: string[]
+  // accessPath: string[]
+  // startPos: number
+  // endPos: number
 }

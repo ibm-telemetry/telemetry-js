@@ -6,7 +6,8 @@
  */
 import * as ts from 'typescript'
 
-import getAccessPath from '../../get-access-path.js'
+// TODO: remove commented code
+// import getAccessPath from '../../get-access-path.js'
 import type { JsToken } from '../../interfaces.js'
 import type { JsFunctionTokenAccumulator } from '../../js-function-token-accumulator.js'
 import { JsNodeHandler } from '../js-node-handler.js'
@@ -24,17 +25,20 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
    * that holds the aggregated tokens state.
    */
   handle(node: ts.PropertyAccessExpression, accumulator: JsFunctionTokenAccumulator) {
+
+// TODO: remove commented code
     // expression is nested, do not capture unless it's a "simple" token
-    if (node.parent.kind === ts.SyntaxKind.ElementAccessExpression) {
-      // // expression is complex
-      if ((node.parent as ts.ElementAccessExpression).argumentExpression !== node) {
-        return
-      }
-    }
+    // if (node.parent.kind === ts.SyntaxKind.ElementAccessExpression) {
+    //   // expression is complex
+    //   if ((node.parent as ts.ElementAccessExpression).argumentExpression !== node) {
+    //     return
+    //   }
+    // }
 
     // expression is nested, do not capture
     if (
       node.parent.kind === ts.SyntaxKind.PropertyAccessExpression ||
+      node.parent.kind === ts.SyntaxKind.ElementAccessExpression ||
       node.parent.kind === ts.SyntaxKind.CallExpression
     ) {
       return
@@ -51,8 +55,12 @@ export class PropertyAccessExpressionNodeHandler extends JsNodeHandler<JsToken> 
    */
   getData(node: ts.PropertyAccessExpression): JsToken {
     return {
-      name: node.name.escapedText.toString(),
-      accessPath: getAccessPath(node, this.sourceFile, this.logger)
+      name: node.getText(this.sourceFile),
+
+      // TODO: remove commented code
+      // accessPath: getAccessPath(node, this.sourceFile, this.logger),
+      // startPos: node.pos,
+      // endPos: node.end
     }
   }
 }

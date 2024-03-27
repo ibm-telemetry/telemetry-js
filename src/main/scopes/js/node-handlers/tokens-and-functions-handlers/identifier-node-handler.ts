@@ -37,8 +37,7 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
     }
     accumulator.tokens.push(this.getData(node))
   }
- 
-// TODO: remove commented code
+
   /**
    * Constructs a JsToken object from a given Identifier type AST node.
    *
@@ -48,9 +47,9 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
   getData(node: ts.Identifier): JsToken {
     return {
       name: node.escapedText.toString(),
-      // accessPath: [node.escapedText.toString()],
-      // startPos: node.pos, 
-      // endPos: node.end
+      accessPath: [node.escapedText.toString()],
+      startPos: node.pos,
+      endPos: node.end
     }
   }
 }

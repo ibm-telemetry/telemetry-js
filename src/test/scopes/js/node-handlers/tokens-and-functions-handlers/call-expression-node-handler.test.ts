@@ -7,46 +7,108 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
-import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-source-files.js'
+import { ComplexValue } from '../../../../../main/scopes/js/complex-value.js'
 import { JsFunctionTokenAccumulator } from '../../../../../main/scopes/js/js-function-token-accumulator.js'
-import { JsScope } from '../../../../../main/scopes/js/js-scope.js'
+// eslint-disable-next-line max-len -- It's a long import
 import { CallExpressionNodeHandler } from '../../../../../main/scopes/js/node-handlers/tokens-and-functions-handlers/call-expression-node-handler.js'
+import { createSourceFileFromText } from '../../../../__utils/create-source-file-from-text.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
-import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
-describe('class: CallExpressionNodeHandler', async () => {
+describe('class: CallExpressionExpressionNodeHandler', async () => {
   const logger = initLogger()
-  const fixture = new Fixture('js-samples/all-js-function-types.ts')
-  const sourceFile = (
-    await getTrackedSourceFiles(fixture.path, logger, JsScope.fileExtensions)
-  )[0] as ts.SourceFile
-  const handler = new CallExpressionNodeHandler(sourceFile, logger)
-  it('correctly returns the JsFunctions for a complex fixture', async () => {
-    const accumulator = new JsFunctionTokenAccumulator()
-    const callExpressions = findNodesByType(sourceFile, ts.SyntaxKind.CallExpression)
 
-    callExpressions.forEach((callExpression) => {
-      handler.handle(callExpression as ts.CallExpression, accumulator)
+  it('captures function at the end of a property chain', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo.bar.baz()')
+    const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+    const handler = new CallExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
     })
 
-    expect(accumulator.functions).toMatchSnapshot()
+    expect(accumulator.functions).toHaveLength(1)
+    expect(accumulator.functions[0]).toStrictEqual({
+      name: 'foo.bar.baz',
+      arguments: [],
+      accessPath: ['foo', 'bar', 'baz'],
+      startPos: 0,
+      endPos: 13
+    })
   })
 
-  it('does not capture JsFunctions if they have already been captured', async () => {
+  it('captures function at the end of a property chain', () => {
     const accumulator = new JsFunctionTokenAccumulator()
-    const callExpressions = findNodesByType(sourceFile, ts.SyntaxKind.CallExpression)
+    const sourceFile = createSourceFileFromText('foo[ACCESS_TOKEN["bla"]].baz()')
+    const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+    const handler = new CallExpressionNodeHandler(sourceFile, logger)
 
-    callExpressions.forEach((callExpression) => {
-      handler.handle(callExpression as ts.CallExpression, accumulator)
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
     })
 
-    expect(accumulator.functions).toHaveLength(8)
+    expect(accumulator.functions).toHaveLength(1)
+    expect(accumulator.functions[0]).toMatchObject({
+      name: 'foo[ACCESS_TOKEN["bla"]].baz',
+      arguments: [],
+      accessPath: ['foo', new ComplexValue('ACCESS_TOKEN["bla"]'), 'baz']
+    })
+  })
 
-    callExpressions.forEach((callExpression) => {
-      handler.handle(callExpression as ts.CallExpression, accumulator)
+  it('captures a function metric for a intermediate function', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo.bar().baz')
+    const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+    const handler = new CallExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
     })
 
-    expect(accumulator.functions).toHaveLength(8)
+    expect(accumulator.functions).toHaveLength(1)
+    expect(accumulator.functions[0]).toMatchObject({
+      name: 'foo.bar',
+      arguments: [],
+      accessPath: ['foo', 'bar']
+    })
+  })
+
+  it('captures a function metric for a simple function', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo()')
+    const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+    const handler = new CallExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.functions).toHaveLength(1)
+    expect(accumulator.functions[0]).toMatchObject({
+      name: 'foo',
+      arguments: [],
+      accessPath: ['foo']
+    })
+  })
+
+  describe('functions containing arguments', () => {
+    it('captures a function metric and its arguments', () => {
+      const accumulator = new JsFunctionTokenAccumulator()
+      const sourceFile = createSourceFileFromText('foo(first)')
+      const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+      const handler = new CallExpressionNodeHandler(sourceFile, logger)
+
+      nodes.forEach((node) => {
+        handler.handle(node, accumulator)
+      })
+
+      expect(accumulator.functions).toHaveLength(1)
+      expect(accumulator.functions[0]).toMatchObject({
+        name: 'foo',
+        arguments: [new ComplexValue('first')],
+        accessPath: ['foo']
+      })
+    })
   })
 })

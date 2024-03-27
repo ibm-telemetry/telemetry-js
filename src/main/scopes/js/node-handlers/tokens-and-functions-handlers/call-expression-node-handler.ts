@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
+import type * as ts from 'typescript'
 
 import getAccessPath from '../../get-access-path.js'
 import type { JsFunction } from '../../interfaces.js'
@@ -27,16 +27,18 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
   handle(node: ts.CallExpression, accumulator: JsFunctionTokenAccumulator) {
     const jsFunction = this.getData(node)
 
-    const functionExists = accumulator.functions.some(
-      (f) =>
-        f.startPos <= jsFunction.startPos &&
-        f.endPos >= jsFunction.endPos &&
-        f.accessPath.join('.').includes(jsFunction.accessPath.join('.'))
-    )
+    // TODO: remove commented out code
+    // TODO: use this at the Js Scope top-level to filter out functions within tokens (drop the
+    // token metric)
+    // const functionExists = accumulator.functions.some(
+    //   (f) =>
+    //     f.startPos <= jsFunction.startPos &&
+    //     f.endPos >= jsFunction.endPos
+    // )
 
-    if (functionExists) {
-      return
-    }
+    // if (functionExists) {
+    //   return
+    // }
 
     accumulator.functions.push(jsFunction)
   }
@@ -49,26 +51,13 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
    */
   getData(node: ts.CallExpression): JsFunction {
     const jsFunction: JsFunction = {
-      name: '',
+      name: this.sourceFile
+        .getFullText(this.sourceFile)
+        .substring(node.pos, node.arguments.pos - 1),
       accessPath: [],
       arguments: [],
       startPos: node.pos,
       endPos: node.end
-    }
-    switch (node.expression.kind) {
-      case ts.SyntaxKind.Identifier:
-        jsFunction.name = (node.expression as ts.Identifier).escapedText.toString()
-        break
-      case ts.SyntaxKind.PropertyAccessExpression:
-        jsFunction.name = (
-          node.expression as ts.PropertyAccessExpression
-        ).name.escapedText.toString()
-        break
-      case ts.SyntaxKind.ElementAccessExpression:
-        jsFunction.name = (
-          node.expression as ts.ElementAccessExpression
-        ).argumentExpression.getText(this.sourceFile)
-        break
     }
 
     jsFunction.arguments = node.arguments.map((arg) =>

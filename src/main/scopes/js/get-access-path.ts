@@ -24,9 +24,9 @@ export default function getAccessPath(
   node: ts.Node,
   sourceFile: ts.SourceFile,
   logger: Logger,
-  currAccessPath: string[] = [],
+  currAccessPath: Array<string | ComplexValue> = [],
   topLevel: boolean = true
-): string[] {
+): Array<string | ComplexValue> {
   switch (node.kind) {
     case ts.SyntaxKind.Identifier:
       return [...currAccessPath, (node as ts.Identifier).escapedText.toString()]
@@ -38,14 +38,7 @@ export default function getAccessPath(
       const data = getNodeValueHandler(argumentExpression.kind, sourceFile, logger).getData(
         argumentExpression
       )
-      if (data instanceof ComplexValue) {
-        currAccessPath = [
-          ...currAccessPath,
-          getAccessPath(argumentExpression, sourceFile, logger, [], false).reverse().join('.')
-        ]
-      } else {
-        currAccessPath.push(data?.toString() ?? '')
-      }
+      currAccessPath.push((data instanceof ComplexValue ? data : data?.toString()) ?? '')
       break
     }
   }

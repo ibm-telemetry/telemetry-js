@@ -14,11 +14,15 @@ describe('class: JsTokenAllImportMatcher', () => {
   const allImportMatcher = new JsTokenAllImportMatcher()
   const simpleJsToken: JsToken = {
     name: 'theToken',
-    accessPath: ['theToken']
+    accessPath: ['theToken'],
+    startPos: 0,
+    endPos: 0
   }
   const nestedJsToken: JsToken = {
     name: 'theToken',
-    accessPath: ['object', 'theToken']
+    accessPath: ['object', 'theToken'],
+    startPos: 0,
+    endPos: 0
   }
   const allImport: JsImport = {
     name: 'object',

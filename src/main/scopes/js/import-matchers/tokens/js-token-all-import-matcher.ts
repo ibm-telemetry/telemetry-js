@@ -17,13 +17,14 @@ export class JsTokenAllImportMatcher implements JsImportMatcher<JsToken> {
    * (.e.g: import * as something from 'package')
    * that matches the supplied list of import elements.
    *
-   * @param _token - JsToken to evaluate.
-   * @param _imports - Import elements to use for comparison.
+   * @param jsToken - JsToken to evaluate.
+   * @param imports - Import elements to use for comparison.
    * @returns Corresponding JsImport element if token was imported as an all import,
    * undefined otherwise.
    */
-  findMatch(_token: JsToken, _imports: JsImport[]) {
-    // TODO: implement
-    return undefined
+  findMatch(jsToken: JsToken, imports: JsImport[]) {
+    return jsToken.accessPath.length >= 2
+      ? imports.find((i) => i.isAll && i.name === jsToken.accessPath[0])
+      : undefined
   }
 }

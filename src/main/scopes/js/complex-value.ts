@@ -9,5 +9,5 @@
  * Object representing a complex value.
  */
 export class ComplexValue {
-  constructor(public complexValue: unknown) {}
+  constructor(public readonly complexValue: unknown) {}
 }

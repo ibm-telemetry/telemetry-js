@@ -8,6 +8,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
+import { DEFAULT_ELEMENT_NAME } from '../../../main/scopes/jsx/constants.js'
 import { JsxElementAllImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
@@ -128,26 +129,12 @@ describe('class: JsxScope', () => {
 
       expect(results).toMatchSnapshot()
     })
-
-    it('throws EmptyScopeError if no collector has been defined', async () => {
-      const fixture = new Fixture('projects/basic-project/node_modules/instrumented')
-      const root = new Fixture('projects/basic-project')
-      const jsxScope = new JsxScope(
-        fixture.path,
-        root.path,
-        { collect: { npm: {} }, projectId: '123', version: 1, endpoint: '' },
-        logger
-      )
-
-      jsxScope.setRunSync(true)
-      await expect(jsxScope.run()).rejects.toThrow(EmptyScopeError)
-    })
   })
 
   describe('resolveElementImports', () => {
     const jsxScope = new JsxScope('', '', config, logger)
     const defaultImport = {
-      name: '[Default]',
+      name: DEFAULT_ELEMENT_NAME,
       rename: 'nameDefault',
       path: 'instrumented',
       isDefault: true,

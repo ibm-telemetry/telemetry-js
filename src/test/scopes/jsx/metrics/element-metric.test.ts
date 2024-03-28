@@ -9,7 +9,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { substitute } from '../../../../main/core/anonymize/substitute.js'
+import { substitute } from '../../../../main/core/anonymize/substitute-array.js'
 import type { JsImport } from '../../../../main/scopes/js/interfaces.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import type { JsxElement, JsxElementAttribute } from '../../../../main/scopes/jsx/interfaces.js'

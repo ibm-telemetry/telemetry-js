@@ -11,7 +11,7 @@ import type { JsImport } from '../js/interfaces.js'
  * Responsible for maintaining an aggregated state of imports and other elements.
  */
 export abstract class JsAccumulator {
-  public readonly imports: JsImport[]
+  public imports: JsImport[]
 
   constructor() {
     this.imports = []

@@ -13,13 +13,13 @@ import { DEFAULT_ELEMENT_NAME } from '../../../../../main/scopes/jsx/constants.j
 describe('class: JsTokenRenamedImportMatcher', () => {
   const renamedImportMatcher = new JsTokenRenamedImportMatcher()
   const simpleJsToken: JsToken = {
-    name: 'theToken',
-    accessPath: ['theToken'],
+    name: 'object',
+    accessPath: ['object'],
     startPos: 0,
     endPos: 0
   }
   const nestedJsToken: JsToken = {
-    name: 'theToken',
+    name: 'object.theToken',
     accessPath: ['object', 'theToken'],
     startPos: 0,
     endPos: 0
@@ -33,7 +33,7 @@ describe('class: JsTokenRenamedImportMatcher', () => {
   const defaultImport: JsImport = {
     name: DEFAULT_ELEMENT_NAME,
     path: '@library/something',
-    rename: 'theToken',
+    rename: 'object',
     isDefault: true,
     isAll: false
   }
@@ -46,7 +46,7 @@ describe('class: JsTokenRenamedImportMatcher', () => {
   const renamedImport: JsImport = {
     name: 'aToken',
     path: '@library/something',
-    rename: 'theToken',
+    rename: 'object',
     isDefault: false,
     isAll: false
   }

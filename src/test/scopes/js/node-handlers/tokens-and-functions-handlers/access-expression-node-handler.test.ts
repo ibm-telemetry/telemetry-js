@@ -41,7 +41,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       })
     })
 
-    it('does not capture a token metric inside of a call expression', () => {
+    it('does not capture a token inside of a call expression', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo["bar"]["baz"]()')
       const nodes = findNodesByType<ts.ElementAccessExpression>(
@@ -57,7 +57,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('does not capture a token metric for an identifier', () => {
+    it('does not capture a token for an identifier', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo')
       const nodes = findNodesByType<ts.ElementAccessExpression>(
@@ -73,7 +73,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('does not capture a token metric for a property access expression', () => {
+    it('does not capture a token for a property access expression', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('bar["asdf"].foo')
       const nodes = findNodesByType<ts.ElementAccessExpression>(
@@ -89,7 +89,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('captures a token metric when accessor is a chain that ends with an element', () => {
+    it('captures a token when accessor is a chain that ends with an element', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo.bar["asdf"]')
       const nodes = findNodesByType<ts.ElementAccessExpression>(
@@ -109,7 +109,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       })
     })
 
-    it('does not capture a token metric for a function invocation', () => {
+    it('does not capture a token for a function invocation', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo()')
       const nodes = findNodesByType<ts.ElementAccessExpression>(
@@ -193,7 +193,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       })
     })
 
-    it('does not capture a token metric inside of a call expression', () => {
+    it('does not capture a token inside of a call expression', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo.bar.baz()')
       const nodes = findNodesByType<ts.PropertyAccessExpression>(
@@ -209,7 +209,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('does not capture a token metric for an identifier', () => {
+    it('does not capture a token for an identifier', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo')
       const nodes = findNodesByType<ts.PropertyAccessExpression>(
@@ -225,7 +225,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('does not capture a token metric for an element access expression', () => {
+    it('does not capture a token for an element access expression', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo.bar["asdf"]')
       const nodes = findNodesByType<ts.PropertyAccessExpression>(
@@ -241,7 +241,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('captures a token metric when accessor is a chain that ends with a property', () => {
+    it('captures a token when accessor is a chain that ends with a property', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo["asdf"].bar')
       const nodes = findNodesByType<ts.PropertyAccessExpression>(
@@ -261,7 +261,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       })
     })
 
-    it('does not capture a token metric for a function invocation', () => {
+    it('does not capture a token for a function invocation', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo()')
       const nodes = findNodesByType<ts.PropertyAccessExpression>(
@@ -277,7 +277,7 @@ describe('class: AccessExpressionNodeHandler', async () => {
       expect(accumulator.tokens).toHaveLength(0)
     })
 
-    it('does not capture a token metric for a property accessed off of a function call', () => {
+    it('does not capture a token for a property accessed off of a function call', () => {
       // This is captured at this point, but will be filtered later on because:
       // foo().bar <-- don't collect because if foo() returns something from a user, then .bar is
       // potentially private information

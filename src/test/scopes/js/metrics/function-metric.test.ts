@@ -9,7 +9,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { substitute } from '../../../../main/core/anonymize/substitute.js'
+import { substitute } from '../../../../main/core/anonymize/substitute-array.js'
 import { ComplexValue } from '../../../../main/scopes/js/complex-value.js'
 import type { JsFunction, JsImport, NodeValue } from '../../../../main/scopes/js/interfaces.js'
 import { FunctionMetric } from '../../../../main/scopes/js/metrics/function-metric.js'

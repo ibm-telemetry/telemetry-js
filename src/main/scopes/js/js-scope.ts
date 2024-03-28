@@ -138,6 +138,30 @@ export class JsScope extends Scope {
     const accumulator = new JsFunctionTokenAccumulator()
 
     processFile(accumulator, sourceFile, jsNodeHandlerMap, this.logger)
+
+    // deduplicateFunctions
+    // foo().bar().baz() <-- 3 functions inccoming. Keep foo() only
+    this.deduplicateFunctions(accumulator)
+
+    this.deduplicateTokens(accumulator)
+
+    // deduplicateIdentifiers
+    // Given: foo.bar().baz
+    // foo <-- filter
+    // bar <-- filter
+    // baz <-- NOT filtered, but will be thrown out because no matching import
+    // foo.bar <-- function, not touched
+    // for each token... if it is a substring of another token, filter it
+    //                  We can't do this 'cause what about BLA[BLE["something"]], or at this point is it supposed to be already substituted?
+    //                   if it is a substring of another function, filter it
+    //
+    // I'll leave the live share open if you want to check me on this logic ^ 👍🏻
+
+    // check identifier-node-handler.ts:
+    // do not capture if inside PropertyAccessExpressionHandler <- why would we want to?
+    // only capture if inside argumentExpression when inside ElementAccessExpressionHandler <- why would we want to otherwise?
+    // given ^, would we even need to filter stuff out ? 🤔
+
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
 
     const promises: Array<Promise<void>> = []
@@ -254,6 +278,26 @@ export class JsScope extends Scope {
     })
   }
 
+  deduplicateFunctions(accumulator: JsFunctionTokenAccumulator) {
+    accumulator.functions = accumulator.functions.filter(
+      (f) =>
+        !accumulator.functions.some(
+          (func) => func.startPos >= f.startPos && func.endPos <= f.endPos && func !== f
+        )
+    )
+  }
+
+  deduplicateTokens(accumulator: JsFunctionTokenAccumulator) {
+    // Given: foo.bar().baz
+    // foo.bar().baz <- filtered
+    // foo.bar <-- function, not touched
+    accumulator.tokens = accumulator.tokens.filter(
+      (token) =>
+        !accumulator.functions.some(
+          (func) => func.startPos >= token.startPos && func.endPos <= token.endPos
+        )
+    )
+  }
   /**
    * **For testing purposes only.**
    * Makes the JsxScope collection run "synchronously" (one source file at a time). Defaults to

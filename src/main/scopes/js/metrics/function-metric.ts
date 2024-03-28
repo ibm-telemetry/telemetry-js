@@ -9,7 +9,7 @@ import type { ConfigSchema } from '@ibm/telemetry-config-schema'
 import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
-import { substitute } from '../../../core/anonymize/substitute.js'
+import { substitute } from '../../../core/anonymize/substitute-array.js'
 import type { Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
@@ -77,17 +77,17 @@ export class FunctionMetric extends ScopeMetric {
       {}
     )
 
-    const anonymizedArguments = substitute(
-      argsObj,
-      Object.keys(argsObj), // all keys are allowed
-      this.allowedArgumentStringValues
+    const anonymizedAccessPath = substituteArray(
+      this.jsFunction.accessPath,
+      this.jsFunction.accessPath.filter((p) => typeof p === 'string')
     )
 
     let metricData: Attributes = {
       [JsScopeAttributes.FUNCTION_NAME]: this.jsFunction.name,
       [JsScopeAttributes.FUNCTION_ACCESS_PATH]: this.jsFunction.accessPath,
-      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(anonymizedArguments).map((arg) =>
-        String(arg)
+      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: substituteArray(
+        this.jsFunction.arguments,
+        this.allowedArgumentStringValues
       ),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,

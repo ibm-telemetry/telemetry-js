@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { substitute } from '../../../main/core/anonymize/substitute.js'
+import { substitute } from '../../../main/core/anonymize/substitute-array.js'
 
 describe('substitute', () => {
   it('correctly anonymizes sensitive data', () => {

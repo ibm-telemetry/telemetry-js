@@ -7,31 +7,87 @@
 import * as ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
-import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-source-files.js'
 import { JsFunctionTokenAccumulator } from '../../../../../main/scopes/js/js-function-token-accumulator.js'
-import { JsScope } from '../../../../../main/scopes/js/js-scope.js'
 import { IdentifierNodeHandler } from '../../../../../main/scopes/js/node-handlers/tokens-and-functions-handlers/identifier-node-handler.js'
+import { createSourceFileFromText } from '../../../../__utils/create-source-file-from-text.js'
 import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
-import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
-describe('class: IdentifierNodeHandler', async () => {
+describe('new wow', () => {
   const logger = initLogger()
-  const fixture = new Fixture('js-samples/all-js-token-types.ts')
-  const sourceFile = (
-    await getTrackedSourceFiles(fixture.path, logger, JsScope.fileExtensions)
-  )[0] as ts.SourceFile
 
-  const handler = new IdentifierNodeHandler(sourceFile, logger)
-
-  it('correctly returns the JsTokens for a complex fixture', async () => {
+  it('captures a token for a simple identifier', () => {
     const accumulator = new JsFunctionTokenAccumulator()
-    const identifiers = findNodesByType(sourceFile, ts.SyntaxKind.Identifier)
+    const sourceFile = createSourceFileFromText('foo')
+    const nodes = findNodesByType<ts.Identifier>(sourceFile, ts.SyntaxKind.Identifier)
+    const handler = new IdentifierNodeHandler(sourceFile, logger)
 
-    identifiers.forEach((identifier) => {
-      handler.handle(identifier as ts.Identifier, accumulator)
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
     })
 
-    expect(accumulator.tokens).toMatchSnapshot()
+    expect(accumulator.tokens).toHaveLength(1)
+    expect(accumulator.tokens[0]).toStrictEqual({
+      name: 'foo',
+      accessPath: ['foo'],
+      startPos: 0,
+      endPos: 3
+    })
+  })
+
+  it('captures a token for a nested identifier', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo[TOKEN]')
+    const nodes = findNodesByType<ts.Identifier>(sourceFile, ts.SyntaxKind.Identifier)
+    const handler = new IdentifierNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(1)
+    expect(accumulator.tokens[0]).toMatchObject({
+      name: 'TOKEN',
+      accessPath: ['TOKEN']
+    })
+  })
+
+  it('does not capture a token for a string access', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo["bla"]')
+    const nodes = findNodesByType<ts.Identifier>(sourceFile, ts.SyntaxKind.Identifier)
+    const handler = new IdentifierNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
+  })
+
+  it('does not capture any tokens for a chained property access', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo.bar.baz')
+    const nodes = findNodesByType<ts.Identifier>(sourceFile, ts.SyntaxKind.Identifier)
+    const handler = new IdentifierNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
+  })
+
+  it('does not capture any tokens for a function + property combo', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo().bar')
+    const nodes = findNodesByType<ts.Identifier>(sourceFile, ts.SyntaxKind.Identifier)
+    const handler = new IdentifierNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.tokens).toHaveLength(0)
   })
 })

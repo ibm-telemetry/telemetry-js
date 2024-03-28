@@ -9,7 +9,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
-import { substitute } from '../../../core/anonymize/substitute.js'
+import { substitute } from '../../../core/anonymize/substitute-array.js'
 import { deNull } from '../../../core/de-null.js'
 import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'

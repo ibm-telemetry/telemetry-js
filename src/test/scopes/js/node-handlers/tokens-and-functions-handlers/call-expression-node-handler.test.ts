@@ -56,7 +56,7 @@ describe('class: CallExpressionExpressionNodeHandler', async () => {
     })
   })
 
-  it('captures a function metric for a intermediate function', () => {
+  it('captures a function for a intermediate function', () => {
     const accumulator = new JsFunctionTokenAccumulator()
     const sourceFile = createSourceFileFromText('foo.bar().baz')
     const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
@@ -74,7 +74,7 @@ describe('class: CallExpressionExpressionNodeHandler', async () => {
     })
   })
 
-  it('captures a function metric for a simple function', () => {
+  it('captures a function for a simple function', () => {
     const accumulator = new JsFunctionTokenAccumulator()
     const sourceFile = createSourceFileFromText('foo()')
     const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
@@ -92,8 +92,31 @@ describe('class: CallExpressionExpressionNodeHandler', async () => {
     })
   })
 
+  it('??', () => {
+    const accumulator = new JsFunctionTokenAccumulator()
+    const sourceFile = createSourceFileFromText('foo().faa()')
+    const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+    const handler = new CallExpressionNodeHandler(sourceFile, logger)
+
+    nodes.forEach((node) => {
+      handler.handle(node, accumulator)
+    })
+
+    expect(accumulator.functions).toHaveLength(2)
+    expect(accumulator.functions[1]).toMatchObject({
+      name: 'foo',
+      arguments: [],
+      accessPath: ['foo']
+    })
+    expect(accumulator.functions[0]).toMatchObject({
+      name: 'foo().faa',
+      arguments: [],
+      accessPath: ['foo', 'faa']
+    })
+  })
+
   describe('functions containing arguments', () => {
-    it('captures a function metric and its arguments', () => {
+    it('captures a function and its arguments', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText('foo(first)')
       const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)

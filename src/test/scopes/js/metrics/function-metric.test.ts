@@ -9,9 +9,9 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { substitute } from '../../../../main/core/anonymize/substitute-array.js'
+import { substituteArray } from '../../../../main/core/anonymize/substitute-array.js'
 import { ComplexValue } from '../../../../main/scopes/js/complex-value.js'
-import type { JsFunction, JsImport, NodeValue } from '../../../../main/scopes/js/interfaces.js'
+import type { JsFunction, JsImport } from '../../../../main/scopes/js/interfaces.js'
 import { FunctionMetric } from '../../../../main/scopes/js/metrics/function-metric.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import { initLogger } from '../../../__utils/init-logger.js'
@@ -32,8 +32,8 @@ const config: ConfigSchema = {
 describe('class: FunctionMetric', () => {
   const logger = initLogger()
   const jsFunction: JsFunction = {
-    name: 'theFunction',
-    accessPath: ['access1', 'access2', 'theFunction'],
+    name: 'theFunction.access1.access2',
+    accessPath: ['theFunction', 'access1', 'access2'],
     startPos: 0,
     endPos: 10,
     arguments: [true, 'allowedArg1', 'allowedArg2', 32, 'unallowedArg', new ComplexValue({})]
@@ -53,17 +53,14 @@ describe('class: FunctionMetric', () => {
       config,
       logger
     ).attributes
-    const argMap = jsFunction.arguments.reduce<Record<string, NodeValue>>((prev, cur, index) => {
-      return { ...prev, [index.toString()]: cur }
-    }, {})
 
-    const subs = substitute(argMap, Object.keys(argMap), ['allowedArg1', 'allowedArg2'])
+    const subs = substituteArray(jsFunction.arguments, ['allowedArg1', 'allowedArg2'])
 
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsScopeAttributes.FUNCTION_NAME]: 'theFunction',
-          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['access1', 'access2', 'theFunction'],
+          [JsScopeAttributes.FUNCTION_NAME]: 'theFunction.access1.access2',
+          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['theFunction', 'access1', 'access2'],
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -99,17 +96,14 @@ describe('class: FunctionMetric', () => {
       config,
       logger
     ).attributes
-    const argMap = jsFunction.arguments.reduce<Record<string, NodeValue>>((prev, cur, index) => {
-      return { ...prev, [index.toString()]: cur }
-    }, {})
 
-    const subs = substitute(argMap, Object.keys(argMap), ['allowedArg1', 'allowedArg2'])
+    const subs = substituteArray(jsFunction.arguments, ['allowedArg1', 'allowedArg2'])
 
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsScopeAttributes.FUNCTION_NAME]: 'theActualName',
-          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['access1', 'access2', 'theActualName'],
+          [JsScopeAttributes.FUNCTION_NAME]: 'theActualName.access1.access2',
+          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['theActualName', 'access1', 'access2'],
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -150,17 +144,14 @@ describe('class: FunctionMetric', () => {
       config,
       logger
     ).attributes
-    const argMap = jsFunction.arguments.reduce<Record<string, NodeValue>>((prev, cur, index) => {
-      return { ...prev, [index.toString()]: cur }
-    }, {})
 
-    const subs = substitute(argMap, Object.keys(argMap), ['allowedArg1', 'allowedArg2'])
+    const subs = substituteArray(jsFunction.arguments, ['allowedArg1', 'allowedArg2'])
 
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsScopeAttributes.FUNCTION_NAME]: DEFAULT_ELEMENT_NAME,
-          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['access1', 'access2', DEFAULT_ELEMENT_NAME],
+          [JsScopeAttributes.FUNCTION_NAME]: `${DEFAULT_ELEMENT_NAME}.access1.access2`,
+          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: [DEFAULT_ELEMENT_NAME, 'access1', 'access2'],
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),

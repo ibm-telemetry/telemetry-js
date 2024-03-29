@@ -9,7 +9,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { substitute } from '../../../../main/core/anonymize/substitute-array.js'
+import { substituteObject } from '../../../../main/core/anonymize/substitute-object.js'
 import type { JsImport } from '../../../../main/scopes/js/interfaces.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import type { JsxElement, JsxElementAttribute } from '../../../../main/scopes/jsx/interfaces.js'
@@ -64,7 +64,7 @@ describe('class: ElementMetric', () => {
       {}
     )
 
-    const subs = substitute(attrMap, [], [])
+    const subs = substituteObject(attrMap, [], [])
 
     expect(attributes).toStrictEqual(
       hash(
@@ -109,7 +109,7 @@ describe('class: ElementMetric', () => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
 
-    const subs = substitute(attrMap, [], [])
+    const subs = substituteObject(attrMap, [], [])
 
     expect(attributes).toStrictEqual(
       hash(
@@ -159,7 +159,7 @@ describe('class: ElementMetric', () => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
 
-    const subs = substitute(attrMap, [], [])
+    const subs = substituteObject(attrMap, [], [])
 
     expect(attributes).toStrictEqual(
       hash(
@@ -228,7 +228,11 @@ describe('class: ElementMetric', () => {
       {}
     )
 
-    const substitutedAttributes = substitute(attrMap, ['allowedAttrName'], ['allowedAttrValue'])
+    const substitutedAttributes = substituteObject(
+      attrMap,
+      ['allowedAttrName'],
+      ['allowedAttrValue']
+    )
 
     expect(attributes).toStrictEqual(
       hash(

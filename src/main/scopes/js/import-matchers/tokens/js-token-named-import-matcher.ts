@@ -21,9 +21,6 @@ export class JsTokenNamedImportMatcher implements JsImportMatcher<JsToken> {
    * undefined otherwise.
    */
   findMatch(jsToken: JsToken, imports: JsImport[]) {
-    return imports.find(
-      (i) =>
-        !i.isDefault && !i.isAll && (i.name === jsToken.accessPath[0])
-    )
+    return imports.find((i) => !i.isDefault && !i.isAll && i.name === jsToken.accessPath[0])
   }
 }

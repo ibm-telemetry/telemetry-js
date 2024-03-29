@@ -16,8 +16,10 @@ import { initLogger } from '../../../__utils/init-logger.js'
 describe('class: TokenMetric', () => {
   const logger = initLogger()
   const jsToken: JsToken = {
-    name: 'theToken',
-    accessPath: ['access1', 'access2', 'theToken']
+    name: 'theToken.access1.access2',
+    accessPath: ['theToken', 'access1', 'access2'],
+    startPos: 0,
+    endPos: 0
   }
   const jsImport: JsImport = {
     name: 'theToken',
@@ -37,8 +39,8 @@ describe('class: TokenMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsScopeAttributes.TOKEN_NAME]: 'theToken',
-          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['access1', 'access2', 'theToken'],
+          [JsScopeAttributes.TOKEN_NAME]: 'theToken.access1.access2',
+          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['theToken', 'access1', 'access2'],
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -74,8 +76,8 @@ describe('class: TokenMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsScopeAttributes.TOKEN_NAME]: 'theActualName',
-          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['access1', 'access2', 'theActualName'],
+          [JsScopeAttributes.TOKEN_NAME]: 'theActualName.access1.access2',
+          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['theActualName', 'access1', 'access2'],
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -116,8 +118,8 @@ describe('class: TokenMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsScopeAttributes.TOKEN_NAME]: DEFAULT_ELEMENT_NAME,
-          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['access1', 'access2', DEFAULT_ELEMENT_NAME],
+          [JsScopeAttributes.TOKEN_NAME]: `${DEFAULT_ELEMENT_NAME}.access1.access2`,
+          [JsScopeAttributes.TOKEN_ACCESS_PATH]: [DEFAULT_ELEMENT_NAME, 'access1', 'access2'],
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',

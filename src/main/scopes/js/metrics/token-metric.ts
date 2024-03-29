@@ -8,6 +8,7 @@ import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes
 import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
+import { substituteArray } from '../../../core/anonymize/substitute-array.js'
 import type { Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
@@ -38,7 +39,7 @@ export class TokenMetric extends ScopeMetric {
     logger: Logger
   ) {
     super(logger)
-    this.jsToken = jsToken
+    this.jsToken = { ...jsToken }
     this.matchingImport = matchingImport
     this.instrumentedPackage = instrumentedPackage
   }
@@ -63,9 +64,22 @@ export class TokenMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
+    // Handle renamed tokens
+    if (this.matchingImport.rename !== undefined) {
+      this.jsToken.name = this.jsToken.name.replace(
+        this.matchingImport.rename,
+        this.matchingImport.name
+      )
+      // replace import name in access path
+      this.jsToken.accessPath[0] = this.matchingImport.name
+    }
+
     let metricData: Attributes = {
       [JsScopeAttributes.TOKEN_NAME]: this.jsToken.name,
-      [JsScopeAttributes.TOKEN_ACCESS_PATH]: this.jsToken.accessPath,
+      [JsScopeAttributes.TOKEN_ACCESS_PATH]: substituteArray(
+        this.jsToken.accessPath,
+        this.jsToken.accessPath.filter((p) => typeof p === 'string')
+      ) as string[],
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
@@ -74,20 +88,6 @@ export class TokenMetric extends ScopeMetric {
       [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
       [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
       [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
-    }
-
-    // Handle renamed tokens
-    if (this.matchingImport.rename !== undefined) {
-      metricData[JsScopeAttributes.TOKEN_NAME] = this.jsToken.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
-      )
-      // replace import name in access path
-      this.jsToken.accessPath.splice(
-        this.jsToken.accessPath.length - 1,
-        1,
-        this.matchingImport.name
-      )
     }
 
     metricData = hash(metricData, [

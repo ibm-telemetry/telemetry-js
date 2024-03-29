@@ -7,6 +7,8 @@
 import type { ConfigSchema } from '@ibm/telemetry-config-schema'
 import type * as ts from 'typescript'
 
+import { Substitution } from '../../core/anonymize/substitution.js'
+import { safeStringify } from '../../core/log/safe-stringify.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -16,6 +18,7 @@ import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
+import { ComplexValue } from './complex-value.js'
 import { JsFunctionAllImportMatcher } from './import-matchers/functions/js-function-all-import-matcher.js'
 import { JsFunctionNamedImportMatcher } from './import-matchers/functions/js-function-named-import-matcher.js'
 import { JsFunctionRenamedImportMatcher } from './import-matchers/functions/js-function-renamed-import-matcher.js'
@@ -139,28 +142,9 @@ export class JsScope extends Scope {
 
     processFile(accumulator, sourceFile, jsNodeHandlerMap, this.logger)
 
-    // deduplicateFunctions
-    // foo().bar().baz() <-- 3 functions inccoming. Keep foo() only
     this.deduplicateFunctions(accumulator)
 
     this.deduplicateTokens(accumulator)
-
-    // deduplicateIdentifiers
-    // Given: foo.bar().baz
-    // foo <-- filter
-    // bar <-- filter
-    // baz <-- NOT filtered, but will be thrown out because no matching import
-    // foo.bar <-- function, not touched
-    // for each token... if it is a substring of another token, filter it
-    //                  We can't do this 'cause what about BLA[BLE["something"]], or at this point is it supposed to be already substituted?
-    //                   if it is a substring of another function, filter it
-    //
-    // I'll leave the live share open if you want to check me on this logic ^ 👍🏻
-
-    // check identifier-node-handler.ts:
-    // do not capture if inside PropertyAccessExpressionHandler <- why would we want to?
-    // only capture if inside argumentExpression when inside ElementAccessExpressionHandler <- why would we want to otherwise?
-    // given ^, would we even need to filter stuff out ? 🤔
 
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
 
@@ -202,6 +186,7 @@ export class JsScope extends Scope {
     instrumentedPackage: PackageData,
     importMatchers: JsImportMatcher<JsToken>[]
   ) {
+    const subs = new Substitution()
     this.resolveTokenImports(accumulator, importMatchers)
 
     accumulator.tokens.forEach((jsToken) => {
@@ -210,6 +195,16 @@ export class JsScope extends Scope {
       if (jsImport === undefined) {
         return
       }
+
+      // replace complex values
+      jsToken.accessPath.forEach((segment) => {
+        if (segment instanceof ComplexValue) {
+          jsToken.name = jsToken.name.replace(
+            safeStringify(segment.complexValue),
+            subs.put(segment)
+          )
+        }
+      })
 
       this.capture(new TokenMetric(jsToken, jsImport, instrumentedPackage, this.logger))
     })
@@ -229,6 +224,7 @@ export class JsScope extends Scope {
     instrumentedPackage: PackageData,
     importMatchers: JsImportMatcher<JsFunction>[]
   ) {
+    const subs = new Substitution()
     this.resolveFunctionImports(accumulator, importMatchers)
 
     accumulator.functions.forEach((jsFunction) => {
@@ -237,6 +233,16 @@ export class JsScope extends Scope {
       if (jsImport === undefined) {
         return
       }
+
+      // replace complex values
+      jsFunction.accessPath.forEach((segment) => {
+        if (segment instanceof ComplexValue) {
+          jsFunction.name = jsFunction.name.replace(
+            safeStringify(segment.complexValue),
+            subs.put(segment)
+          )
+        }
+      })
 
       this.capture(
         new FunctionMetric(jsFunction, jsImport, instrumentedPackage, this.config, this.logger)

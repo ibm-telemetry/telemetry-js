@@ -175,19 +175,27 @@ describe('class: JsScope', () => {
     }
     const defaultToken: JsToken = {
       name: 'nameDefault',
-      accessPath: ['object', 'nameDefault']
+      accessPath: ['object', 'nameDefault'],
+      startPos: 0,
+      endPos: 0
     }
     const allToken: JsToken = {
       name: 'whatever',
-      accessPath: ['all', 'whatever']
+      accessPath: ['all', 'whatever'],
+      startPos: 0,
+      endPos: 0
     }
     const namedToken: JsToken = {
       name: 'name',
-      accessPath: ['object', 'name']
+      accessPath: ['object', 'name'],
+      startPos: 0,
+      endPos: 0
     }
     const renamedToken: JsToken = {
       name: 'rename',
-      accessPath: ['rename']
+      accessPath: ['rename'],
+      startPos: 0,
+      endPos: 0
     }
 
     it('correctly identifies tokens with their matchers', () => {
@@ -216,11 +224,15 @@ describe('class: JsScope', () => {
     it('discards tokens that do not have a matcher', () => {
       const unmatchedToken1: JsToken = {
         name: 'noMatch1',
-        accessPath: ['noMatch1']
+        accessPath: ['noMatch1'],
+        startPos: 0,
+        endPos: 0
       }
       const unmatchedToken2: JsToken = {
         name: 'noMatch2',
-        accessPath: ['bla', 'noMatch2']
+        accessPath: ['bla', 'noMatch2'],
+        startPos: 0,
+        endPos: 0
       }
       const accumulator = new JsFunctionTokenAccumulator()
       accumulator.imports.push(defaultImport)

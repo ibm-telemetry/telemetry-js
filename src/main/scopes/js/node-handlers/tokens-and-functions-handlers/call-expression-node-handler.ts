@@ -27,19 +27,6 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
   handle(node: ts.CallExpression, accumulator: JsFunctionTokenAccumulator) {
     const jsFunction = this.getData(node)
 
-    // TODO: remove commented out code
-    // TODO: use this at the Js Scope top-level to filter out functions within tokens (drop the
-    // token metric)
-    // const functionExists = accumulator.functions.some(
-    //   (f) =>
-    //     f.startPos <= jsFunction.startPos &&
-    //     f.endPos >= jsFunction.endPos
-    // )
-
-    // if (functionExists) {
-    //   return
-    // }
-
     accumulator.functions.push(jsFunction)
   }
 

@@ -61,8 +61,6 @@ export class AccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
    */
   getData(node: ts.ElementAccessExpression | ts.PropertyAccessExpression): JsToken {
     return {
-      // TODO: this might contain element access expressions that need to be anonymized. need to
-      // anonymize later based on complex values from the accessPath (global string replace)
       name: node.getText(this.sourceFile),
       accessPath: getAccessPath(node, this.sourceFile, this.logger),
       startPos: node.pos,

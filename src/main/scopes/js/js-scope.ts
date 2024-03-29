@@ -196,6 +196,7 @@ export class JsScope extends Scope {
         return
       }
 
+      // TODO: test
       // replace complex values
       jsToken.accessPath.forEach((segment) => {
         if (segment instanceof ComplexValue) {
@@ -234,6 +235,7 @@ export class JsScope extends Scope {
         return
       }
 
+      // TODO: test
       // replace complex values
       jsFunction.accessPath.forEach((segment) => {
         if (segment instanceof ComplexValue) {

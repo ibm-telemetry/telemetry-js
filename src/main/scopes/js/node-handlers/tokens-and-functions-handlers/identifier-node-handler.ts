@@ -23,8 +23,6 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
    * that holds the aggregated tokens state.
    */
   handle(node: ts.Identifier, accumulator: JsFunctionTokenAccumulator) {
-    // TODO: filter out upstream if included in another token (or function)
-
     // The logic below does the following:
     // foo[TOKEN] <-- capture TOKEN, not foo
     // foo[BLA['cool']] <-- capture nothing

@@ -3,4 +3,4 @@ import { TOKEN } from 'instrumented'
 
 BLA = TOKEN['60']
 
-TOKEN.function().anotherFunction()
+TOKEN.function().anotherFunction('firstArg', 'secondArg')

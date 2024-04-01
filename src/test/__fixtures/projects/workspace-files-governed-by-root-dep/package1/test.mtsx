@@ -5,6 +5,6 @@ import BLA from 'another-package'
 
 const ble = BLA[instrumented['hii']]
 
-instrumented.callingAFunction('arg')
+instrumented.callingAFunction('firstArg')
 
 

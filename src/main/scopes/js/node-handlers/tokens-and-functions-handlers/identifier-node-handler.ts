@@ -36,7 +36,11 @@ export class IdentifierNodeHandler extends JsNodeHandler<JsToken> {
     }
 
     if (
+      // TODOASKJOE about JsxElement types
       [
+        ts.SyntaxKind.JsxOpeningElement,
+        ts.SyntaxKind.JsxSelfClosingElement,
+        ts.SyntaxKind.JsxClosingElement,
         ts.SyntaxKind.PropertyAccessExpression,
         ts.SyntaxKind.CallExpression,
         ts.SyntaxKind.ImportClause,

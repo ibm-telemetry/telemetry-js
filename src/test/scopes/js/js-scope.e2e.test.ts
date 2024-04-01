@@ -20,7 +20,6 @@ import { jsNodeHandlerMap } from '../../../main/scopes/js/js-node-handler-map.js
 import { JsScope } from '../../../main/scopes/js/js-scope.js'
 import { processFile } from '../../../main/scopes/js/process-file.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../main/scopes/jsx/constants.js'
-import { JsxScope } from '../../../main/scopes/jsx/jsx-scope.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
 import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-version.js'
 import { createSourceFileFromText } from '../../__utils/create-source-file-from-text.js'
@@ -44,7 +43,7 @@ const config: ConfigSchema = {
 
 describe('class: JsScope', () => {
   const logger = initLogger()
-  describe.skip('run', () => {
+  describe('run', () => {
     it('correctly captures js function and token metric data', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture('projects/basic-project')
@@ -76,7 +75,7 @@ describe('class: JsScope', () => {
       await expect(scope.run()).rejects.toThrow(EmptyScopeError)
     })
 
-    it.todo('only captures metrics for the instrumented package/version', async () => {
+    it('only captures metrics for the instrumented package/version', async () => {
       let metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture('projects/multiple-versions-of-instrumented-dep')
       const pkgA = new Fixture(
@@ -86,66 +85,62 @@ describe('class: JsScope', () => {
         'projects/multiple-versions-of-instrumented-dep/b/node_modules/instrumented'
       )
 
-      let jsxScope = new JsxScope(pkgA.path, root.path, config, logger)
-      jsxScope.setRunSync(true)
-      await jsxScope.run()
+      let jsScope = new JsScope(pkgA.path, root.path, config, logger)
+      jsScope.setRunSync(true)
+      await jsScope.run()
       const resultsA = await metricReader.collect()
 
       metricReader = initializeOtelForTest().getMetricReader()
 
-      jsxScope = new JsxScope(pkgB.path, root.path, config, logger)
-      jsxScope.setRunSync(true)
-      await jsxScope.run()
+      jsScope = new JsScope(pkgB.path, root.path, config, logger)
+      jsScope.setRunSync(true)
+      await jsScope.run()
       const resultsB = await metricReader.collect()
 
       expect(resultsA.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(1)
       expect(resultsB.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints).toHaveLength(2)
+      expect(resultsA.resourceMetrics.scopeMetrics[0]?.metrics[1]?.dataPoints).toHaveLength(1)
+      expect(resultsB.resourceMetrics.scopeMetrics[0]?.metrics[1]?.dataPoints).toHaveLength(2)
     })
 
-    it.todo(
-      'captures metrics when instrumented package is installed in intermediate package',
-      async () => {
-        const metricReader = initializeOtelForTest().getMetricReader()
-        const root = new Fixture('projects/hoisted-deeply-nested-deps')
-        const cwd = new Fixture('projects/hoisted-deeply-nested-deps/node_modules/instrumented')
-        const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+    it('captures metrics when instrumented package is installed in intermediate package', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture('projects/hoisted-deeply-nested-deps')
+      const cwd = new Fixture('projects/hoisted-deeply-nested-deps/node_modules/instrumented')
+      const jsScope = new JsScope(cwd.path, root.path, config, logger)
 
-        jsxScope.setRunSync(true)
-        await jsxScope.run()
+      jsScope.setRunSync(true)
+      await jsScope.run()
 
-        const results = await metricReader.collect()
+      const results = await metricReader.collect()
 
-        clearTelemetrySdkVersion(results)
-        clearDataPointTimes(results)
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
 
-        expect(results).toMatchSnapshot()
-      }
-    )
+      expect(results).toMatchSnapshot()
+    })
 
-    it.todo(
-      'captures metrics for workspace files when instrumented package is installed by root package',
-      async () => {
-        const metricReader = initializeOtelForTest().getMetricReader()
-        const root = new Fixture('projects/workspace-files-governed-by-root-dep')
-        const cwd = new Fixture(
-          'projects/workspace-files-governed-by-root-dep/node_modules/instrumented-top-level'
-        )
-        const jsxScope = new JsxScope(cwd.path, root.path, config, logger)
+    it('captures metrics for workspace files when instrumented package is installed by root package', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture('projects/workspace-files-governed-by-root-dep')
+      const cwd = new Fixture(
+        'projects/workspace-files-governed-by-root-dep/node_modules/instrumented-top-level'
+      )
+      const jsScope = new JsScope(cwd.path, root.path, config, logger)
 
-        jsxScope.setRunSync(true)
-        await jsxScope.run()
+      jsScope.setRunSync(true)
+      await jsScope.run()
 
-        const results = await metricReader.collect()
+      const results = await metricReader.collect()
 
-        clearTelemetrySdkVersion(results)
-        clearDataPointTimes(results)
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
 
-        expect(results).toMatchSnapshot()
-      }
-    )
+      expect(results).toMatchSnapshot()
+    })
   })
 
-  describe.skip('resolveTokenImports', () => {
+  describe('resolveTokenImports', () => {
     const jsScope = new JsScope('', '', config, logger)
     const defaultImport: JsImport = {
       name: DEFAULT_ELEMENT_NAME,
@@ -174,20 +169,20 @@ describe('class: JsScope', () => {
       isAll: false
     }
     const defaultToken: JsToken = {
-      name: 'nameDefault',
-      accessPath: ['object', 'nameDefault'],
+      name: 'nameDefault.prop',
+      accessPath: ['nameDefault', 'prop'],
       startPos: 0,
       endPos: 0
     }
     const allToken: JsToken = {
-      name: 'whatever',
+      name: 'all["whatever"]',
       accessPath: ['all', 'whatever'],
       startPos: 0,
       endPos: 0
     }
     const namedToken: JsToken = {
-      name: 'name',
-      accessPath: ['object', 'name'],
+      name: 'name.prop',
+      accessPath: ['name', 'prop'],
       startPos: 0,
       endPos: 0
     }
@@ -267,7 +262,7 @@ describe('class: JsScope', () => {
     })
   })
 
-  describe.skip('resolveFunctionImports', () => {
+  describe('resolveFunctionImports', () => {
     const jsScope = new JsScope('', '', config, logger)
     const defaultImport: JsImport = {
       name: DEFAULT_ELEMENT_NAME,
@@ -296,14 +291,14 @@ describe('class: JsScope', () => {
       isAll: false
     }
     const defaultFunction: JsFunction = {
-      name: 'functionName',
+      name: 'nameDefault.functionName',
       accessPath: ['nameDefault', 'functionName'],
       arguments: [],
       startPos: 0,
       endPos: 0
     }
     const allFunction: JsFunction = {
-      name: 'whatever',
+      name: 'all["whatever"]',
       accessPath: ['all', 'whatever'],
       arguments: [],
       startPos: 0,

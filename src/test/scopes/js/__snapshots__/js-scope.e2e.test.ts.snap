@@ -1,5 +1,305 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`class: JsScope > run > captures metrics for workspace files when instrumented package is installed by root package 1`] = `
+{
+  "errors": [],
+  "resourceMetrics": {
+    "resource": Resource {
+      "_asyncAttributesPromise": undefined,
+      "_attributes": {
+        "analyzed.commit": "commitHash",
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.path": "host/owner/repository",
+        "analyzed.refs": [],
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "[omitted for test snapshot]",
+      },
+      "_syncAttributes": {
+        "analyzed.commit": "commitHash",
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.path": "host/owner/repository",
+        "analyzed.refs": [],
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "[omitted for test snapshot]",
+      },
+      "asyncAttributesPending": false,
+    },
+    "scopeMetrics": [
+      {
+        "metrics": [
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "js.token.accessPath": [
+                    "instrumented",
+                    "hii",
+                  ],
+                  "js.token.name": "instrumented['hii']",
+                  "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
+                  "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
+                  "npm.dependency.instrumented.version.major": "1",
+                  "npm.dependency.instrumented.version.minor": "0",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+            ],
+            "descriptor": {
+              "advice": {},
+              "description": "",
+              "name": "js.token",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 0,
+            },
+            "isMonotonic": true,
+          },
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "js.function.accessPath": [
+                    "instrumented",
+                    "callingAFunction",
+                  ],
+                  "js.function.arguments.values": [
+                    "firstArg",
+                  ],
+                  "js.function.name": "instrumented.callingAFunction",
+                  "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
+                  "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
+                  "npm.dependency.instrumented.version.major": "1",
+                  "npm.dependency.instrumented.version.minor": "0",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+            ],
+            "descriptor": {
+              "advice": {},
+              "description": "",
+              "name": "js.function",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 0,
+            },
+            "isMonotonic": true,
+          },
+        ],
+        "scope": {
+          "name": "js",
+          "schemaUrl": undefined,
+          "version": "",
+        },
+      },
+    ],
+  },
+}
+`;
+
+exports[`class: JsScope > run > captures metrics when instrumented package is installed in intermediate package 1`] = `
+{
+  "errors": [],
+  "resourceMetrics": {
+    "resource": Resource {
+      "_asyncAttributesPromise": undefined,
+      "_attributes": {
+        "analyzed.commit": "commitHash",
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.path": "host/owner/repository",
+        "analyzed.refs": [],
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "[omitted for test snapshot]",
+      },
+      "_syncAttributes": {
+        "analyzed.commit": "commitHash",
+        "analyzed.host": "host",
+        "analyzed.owner": "owner",
+        "analyzed.path": "host/owner/repository",
+        "analyzed.refs": [],
+        "analyzed.repository": "repository",
+        "date": "1970-01-01T00:00:02.023Z",
+        "project.id": "projectId",
+        "service.name": "IBM Telemetry",
+        "telemetry.emitter.name": "telemetryName",
+        "telemetry.emitter.version": "telemetryVersion",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "[omitted for test snapshot]",
+      },
+      "asyncAttributesPending": false,
+    },
+    "scopeMetrics": [
+      {
+        "metrics": [
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "js.token.accessPath": [
+                    "TEST",
+                    "[redacted9]",
+                    "prop",
+                    "property",
+                  ],
+                  "js.token.name": "TEST[[redacted9]].prop.property",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "1",
+                  "npm.dependency.instrumented.version.minor": "0",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "js.token.accessPath": [
+                    "TEST",
+                    "[redacted10]",
+                  ],
+                  "js.token.name": "TEST[[redacted10]]",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "1",
+                  "npm.dependency.instrumented.version.minor": "0",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+            ],
+            "descriptor": {
+              "advice": {},
+              "description": "",
+              "name": "js.token",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 0,
+            },
+            "isMonotonic": true,
+          },
+          {
+            "aggregationTemporality": 1,
+            "dataPointType": 3,
+            "dataPoints": [
+              {
+                "attributes": {
+                  "js.function.accessPath": [
+                    "somefunction",
+                  ],
+                  "js.function.arguments.values": [
+                    "1",
+                    "[redacted11]",
+                    "firstArg",
+                    "true",
+                  ],
+                  "js.function.name": "somefunction",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "1",
+                  "npm.dependency.instrumented.version.minor": "0",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+            ],
+            "descriptor": {
+              "advice": {},
+              "description": "",
+              "name": "js.function",
+              "type": "COUNTER",
+              "unit": "",
+              "valueType": 0,
+            },
+            "isMonotonic": true,
+          },
+        ],
+        "scope": {
+          "name": "js",
+          "schemaUrl": undefined,
+          "version": "",
+        },
+      },
+    ],
+  },
+}
+`;
+
 exports[`class: JsScope > run > correctly captures js function and token metric data 1`] = `
 {
   "errors": [],
@@ -53,31 +353,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
                     "BLA",
                     "hi",
                   ],
-                  "js.token.name": "hi",
-                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
-                  "npm.dependency.instrumented.version.major": "0",
-                  "npm.dependency.instrumented.version.minor": "1",
-                  "npm.dependency.instrumented.version.patch": "0",
-                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
-                },
-                "endTime": [
-                  0,
-                  0,
-                ],
-                "startTime": [
-                  0,
-                  0,
-                ],
-                "value": 1,
-              },
-              {
-                "attributes": {
-                  "js.token.accessPath": [
-                    "BLE",
-                    "[Default]",
-                  ],
-                  "js.token.name": "property",
+                  "js.token.name": "BLA['hi']",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",
@@ -99,8 +375,9 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
                 "attributes": {
                   "js.token.accessPath": [
                     "[Default]",
+                    "property",
                   ],
-                  "js.token.name": "[Default]",
+                  "js.token.name": "[Default].property",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",
@@ -116,7 +393,30 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
                   0,
                   0,
                 ],
-                "value": 2,
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "js.token.accessPath": [
+                    "A_TOKEN",
+                  ],
+                  "js.token.name": "A_TOKEN",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "0",
+                  "npm.dependency.instrumented.version.minor": "1",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
               },
             ],
             "descriptor": {
@@ -149,7 +449,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
                     "32",
                     "[redacted2]",
                   ],
-                  "js.function.name": "someFunction",
+                  "js.function.name": "BLA.someFunction",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",
@@ -170,15 +470,69 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
               {
                 "attributes": {
                   "js.function.accessPath": [
-                    "BLE",
-                    "property",
                     "[Default]",
+                    "property",
+                    "aFunction",
                   ],
                   "js.function.arguments.values": [
                     "[redacted3]",
                     "[redacted4]",
                   ],
-                  "js.function.name": "aFunction",
+                  "js.function.name": "[Default].property.aFunction?.",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "0",
+                  "npm.dependency.instrumented.version.minor": "1",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "js.function.accessPath": [
+                    "anObject",
+                    "property",
+                    "[redacted5]",
+                  ],
+                  "js.function.arguments.values": [
+                    "[redacted6]",
+                    "500",
+                    "[redacted7]",
+                  ],
+                  "js.function.name": "anObject['property'][[redacted5]]",
+                  "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
+                  "npm.dependency.instrumented.version.major": "0",
+                  "npm.dependency.instrumented.version.minor": "1",
+                  "npm.dependency.instrumented.version.patch": "0",
+                  "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "js.function.accessPath": [
+                    "Function1",
+                  ],
+                  "js.function.arguments.values": [],
+                  "js.function.name": "Function1",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",

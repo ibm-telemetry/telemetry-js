@@ -37,10 +37,11 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
    * @returns Constructed JsFunction object.
    */
   getData(node: ts.CallExpression): JsFunction {
+    const argsLength = node.arguments.end - node.arguments.pos
+    const nodeText = node.getText(this.sourceFile)
     const jsFunction: JsFunction = {
-      name: this.sourceFile
-        .getFullText(this.sourceFile)
-        .substring(node.pos, node.arguments.pos - 1),
+      // account for parentheses
+      name: nodeText.substring(0, nodeText.length - argsLength - 2),
       accessPath: [],
       arguments: [],
       startPos: node.pos,

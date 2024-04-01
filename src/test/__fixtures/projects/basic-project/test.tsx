@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 // @ts-nocheck
-import { ImaginaryThing, Function1, A_TOKEN as A_RENAMED_TOKEN } from 'instrumented'
+import { ImaginaryThing, Function1, A_TOKEN as A_RENAMED_TOKEN, anObject } from 'instrumented'
 import OtherThing from '@not/instrumented'
 
 export const MyComponent = ({other, ...spreadObj}) => {

@@ -8,6 +8,7 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
+import { ComplexValue } from '../../../main/scopes/js/complex-value.js'
 import { JsAllImportMatcher } from '../../../main/scopes/js/import-matchers/js-all-import-matcher.js'
 import { JsNamedImportMatcher } from '../../../main/scopes/js/import-matchers/js-named-import-matcher.js'
 import { JsRenamedImportMatcher } from '../../../main/scopes/js/import-matchers/js-renamed-import-matcher.js'
@@ -444,6 +445,96 @@ describe('class: JsScope', () => {
 
       new JsScope('', '', config, logger).deduplicateTokens(accumulator)
       expect(accumulator.tokens).toHaveLength(1)
+    })
+  })
+
+  describe('redactSensitiveData', () => {
+    const allImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: true
+    }
+    const namedImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: false
+    }
+
+    it('redacts an all import', () => {
+      const jsToken: JsToken = {
+        name: 'import.aToken',
+        accessPath: ['import', 'aToken'],
+        startPos: 0,
+        endPos: 0
+      }
+      const jsFunction: JsFunction = {
+        name: 'import.aFunction',
+        accessPath: ['import', 'aFunction'],
+        startPos: 0,
+        endPos: 0,
+        arguments: []
+      }
+
+      new JsScope('', '', config, logger).redactSensitiveData(jsToken, allImport)
+      new JsScope('', '', config, logger).redactSensitiveData(jsFunction, allImport)
+
+      expect(jsToken.name).not.toBe('import.aToken')
+      expect(jsToken.accessPath[0]).not.toBe('import')
+      expect(jsFunction.name).not.toBe('import.aFunction')
+      expect(jsFunction.accessPath[0]).not.toBe('import')
+    })
+
+    it('redacts complex values', () => {
+      const jsToken: JsToken = {
+        name: 'import[complex["complex"]]',
+        accessPath: ['import', new ComplexValue('complex["complex"]')],
+        startPos: 0,
+        endPos: 0
+      }
+      const jsFunction: JsFunction = {
+        name: 'import[complex["complex"]]',
+        accessPath: ['import', new ComplexValue('complex["complex"]')],
+        startPos: 0,
+        endPos: 0,
+        arguments: []
+      }
+
+      new JsScope('', '', config, logger).redactSensitiveData(jsToken, namedImport)
+      new JsScope('', '', config, logger).redactSensitiveData(jsFunction, namedImport)
+
+      expect(jsToken.name).not.toBe('import[complex["complex"]]')
+      expect(jsToken.accessPath).toStrictEqual(['import', new ComplexValue('complex["complex"]')])
+      expect(jsFunction.name).not.toBe('import[complex["complex"]]')
+      expect(jsFunction.accessPath).toStrictEqual([
+        'import',
+        new ComplexValue('complex["complex"]')
+      ])
+    })
+
+    it('keeps values intact if no redaction necessary', () => {
+      const jsToken: JsToken = {
+        name: 'import.token',
+        accessPath: ['import', 'token'],
+        startPos: 0,
+        endPos: 0
+      }
+      const jsFunction: JsFunction = {
+        name: 'import["function"]',
+        accessPath: ['import', 'function'],
+        startPos: 0,
+        endPos: 0,
+        arguments: []
+      }
+
+      new JsScope('', '', config, logger).redactSensitiveData(jsToken, namedImport)
+      new JsScope('', '', config, logger).redactSensitiveData(jsFunction, namedImport)
+
+      expect(jsToken.name).toBe('import.token')
+      expect(jsToken.accessPath).toStrictEqual(['import', 'token'])
+      expect(jsFunction.name).toBe('import["function"]')
+      expect(jsFunction.accessPath).toStrictEqual(['import', 'function'])
     })
   })
 })

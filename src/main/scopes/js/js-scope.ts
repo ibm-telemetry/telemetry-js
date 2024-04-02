@@ -19,12 +19,9 @@ import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
 import { ComplexValue } from './complex-value.js'
-import { JsFunctionAllImportMatcher } from './import-matchers/functions/js-function-all-import-matcher.js'
-import { JsFunctionNamedImportMatcher } from './import-matchers/functions/js-function-named-import-matcher.js'
-import { JsFunctionRenamedImportMatcher } from './import-matchers/functions/js-function-renamed-import-matcher.js'
-import { JsTokenAllImportMatcher } from './import-matchers/tokens/js-token-all-import-matcher.js'
-import { JsTokenNamedImportMatcher } from './import-matchers/tokens/js-token-named-import-matcher.js'
-import { JsTokenRenamedImportMatcher } from './import-matchers/tokens/js-token-renamed-import-matcher.js'
+import { JsAllImportMatcher } from './import-matchers/js-all-import-matcher.js'
+import { JsNamedImportMatcher } from './import-matchers/js-named-import-matcher.js'
+import { JsRenamedImportMatcher } from './import-matchers/js-renamed-import-matcher.js'
 import { JsFunctionTokenAccumulator } from './js-function-token-accumulator.js'
 import { jsNodeHandlerMap } from './js-node-handler-map.js'
 import { FunctionMetric } from './metrics/function-metric.js'
@@ -74,17 +71,10 @@ export class JsScope extends Scope {
   async captureAllMetrics(
     collectorKeys: NonNullable<ConfigSchema['collect']['js']>
   ): Promise<void> {
-    // TODO: these might end up becoming one and the same (same matchers for functions and tokens)
-    const functionImportMatchers: JsImportMatcher<JsFunction>[] = [
-      new JsFunctionAllImportMatcher(),
-      new JsFunctionNamedImportMatcher(),
-      new JsFunctionRenamedImportMatcher()
-    ]
-
-    const tokenImportMatchers: JsImportMatcher<JsToken>[] = [
-      new JsTokenAllImportMatcher(),
-      new JsTokenNamedImportMatcher(),
-      new JsTokenRenamedImportMatcher()
+    const importMatchers: JsImportMatcher<JsToken | JsFunction>[] = [
+      new JsAllImportMatcher(),
+      new JsNamedImportMatcher(),
+      new JsRenamedImportMatcher()
     ]
 
     const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
@@ -105,8 +95,7 @@ export class JsScope extends Scope {
       const resultPromise = this.captureFileMetrics(
         sourceFile,
         instrumentedPackage,
-        tokenImportMatchers,
-        functionImportMatchers,
+        importMatchers,
         collectorKeys
       )
 
@@ -127,15 +116,13 @@ export class JsScope extends Scope {
    * @param sourceFile - The sourcefile node to generate metrics for.
    * @param instrumentedPackage - Name and version of the instrumented package
    * to capture metrics for.
-   * @param tokenImportMatchers - Matchers instances to use for import-token matching.
-   * @param functionImportMatchers - Matchers instances to use for import-function matching.
+   * @param importMatchers - Matchers instances to use for import-function/token matching.
    * @param collectorKeys - Config keys defined for JS scope.
    */
   async captureFileMetrics(
     sourceFile: ts.SourceFile,
     instrumentedPackage: PackageData,
-    tokenImportMatchers: JsImportMatcher<JsToken>[],
-    functionImportMatchers: JsImportMatcher<JsFunction>[],
+    importMatchers: JsImportMatcher<JsToken | JsFunction>[],
     collectorKeys: NonNullable<ConfigSchema['collect']['js']>
   ) {
     const accumulator = new JsFunctionTokenAccumulator()
@@ -154,16 +141,12 @@ export class JsScope extends Scope {
       switch (key) {
         case 'tokens':
           promises.push(
-            this.captureTokenFileMetrics(accumulator, instrumentedPackage, tokenImportMatchers)
+            this.captureTokenFileMetrics(accumulator, instrumentedPackage, importMatchers)
           )
           break
         case 'functions':
           promises.push(
-            this.captureFunctionFileMetrics(
-              accumulator,
-              instrumentedPackage,
-              functionImportMatchers
-            )
+            this.captureFunctionFileMetrics(accumulator, instrumentedPackage, importMatchers)
           )
           break
       }
@@ -196,8 +179,6 @@ export class JsScope extends Scope {
         return
       }
 
-      // TODO: test
-      // replace complex values
       jsToken.accessPath.forEach((segment) => {
         if (segment instanceof ComplexValue) {
           jsToken.name = jsToken.name.replace(
@@ -235,8 +216,6 @@ export class JsScope extends Scope {
         return
       }
 
-      // TODO: test
-      // replace complex values
       jsFunction.accessPath.forEach((segment) => {
         if (segment instanceof ComplexValue) {
           jsFunction.name = jsFunction.name.replace(

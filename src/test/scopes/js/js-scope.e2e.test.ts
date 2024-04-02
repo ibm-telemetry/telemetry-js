@@ -8,12 +8,9 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
-import { JsFunctionAllImportMatcher } from '../../../main/scopes/js/import-matchers/functions/js-function-all-import-matcher.js'
-import { JsFunctionNamedImportMatcher } from '../../../main/scopes/js/import-matchers/functions/js-function-named-import-matcher.js'
-import { JsFunctionRenamedImportMatcher } from '../../../main/scopes/js/import-matchers/functions/js-function-renamed-import-matcher.js'
-import { JsTokenAllImportMatcher } from '../../../main/scopes/js/import-matchers/tokens/js-token-all-import-matcher.js'
-import { JsTokenNamedImportMatcher } from '../../../main/scopes/js/import-matchers/tokens/js-token-named-import-matcher.js'
-import { JsTokenRenamedImportMatcher } from '../../../main/scopes/js/import-matchers/tokens/js-token-renamed-import-matcher.js'
+import { JsAllImportMatcher } from '../../../main/scopes/js/import-matchers/js-all-import-matcher.js'
+import { JsNamedImportMatcher } from '../../../main/scopes/js/import-matchers/js-named-import-matcher.js'
+import { JsRenamedImportMatcher } from '../../../main/scopes/js/import-matchers/js-renamed-import-matcher.js'
 import type { JsFunction, JsImport, JsToken } from '../../../main/scopes/js/interfaces.js'
 import { JsFunctionTokenAccumulator } from '../../../main/scopes/js/js-function-token-accumulator.js'
 import { jsNodeHandlerMap } from '../../../main/scopes/js/js-node-handler-map.js'
@@ -205,9 +202,9 @@ describe('class: JsScope', () => {
       accumulator.tokens.push(renamedToken)
 
       jsScope.resolveTokenImports(accumulator, [
-        new JsTokenAllImportMatcher(),
-        new JsTokenNamedImportMatcher(),
-        new JsTokenRenamedImportMatcher()
+        new JsAllImportMatcher(),
+        new JsNamedImportMatcher(),
+        new JsRenamedImportMatcher()
       ])
 
       expect(accumulator.tokenImports.get(defaultToken)).toStrictEqual(defaultImport)
@@ -242,9 +239,9 @@ describe('class: JsScope', () => {
 
       const jsScope = new JsScope('', '', config, logger)
       jsScope.resolveTokenImports(accumulator, [
-        new JsTokenAllImportMatcher(),
-        new JsTokenNamedImportMatcher(),
-        new JsTokenRenamedImportMatcher()
+        new JsAllImportMatcher(),
+        new JsNamedImportMatcher(),
+        new JsRenamedImportMatcher()
       ])
 
       expect(accumulator.tokenImports.get(defaultToken)).toStrictEqual(defaultImport)
@@ -331,9 +328,9 @@ describe('class: JsScope', () => {
       accumulator.functions.push(renamedFunction)
 
       jsScope.resolveFunctionImports(accumulator, [
-        new JsFunctionAllImportMatcher(),
-        new JsFunctionNamedImportMatcher(),
-        new JsFunctionRenamedImportMatcher()
+        new JsAllImportMatcher(),
+        new JsNamedImportMatcher(),
+        new JsRenamedImportMatcher()
       ])
 
       expect(accumulator.functionImports.get(defaultFunction)).toStrictEqual(defaultImport)
@@ -370,9 +367,9 @@ describe('class: JsScope', () => {
 
       const jsScope = new JsScope('', '', config, logger)
       jsScope.resolveFunctionImports(accumulator, [
-        new JsFunctionAllImportMatcher(),
-        new JsFunctionNamedImportMatcher(),
-        new JsFunctionRenamedImportMatcher()
+        new JsAllImportMatcher(),
+        new JsNamedImportMatcher(),
+        new JsRenamedImportMatcher()
       ])
 
       expect(accumulator.functionImports.get(defaultFunction)).toStrictEqual(defaultImport)

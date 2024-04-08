@@ -84,6 +84,7 @@ export class FunctionMetric extends ScopeMetric {
     let metricData: Attributes = {
       // TODOASKJOE: does this need a specifier?
       [JsScopeAttributes.FUNCTION_NAME]: this.jsFunction.name,
+      // TODOASKJOE: should this be a string? as per TD
       [JsScopeAttributes.FUNCTION_ACCESS_PATH]: substituteArray(
         this.jsFunction.accessPath,
         this.jsFunction.accessPath.filter((p) => typeof p === 'string')

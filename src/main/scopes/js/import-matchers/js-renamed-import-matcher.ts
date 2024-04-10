@@ -22,6 +22,6 @@ export class JsRenamedImportMatcher implements JsImportMatcher<JsToken | JsFunct
    * undefined otherwise.
    */
   findMatch(jsElement: JsToken | JsFunction, imports: JsImport[]) {
-    return imports.find((i) => Boolean(i.rename) && i.rename === jsElement.accessPath[0])
+    return imports.find((i) => i.rename !== undefined && i.rename === jsElement.accessPath[0])
   }
 }

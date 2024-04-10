@@ -23,7 +23,7 @@ export class JsNamedImportMatcher implements JsImportMatcher<JsToken | JsFunctio
    */
   findMatch(jsElement: JsToken | JsFunction, imports: JsImport[]) {
     return imports.find(
-      (i) => !i.isDefault && !i.isAll && !Boolean(i.rename) && i.name === jsElement.accessPath[0]
+      (i) => !i.isDefault && !i.isAll && i.rename === undefined && i.name === jsElement.accessPath[0]
     )
   }
 }

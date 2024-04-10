@@ -138,7 +138,6 @@ describe('class: JsScope', () => {
   })
 
   describe('resolveTokenImports', () => {
-    const jsScope = new JsScope('', '', config, logger)
     const defaultImport: JsImport = {
       name: DEFAULT_ELEMENT_NAME,
       rename: 'nameDefault',
@@ -201,6 +200,10 @@ describe('class: JsScope', () => {
       accumulator.tokens.push(namedToken)
       accumulator.tokens.push(renamedToken)
 
+      const jsScope = new JsScope('', '', config, logger)
+
+      jsScope.setRunSync(true)
+
       jsScope.resolveTokenImports(accumulator, [
         new JsAllImportMatcher(),
         new JsNamedImportMatcher(),
@@ -238,6 +241,9 @@ describe('class: JsScope', () => {
       accumulator.tokens.push(unmatchedToken2)
 
       const jsScope = new JsScope('', '', config, logger)
+
+      jsScope.setRunSync(true)
+
       jsScope.resolveTokenImports(accumulator, [
         new JsAllImportMatcher(),
         new JsNamedImportMatcher(),
@@ -252,6 +258,10 @@ describe('class: JsScope', () => {
     })
 
     it('can accept empty array', () => {
+      const jsScope = new JsScope('', '', config, logger)
+
+      jsScope.setRunSync(true)
+
       const accumulator = new JsFunctionTokenAccumulator()
       expect(() => {
         jsScope.resolveTokenImports(accumulator, [])
@@ -260,7 +270,6 @@ describe('class: JsScope', () => {
   })
 
   describe('resolveFunctionImports', () => {
-    const jsScope = new JsScope('', '', config, logger)
     const defaultImport: JsImport = {
       name: DEFAULT_ELEMENT_NAME,
       rename: 'nameDefault',
@@ -327,6 +336,10 @@ describe('class: JsScope', () => {
       accumulator.functions.push(namedFunction)
       accumulator.functions.push(renamedFunction)
 
+      const jsScope = new JsScope('', '', config, logger)
+
+      jsScope.setRunSync(true)
+
       jsScope.resolveFunctionImports(accumulator, [
         new JsAllImportMatcher(),
         new JsNamedImportMatcher(),
@@ -380,6 +393,10 @@ describe('class: JsScope', () => {
     })
 
     it('can accept empty array', () => {
+      const jsScope = new JsScope('', '', config, logger)
+
+      jsScope.setRunSync(true)
+
       const accumulator = new JsFunctionTokenAccumulator()
       expect(() => {
         jsScope.resolveTokenImports(accumulator, [])

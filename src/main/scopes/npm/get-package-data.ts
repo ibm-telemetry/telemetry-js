@@ -40,6 +40,7 @@ export async function getPackageData(
     } catch (err) {
       logger.debug(String(err))
     }
+
     if (packageData?.name !== undefined && packageData?.version !== undefined) {
       break
     }

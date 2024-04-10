@@ -10,10 +10,13 @@ import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substituteArray } from '../../../core/anonymize/substitute-array.js'
+import { Substitution } from '../../../core/anonymize/substitution.js'
 import type { Logger } from '../../../core/log/logger.js'
+import { safeStringify } from '../../../core/log/safe-stringify.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { PackageData } from '../../npm/interfaces.js'
+import { ComplexValue } from '../complex-value.js'
 import type { JsFunction, JsImport } from '../interfaces.js'
 
 /**
@@ -43,7 +46,7 @@ export class FunctionMetric extends ScopeMetric {
     logger: Logger
   ) {
     super(logger)
-    this.jsFunction = { ...jsFunction }
+    this.jsFunction = jsFunction
     this.matchingImport = matchingImport
     this.instrumentedPackage = instrumentedPackage
 
@@ -71,24 +74,44 @@ export class FunctionMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
+    let functionName = this.jsFunction.name
+    const functionAccessPath = this.jsFunction.accessPath
+
     // Handle renamed functions
     if (this.matchingImport.rename !== undefined) {
-      this.jsFunction.name = this.jsFunction.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
-      )
+      functionName = functionName.replace(this.matchingImport.rename, this.matchingImport.name)
       // replace the import name in access path
-      this.jsFunction.accessPath[0] = this.matchingImport.name
+      functionAccessPath[0] = this.matchingImport.name
+    }
+
+    const subs = new Substitution()
+    // redact complex values
+    functionAccessPath.forEach((segment) => {
+      if (segment instanceof ComplexValue) {
+        functionName = safeStringify(functionName).replace(
+          safeStringify(segment.complexValue),
+          subs.put(segment)
+        )
+      }
+    })
+
+    // redact "all" import
+    if (this.matchingImport.isAll) {
+      functionAccessPath[0] = subs.put(this.matchingImport.name)
+      functionName = functionName.replace(
+        this.matchingImport.name,
+        subs.put(this.matchingImport.name)
+      )
     }
 
     let metricData: Attributes = {
-      // TODOASKJOE: does this need a specifier?
-      [JsScopeAttributes.FUNCTION_NAME]: this.jsFunction.name,
-      // TODOASKJOE: should this be a string? as per TD
+      [JsScopeAttributes.FUNCTION_NAME]: functionName,
+      // TODO: uncomment
+      // [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: this.matchingImport.path,
       [JsScopeAttributes.FUNCTION_ACCESS_PATH]: substituteArray(
-        this.jsFunction.accessPath,
-        this.jsFunction.accessPath.filter((p) => typeof p === 'string')
-      ) as string[],
+        functionAccessPath,
+        functionAccessPath.filter((p) => typeof p === 'string')
+      ).join(' '),
       [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: substituteArray(
         this.jsFunction.arguments,
         this.allowedArgumentStringValues

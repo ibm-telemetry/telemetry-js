@@ -49,10 +49,7 @@ exports[`class: JsScope > run > captures metrics for workspace files when instru
             "dataPoints": [
               {
                 "attributes": {
-                  "js.token.accessPath": [
-                    "[redacted14]",
-                    "hii",
-                  ],
+                  "js.token.accessPath": "[redacted14] hii",
                   "js.token.name": "[redacted14]['hii']",
                   "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
                   "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
@@ -88,10 +85,7 @@ exports[`class: JsScope > run > captures metrics for workspace files when instru
             "dataPoints": [
               {
                 "attributes": {
-                  "js.function.accessPath": [
-                    "[redacted14]",
-                    "callingAFunction",
-                  ],
+                  "js.function.accessPath": "[redacted14] callingAFunction",
                   "js.function.arguments.values": [
                     "firstArg",
                   ],
@@ -185,12 +179,7 @@ exports[`class: JsScope > run > captures metrics when instrumented package is in
             "dataPoints": [
               {
                 "attributes": {
-                  "js.token.accessPath": [
-                    "TEST",
-                    "[redacted11]",
-                    "prop",
-                    "property",
-                  ],
+                  "js.token.accessPath": "TEST [redacted11] prop property",
                   "js.token.name": "TEST[[redacted11]].prop.property",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
@@ -211,10 +200,7 @@ exports[`class: JsScope > run > captures metrics when instrumented package is in
               },
               {
                 "attributes": {
-                  "js.token.accessPath": [
-                    "TEST",
-                    "[redacted12]",
-                  ],
+                  "js.token.accessPath": "TEST [redacted12]",
                   "js.token.name": "TEST[[redacted12]]",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
@@ -250,9 +236,7 @@ exports[`class: JsScope > run > captures metrics when instrumented package is in
             "dataPoints": [
               {
                 "attributes": {
-                  "js.function.accessPath": [
-                    "somefunction",
-                  ],
+                  "js.function.accessPath": "somefunction",
                   "js.function.arguments.values": [
                     "1",
                     "[redacted13]",
@@ -349,10 +333,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
             "dataPoints": [
               {
                 "attributes": {
-                  "js.token.accessPath": [
-                    "[redacted1]",
-                    "hi",
-                  ],
+                  "js.token.accessPath": "[redacted1] hi",
                   "js.token.name": "[redacted1]['hi']",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
@@ -373,10 +354,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
               },
               {
                 "attributes": {
-                  "js.token.accessPath": [
-                    "[Default]",
-                    "property",
-                  ],
+                  "js.token.accessPath": "[Default] property",
                   "js.token.name": "[Default].property",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
@@ -397,9 +375,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
               },
               {
                 "attributes": {
-                  "js.token.accessPath": [
-                    "A_TOKEN",
-                  ],
+                  "js.token.accessPath": "A_TOKEN",
                   "js.token.name": "A_TOKEN",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
@@ -435,10 +411,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
             "dataPoints": [
               {
                 "attributes": {
-                  "js.function.accessPath": [
-                    "[redacted1]",
-                    "someFunction",
-                  ],
+                  "js.function.accessPath": "[redacted1] someFunction",
                   "js.function.arguments.values": [
                     "1",
                     "2",
@@ -469,11 +442,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
               },
               {
                 "attributes": {
-                  "js.function.accessPath": [
-                    "[Default]",
-                    "property",
-                    "aFunction",
-                  ],
+                  "js.function.accessPath": "[Default] property aFunction",
                   "js.function.arguments.values": [
                     "[redacted4]",
                     "[redacted5]",
@@ -498,11 +467,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
               },
               {
                 "attributes": {
-                  "js.function.accessPath": [
-                    "anObject",
-                    "property",
-                    "[redacted6]",
-                  ],
+                  "js.function.accessPath": "anObject property [redacted6]",
                   "js.function.arguments.values": [
                     "[redacted7]",
                     "500",
@@ -528,9 +493,7 @@ exports[`class: JsScope > run > correctly captures js function and token metric 
               },
               {
                 "attributes": {
-                  "js.function.accessPath": [
-                    "Function1",
-                  ],
+                  "js.function.accessPath": "Function1",
                   "js.function.arguments.values": [],
                   "js.function.name": "Function1",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",

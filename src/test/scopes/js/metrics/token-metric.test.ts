@@ -8,6 +8,7 @@ import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
+import { ComplexValue } from '../../../../main/scopes/js/complex-value.js'
 import type { JsImport, JsToken } from '../../../../main/scopes/js/interfaces.js'
 import { TokenMetric } from '../../../../main/scopes/js/metrics/token-metric.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
@@ -40,7 +41,7 @@ describe('class: TokenMetric', () => {
       hash(
         {
           [JsScopeAttributes.TOKEN_NAME]: 'theToken.access1.access2',
-          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['theToken', 'access1', 'access2'],
+          [JsScopeAttributes.TOKEN_ACCESS_PATH]: 'theToken access1 access2',
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -77,7 +78,7 @@ describe('class: TokenMetric', () => {
       hash(
         {
           [JsScopeAttributes.TOKEN_NAME]: 'theActualName.access1.access2',
-          [JsScopeAttributes.TOKEN_ACCESS_PATH]: ['theActualName', 'access1', 'access2'],
+          [JsScopeAttributes.TOKEN_ACCESS_PATH]: 'theActualName access1 access2',
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -119,7 +120,7 @@ describe('class: TokenMetric', () => {
       hash(
         {
           [JsScopeAttributes.TOKEN_NAME]: `${DEFAULT_ELEMENT_NAME}.access1.access2`,
-          [JsScopeAttributes.TOKEN_ACCESS_PATH]: [DEFAULT_ELEMENT_NAME, 'access1', 'access2'],
+          [JsScopeAttributes.TOKEN_ACCESS_PATH]: `${DEFAULT_ELEMENT_NAME} access1 access2`,
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -138,5 +139,91 @@ describe('class: TokenMetric', () => {
         ]
       )
     )
+  })
+
+  it('redacts an all import name and access path', () => {
+    const jsToken: JsToken = {
+      name: 'import.aToken',
+      accessPath: ['import', 'aToken'],
+      startPos: 0,
+      endPos: 0
+    }
+    const allImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: true
+    }
+
+    const attributes = new TokenMetric(
+      jsToken,
+      allImport,
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      logger
+    ).attributes
+
+    expect(attributes[JsScopeAttributes.TOKEN_NAME]).not.toContain('import')
+    expect(attributes[JsScopeAttributes.TOKEN_ACCESS_PATH]).not.toContain('import')
+  })
+
+  it('redacts complex values', () => {
+    const jsToken: JsToken = {
+      name: 'import[complex["complex"]]',
+      accessPath: ['import', new ComplexValue('complex["complex"]')],
+      startPos: 0,
+      endPos: 0
+    }
+
+    const namedImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: false
+    }
+
+    const attributes = new TokenMetric(
+      jsToken,
+      namedImport,
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      logger
+    ).attributes
+
+    expect(attributes[JsScopeAttributes.TOKEN_NAME]).not.toContain('complex["complex"]')
+    expect(attributes[JsScopeAttributes.TOKEN_ACCESS_PATH]).not.toContain('complex["complex"]')
+  })
+
+  it('does not redact simple values', () => {
+    const jsToken: JsToken = {
+      name: 'import["simpleAccess"]',
+      accessPath: ['import', 'simpleAccess'],
+      startPos: 0,
+      endPos: 0
+    }
+
+    const namedImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: false
+    }
+
+    const attributes = new TokenMetric(
+      jsToken,
+      namedImport,
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      logger
+    ).attributes
+
+    expect(attributes[JsScopeAttributes.TOKEN_NAME]).toBe('import["simpleAccess"]')
+    expect(attributes[JsScopeAttributes.TOKEN_ACCESS_PATH]).toBe('import simpleAccess')
   })
 })

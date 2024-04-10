@@ -7,18 +7,15 @@
 import type { ConfigSchema } from '@ibm/telemetry-config-schema'
 import type * as ts from 'typescript'
 
-import { Substitution } from '../../core/anonymize/substitution.js'
-import { safeStringify } from '../../core/log/safe-stringify.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findRelevantSourceFiles } from '../js/find-relevant-source-files.js'
-import type { JsFunction, JsImport, JsImportMatcher, JsToken } from '../js/interfaces.js'
+import type { JsFunction, JsImportMatcher, JsToken } from '../js/interfaces.js'
 import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
-import { ComplexValue } from './complex-value.js'
 import { JsAllImportMatcher } from './import-matchers/js-all-import-matcher.js'
 import { JsNamedImportMatcher } from './import-matchers/js-named-import-matcher.js'
 import { JsRenamedImportMatcher } from './import-matchers/js-renamed-import-matcher.js'
@@ -178,8 +175,6 @@ export class JsScope extends Scope {
         return
       }
 
-      this.redactSensitiveData(jsToken, jsImport)
-
       this.capture(new TokenMetric(jsToken, jsImport, instrumentedPackage, this.logger))
     })
   }
@@ -206,8 +201,6 @@ export class JsScope extends Scope {
       if (jsImport === undefined) {
         return
       }
-
-      this.redactSensitiveData(jsFunction, jsImport)
 
       this.capture(
         new FunctionMetric(jsFunction, jsImport, instrumentedPackage, this.config, this.logger)
@@ -268,25 +261,6 @@ export class JsScope extends Scope {
           (func) => func.startPos >= token.startPos && func.endPos <= token.endPos
         )
     )
-  }
-
-  redactSensitiveData(jsElement: JsToken | JsFunction, matchingImport: JsImport) {
-    const subs = new Substitution()
-    // redact complex values
-    jsElement.accessPath.forEach((segment) => {
-      if (segment instanceof ComplexValue) {
-        jsElement.name = jsElement.name.replace(
-          safeStringify(segment.complexValue),
-          subs.put(segment)
-        )
-      }
-    })
-
-    // redact isAll values (TODOASKJOE)
-    if (matchingImport.isAll) {
-      jsElement.accessPath[0] = subs.put(matchingImport.name)
-      jsElement.name = jsElement.name.replace(matchingImport.name, subs.put(matchingImport.name))
-    }
   }
 
   /**

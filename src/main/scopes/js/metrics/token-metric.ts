@@ -9,10 +9,13 @@ import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
 import { substituteArray } from '../../../core/anonymize/substitute-array.js'
+import { Substitution } from '../../../core/anonymize/substitution.js'
 import type { Logger } from '../../../core/log/logger.js'
+import { safeStringify } from '../../../core/log/safe-stringify.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { PackageData } from '../../npm/interfaces.js'
+import { ComplexValue } from '../complex-value.js'
 import type { JsImport, JsToken } from '../interfaces.js'
 
 /**
@@ -39,7 +42,7 @@ export class TokenMetric extends ScopeMetric {
     logger: Logger
   ) {
     super(logger)
-    this.jsToken = { ...jsToken }
+    this.jsToken = jsToken
     this.matchingImport = matchingImport
     this.instrumentedPackage = instrumentedPackage
   }
@@ -64,22 +67,41 @@ export class TokenMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
+    let tokenName = this.jsToken.name
+    const tokenAccessPath = this.jsToken.accessPath
+
     // Handle renamed tokens
     if (this.matchingImport.rename !== undefined) {
-      this.jsToken.name = this.jsToken.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
-      )
+      tokenName = tokenName.replace(this.matchingImport.rename, this.matchingImport.name)
       // replace import name in access path
-      this.jsToken.accessPath[0] = this.matchingImport.name
+      tokenAccessPath[0] = this.matchingImport.name
+    }
+
+    const subs = new Substitution()
+    // redact complex values
+    tokenAccessPath.forEach((segment) => {
+      if (segment instanceof ComplexValue) {
+        tokenName = safeStringify(tokenName).replace(
+          safeStringify(segment.complexValue),
+          subs.put(segment)
+        )
+      }
+    })
+
+    // redact "all" import
+    if (this.matchingImport.isAll) {
+      tokenAccessPath[0] = subs.put(this.matchingImport.name)
+      tokenName = tokenName.replace(this.matchingImport.name, subs.put(this.matchingImport.name))
     }
 
     let metricData: Attributes = {
-      [JsScopeAttributes.TOKEN_NAME]: this.jsToken.name,
+      [JsScopeAttributes.TOKEN_NAME]: tokenName,
+      // TODO: uncomment
+      // [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: this.matchingImport.path,
       [JsScopeAttributes.TOKEN_ACCESS_PATH]: substituteArray(
-        this.jsToken.accessPath,
-        this.jsToken.accessPath.filter((p) => typeof p === 'string')
-      ) as string[],
+        tokenAccessPath,
+        tokenAccessPath.filter((p) => typeof p === 'string')
+      ).join(' '),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,

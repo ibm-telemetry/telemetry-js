@@ -60,7 +60,7 @@ describe('class: FunctionMetric', () => {
       hash(
         {
           [JsScopeAttributes.FUNCTION_NAME]: 'theFunction.access1.access2',
-          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['theFunction', 'access1', 'access2'],
+          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: 'theFunction access1 access2',
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -103,7 +103,7 @@ describe('class: FunctionMetric', () => {
       hash(
         {
           [JsScopeAttributes.FUNCTION_NAME]: 'theActualName.access1.access2',
-          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: ['theActualName', 'access1', 'access2'],
+          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: 'theActualName access1 access2',
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -151,7 +151,7 @@ describe('class: FunctionMetric', () => {
       hash(
         {
           [JsScopeAttributes.FUNCTION_NAME]: `${DEFAULT_ELEMENT_NAME}.access1.access2`,
-          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: [DEFAULT_ELEMENT_NAME, 'access1', 'access2'],
+          [JsScopeAttributes.FUNCTION_ACCESS_PATH]: `${DEFAULT_ELEMENT_NAME} access1 access2`,
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -173,5 +173,97 @@ describe('class: FunctionMetric', () => {
         ]
       )
     )
+  })
+
+  it('redacts an all import name and access path', () => {
+    const jsFunction: JsFunction = {
+      name: 'import.aFunction',
+      accessPath: ['import', 'aFunction'],
+      arguments: [],
+      startPos: 0,
+      endPos: 0
+    }
+    const allImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: true
+    }
+
+    const attributes = new FunctionMetric(
+      jsFunction,
+      allImport,
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      config,
+      logger
+    ).attributes
+
+    expect(attributes[JsScopeAttributes.FUNCTION_NAME]).not.toContain('import')
+    expect(attributes[JsScopeAttributes.FUNCTION_ACCESS_PATH]).not.toContain('import')
+  })
+
+  it('redacts complex values', () => {
+    const jsFunction: JsFunction = {
+      name: 'import[complex["complex"]]',
+      accessPath: ['import', new ComplexValue('complex["complex"]')],
+      arguments: [],
+      startPos: 0,
+      endPos: 0
+    }
+
+    const namedImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: false
+    }
+
+    const attributes = new FunctionMetric(
+      jsFunction,
+      namedImport,
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      config,
+      logger
+    ).attributes
+
+    expect(attributes[JsScopeAttributes.FUNCTION_NAME]).not.toContain('complex["complex"]')
+    expect(attributes[JsScopeAttributes.FUNCTION_ACCESS_PATH]).not.toContain('complex["complex"]')
+  })
+
+  it('does not redact simple values', () => {
+    const jsFunction: JsFunction = {
+      name: 'import["simpleAccess"]',
+      accessPath: ['import', 'simpleAccess'],
+      arguments: [],
+      startPos: 0,
+      endPos: 0
+    }
+
+    const namedImport: JsImport = {
+      name: 'import',
+      path: 'instrumented',
+      isDefault: false,
+      isAll: false
+    }
+
+    const attributes = new FunctionMetric(
+      jsFunction,
+      namedImport,
+      {
+        name: 'instrumented',
+        version: '1.0.0+9999'
+      },
+      config,
+      logger
+    ).attributes
+
+    expect(attributes[JsScopeAttributes.FUNCTION_NAME]).toBe('import["simpleAccess"]')
+    expect(attributes[JsScopeAttributes.FUNCTION_ACCESS_PATH]).toBe('import simpleAccess')
   })
 })

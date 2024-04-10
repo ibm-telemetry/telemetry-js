@@ -67,7 +67,7 @@ export class TokenMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
-    let tokenName = this.jsToken.name
+    let tokenName = safeStringify(this.jsToken.name)
     const tokenAccessPath = this.jsToken.accessPath
 
     // Handle renamed tokens
@@ -81,10 +81,7 @@ export class TokenMetric extends ScopeMetric {
     // redact complex values
     tokenAccessPath.forEach((segment) => {
       if (segment instanceof ComplexValue) {
-        tokenName = safeStringify(tokenName).replace(
-          safeStringify(segment.complexValue),
-          subs.put(segment)
-        )
+        tokenName = tokenName.replace(safeStringify(segment.complexValue), subs.put(segment))
       }
     })
 

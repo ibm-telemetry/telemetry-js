@@ -8,7 +8,7 @@
 import type { JsFunction, JsImport, JsImportMatcher, JsToken } from '../interfaces.js'
 
 /**
- * Identifies JsTokens and JsFunctions that have been imported as renamed imports.
+ * Import matcher for all renamed imports, such as import { stuff as renamedStuff } from 'whatever'.
  */
 export class JsRenamedImportMatcher implements JsImportMatcher<JsToken | JsFunction> {
   /**

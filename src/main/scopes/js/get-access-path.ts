@@ -10,22 +10,45 @@ import type { Logger } from '../../core/log/logger.js'
 import { ComplexValue } from './complex-value.js'
 import { getNodeValueHandler } from './node-value-handler-map.js'
 
+type ExpressionContainingNode =
+  | ts.PropertyAccessExpression
+  | ts.ElementAccessExpression
+  | ts.CallExpression
+
 /**
- * Constructs a JsToken object from a given Identifier type AST node.
+ * Constructs the access path to a given expression-containing node
+ * (PropertyAccessExpression, ElementAccessExpression or CallExpression)
+ * by reading the node's content recursively.
  *
  * @param node - TS node to retrieve access path for.
  * @param sourceFile - Root AST node.
  * @param logger - A logger instance.
- * @param currAccessPath - For internal use only, tracks current constructed access path.
- * @param topLevel - For internal use only, tracks top level function call.
  * @returns Access path to node represented as string array (chunks).
  */
 export default function getAccessPath(
+  node: ExpressionContainingNode,
+  sourceFile: ts.SourceFile,
+  logger: Logger
+) {
+  return computeAccessPath(node, sourceFile, [], true, logger)
+}
+
+/**
+ * Constructs the access path to a given node by reading the node's content recursively.
+ *
+ * @param node - TS node to retrieve access path for.
+ * @param sourceFile - Root AST node.
+ * @param currAccessPath - For internal use only, tracks current constructed access path.
+ * @param topLevel - For internal use only, tracks top level function call.
+ * @param logger - A logger instance.
+ * @returns Access path to node represented as string array (chunks).
+ */
+function computeAccessPath(
   node: ts.Node,
   sourceFile: ts.SourceFile,
-  logger: Logger,
-  currAccessPath: Array<string | ComplexValue> = [],
-  topLevel: boolean = true
+  currAccessPath: Array<string | ComplexValue>,
+  topLevel: boolean,
+  logger: Logger
 ): Array<string | ComplexValue> {
   switch (node.kind) {
     case ts.SyntaxKind.Identifier:
@@ -46,12 +69,12 @@ export default function getAccessPath(
   let accessPath = currAccessPath
 
   if ('expression' in node) {
-    accessPath = getAccessPath(
+    accessPath = computeAccessPath(
       node.expression as ts.Node,
       sourceFile,
-      logger,
       currAccessPath,
-      false
+      false,
+      logger
     )
   }
 

@@ -8,8 +8,7 @@
 import type { JsFunction, JsImport, JsImportMatcher, JsToken } from '../interfaces.js'
 
 /**
- * Identifies JsTokens and JsFunctions that have been imported as named imports,
- * and returns an import element match (if any) or undefined otherwise.
+ * Import matcher for all named imports, such as import { stuff } from 'whatever'.
  */
 export class JsNamedImportMatcher implements JsImportMatcher<JsToken | JsFunction> {
   /**
@@ -23,7 +22,8 @@ export class JsNamedImportMatcher implements JsImportMatcher<JsToken | JsFunctio
    */
   findMatch(jsElement: JsToken | JsFunction, imports: JsImport[]) {
     return imports.find(
-      (i) => !i.isDefault && !i.isAll && i.rename === undefined && i.name === jsElement.accessPath[0]
+      (i) =>
+        !i.isDefault && !i.isAll && i.rename === undefined && i.name === jsElement.accessPath[0]
     )
   }
 }

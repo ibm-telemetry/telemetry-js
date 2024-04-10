@@ -74,7 +74,7 @@ export class FunctionMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
-    let functionName = this.jsFunction.name
+    let functionName = safeStringify(this.jsFunction.name)
     const functionAccessPath = this.jsFunction.accessPath
 
     // Handle renamed functions
@@ -88,10 +88,7 @@ export class FunctionMetric extends ScopeMetric {
     // redact complex values
     functionAccessPath.forEach((segment) => {
       if (segment instanceof ComplexValue) {
-        functionName = safeStringify(functionName).replace(
-          safeStringify(segment.complexValue),
-          subs.put(segment)
-        )
+        functionName = functionName.replace(safeStringify(segment.complexValue), subs.put(segment))
       }
     })
 

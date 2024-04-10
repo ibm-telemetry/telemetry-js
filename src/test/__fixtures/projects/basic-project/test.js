@@ -1,6 +1,6 @@
 
 // @ts-nocheck
-import * as BLA from 'instrumented'
+import * as BLA from 'instrumented/the/path'
 
 const A = BLA['hi']
 

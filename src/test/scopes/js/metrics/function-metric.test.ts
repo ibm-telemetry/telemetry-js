@@ -61,6 +61,7 @@ describe('class: FunctionMetric', () => {
         {
           [JsScopeAttributes.FUNCTION_NAME]: 'theFunction.access1.access2',
           [JsScopeAttributes.FUNCTION_ACCESS_PATH]: 'theFunction access1 access2',
+          [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: 'path',
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -104,6 +105,7 @@ describe('class: FunctionMetric', () => {
         {
           [JsScopeAttributes.FUNCTION_NAME]: 'theActualName.access1.access2',
           [JsScopeAttributes.FUNCTION_ACCESS_PATH]: 'theActualName access1 access2',
+          [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: 'path',
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),
@@ -152,6 +154,7 @@ describe('class: FunctionMetric', () => {
         {
           [JsScopeAttributes.FUNCTION_NAME]: `${DEFAULT_ELEMENT_NAME}.access1.access2`,
           [JsScopeAttributes.FUNCTION_ACCESS_PATH]: `${DEFAULT_ELEMENT_NAME} access1 access2`,
+          [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: 'path',
           [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(subs).map((arg) =>
             String(arg)
           ),

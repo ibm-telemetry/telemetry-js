@@ -96,8 +96,7 @@ export class TokenMetric extends ScopeMetric {
 
     let metricData: Attributes = {
       [JsScopeAttributes.TOKEN_NAME]: tokenName,
-      // TODO: uncomment
-      // [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: this.matchingImport.path,
+      [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: this.matchingImport.path,
       [JsScopeAttributes.TOKEN_ACCESS_PATH]: substituteArray(
         tokenAccessPath,
         tokenAccessPath.filter((p) => typeof p === 'string')

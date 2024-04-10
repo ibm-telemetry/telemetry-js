@@ -106,8 +106,7 @@ export class FunctionMetric extends ScopeMetric {
 
     let metricData: Attributes = {
       [JsScopeAttributes.FUNCTION_NAME]: functionName,
-      // TODO: uncomment
-      // [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: this.matchingImport.path,
+      [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: this.matchingImport.path,
       [JsScopeAttributes.FUNCTION_ACCESS_PATH]: substituteArray(
         functionAccessPath,
         functionAccessPath.filter((p) => typeof p === 'string')

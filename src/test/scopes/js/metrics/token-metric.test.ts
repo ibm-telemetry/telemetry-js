@@ -42,6 +42,7 @@ describe('class: TokenMetric', () => {
         {
           [JsScopeAttributes.TOKEN_NAME]: 'theToken.access1.access2',
           [JsScopeAttributes.TOKEN_ACCESS_PATH]: 'theToken access1 access2',
+          [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: 'path',
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -79,6 +80,7 @@ describe('class: TokenMetric', () => {
         {
           [JsScopeAttributes.TOKEN_NAME]: 'theActualName.access1.access2',
           [JsScopeAttributes.TOKEN_ACCESS_PATH]: 'theActualName access1 access2',
+          [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: 'path',
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -121,6 +123,7 @@ describe('class: TokenMetric', () => {
         {
           [JsScopeAttributes.TOKEN_NAME]: `${DEFAULT_ELEMENT_NAME}.access1.access2`,
           [JsScopeAttributes.TOKEN_ACCESS_PATH]: `${DEFAULT_ELEMENT_NAME} access1 access2`,
+          [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: 'path',
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',

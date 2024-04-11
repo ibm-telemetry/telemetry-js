@@ -125,53 +125,6 @@ describe('ibmTelemetry', () => {
       expect(mock).toHaveBeenCalledOnce()
     })
 
-    it('does not call export when metrics dataPoints are empty', async () => {
-      const environment = new Environment({ isExportEnabled: true })
-      const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
-      const root = new Fixture(path.join('projects', 'basic-project'))
-      const cwd = new Fixture(
-        path.join('projects', 'basic-project', 'node_modules', 'instrumented')
-      )
-
-      const otelContext = OpenTelemetryContext.getInstance()
-
-      const config: ConfigSchema = {
-        projectId: 'asdf',
-        version: 1,
-        endpoint: '',
-        collect: {
-          npm: { dependencies: null },
-          jsx: {
-            elements: {
-              allowedAttributeNames: ['firstProp', 'secondProp'],
-              allowedAttributeStringValues: ['hi', 'wow']
-            }
-          }
-        }
-      }
-
-      const promises = ibmTelemetry.runScopes(cwd.path, root.path, config)
-
-      await Promise.allSettled(promises)
-
-      const mock = vi.spyOn(OTLPMetricExporter.prototype, 'export')
-
-      const results = await otelContext.getMetricReader().collect()
-
-      // force all metrics dataPoints to be empty
-      results.resourceMetrics.scopeMetrics.forEach(
-        (scopeMetric) =>
-          (scopeMetric.metrics = scopeMetric.metrics.map((metric) => ({
-            ...metric,
-            dataPoints: []
-          })))
-      )
-
-      await ibmTelemetry.emitMetrics(results.resourceMetrics, config)
-
-      expect(mock).not.toHaveBeenCalled()
-    })
-
     it('does not call export when scope metrics are empty', async () => {
       const environment = new Environment({ isExportEnabled: true })
       const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
@@ -206,7 +159,7 @@ describe('ibmTelemetry', () => {
       const results = await otelContext.getMetricReader().collect()
 
       // force all metrics to be empty
-      results.resourceMetrics.scopeMetrics.forEach((scopeMetric) => (scopeMetric.metrics = []))
+      results.resourceMetrics.scopeMetrics = []
 
       await ibmTelemetry.emitMetrics(results.resourceMetrics, config)
 

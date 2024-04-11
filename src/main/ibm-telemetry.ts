@@ -191,18 +191,9 @@ export class IbmTelemetry {
    */
   @Trace()
   public async emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
-    // ensure each independent metric (npm.dependency, jsx.element, js.function...)
-    // has at least 1 dataPoint (1 individual collected element)
-    metrics.scopeMetrics.forEach((scopeMetric) => {
-      scopeMetric.metrics = scopeMetric.metrics.filter((metric) => metric.dataPoints.length > 0)
-    })
-
-    // ensure each scope has at least one metric type (npm.dependency, jsx.element, js.function...)
-    metrics.scopeMetrics = metrics.scopeMetrics.filter((scope) => scope.metrics.length > 0)
-
     // no metrics, do not export
     if (metrics.scopeMetrics.length <= 0) {
-      return Promise.resolve(undefined)
+      return undefined
     }
 
     const exporter = new OTLPMetricExporter({

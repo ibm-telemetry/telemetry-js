@@ -61,7 +61,9 @@ function computeAccessPath(
       const data = getNodeValueHandler(argumentExpression.kind, sourceFile, logger).getData(
         argumentExpression
       )
-      currAccessPath.push((data instanceof ComplexValue ? data : data?.toString()) ?? '')
+      if (data !== undefined && data !== null) {
+        currAccessPath.push(data instanceof ComplexValue ? data : data.toString())
+      }
       break
     }
   }

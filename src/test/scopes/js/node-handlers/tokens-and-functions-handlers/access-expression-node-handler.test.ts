@@ -339,5 +339,25 @@ describe('class: AccessExpressionNodeHandler', async () => {
         accessPath: ['nested', 'property']
       })
     })
+
+    it('captures token when accessed as undefined', () => {
+      const accumulator = new JsFunctionTokenAccumulator()
+      const sourceFile = createSourceFileFromText('foo[undefined]')
+      const nodes = findNodesByType<ts.ElementAccessExpression>(
+        sourceFile,
+        ts.SyntaxKind.ElementAccessExpression
+      )
+      const handler = new AccessExpressionNodeHandler(sourceFile, logger)
+
+      nodes.forEach((node) => {
+        handler.handle(node, accumulator)
+      })
+
+      expect(accumulator.tokens).toHaveLength(1)
+      expect(accumulator.tokens[0]).toMatchObject({
+        name: 'foo[undefined]',
+        accessPath: ['foo']
+      })
+    })
   })
 })

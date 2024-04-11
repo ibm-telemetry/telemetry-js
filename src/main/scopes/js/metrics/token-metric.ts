@@ -67,36 +67,45 @@ export class TokenMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
-    let tokenName = safeStringify(this.jsToken.name)
-    const tokenAccessPath = this.jsToken.accessPath
+    let anonymizedTokenName = safeStringify(this.jsToken.name)
+    const anonymizedTokenAccessPath = [...this.jsToken.accessPath]
 
     // Handle renamed tokens
     if (this.matchingImport.rename !== undefined) {
-      tokenName = tokenName.replace(this.matchingImport.rename, this.matchingImport.name)
+      anonymizedTokenName = anonymizedTokenName.replace(
+        this.matchingImport.rename,
+        this.matchingImport.name
+      )
       // replace import name in access path
-      tokenAccessPath[0] = this.matchingImport.name
+      anonymizedTokenAccessPath[0] = this.matchingImport.name
     }
 
     const subs = new Substitution()
     // redact complex values
-    tokenAccessPath.forEach((segment) => {
+    anonymizedTokenAccessPath.forEach((segment) => {
       if (segment instanceof ComplexValue) {
-        tokenName = tokenName.replace(safeStringify(segment.complexValue), subs.put(segment))
+        anonymizedTokenName = anonymizedTokenName.replace(
+          safeStringify(segment.complexValue),
+          subs.put(segment)
+        )
       }
     })
 
     // redact "all" import
     if (this.matchingImport.isAll) {
-      tokenAccessPath[0] = subs.put(this.matchingImport.name)
-      tokenName = tokenName.replace(this.matchingImport.name, subs.put(this.matchingImport.name))
+      anonymizedTokenAccessPath[0] = subs.put(this.matchingImport.name)
+      anonymizedTokenName = anonymizedTokenName.replace(
+        this.matchingImport.name,
+        subs.put(this.matchingImport.name)
+      )
     }
 
     let metricData: Attributes = {
-      [JsScopeAttributes.TOKEN_NAME]: tokenName,
+      [JsScopeAttributes.TOKEN_NAME]: anonymizedTokenName,
       [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: this.matchingImport.path,
       [JsScopeAttributes.TOKEN_ACCESS_PATH]: substituteArray(
-        tokenAccessPath,
-        tokenAccessPath.filter((p) => typeof p === 'string')
+        anonymizedTokenAccessPath,
+        anonymizedTokenAccessPath.filter((p) => typeof p === 'string')
       ).join(' '),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,

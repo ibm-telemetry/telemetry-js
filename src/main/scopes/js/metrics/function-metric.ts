@@ -74,39 +74,45 @@ export class FunctionMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
-    let functionName = safeStringify(this.jsFunction.name)
-    const functionAccessPath = this.jsFunction.accessPath
+    let anonymizedFunctionName = safeStringify(this.jsFunction.name)
+    const anonymizedFunctionAccessPath = [...this.jsFunction.accessPath]
 
     // Handle renamed functions
     if (this.matchingImport.rename !== undefined) {
-      functionName = functionName.replace(this.matchingImport.rename, this.matchingImport.name)
+      anonymizedFunctionName = anonymizedFunctionName.replace(
+        this.matchingImport.rename,
+        this.matchingImport.name
+      )
       // replace the import name in access path
-      functionAccessPath[0] = this.matchingImport.name
+      anonymizedFunctionAccessPath[0] = this.matchingImport.name
     }
 
     const subs = new Substitution()
     // redact complex values
-    functionAccessPath.forEach((segment) => {
+    anonymizedFunctionAccessPath.forEach((segment) => {
       if (segment instanceof ComplexValue) {
-        functionName = functionName.replace(safeStringify(segment.complexValue), subs.put(segment))
+        anonymizedFunctionName = anonymizedFunctionName.replace(
+          safeStringify(segment.complexValue),
+          subs.put(segment)
+        )
       }
     })
 
     // redact "all" import
     if (this.matchingImport.isAll) {
-      functionAccessPath[0] = subs.put(this.matchingImport.name)
-      functionName = functionName.replace(
+      anonymizedFunctionAccessPath[0] = subs.put(this.matchingImport.name)
+      anonymizedFunctionName = anonymizedFunctionName.replace(
         this.matchingImport.name,
         subs.put(this.matchingImport.name)
       )
     }
 
     let metricData: Attributes = {
-      [JsScopeAttributes.FUNCTION_NAME]: functionName,
+      [JsScopeAttributes.FUNCTION_NAME]: anonymizedFunctionName,
       [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: this.matchingImport.path,
       [JsScopeAttributes.FUNCTION_ACCESS_PATH]: substituteArray(
-        functionAccessPath,
-        functionAccessPath.filter((p) => typeof p === 'string')
+        anonymizedFunctionAccessPath,
+        anonymizedFunctionAccessPath.filter((p) => typeof p === 'string')
       ).join(' '),
       [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: substituteArray(
         this.jsFunction.arguments,

@@ -9,11 +9,14 @@ import type { ConfigSchema } from '@ibm/telemetry-config-schema'
 import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
-import { substitute } from '../../../core/anonymize/substitute.js'
+import { substituteArray } from '../../../core/anonymize/substitute-array.js'
+import { Substitution } from '../../../core/anonymize/substitution.js'
 import type { Logger } from '../../../core/log/logger.js'
+import { safeStringify } from '../../../core/log/safe-stringify.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { PackageData } from '../../npm/interfaces.js'
+import { ComplexValue } from '../complex-value.js'
 import type { JsFunction, JsImport } from '../interfaces.js'
 
 /**
@@ -27,23 +30,23 @@ export class FunctionMetric extends ScopeMetric {
   private readonly instrumentedPackage: PackageData
 
   /**
-   * Constructs a TokenMetric.
+   * Constructs a FunctionMetric.
    *
-   * @param jsToken - Object containing token data to generate metric from.
+   * @param jsFunction - Object containing function data to generate metric from.
    * @param matchingImport - Import that matched the provided JsFunction in the file.
    * @param instrumentedPackage - Data (name and version) pertaining to instrumented package.
    * @param config - Determines which argument values to collect for.
    * @param logger - Logger instance.
    */
   public constructor(
-    jsToken: JsFunction,
+    jsFunction: JsFunction,
     matchingImport: JsImport,
     instrumentedPackage: PackageData,
     config: ConfigSchema,
     logger: Logger
   ) {
     super(logger)
-    this.jsFunction = jsToken
+    this.jsFunction = jsFunction
     this.matchingImport = matchingImport
     this.instrumentedPackage = instrumentedPackage
 
@@ -71,24 +74,50 @@ export class FunctionMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
-    // convert arguments into a fake object to satisfy the substitute api
-    const argsObj: Record<string, unknown> = this.jsFunction.arguments.reduce(
-      (cur, val, index) => ({ ...cur, [index.toString()]: val }),
-      {}
-    )
+    let anonymizedFunctionName = safeStringify(this.jsFunction.name)
+    const anonymizedFunctionAccessPath = [...this.jsFunction.accessPath]
 
-    const anonymizedArguments = substitute(
-      argsObj,
-      Object.keys(argsObj), // all keys are allowed
-      this.allowedArgumentStringValues
-    )
+    // Handle renamed functions
+    if (this.matchingImport.rename !== undefined) {
+      anonymizedFunctionName = anonymizedFunctionName.replace(
+        this.matchingImport.rename,
+        this.matchingImport.name
+      )
+      // replace the import name in access path
+      anonymizedFunctionAccessPath[0] = this.matchingImport.name
+    }
+
+    const subs = new Substitution()
+    // redact complex values
+    anonymizedFunctionAccessPath.forEach((segment) => {
+      if (segment instanceof ComplexValue) {
+        anonymizedFunctionName = anonymizedFunctionName.replace(
+          safeStringify(segment.complexValue),
+          subs.put(segment)
+        )
+      }
+    })
+
+    // redact "all" import
+    if (this.matchingImport.isAll) {
+      anonymizedFunctionAccessPath[0] = subs.put(this.matchingImport.name)
+      anonymizedFunctionName = anonymizedFunctionName.replace(
+        this.matchingImport.name,
+        subs.put(this.matchingImport.name)
+      )
+    }
 
     let metricData: Attributes = {
-      [JsScopeAttributes.FUNCTION_NAME]: this.jsFunction.name,
-      [JsScopeAttributes.FUNCTION_ACCESS_PATH]: this.jsFunction.accessPath,
-      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: Object.values(anonymizedArguments).map((arg) =>
-        String(arg)
-      ),
+      [JsScopeAttributes.FUNCTION_NAME]: anonymizedFunctionName,
+      [JsScopeAttributes.FUNCTION_MODULE_SPECIFIER]: this.matchingImport.path,
+      [JsScopeAttributes.FUNCTION_ACCESS_PATH]: substituteArray(
+        anonymizedFunctionAccessPath,
+        anonymizedFunctionAccessPath.filter((p) => typeof p === 'string')
+      ).join(' '),
+      [JsScopeAttributes.FUNCTION_ARGUMENT_VALUES]: substituteArray(
+        this.jsFunction.arguments,
+        this.allowedArgumentStringValues
+      ).map((arg) => String(arg)),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
@@ -97,14 +126,6 @@ export class FunctionMetric extends ScopeMetric {
       [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
       [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
       [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
-    }
-
-    // Handle renamed functions
-    if (this.matchingImport.rename !== undefined) {
-      metricData[JsScopeAttributes.FUNCTION_NAME] = this.jsFunction.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
-      )
     }
 
     metricData = hash(metricData, [

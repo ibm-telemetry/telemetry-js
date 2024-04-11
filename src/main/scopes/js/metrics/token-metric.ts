@@ -8,10 +8,14 @@ import { JsScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes
 import type { Attributes } from '@opentelemetry/api'
 
 import { hash } from '../../../core/anonymize/hash.js'
+import { substituteArray } from '../../../core/anonymize/substitute-array.js'
+import { Substitution } from '../../../core/anonymize/substitution.js'
 import type { Logger } from '../../../core/log/logger.js'
+import { safeStringify } from '../../../core/log/safe-stringify.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { PackageData } from '../../npm/interfaces.js'
+import { ComplexValue } from '../complex-value.js'
 import type { JsImport, JsToken } from '../interfaces.js'
 
 /**
@@ -63,9 +67,46 @@ export class TokenMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
+    let anonymizedTokenName = safeStringify(this.jsToken.name)
+    const anonymizedTokenAccessPath = [...this.jsToken.accessPath]
+
+    // Handle renamed tokens
+    if (this.matchingImport.rename !== undefined) {
+      anonymizedTokenName = anonymizedTokenName.replace(
+        this.matchingImport.rename,
+        this.matchingImport.name
+      )
+      // replace import name in access path
+      anonymizedTokenAccessPath[0] = this.matchingImport.name
+    }
+
+    const subs = new Substitution()
+    // redact complex values
+    anonymizedTokenAccessPath.forEach((segment) => {
+      if (segment instanceof ComplexValue) {
+        anonymizedTokenName = anonymizedTokenName.replace(
+          safeStringify(segment.complexValue),
+          subs.put(segment)
+        )
+      }
+    })
+
+    // redact "all" import
+    if (this.matchingImport.isAll) {
+      anonymizedTokenAccessPath[0] = subs.put(this.matchingImport.name)
+      anonymizedTokenName = anonymizedTokenName.replace(
+        this.matchingImport.name,
+        subs.put(this.matchingImport.name)
+      )
+    }
+
     let metricData: Attributes = {
-      [JsScopeAttributes.TOKEN_NAME]: this.jsToken.name,
-      [JsScopeAttributes.TOKEN_ACCESS_PATH]: this.jsToken.accessPath,
+      [JsScopeAttributes.TOKEN_NAME]: anonymizedTokenName,
+      [JsScopeAttributes.TOKEN_MODULE_SPECIFIER]: this.matchingImport.path,
+      [JsScopeAttributes.TOKEN_ACCESS_PATH]: substituteArray(
+        anonymizedTokenAccessPath,
+        anonymizedTokenAccessPath.filter((p) => typeof p === 'string')
+      ).join(' '),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
@@ -74,14 +115,6 @@ export class TokenMetric extends ScopeMetric {
       [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
       [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
       [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
-    }
-
-    // Handle renamed tokens
-    if (this.matchingImport.rename !== undefined) {
-      metricData[JsScopeAttributes.TOKEN_NAME] = this.jsToken.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
-      )
     }
 
     metricData = hash(metricData, [

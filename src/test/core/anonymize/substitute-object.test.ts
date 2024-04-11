@@ -6,14 +6,14 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { substitute } from '../../../main/core/anonymize/substitute.js'
+import { substituteObject } from '../../../main/core/anonymize/substitute-object.js'
 
-describe('substitute', () => {
+describe('substituteObject', () => {
   it('correctly anonymizes sensitive data', () => {
     const obj = {
       sensitiveKey: 'sensitive value'
     }
-    const anonymized = substitute(obj, [], [])
+    const anonymized = substituteObject(obj, [], [])
 
     expect(anonymized.sensitiveKey).toBeUndefined()
     expect(Object.values(anonymized)).not.toContain('sensitive value')
@@ -23,7 +23,7 @@ describe('substitute', () => {
     const obj = {
       knownKey: 'cool sensitive value'
     }
-    const anonymized = substitute(obj, ['knownKey'], [])
+    const anonymized = substituteObject(obj, ['knownKey'], [])
 
     expect(anonymized.knownKey).not.toBe('cool sensitive value')
   })
@@ -32,7 +32,7 @@ describe('substitute', () => {
     const obj = {
       knownKey: 'known value'
     }
-    const anonymized = substitute(obj, ['knownKey'], ['known value'])
+    const anonymized = substituteObject(obj, ['knownKey'], ['known value'])
 
     expect(anonymized).toMatchObject({
       knownKey: 'known value'
@@ -47,8 +47,8 @@ describe('substitute', () => {
       sensitiveKey: 'sensitive value'
     }
 
-    const anon1 = substitute(obj1, [], [])
-    const anon2 = substitute(obj2, [], [])
+    const anon1 = substituteObject(obj1, [], [])
+    const anon2 = substituteObject(obj2, [], [])
 
     expect(Object.keys(anon1)).toStrictEqual(Object.keys(anon2))
     expect(Object.values(anon1)).toStrictEqual(Object.values(anon2))
@@ -59,8 +59,8 @@ describe('substitute', () => {
       knownKey: { some: 'object' }
     }
 
-    substitute(obj, [], [])
-    const anonymized = substitute(obj, ['knownKey'], [])
+    substituteObject(obj, [], [])
+    const anonymized = substituteObject(obj, ['knownKey'], [])
 
     expect(anonymized).toMatchObject({
       knownKey: '[redacted5]'
@@ -75,8 +75,8 @@ describe('substitute', () => {
       knownKey: { some: 'object' }
     }
 
-    const anon1 = substitute(obj1, ['knownKey'], [])
-    const anon2 = substitute(obj2, ['knownKey'], [])
+    const anon1 = substituteObject(obj1, ['knownKey'], [])
+    const anon2 = substituteObject(obj2, ['knownKey'], [])
 
     expect(anon1.knownKey).toStrictEqual(anon2.knownKey)
   })
@@ -87,7 +87,7 @@ describe('substitute', () => {
       knownKey2: "{ some: 'object' }"
     }
 
-    const anon = substitute(obj, ['knownKey1', 'knownKey2'], [])
+    const anon = substituteObject(obj, ['knownKey1', 'knownKey2'], [])
 
     expect(anon.knownKey1).not.toBe(anon.knownKey2)
   })
@@ -96,7 +96,7 @@ describe('substitute', () => {
     const obj = {
       knownKey1: Number('123')
     }
-    const anon = substitute(obj, ['knownKey1'], [])
+    const anon = substituteObject(obj, ['knownKey1'], [])
     expect(anon.knownKey1).toBe(obj.knownKey1)
   })
 
@@ -104,7 +104,7 @@ describe('substitute', () => {
     const obj = {
       knownKey1: true
     }
-    const anon = substitute(obj, ['knownKey1'], [])
+    const anon = substituteObject(obj, ['knownKey1'], [])
     expect(anon.knownKey1).toBe(obj.knownKey1)
   })
 
@@ -112,7 +112,7 @@ describe('substitute', () => {
     const obj = {
       knownKey1: null
     }
-    const anon = substitute(obj, ['knownKey1'], [])
+    const anon = substituteObject(obj, ['knownKey1'], [])
     expect(anon.knownKey1).toBe(obj.knownKey1)
   })
 
@@ -120,7 +120,7 @@ describe('substitute', () => {
     const obj = {
       knownKey1: undefined
     }
-    const anon = substitute(obj, ['knownKey1'], [])
+    const anon = substituteObject(obj, ['knownKey1'], [])
     expect(anon.knownKey1).toBe(obj.knownKey1)
   })
 })

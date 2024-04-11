@@ -37,9 +37,12 @@ export async function getPackageData(
   for (const dir of dirs) {
     try {
       packageData = await getImmediatePackageData(dir, logger)
-      break
     } catch (err) {
       logger.debug(String(err))
+    }
+
+    if (packageData?.name !== undefined && packageData?.version !== undefined) {
+      break
     }
   }
 

@@ -73,17 +73,19 @@ export async function findRelevantSourceFiles(
     } while (shortestPathLength === undefined && packageTrees.length > 0)
 
     if (instrumentedInstallVersions === undefined) {
-      throw new NoInstallationFoundError(instrumentedPackage.name)
+      logger.error(new NoInstallationFoundError(instrumentedPackage.name))
+      return false
     }
 
     return instrumentedInstallVersions.some((version) => version === instrumentedPackage.version)
   })
+
   const filterData = await Promise.all(filterPromises)
 
   const results = sourceFiles.filter((_, index) => {
     return filterData[index]
   })
 
-  logger.traceEnter('', 'findRelevantSourceFiles', results)
+  logger.traceExit('', 'findRelevantSourceFiles', results)
   return results
 }

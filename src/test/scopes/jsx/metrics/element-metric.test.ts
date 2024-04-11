@@ -9,8 +9,9 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
-import { substitute } from '../../../../main/core/anonymize/substitute.js'
+import { substituteObject } from '../../../../main/core/anonymize/substitute-object.js'
 import type { JsImport } from '../../../../main/scopes/js/interfaces.js'
+import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import type { JsxElement, JsxElementAttribute } from '../../../../main/scopes/jsx/interfaces.js'
 import { ElementMetric } from '../../../../main/scopes/jsx/metrics/element-metric.js'
 import { initLogger } from '../../../__utils/init-logger.js'
@@ -63,7 +64,7 @@ describe('class: ElementMetric', () => {
       {}
     )
 
-    const subs = substitute(attrMap, [], [])
+    const subs = substituteObject(attrMap, [], [])
 
     expect(attributes).toStrictEqual(
       hash(
@@ -108,7 +109,7 @@ describe('class: ElementMetric', () => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
 
-    const subs = substitute(attrMap, [], [])
+    const subs = substituteObject(attrMap, [], [])
 
     expect(attributes).toStrictEqual(
       hash(
@@ -138,7 +139,12 @@ describe('class: ElementMetric', () => {
   })
 
   it('returns the correct attributes for a default element', () => {
-    const defaultImport = { ...jsImport, name: '[Default]', rename: 'theName', isDefault: true }
+    const defaultImport = {
+      ...jsImport,
+      name: DEFAULT_ELEMENT_NAME,
+      rename: 'theName',
+      isDefault: true
+    }
     const attributes = new ElementMetric(
       jsxElement,
       defaultImport,
@@ -153,12 +159,12 @@ describe('class: ElementMetric', () => {
       return { ...prev, [cur.name]: cur.value }
     }, {})
 
-    const subs = substitute(attrMap, [], [])
+    const subs = substituteObject(attrMap, [], [])
 
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsxScopeAttributes.NAME]: '[Default]',
+          [JsxScopeAttributes.NAME]: DEFAULT_ELEMENT_NAME,
           [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
           [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
           [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
@@ -222,7 +228,11 @@ describe('class: ElementMetric', () => {
       {}
     )
 
-    const substitutedAttributes = substitute(attrMap, ['allowedAttrName'], ['allowedAttrValue'])
+    const substitutedAttributes = substituteObject(
+      attrMap,
+      ['allowedAttrName'],
+      ['allowedAttrValue']
+    )
 
     expect(attributes).toStrictEqual(
       hash(

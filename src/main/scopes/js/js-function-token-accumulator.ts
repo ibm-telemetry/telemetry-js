@@ -11,8 +11,8 @@ import { JsAccumulator } from '../js/js-accumulator.js'
  * Responsible for maintaining an aggregated state of imports, functions and tokens.
  */
 export class JsFunctionTokenAccumulator extends JsAccumulator {
-  public readonly tokens: JsToken[]
-  public readonly functions: JsFunction[]
+  public tokens: JsToken[]
+  public functions: JsFunction[]
   public readonly functionImports: Map<JsFunction, JsImport>
   public readonly tokenImports: Map<JsToken, JsImport>
 

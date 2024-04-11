@@ -182,8 +182,29 @@ export class IbmTelemetry {
     return promises
   }
 
+  /**
+   * Exports collected metrics (if any).
+   *
+   * @param metrics - ResourceMetrics instance of pre-collected metrics to export.
+   * @param config - The provided config.
+   * @returns Promise that resolves to undefined.
+   */
   @Trace()
-  private async emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
+  public async emitMetrics(metrics: ResourceMetrics, config: ConfigSchema) {
+    // ensure each independent metric (npm.dependency, jsx.element, js.function...)
+    // has at least 1 dataPoint (1 individual collected element)
+    metrics.scopeMetrics.forEach((scopeMetric) => {
+      scopeMetric.metrics = scopeMetric.metrics.filter((metric) => metric.dataPoints.length > 0)
+    })
+
+    // ensure each scope has at least one metric type (npm.dependency, jsx.element, js.function...)
+    metrics.scopeMetrics = metrics.scopeMetrics.filter((scope) => scope.metrics.length > 0)
+
+    // no metrics, do not export
+    if (metrics.scopeMetrics.length <= 0) {
+      return Promise.resolve(undefined)
+    }
+
     const exporter = new OTLPMetricExporter({
       url: config.endpoint,
       temporalityPreference: AggregationTemporality.DELTA,

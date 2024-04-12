@@ -26,10 +26,11 @@ export class OpenTelemetryContext {
   /**
    * Returns a singleton OTelContext instance.
    *
+   * @param reInitialize - Whether or not to reinitialize otel. Defaults to false.
    * @returns A singleton instance.
    */
-  public static getInstance(): OpenTelemetryContext {
-    if (OpenTelemetryContext.instance === undefined) {
+  public static getInstance(reInitialize = false): OpenTelemetryContext {
+    if (reInitialize || OpenTelemetryContext.instance === undefined) {
       OpenTelemetryContext.instance = new OpenTelemetryContext()
     }
 

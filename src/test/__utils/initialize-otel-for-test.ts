@@ -18,10 +18,7 @@ export function initializeOtelForTest() {
   const date = new Date(2023).toISOString()
 
   // Force re-initialization on next use
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- See above
-  ;(OpenTelemetryContext as any).instance = undefined
-
-  const otelContext = OpenTelemetryContext.getInstance()
+  const otelContext = OpenTelemetryContext.getInstance(true)
 
   otelContext.setAttributes({
     [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',

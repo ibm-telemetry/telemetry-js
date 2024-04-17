@@ -90,7 +90,7 @@ export class JsScope extends Scope {
 
     for (const sourceFile of sourceFiles) {
       const resultPromise = this.captureFileMetrics(
-        sourceFile,
+        await sourceFile.createSourceFile(),
         instrumentedPackage,
         importMatchers,
         collectorKeys

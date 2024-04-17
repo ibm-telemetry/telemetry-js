@@ -24,6 +24,8 @@ export class TrackedFileEnumerator extends Loggable {
    *
    * The returned paths are absolute.
    *
+   * @param cwd - The current working directory of telemetry data collection. This is an absolute
+   * path.
    * @param root - Directory to consider as the root. This is an absolute path.
    * @param predicate - Function to indicate whether or not each enumerated file should be part of
    * the result set.
@@ -31,11 +33,12 @@ export class TrackedFileEnumerator extends Loggable {
    */
   @Trace()
   public async find(
+    cwd: string,
     root: string,
     predicate: (file: string) => boolean | Promise<boolean>
   ): Promise<string[]> {
     const allFiles = (
-      await runCommand(`git ls-tree --full-tree --name-only -r HEAD ${root}`, this.logger)
+      await runCommand(`git ls-tree --full-tree --name-only -r HEAD ${root}`, this.logger, { cwd })
     ).stdout
       .split(/\r?\n/g)
       .filter((file) => file !== '')

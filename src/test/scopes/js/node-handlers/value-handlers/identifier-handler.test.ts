@@ -20,9 +20,9 @@ describe('identifierHandler', () => {
 
   it('correctly returns undefined for undefined attribute value', async () => {
     const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
-    const sourceFile = (
-      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
-    )[0] as ts.SourceFile
+    const sourceFile = (await (
+      await getTrackedSourceFiles(fixture.path, fixture.path, logger, JsxScope.fileExtensions)
+    )[0]?.createSourceFile()) as ts.SourceFile
 
     const handler = new IdentifierHandler(sourceFile, logger)
 
@@ -37,9 +37,9 @@ describe('identifierHandler', () => {
 
   it('correctly returns complex attribute', async () => {
     const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
-    const sourceFile = (
-      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
-    )[0] as ts.SourceFile
+    const sourceFile = (await (
+      await getTrackedSourceFiles(fixture.path, fixture.path, logger, JsxScope.fileExtensions)
+    )[0]?.createSourceFile()) as ts.SourceFile
 
     const handler = new IdentifierHandler(sourceFile, logger)
 

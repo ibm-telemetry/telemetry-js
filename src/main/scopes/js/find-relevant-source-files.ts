@@ -41,7 +41,7 @@ export async function findRelevantSourceFiles(
   logger: Logger
 ) {
   logger.traceEnter('', 'findRelevantSourceFiles', [instrumentedPackage, cwd, root, fileExtensions])
-  const sourceFiles = await getTrackedSourceFiles(root, logger, fileExtensions)
+  const sourceFiles = await getTrackedSourceFiles(cwd, root, logger, fileExtensions)
 
   const dependencyTree = await getDependencyTree(cwd, root, logger)
 

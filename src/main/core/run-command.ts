@@ -16,6 +16,9 @@ export interface RunCommandResult {
   exitCode: number
 }
 
+const MAX_OUTSTANDING_COMMANDS = 5
+const outstandingPromises = new Set<Promise<unknown>>()
+
 /**
  * Runs a command using childProcess. Throws an exception if the command fails or exits with a
  * non-zero exit code.
@@ -37,6 +40,10 @@ export async function runCommand(
 
   guardShell(cmd)
 
+  while (outstandingPromises.size >= MAX_OUTSTANDING_COMMANDS) {
+    await Promise.allSettled(outstandingPromises)
+  }
+
   let resolveFn: (value: RunCommandResult) => void
   let rejectFn: (reason: unknown) => void
   let outData = ''
@@ -52,6 +59,7 @@ export async function runCommand(
     resolveFn = resolve
     rejectFn = reject
   })
+  outstandingPromises.add(promise)
   const proc = childProcess.spawn(cmd, spawnOptions)
 
   proc.stdout?.on('data', (data) => {
@@ -87,6 +95,8 @@ export async function runCommand(
       resolveFn(result)
     }
 
+    outstandingPromises.delete(promise)
+
     hasCallbackBeenTriggered = true
     logger.traceExit('', 'runCommand', result)
   })
@@ -114,6 +124,8 @@ export async function runCommand(
       }
       resolveFn(result)
     }
+
+    outstandingPromises.delete(promise)
 
     hasCallbackBeenTriggered = true
     logger.traceExit('', 'runCommand', result)

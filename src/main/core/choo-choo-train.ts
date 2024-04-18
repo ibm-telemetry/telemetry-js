@@ -15,7 +15,7 @@ import type { Logger } from './log/logger.js'
 import { Trace } from './log/trace.js'
 
 const MAX_RETRIES = 3
-const MAX_BACKLOG = 20
+const MAX_BACKLOG = 64
 
 interface Work {
   cwd: string

@@ -69,7 +69,7 @@ async function runBackgroundProcess(opts: CommandLineOptions) {
   }
 
   logger.traceExit('', 'runBackgroundProcess', undefined)
-  logger.close()
+  await logger.close()
 }
 
 run()

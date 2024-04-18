@@ -22,9 +22,9 @@ describe('processFile', () => {
 
   it('correctly detects imports and elements in a given file', async () => {
     const accumulator = new JsxElementAccumulator()
-    const sourceFile = (
-      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
-    )[0] as ts.SourceFile
+    const sourceFile = (await (
+      await getTrackedSourceFiles(fixture.path, fixture.path, logger, JsxScope.fileExtensions)
+    )[0]?.createSourceFile()) as ts.SourceFile
 
     processFile(accumulator, sourceFile, jsxNodeHandlerMap, logger)
     expect(accumulator.elements).toMatchSnapshot('elements')

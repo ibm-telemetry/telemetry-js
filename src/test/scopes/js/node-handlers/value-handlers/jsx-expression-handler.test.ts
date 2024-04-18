@@ -19,9 +19,9 @@ describe('class: JsxExpressionHandler', () => {
   const logger = initLogger()
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
-    const sourceFile = (
-      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
-    )[0] as ts.SourceFile
+    const sourceFile = (await (
+      await getTrackedSourceFiles(fixture.path, fixture.path, logger, JsxScope.fileExtensions)
+    )[0]?.createSourceFile()) as ts.SourceFile
     const handler = new JsxExpressionHandler(sourceFile, logger)
 
     const nodes = findNodesByType<ts.JsxExpression>(sourceFile, ts.SyntaxKind.JsxExpression)
@@ -32,9 +32,9 @@ describe('class: JsxExpressionHandler', () => {
 
   it('throws NoAttributeExpressionFoundError if attribute does not have an expression', async () => {
     const fixture = new Fixture('jsx-samples/all-jsx-element-types.tsx')
-    const sourceFile = (
-      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
-    )[0] as ts.SourceFile
+    const sourceFile = (await (
+      await getTrackedSourceFiles(fixture.path, fixture.path, logger, JsxScope.fileExtensions)
+    )[0]?.createSourceFile()) as ts.SourceFile
     const handler = new JsxExpressionHandler(sourceFile, logger)
 
     const node = findNodesByType(

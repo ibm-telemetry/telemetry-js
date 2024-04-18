@@ -90,7 +90,11 @@ export class JsxScope extends Scope {
     const promises: Promise<void>[] = []
 
     for (const sourceFile of sourceFiles) {
-      const resultPromise = this.captureFileMetrics(sourceFile, instrumentedPackage, importMatchers)
+      const resultPromise = this.captureFileMetrics(
+        await sourceFile.createSourceFile(),
+        instrumentedPackage,
+        importMatchers
+      )
 
       if (this.runSync) {
         await resultPromise

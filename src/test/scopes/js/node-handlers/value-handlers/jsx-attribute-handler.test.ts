@@ -18,9 +18,9 @@ describe('class: JsxAttributeHandler', () => {
   const logger = initLogger()
   it('correctly returns node text', async () => {
     const fixture = new Fixture('jsx-samples/all-attr-types.tsx')
-    const sourceFile = (
-      await getTrackedSourceFiles(fixture.path, logger, JsxScope.fileExtensions)
-    )[0] as ts.SourceFile
+    const sourceFile = (await (
+      await getTrackedSourceFiles(fixture.path, fixture.path, logger, JsxScope.fileExtensions)
+    )[0]?.createSourceFile()) as ts.SourceFile
     const handler = new JsxAttributeHandler(sourceFile, logger)
     const nodes = findNodesByType(sourceFile, ts.SyntaxKind.JsxAttribute)
 

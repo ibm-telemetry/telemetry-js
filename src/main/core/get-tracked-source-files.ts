@@ -16,6 +16,7 @@ import { TrackedFileEnumerator } from './tracked-file-enumerator.js'
  * Gets all tracked source files to consider for data collection,
  * filtered by supplied file extension array.
  *
+ * @param cwd - Working directory for underlying command execution.
  * @param root - Root directory in which to search for tracked source files. This is an absolute
  * path.
  * @param logger - Logger instance to use.
@@ -23,6 +24,7 @@ import { TrackedFileEnumerator } from './tracked-file-enumerator.js'
  * @returns An array of source file objects.
  */
 export async function getTrackedSourceFiles(
+  cwd: string,
   root: string,
   logger: Logger,
   fileExtensions: string[]
@@ -37,17 +39,24 @@ export async function getTrackedSourceFiles(
     files.push(root)
   } else {
     files.push(
-      ...(await fileEnumerator.find(root, (file) => fileExtensions.includes(path.extname(file))))
+      ...(await fileEnumerator.find(cwd, root, (file) =>
+        fileExtensions.includes(path.extname(file))
+      ))
     )
   }
 
   const promises = files.map(async (file) => {
-    return ts.createSourceFile(
-      file,
-      (await readFile(file)).toString(),
-      ts.ScriptTarget.ES2021,
-      /* setParentNodes */ true
-    )
+    return {
+      fileName: file,
+      async createSourceFile(): Promise<ts.SourceFile> {
+        return ts.createSourceFile(
+          file,
+          (await readFile(file)).toString(),
+          ts.ScriptTarget.ES2021,
+          /* setParentNodes */ true
+        )
+      }
+    }
   })
 
   const results = await Promise.all(promises)

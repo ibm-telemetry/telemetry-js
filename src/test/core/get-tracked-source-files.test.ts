@@ -18,7 +18,7 @@ describe('getTrackedSourceFiles', () => {
   it('correctly returns all tracked source files', async () => {
     const root = new Fixture('projects/all-extensions')
 
-    const sourceFiles = await getTrackedSourceFiles(root.path, logger, [
+    const sourceFiles = await getTrackedSourceFiles(root.path, root.path, logger, [
       '.js',
       '.mjs',
       '.cjs',
@@ -38,7 +38,7 @@ describe('getTrackedSourceFiles', () => {
   it('correctly includes root', async () => {
     const root = new Fixture('projects/all-extensions/test.js')
 
-    const sourceFiles = await getTrackedSourceFiles(root.path, logger, [
+    const sourceFiles = await getTrackedSourceFiles(root.path, root.path, logger, [
       '.js',
       '.mjs',
       '.cjs',
@@ -52,7 +52,7 @@ describe('getTrackedSourceFiles', () => {
   it('correctly returns empty tracked files array when no files match the desired extensions', async () => {
     const root = new Fixture('projects/all-extensions/nested/deeply-nested/irrelevant-nested-files')
 
-    const sourceFiles = await getTrackedSourceFiles(root.path, logger, [
+    const sourceFiles = await getTrackedSourceFiles(process.cwd(), root.path, logger, [
       '.js',
       '.mjs',
       '.cjs',
@@ -66,7 +66,7 @@ describe('getTrackedSourceFiles', () => {
   it('correctly returns empty tracked files array when directory does not exist', async () => {
     const root = new Fixture('scopes/jsx/not-a-real-directory')
 
-    const sourceFiles = await getTrackedSourceFiles(root.path, logger, [
+    const sourceFiles = await getTrackedSourceFiles(process.cwd(), root.path, logger, [
       '.js',
       '.mjs',
       '.cjs',

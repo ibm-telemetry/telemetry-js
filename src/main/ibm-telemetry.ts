@@ -81,7 +81,7 @@ export class IbmTelemetry {
     const config = await parseYamlFile(this.configPath)
     this.logger.debug('Config: ' + JSON.stringify(config, undefined, 2))
 
-    const cwd = process.cwd()
+    const cwd = this.environment.cwd
     this.logger.debug('cwd: ' + cwd)
 
     const projectRoot = await getProjectRoot(cwd, this.logger)
@@ -95,7 +95,7 @@ export class IbmTelemetry {
       this.logger
     ).getGitInfo()
     const emitterInfo = await getTelemetryPackageData(this.logger)
-    const otelContext = OpenTelemetryContext.getInstance()
+    const otelContext = OpenTelemetryContext.getInstance(true)
 
     otelContext.setAttributes(
       hash(

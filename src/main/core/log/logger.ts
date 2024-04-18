@@ -59,9 +59,10 @@ export class Logger {
    * Debug logs a given log message.
    *
    * @param msg - The message to log.
+   * @param others - Other (optional) messages.
    */
-  public debug(msg: string) {
-    this.log('debug', msg)
+  public debug(msg: string, ...others: Array<string | number>) {
+    this.log('debug', [msg, ...others])
   }
 
   /**
@@ -78,7 +79,7 @@ export class Logger {
       entry = msg
     }
 
-    this.log('error', entry)
+    this.log('error', [entry])
   }
 
   /**
@@ -133,11 +134,11 @@ export class Logger {
    * Logs a given message to the log file.
    *
    * @param level - 'debug' or 'error'.
-   * @param msg - Message to log.
+   * @param msgs - Messages to log.
    */
-  private log(level: Level, msg: string) {
+  private log(level: Level, msgs: Array<string | number>) {
     const date = new Date().toISOString()
 
-    this.#buffer.push(level + ' ' + process.pid + ' ' + date + ' ' + msg + '\n')
+    this.#buffer.push(level + ' ' + process.pid + ' ' + date + ' ' + msgs.join(' ') + '\n')
   }
 }

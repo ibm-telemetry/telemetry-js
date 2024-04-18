@@ -20,14 +20,14 @@ describe('class: TrackedFileEnumerator', () => {
   it('correctly returns all tracked files for a predicate that always returns true', async () => {
     const root = new Fixture('projects/nested-project-files')
 
-    await expect(enumerator.find(root.path, () => true)).resolves.toHaveLength(7)
+    await expect(enumerator.find(root.path, root.path, () => true)).resolves.toHaveLength(7)
   })
 
   it('correctly excludes files not matched by predicate', async () => {
     const root = new Fixture('projects/nested-project-files')
 
     await expect(
-      enumerator.find(root.path, (fileName) => !fileName.endsWith('.something'))
+      enumerator.find(root.path, root.path, (fileName) => !fileName.endsWith('.something'))
     ).resolves.toHaveLength(3)
   })
 
@@ -35,14 +35,16 @@ describe('class: TrackedFileEnumerator', () => {
     const root = new Fixture('projects/nested-project-files')
 
     await expect(
-      enumerator.find(root.path, (fileName) => fileName === 'does-not-exist')
+      enumerator.find(root.path, root.path, (fileName) => fileName === 'does-not-exist')
     ).resolves.toHaveLength(0)
   })
 
   it('returns correctly resolved absolute paths', async () => {
     const root = new Fixture('projects/nested-project-files')
 
-    const files = await enumerator.find(root.path, (fileName) => fileName.endsWith('.js'))
+    const files = await enumerator.find(root.path, root.path, (fileName) =>
+      fileName.endsWith('.js')
+    )
 
     expect(files).toStrictEqual([
       path.join(root.path, 'nested/deeply-nested/test.js'),
@@ -54,7 +56,7 @@ describe('class: TrackedFileEnumerator', () => {
   it('handles a top-level file in the repo', async () => {
     const root = await getProjectRoot(process.cwd(), logger)
     const fileEnumerator = new TrackedFileEnumerator(logger)
-    const files = await fileEnumerator.find(root, (file) => file === 'package.json')
+    const files = await fileEnumerator.find(root, root, (file) => file === 'package.json')
 
     expect(files).toStrictEqual([path.join(root, 'package.json')])
   })

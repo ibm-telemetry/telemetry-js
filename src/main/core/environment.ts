@@ -7,6 +7,7 @@
 import { isCI } from 'ci-info'
 
 interface EnvironmentConfig {
+  cwd?: string
   isCI?: boolean
   isExportEnabled?: boolean
   isTelemetryEnabled?: boolean
@@ -32,10 +33,16 @@ export class Environment {
    */
   readonly isTelemetryEnabled: boolean
 
+  /**
+   * Working directory to run process on.
+   */
+  readonly cwd: string
+
   constructor(config?: EnvironmentConfig) {
     this.isCI = isCI
     this.isExportEnabled = process.env['IBM_TELEMETRY_EXPORT_DISABLED'] !== 'true'
     this.isTelemetryEnabled = process.env['IBM_TELEMETRY_DISABLED'] !== 'true'
+    this.cwd = process.cwd()
 
     // Config object supersedes environment variable values
 
@@ -47,6 +54,9 @@ export class Environment {
     }
     if (config?.isTelemetryEnabled !== undefined) {
       this.isTelemetryEnabled = config.isTelemetryEnabled
+    }
+    if (config?.cwd !== undefined) {
+      this.cwd = config.cwd
     }
   }
 }

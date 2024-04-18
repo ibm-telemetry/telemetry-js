@@ -1,7 +1,7 @@
 {
   "name": "@ibm/telemetry-js",
   "description": "JavaScript telemetry tooling for open/inner source projects",
-  "version": "1.4.0",
+  "version": "1.5.0-rc.0",
   "license": "Apache-2.0",
   "author": "IBM",
   "keywords": [

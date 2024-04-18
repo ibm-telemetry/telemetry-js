@@ -41,7 +41,7 @@ export async function runCommand(
   guardShell(cmd)
 
   while (outstandingPromises.size >= MAX_OUTSTANDING_COMMANDS) {
-    await Promise.allSettled(outstandingPromises)
+    await Promise.any(outstandingPromises)
   }
 
   let resolveFn: (value: RunCommandResult) => void
@@ -77,6 +77,8 @@ export async function runCommand(
 
     let result
 
+    outstandingPromises.delete(promise)
+
     if (rejectOnError) {
       result = new RunCommandError({
         exitCode: 'errno' in err && typeof err.errno === 'number' ? err.errno : -1,
@@ -95,8 +97,6 @@ export async function runCommand(
       resolveFn(result)
     }
 
-    outstandingPromises.delete(promise)
-
     hasCallbackBeenTriggered = true
     logger.traceExit('', 'runCommand', result)
   })
@@ -105,6 +105,8 @@ export async function runCommand(
     if (hasCallbackBeenTriggered) {
       return
     }
+
+    outstandingPromises.delete(promise)
 
     let result
 
@@ -124,8 +126,6 @@ export async function runCommand(
       }
       resolveFn(result)
     }
-
-    outstandingPromises.delete(promise)
 
     hasCallbackBeenTriggered = true
     logger.traceExit('', 'runCommand', result)

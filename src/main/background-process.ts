@@ -44,6 +44,11 @@ function run() {
   }
 }
 
+/**
+ * This is the main entrypoint for telemetry collection.
+ *
+ * @param opts - The command line options provided when the program was executed.
+ */
 async function runBackgroundProcess(opts: CommandLineOptions) {
   const date = new Date().toISOString()
   const logFilePath = opts.log ?? createLogFilePath(date)

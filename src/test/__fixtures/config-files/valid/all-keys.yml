@@ -18,4 +18,10 @@ collect:
       allowedAttributeStringValues:
         - 'one'
         - 'two'
+  js:
+    functions:
+      allowedArgumentStringValues:
+        - 'one'
+        - 'two'
+    tokens:
 projectId: '123'

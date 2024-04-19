@@ -25,15 +25,6 @@ describe('class: ConfigValidator', () => {
     }).not.toThrow()
   })
 
-  it('allows for an empty elements object in jsx scope', async () => {
-    const fixture = new Fixture('config-files/valid/empty-jsx-elements.yml')
-    const config = await fixture.parse()
-
-    expect(() => {
-      validator.validate(config)
-    }).not.toThrow()
-  })
-
   it('does not allow extra properties', async () => {
     const fixture = new Fixture('config-files/invalid/extra-key.yml')
     const config = await fixture.parse()
@@ -159,104 +150,238 @@ describe('class: ConfigValidator', () => {
     ])
   })
 
-  it('requires at least one property in npm scope', async () => {
-    const fixture = new Fixture('config-files/invalid/missing-keys/missing-npm-keys.yml')
-    const config = await fixture.parse()
-    let err
+  describe('scopes', () => {
+    it('requires at least one property in npm scope', async () => {
+      const fixture = new Fixture('config-files/invalid/missing-keys/missing-npm-keys.yml')
+      const config = await fixture.parse()
+      let err
 
-    try {
-      validator.validate(config)
-    } catch (e) {
-      err = e
-    }
-
-    expect(err).toBeInstanceOf(ConfigValidationError)
-
-    expect((err as ConfigValidationError).errors).toStrictEqual([
-      {
-        instancePath: '/collect/npm',
-        keyword: 'minProperties',
-        message: 'must NOT have fewer than 1 properties',
-        params: {
-          limit: 1
-        }
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
       }
-    ])
+
+      expect(err).toBeInstanceOf(ConfigValidationError)
+
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/npm',
+          keyword: 'minProperties',
+          message: 'must NOT have fewer than 1 properties',
+          params: {
+            limit: 1
+          }
+        }
+      ])
+    })
+
+    it('requires at least one property in jsx scope', async () => {
+      const fixture = new Fixture('config-files/invalid/missing-keys/missing-jsx-keys.yml')
+      const config = await fixture.parse()
+      let err
+
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
+      }
+
+      expect(err).toBeInstanceOf(ConfigValidationError)
+
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/jsx',
+          keyword: 'minProperties',
+          message: 'must NOT have fewer than 1 properties',
+          params: {
+            limit: 1
+          }
+        }
+      ])
+    })
+
+    it('requires at least one property in js scope', async () => {
+      const fixture = new Fixture('config-files/invalid/missing-keys/missing-js-keys.yml')
+      const config = await fixture.parse()
+      let err
+
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
+      }
+
+      expect(err).toBeInstanceOf(ConfigValidationError)
+
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/js',
+          keyword: 'minProperties',
+          message: 'must NOT have fewer than 1 properties',
+          params: {
+            limit: 1
+          }
+        }
+      ])
+    })
   })
 
-  it('requires at least one property in jsx scope', async () => {
-    const fixture = new Fixture('config-files/invalid/missing-keys/missing-jsx-keys.yml')
-    const config = await fixture.parse()
-    let err
+  describe('jsx', () => {
+    it('allows for an empty elements object', async () => {
+      const fixture = new Fixture('config-files/valid/empty-jsx-elements.yml')
+      const config = await fixture.parse()
 
-    try {
-      validator.validate(config)
-    } catch (e) {
-      err = e
-    }
+      expect(() => {
+        validator.validate(config)
+      }).not.toThrow()
+    })
 
-    expect(err).toBeInstanceOf(ConfigValidationError)
+    it('allows for null elements object', async () => {
+      const fixture = new Fixture('config-files/valid/null-jsx-elements.yml')
+      const config = await fixture.parse()
 
-    expect((err as ConfigValidationError).errors).toStrictEqual([
-      {
-        instancePath: '/collect/jsx',
-        keyword: 'minProperties',
-        message: 'must NOT have fewer than 1 properties',
-        params: {
-          limit: 1
-        }
+      expect(() => {
+        validator.validate(config)
+      }).not.toThrow()
+    })
+
+    it('requires at least one name if allowedAttributeNames is defined', async () => {
+      const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-names.yml')
+      const config = await fixture.parse()
+      let err
+
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
       }
-    ])
+
+      expect(err).toBeInstanceOf(ConfigValidationError)
+
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/jsx/elements',
+          keyword: 'type',
+          message: 'must be null',
+          params: {
+            type: 'null'
+          }
+        },
+        {
+          instancePath: '/collect/jsx/elements/allowedAttributeNames',
+          keyword: 'minItems',
+          message: 'must NOT have fewer than 1 items',
+          params: {
+            limit: 1
+          }
+        },
+        {
+          instancePath: '/collect/jsx/elements',
+          keyword: 'anyOf',
+          message: 'must match a schema in anyOf',
+          params: {}
+        }
+      ])
+    })
+
+    it('requires at least one value if allowedAttributeStringValues is defined', async () => {
+      const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-string-values.yml')
+      const config = await fixture.parse()
+      let err
+
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
+      }
+
+      expect(err).toBeInstanceOf(ConfigValidationError)
+
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/jsx/elements',
+          keyword: 'type',
+          message: 'must be null',
+          params: {
+            type: 'null'
+          }
+        },
+        {
+          instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
+          keyword: 'minItems',
+          message: 'must NOT have fewer than 1 items',
+          params: {
+            limit: 1
+          }
+        },
+        {
+          instancePath: '/collect/jsx/elements',
+          keyword: 'anyOf',
+          message: 'must match a schema in anyOf',
+          params: {}
+        }
+      ])
+    })
   })
 
-  it('requires at least one name if allowedAttributeNames is defined', async () => {
-    const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-names.yml')
-    const config = await fixture.parse()
-    let err
+  describe('js', () => {
+    it('allows for an empty functions object', async () => {
+      const fixture = new Fixture('config-files/valid/empty-js-functions.yml')
+      const config = await fixture.parse()
 
-    try {
-      validator.validate(config)
-    } catch (e) {
-      err = e
-    }
+      expect(() => {
+        validator.validate(config)
+      }).not.toThrow()
+    })
 
-    expect(err).toBeInstanceOf(ConfigValidationError)
+    it('allows for null functions object', async () => {
+      const fixture = new Fixture('config-files/valid/null-js-functions.yml')
+      const config = await fixture.parse()
 
-    expect((err as ConfigValidationError).errors).toStrictEqual([
-      {
-        instancePath: '/collect/jsx/elements/allowedAttributeNames',
-        keyword: 'minItems',
-        message: 'must NOT have fewer than 1 items',
-        params: {
-          limit: 1
-        }
+      expect(() => {
+        validator.validate(config)
+      }).not.toThrow()
+    })
+
+    it('requires at least one value if allowedArgumentStringValues is defined', async () => {
+      const fixture = new Fixture('config-files/invalid/empty-allowed-argument-string-values.yml')
+      const config = await fixture.parse()
+      let err
+
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
       }
-    ])
-  })
 
-  it('requires at least one value if allowedAttributeStringValues is defined', async () => {
-    const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-string-values.yml')
-    const config = await fixture.parse()
-    let err
+      expect(err).toBeInstanceOf(ConfigValidationError)
 
-    try {
-      validator.validate(config)
-    } catch (e) {
-      err = e
-    }
-
-    expect(err).toBeInstanceOf(ConfigValidationError)
-
-    expect((err as ConfigValidationError).errors).toStrictEqual([
-      {
-        instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
-        keyword: 'minItems',
-        message: 'must NOT have fewer than 1 items',
-        params: {
-          limit: 1
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/js/functions',
+          keyword: 'type',
+          message: 'must be null',
+          params: {
+            type: 'null'
+          }
+        },
+        {
+          instancePath: '/collect/js/functions/allowedArgumentStringValues',
+          keyword: 'minItems',
+          message: 'must NOT have fewer than 1 items',
+          params: {
+            limit: 1
+          }
+        },
+        {
+          instancePath: '/collect/js/functions',
+          keyword: 'anyOf',
+          message: 'must match a schema in anyOf',
+          params: {}
         }
-      }
-    ])
+      ])
+    })
   })
 
   it('is able to identify more than one error', async () => {
@@ -290,12 +415,26 @@ describe('class: ConfigValidator', () => {
         }
       },
       {
+        instancePath: '/collect/jsx/elements',
+        keyword: 'type',
+        message: 'must be null',
+        params: {
+          type: 'null'
+        }
+      },
+      {
         instancePath: '/collect/jsx/elements/allowedAttributeStringValues',
         keyword: 'minItems',
         message: 'must NOT have fewer than 1 items',
         params: {
           limit: 1
         }
+      },
+      {
+        instancePath: '/collect/jsx/elements',
+        keyword: 'anyOf',
+        message: 'must match a schema in anyOf',
+        params: {}
       }
     ])
   })

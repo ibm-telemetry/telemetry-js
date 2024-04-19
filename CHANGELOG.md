@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.4.0...v1.5.0) (2024-04-19)
+
+
+### Features
+
+* choo-choo train ([#232](https://github.com/ibm-telemetry/telemetry-js/issues/232)) ([3217a91](https://github.com/ibm-telemetry/telemetry-js/commit/3217a912f77f07664bb6f49f12cf4705b6c7c8f6))
+* update config schema to latest ([5f125c2](https://github.com/ibm-telemetry/telemetry-js/commit/5f125c208ee2ce18bb205d05433a3dc948fa6b33))
+* update config schema to latest version ([ca3da4b](https://github.com/ibm-telemetry/telemetry-js/commit/ca3da4b1991bfcaa23774a2ad4569cf63faa5021))
+
+
+### Bug Fixes
+
+* add release-please version hint ([b20586e](https://github.com/ibm-telemetry/telemetry-js/commit/b20586e1c6b18638e6bd3ce490632c568f0a2d15))
+* **deps:** upgrade devDependencies (minor) ([#229](https://github.com/ibm-telemetry/telemetry-js/issues/229)) ([9870632](https://github.com/ibm-telemetry/telemetry-js/commit/9870632e15170a47f56eee807f1ff50ff217f784))
+
 ## [1.4.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.3.0...v1.4.0) (2024-04-11)
 
 

@@ -53,10 +53,11 @@ async function runBackgroundProcess(opts: CommandLineOptions) {
   const date = new Date().toISOString()
   const logFilePath = opts.log ?? createLogFilePath(date)
   const logger = new Logger(logFilePath)
+  const fullConfigPath = path.resolve(opts.config)
 
   logger.traceEnter('', 'runBackgroundProcess', [opts])
 
-  const chooChooTrain = new ChooChooTrain(IPC_ADDR, new Environment(), opts.config, logger)
+  const chooChooTrain = new ChooChooTrain(IPC_ADDR, new Environment(), fullConfigPath, logger)
 
   try {
     await chooChooTrain.run()

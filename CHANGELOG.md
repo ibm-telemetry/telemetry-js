@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.5.0...v1.5.1) (2024-05-08)
+
+
+### Bug Fixes
+
+* **deps:** upgrade devDependencies (minor) ([#234](https://github.com/ibm-telemetry/telemetry-js/issues/234)) ([b6f5e74](https://github.com/ibm-telemetry/telemetry-js/commit/b6f5e74cc01d24f44a18ff24d24dfc2f2c7f2281))
+* resolve absolute path for config files ([5c96589](https://github.com/ibm-telemetry/telemetry-js/commit/5c96589497697b2d4c75bba50213de4d248f9dba))
+
 ## [1.5.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.4.0...v1.5.0) (2024-04-19)
 
 

@@ -11,15 +11,14 @@ console.warn(
   '----------------------------------------------------------------------------' +
     '-----------------------------------------------------------------------\n' +
     chalk.yellow('NOTICE: ') +
-    'A package you installed uses IBM Telemetry to collect metrics data. ' +
-    'By installing this package as a dependency you are agreeing to telemetry collection.\n\nTo opt out, see ' +
-    chalk.blue.underline.italic(
-      'https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection'
-    ) +
-    '.\n\nFor more information on the data being collected, please refer to the IBM Telemetry documentation at ' +
-    chalk.blue.underline.italic(
-      'https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics.\n'
-    ) +
+    'A package you installed is using IBM Telemetry to collect anonymous usage data. ' +
+    "This information is used to influence the project's roadmap and prioritize bug fixes." +
+    ' \n\nYou can opt-out of this process by setting ' +
+    chalk.dim.gray("IBM_TELEMETRY_DISABLED='true'") +
+    ' in your environment.' +
+    '\n\nTo learn more, please visit: ' +
+    chalk.blue.underline.italic('https://github.com/ibm-telemetry/telemetry-js') +
+    '.\n' +
     '-----------------------------------------------------------------------------' +
     '----------------------------------------------------------------------\n'
 )

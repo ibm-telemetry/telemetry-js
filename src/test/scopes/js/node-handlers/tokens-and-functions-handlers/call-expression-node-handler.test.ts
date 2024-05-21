@@ -136,7 +136,7 @@ describe('class: CallExpressionExpressionNodeHandler', async () => {
     it('correctly trims a multiline function and its arguments', () => {
       const accumulator = new JsFunctionTokenAccumulator()
       const sourceFile = createSourceFileFromText(`foo(
-        'first'
+        'first second'
       )`)
       const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
       const handler = new CallExpressionNodeHandler(sourceFile, logger)
@@ -148,7 +148,27 @@ describe('class: CallExpressionExpressionNodeHandler', async () => {
       expect(accumulator.functions).toHaveLength(1)
       expect(accumulator.functions[0]).toMatchObject({
         name: 'foo',
-        arguments: ['first'],
+        arguments: ['first second'],
+        accessPath: ['foo']
+      })
+    })
+    it('correctly trims a multiline function and its multiline arguments', () => {
+      const accumulator = new JsFunctionTokenAccumulator()
+      const sourceFile = createSourceFileFromText(`foo(
+        'first second',
+        5
+      )`)
+      const nodes = findNodesByType<ts.CallExpression>(sourceFile, ts.SyntaxKind.CallExpression)
+      const handler = new CallExpressionNodeHandler(sourceFile, logger)
+
+      nodes.forEach((node) => {
+        handler.handle(node, accumulator)
+      })
+
+      expect(accumulator.functions).toHaveLength(1)
+      expect(accumulator.functions[0]).toMatchObject({
+        name: 'foo',
+        arguments: ['first second', 5],
         accessPath: ['foo']
       })
     })

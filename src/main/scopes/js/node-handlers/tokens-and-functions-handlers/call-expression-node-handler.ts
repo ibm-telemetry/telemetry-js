@@ -40,13 +40,13 @@ export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
     const argsLength = node.arguments.end - node.arguments.pos
     const nodeText = node.getText(this.sourceFile)
     // account for closing parentheses, remove newlines
-    const functionName = nodeText
-      .substring(0, nodeText.length - argsLength - 1)
-      .replace(/[\r\n]+/gm, '')
-      .trim()
+    let functionName = nodeText.substring(0, nodeText.length - argsLength - 1).replace(/\s/g, '')
+
+    functionName = functionName.substring(0, functionName.length - 1)
+
     const jsFunction: JsFunction = {
       // account for opening parentheses
-      name: functionName.substring(0, functionName.length - 1),
+      name: functionName,
       accessPath: [],
       arguments: [],
       startPos: node.pos,

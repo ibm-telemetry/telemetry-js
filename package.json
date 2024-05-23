@@ -31,7 +31,7 @@
     "dist/background-process.js",
     "dist/collect.js",
     "dist/spawn-background-process.js",
-    "scripts/postinstall.js"
+    "dist/notify.js"
   ],
   "scripts": {
     "build": "npm run clean && npm run compile && npm run compile:collect && npm run bundle",

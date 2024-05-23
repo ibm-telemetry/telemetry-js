@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.5.2](https://github.com/ibm-telemetry/telemetry-js/compare/v1.5.1...v1.5.2) (2024-05-21)
+
+
+### Features
+
+* move to eslint flat config ([#244](https://github.com/ibm-telemetry/telemetry-js/issues/244)) ([f540128](https://github.com/ibm-telemetry/telemetry-js/commit/f5401282794312c337aeffeca2febec730ef5fb4))
+
+
+### Bug Fixes
+
+* **deps:** upgrade contributor-assistant/github-action action to v2.4.0 ([#239](https://github.com/ibm-telemetry/telemetry-js/issues/239)) ([dfefe9c](https://github.com/ibm-telemetry/telemetry-js/commit/dfefe9c3b05a212e790a397888b4822623eaabe7))
+* **deps:** upgrade devDependencies (minor) ([#236](https://github.com/ibm-telemetry/telemetry-js/issues/236)) ([bea5a86](https://github.com/ibm-telemetry/telemetry-js/commit/bea5a86a1314ed4b9da708a81940ff5b8468bf1e))
+* **deps:** upgrade devDependencies (minor) ([#241](https://github.com/ibm-telemetry/telemetry-js/issues/241)) ([938a9e9](https://github.com/ibm-telemetry/telemetry-js/commit/938a9e91c13fe66fbdc5571ce223f344d4c82198))
+* refine js scope function parsing logic ([#243](https://github.com/ibm-telemetry/telemetry-js/issues/243)) ([5e1990f](https://github.com/ibm-telemetry/telemetry-js/commit/5e1990fe271c97810d47e5d8fc7af3333131ceea))
+
+
+### Continuous Integration
+
+* release 1.5.2 ([ba40042](https://github.com/ibm-telemetry/telemetry-js/commit/ba4004277119c8f900f1f58a18fb7ec4e6237ec9))
+
 ## [1.5.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.5.0...v1.5.1) (2024-05-08)
 
 

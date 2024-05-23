@@ -6,7 +6,7 @@ echo "Running prettier"
 npx prettier --check --write .
 
 echo "Running eslint"
-npx eslint --fix --max-warnings=0 --ext .js,.cjs,.mjs,.jsx,.ts,.tsx .
+npx eslint --fix --max-warnings=0 .
 
 echo "Running package.json formatter"
 node scripts/format-package-json.js --fix

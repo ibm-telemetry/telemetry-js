@@ -10,15 +10,11 @@
 // allows the file to be run in very old Node environments and perform pre-checks prior to running
 // the mainline telemetry collection logic, which is compiled and bundled separately.
 //
-import notify from '../notify.js'
-import { Environment } from './core/environment.js'
 
 const MIN_NODE_VERSION = 16
 
 // Check the node version and exit if it's too low
 const major = parseInt(process.versions.node.split('.')[0] ?? '0')
-
-notify(new Environment())
 
 if (major < MIN_NODE_VERSION) {
   console.log('Telemetry collection not supported in this environment. Skipping')

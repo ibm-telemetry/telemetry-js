@@ -8,7 +8,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
-import notify from '../notify.js'
+import { notify } from '../main/notify.js'
 
 describe('notify', () => {
   const spy = vi.spyOn(console, 'log').mockImplementation(() => vi.fn())

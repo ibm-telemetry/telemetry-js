@@ -60,3 +60,10 @@ const __dirname = (await import("node:path")).dirname(__filename);
   entryPoints: [path.join('dist', 'main', 'background-process.js')],
   outfile: path.join('dist', 'background-process.js')
 })
+
+// notify logs a telemetry collection notice to the console
+await build({
+  ...baseConfig,
+  entryPoints: [path.join('dist', 'main', 'notify.js')],
+  outfile: path.join('dist', 'notify.js')
+})

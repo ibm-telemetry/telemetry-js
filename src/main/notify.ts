@@ -1,4 +1,4 @@
-import type { Environment } from './core/environment.js'
+import { Environment } from './core/environment.js'
 
 /*
  * Copyright IBM Corp. 2024, 2024
@@ -6,7 +6,8 @@ import type { Environment } from './core/environment.js'
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-function notify(env: Environment) {
+function notify() {
+  const env = new Environment()
   if (env.isCI && env.isTelemetryEnabled) {
     console.log(
       '--------------------------------------------------------------------------------\n' +

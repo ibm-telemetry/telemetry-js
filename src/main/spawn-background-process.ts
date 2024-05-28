@@ -1,5 +1,3 @@
-import { Environment } from './core/environment.js'
-
 /*
  * Copyright IBM Corp. 2024, 2024
  *
@@ -7,11 +5,6 @@ import { Environment } from './core/environment.js'
  * LICENSE file in the root directory of this source tree.
  */
 async function spawnBackgroundProcess() {
-  // TODOASKJOE: doesn't work if I put it under collect.js
-  const { notify } = await import('./notify.js')
-
-  notify(new Environment())
-
   const childProcess = await import('node:child_process')
   const path = await import('node:path')
   const { fileURLToPath } = await import('node:url')

@@ -23,6 +23,10 @@ if (major < MIN_NODE_VERSION) {
 }
 
 async function run() {
+  const { notify } = await import('./notify.js')
+
+  notify()
+
   const { spawnBackgroundProcess } = await import('./spawn-background-process.js')
 
   spawnBackgroundProcess()

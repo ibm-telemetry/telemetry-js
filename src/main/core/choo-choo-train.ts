@@ -6,7 +6,8 @@
  */
 import * as net from 'node:net'
 
-import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
+import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type:
+  'json' }
 
 import { IbmTelemetry } from '../ibm-telemetry.js'
 import { Environment } from './environment.js'

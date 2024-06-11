@@ -7,8 +7,8 @@
 import { Environment } from './core/environment.js'
 
 function notify() {
-  const env = new Environment()
-  if (env.isCI && env.isTelemetryEnabled) {
+  const environment = new Environment()
+  if (environment.isCI && environment.isTelemetryEnabled) {
     console.log(`
 --------------------------------------------------------------------------------
 NOTICE:

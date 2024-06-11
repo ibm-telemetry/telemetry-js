@@ -9,19 +9,19 @@ import { Environment } from './core/environment.js'
 function notify() {
   const env = new Environment()
   if (env.isCI && env.isTelemetryEnabled) {
-    console.log(
-      '--------------------------------------------------------------------------------\n' +
-        'NOTICE: ' +
-        'A package you installed is using IBM Telemetry to collect anonymous usage data. ' +
-        "This information is used to influence the project's roadmap and prioritize bug fixes." +
-        ' \n\nYou can opt-out of this process by setting ' +
-        "IBM_TELEMETRY_DISABLED='true'" +
-        ' in your environment.' +
-        '\n\nTo learn more, please visit: ' +
-        'https://github.com/ibm-telemetry/telemetry-js' +
-        '.\n' +
-        '--------------------------------------------------------------------------------\n'
-    )
+    console.log(`
+--------------------------------------------------------------------------------
+NOTICE:
+A package you installed is using IBM Telemetry to collect anonymous usage data.
+This information is used to influence the project's roadmap and prioritize bug
+fixes.
+
+You can opt-out of this process by setting IBM_TELEMETRY_DISABLED='true' in your
+environment.
+
+To learn more, please visit: https://github.com/ibm-telemetry/telemetry-js'
+--------------------------------------------------------------------------------
+`)
   }
 }
 

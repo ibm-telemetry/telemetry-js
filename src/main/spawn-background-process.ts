@@ -1,3 +1,5 @@
+import { Environment } from './core/environment.js'
+
 /*
  * Copyright IBM Corp. 2024, 2024
  *
@@ -8,11 +10,15 @@ async function spawnBackgroundProcess() {
   const childProcess = await import('node:child_process')
   const path = await import('node:path')
   const { fileURLToPath } = await import('node:url')
-
   const { createLogFilePath } = await import('./core/log/create-log-file-path.js')
-
   const date = new Date().toISOString()
   const logFilePath = createLogFilePath(date)
+  const environment = new Environment()
+
+  if (environment.isCI === false || environment.isTelemetryEnabled === false) {
+    // Do nothing and exit quietly
+    return
+  }
 
   console.log('Log file:', logFilePath)
 
@@ -27,7 +33,7 @@ async function spawnBackgroundProcess() {
       {
         stdio: 'ignore',
         detached: true,
-        shell: true
+        shell: false
       }
     )
     .unref()

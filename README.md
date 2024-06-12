@@ -110,8 +110,20 @@ During a build or any other CI operation that installs package dependencies (`np
 
 IBM Telemetry will collect metric data for instrumented packages by default. If your project is
 installing an IBM Telemetry-instrumented package and you want to opt-out of metric collection, set
-an environment variable of `IBM_TELEMETRY_DISABLED='true'`. This will prevent **any and all** data
-from being collected in your project.
+the following environment variable to prevent **any and all** data from being collected in your
+project.
+
+#### Unix, Linux, MacOS, BSD, etc.
+
+```sh
+IBM_TELEMETRY_DISABLED='true'
+```
+
+#### Windows (powershell)
+
+```powershell
+$Env:IBM_TELEMETRY_DISABLED='true'
+```
 
 ### Anonymizing / de-identifying
 

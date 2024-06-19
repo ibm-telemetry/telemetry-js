@@ -155,7 +155,7 @@ detailed explanation of all available configuration options.
 Sample:
 
 ```yaml path="sample-telemetry.yml"
-# yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@0.3.0/dist/config.schema.json
+# yaml-language-server: $schema=https://unpkg.com/@ibm/telemetry-config-schema@1/dist/config.schema.json
 version: 1
 projectId: '<your assigned project id>'
 endpoint: 'https://example.com/v1/metrics'

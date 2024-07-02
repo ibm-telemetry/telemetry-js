@@ -47,8 +47,10 @@ describe('class: TrackedFileEnumerator', () => {
     )
 
     expect(files).toStrictEqual([
+      path.join(root.path, 'nested-project-files/test.js'),
       path.join(root.path, 'nested/deeply-nested/test.js'),
       path.join(root.path, 'nested/test.js'),
+      path.join(root.path, 'project-files/test.js'),
       path.join(root.path, 'test.js')
     ])
   })

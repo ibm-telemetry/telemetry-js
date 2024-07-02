@@ -70,7 +70,10 @@ export class TrackedFileEnumerator extends Loggable {
     const suffixParts: string[] = []
 
     while (trackedFileParts.length > 0) {
-      if (root.endsWith(trackedFileParts.join(path.sep))) {
+      if (
+        root === trackedFileParts.join(path.sep) ||
+        root.endsWith(path.sep + trackedFileParts.join(path.sep))
+      ) {
         break
       }
 

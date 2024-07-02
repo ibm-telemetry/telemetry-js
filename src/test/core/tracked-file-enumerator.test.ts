@@ -20,7 +20,7 @@ describe('class: TrackedFileEnumerator', () => {
   it('correctly returns all tracked files for a predicate that always returns true', async () => {
     const root = new Fixture('projects/nested-project-files')
 
-    await expect(enumerator.find(root.path, root.path, () => true)).resolves.toHaveLength(7)
+    await expect(enumerator.find(root.path, root.path, () => true)).resolves.toHaveLength(9)
   })
 
   it('correctly excludes files not matched by predicate', async () => {
@@ -28,7 +28,7 @@ describe('class: TrackedFileEnumerator', () => {
 
     await expect(
       enumerator.find(root.path, root.path, (fileName) => !fileName.endsWith('.something'))
-    ).resolves.toHaveLength(3)
+    ).resolves.toHaveLength(5)
   })
 
   it('returns empty array when no files match predicate', async () => {

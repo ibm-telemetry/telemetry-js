@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.6.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.5.2...v1.6.0) (2024-07-03)
+
+
+### Features
+
+* add command line telemetry disclosure ([#242](https://github.com/ibm-telemetry/telemetry-js/issues/242)) ([2c08976](https://github.com/ibm-telemetry/telemetry-js/commit/2c089769ea27ef78cd62f13275eb317fde2b8322))
+
+
+### Bug Fixes
+
+* adjust environment instance naming for consistency ([7d05a9a](https://github.com/ibm-telemetry/telemetry-js/commit/7d05a9aeb0532e0a325752dcf977be23deb0ba8a))
+* adjust spacing and formatting of notify message ([687b761](https://github.com/ibm-telemetry/telemetry-js/commit/687b76121dea18bae81ebc1c5202eb56c23e0444))
+* **deps:** upgrade devDependencies (minor) ([#245](https://github.com/ibm-telemetry/telemetry-js/issues/245)) ([5455d7d](https://github.com/ibm-telemetry/telemetry-js/commit/5455d7ded5f480e1d64fd5666a724e45c7c834ec))
+* **deps:** upgrade devDependencies (minor) ([#248](https://github.com/ibm-telemetry/telemetry-js/issues/248)) ([42ba19c](https://github.com/ibm-telemetry/telemetry-js/commit/42ba19c3d26fd31eab05e954bb6fd5733493f40a))
+* **deps:** upgrade devDependencies (minor) ([#249](https://github.com/ibm-telemetry/telemetry-js/issues/249)) ([f97c66d](https://github.com/ibm-telemetry/telemetry-js/commit/f97c66d4ab34626156088665e9be6cacb6082dc1))
+* move notify imports below copyright statement ([8dfb556](https://github.com/ibm-telemetry/telemetry-js/commit/8dfb5566736356a53b4c17ebb1a159a977026c0c))
+* prevent terminal popup on windows ([#251](https://github.com/ibm-telemetry/telemetry-js/issues/251)) ([1d37108](https://github.com/ibm-telemetry/telemetry-js/commit/1d3710830dfdc1683a74e075941f08b5c206f448)), closes [#250](https://github.com/ibm-telemetry/telemetry-js/issues/250)
+* refine getTrackedSourceFiles logic ([#253](https://github.com/ibm-telemetry/telemetry-js/issues/253)) ([57c4fc6](https://github.com/ibm-telemetry/telemetry-js/commit/57c4fc63de26ce881bbd87913c0815e7d6369c64))
+
 ## [1.5.2](https://github.com/ibm-telemetry/telemetry-js/compare/v1.5.1...v1.5.2) (2024-05-21)
 
 

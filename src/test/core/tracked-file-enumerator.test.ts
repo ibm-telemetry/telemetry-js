@@ -8,7 +8,7 @@ import * as path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { getProjectRoot } from '../../main/core/get-project-root.js'
+import { getRepositoryRoot } from '../../main/core/get-repository-root.js'
 import { TrackedFileEnumerator } from '../../main/core/tracked-file-enumerator.js'
 import { Fixture } from '../__utils/fixture.js'
 import { initLogger } from '../__utils/init-logger.js'
@@ -20,7 +20,7 @@ describe('class: TrackedFileEnumerator', () => {
   it('correctly returns all tracked files for a predicate that always returns true', async () => {
     const root = new Fixture('projects/nested-project-files')
 
-    await expect(enumerator.find(root.path, root.path, () => true)).resolves.toHaveLength(7)
+    await expect(enumerator.find(root.path, root.path, () => true)).resolves.toHaveLength(9)
   })
 
   it('correctly excludes files not matched by predicate', async () => {
@@ -28,7 +28,7 @@ describe('class: TrackedFileEnumerator', () => {
 
     await expect(
       enumerator.find(root.path, root.path, (fileName) => !fileName.endsWith('.something'))
-    ).resolves.toHaveLength(3)
+    ).resolves.toHaveLength(5)
   })
 
   it('returns empty array when no files match predicate', async () => {
@@ -47,14 +47,16 @@ describe('class: TrackedFileEnumerator', () => {
     )
 
     expect(files).toStrictEqual([
+      path.join(root.path, 'nested-project-files/test-a.js'),
       path.join(root.path, 'nested/deeply-nested/test.js'),
       path.join(root.path, 'nested/test.js'),
+      path.join(root.path, 'project-files/test-b.js'),
       path.join(root.path, 'test.js')
     ])
   })
 
   it('handles a top-level file in the repo', async () => {
-    const root = await getProjectRoot(process.cwd(), logger)
+    const root = await getRepositoryRoot(process.cwd(), logger)
     const fileEnumerator = new TrackedFileEnumerator(logger)
     const files = await fileEnumerator.find(root, root, (file) => file === 'package.json')
 

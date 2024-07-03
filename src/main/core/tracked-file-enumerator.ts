@@ -4,10 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { access } from 'node:fs/promises'
 import * as path from 'node:path'
 
-import { InvalidRootPathError } from '../exceptions/invalid-root-path-error.js'
+import { getRepositoryRoot } from './get-repository-root.js'
 import { Loggable } from './log/loggable.js'
 import { Trace } from './log/trace.js'
 import { runCommand } from './run-command.js'
@@ -48,43 +47,9 @@ export class TrackedFileEnumerator extends Loggable {
     return await Promise.all(
       allFiles
         .filter((_file, index) => checks[index] === true)
-        .map(async (file) => await this.findAbsolutePath(file, root))
+        .map(async (file) => {
+          return path.join(await getRepositoryRoot(cwd, this.logger), file)
+        })
     )
-  }
-
-  /**
-   * Given two paths that may have partially overlapping directory hierarchies, find an absolute
-   * path that uses as many pieces of the two paths as possible.
-   *
-   * @param trackedFile - A file obtained from a git ls-tree command. This is NOT an absolute path.
-   * @param root - An absolute path representing a root directory in which the tracked file is
-   * contained.
-   * @throws InvalidRootPathError if no valid path could be constructed using parts from both the
-   * trackedFile path and the root path.
-   * @returns A promise of a path.
-   */
-  private async findAbsolutePath(trackedFile: string, root: string) {
-    trackedFile = path.normalize(trackedFile)
-    root = path.normalize(root)
-    const trackedFileParts = trackedFile.split(path.sep)
-    const suffixParts: string[] = []
-
-    while (trackedFileParts.length > 0) {
-      if (root.endsWith(trackedFileParts.join(path.sep))) {
-        break
-      }
-
-      suffixParts.unshift(trackedFileParts.pop() ?? '')
-    }
-
-    const finalPath = path.join(root, ...suffixParts)
-
-    try {
-      await access(finalPath)
-    } catch {
-      throw new InvalidRootPathError(trackedFile, root)
-    }
-
-    return finalPath
   }
 }

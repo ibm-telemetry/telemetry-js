@@ -6,24 +6,24 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { getProjectRoot } from '../../main/core/get-project-root.js'
+import { getRepositoryRoot } from '../../main/core/get-repository-root.js'
 import { RunCommandError } from '../../main/exceptions/run-command-error.js'
 import { Fixture } from '../__utils/fixture.js'
 import { initLogger } from '../__utils/init-logger.js'
 
-describe('getProjectRoot', () => {
+describe('getRepositoryRoot', () => {
   const logger = initLogger()
 
-  it('correctly gets project root', async () => {
+  it('correctly gets repository root', async () => {
     const fixture = new Fixture('projects/basic-project/node_modules')
-    await expect(getProjectRoot(fixture.path, logger)).resolves.toMatch(process.cwd())
+    await expect(getRepositoryRoot(fixture.path, logger)).resolves.toMatch(process.cwd())
   })
 
   it('can handle edge case when root is the cwd', async () => {
-    await expect(getProjectRoot(process.cwd(), logger)).resolves.toMatch(process.cwd())
+    await expect(getRepositoryRoot(process.cwd(), logger)).resolves.toMatch(process.cwd())
   })
 
   it('throws error if no root exists', async () => {
-    await expect(getProjectRoot('does-not-exist', logger)).rejects.toThrow(RunCommandError)
+    await expect(getRepositoryRoot('does-not-exist', logger)).rejects.toThrow(RunCommandError)
   })
 })

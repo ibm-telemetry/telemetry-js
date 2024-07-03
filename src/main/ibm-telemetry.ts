@@ -14,7 +14,7 @@ import { type Schema } from 'ajv'
 import { hash } from './core/anonymize/hash.js'
 import { ConfigValidator } from './core/config-validator.js'
 import type { Environment } from './core/environment.js'
-import { getProjectRoot } from './core/get-project-root.js'
+import { getRepositoryRoot } from './core/get-repository-root.js'
 import { GitInfoProvider } from './core/git-info-provider.js'
 import { type Logger } from './core/log/logger.js'
 import { safeStringify } from './core/log/safe-stringify.js'
@@ -84,7 +84,7 @@ export class IbmTelemetry {
     const cwd = this.environment.cwd
     this.logger.debug('cwd: ' + cwd)
 
-    const projectRoot = await getProjectRoot(cwd, this.logger)
+    const projectRoot = await getRepositoryRoot(cwd, this.logger)
     this.logger.debug('projectRoot: ' + projectRoot)
 
     // This will throw if config does not conform to ConfigSchema

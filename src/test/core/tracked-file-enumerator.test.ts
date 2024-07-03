@@ -8,7 +8,7 @@ import * as path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { getProjectRoot } from '../../main/core/get-project-root.js'
+import { getRepositoryRoot } from '../../main/core/get-repository-root.js'
 import { TrackedFileEnumerator } from '../../main/core/tracked-file-enumerator.js'
 import { Fixture } from '../__utils/fixture.js'
 import { initLogger } from '../__utils/init-logger.js'
@@ -47,16 +47,16 @@ describe('class: TrackedFileEnumerator', () => {
     )
 
     expect(files).toStrictEqual([
-      path.join(root.path, 'nested-project-files/test.js'),
+      path.join(root.path, 'nested-project-files/test-a.js'),
       path.join(root.path, 'nested/deeply-nested/test.js'),
       path.join(root.path, 'nested/test.js'),
-      path.join(root.path, 'project-files/test.js'),
+      path.join(root.path, 'project-files/test-b.js'),
       path.join(root.path, 'test.js')
     ])
   })
 
   it('handles a top-level file in the repo', async () => {
-    const root = await getProjectRoot(process.cwd(), logger)
+    const root = await getRepositoryRoot(process.cwd(), logger)
     const fileEnumerator = new TrackedFileEnumerator(logger)
     const files = await fileEnumerator.find(root, root, (file) => file === 'package.json')
 

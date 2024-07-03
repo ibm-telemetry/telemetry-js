@@ -7,8 +7,10 @@
 import { type Logger } from './log/logger.js'
 import { runCommand } from './run-command.js'
 
+const cache = new Map<string, string>()
+
 /**
- * Finds and returns the root-most directory of the analyzed project's source tree.
+ * Finds and returns the root-most directory of the analyzed repository's source tree.
  *
  * @param cwd - Current working directory to use as the basis for finding the root directory. This
  * is an absolute path.
@@ -16,8 +18,14 @@ import { runCommand } from './run-command.js'
  * @throws An exception if no usable root data was obtained.
  * @returns The absolute path of the analyzed project's root directory.
  */
-export async function getProjectRoot(cwd: string, logger: Logger): Promise<string> {
-  const result = await runCommand('git rev-parse --show-toplevel', logger, { cwd }, true)
+export async function getRepositoryRoot(cwd: string, logger: Logger): Promise<string> {
+  if (cache.has(cwd)) {
+    logger.debug('getRepositoryRoot cache hit for ' + cwd)
+    const data = cache.get(cwd) as string
+    return data
+  }
 
-  return result.stdout
+  cache.set(cwd, (await runCommand('git rev-parse --show-toplevel', logger, { cwd }, true)).stdout)
+
+  return cache.get(cwd) as string
 }

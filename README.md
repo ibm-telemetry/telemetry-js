@@ -97,7 +97,7 @@ JSX elements will never be captured.
 - JavaScript tokens and functions imported by your project from the instrumented package and details
   such as function arguments.
 
-The arguemnt boolean, number, and string values are handled the same as JSX data with instrumented
+The argument boolean, number, and string values are handled the same as JSX data with instrumented
 package allowlist configurations.
 
 Sensitive data that may contain confidential or personally identifiable information that gets

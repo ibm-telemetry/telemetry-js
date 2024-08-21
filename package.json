@@ -49,7 +49,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@eslint-community/eslint-plugin-eslint-comments": "^4.3.0",
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.4.0",
     "@ibm/telemetry-attributes-js": "^3.2.0",
     "@ibm/telemetry-config-schema": "^1.3.0",
     "@opentelemetry/api": "^1.9.0",
@@ -60,13 +60,13 @@
     "@opentelemetry/semantic-conventions": "^1.25.1",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.7",
-    "@types/node": "^20.14.15",
+    "@types/node": "^20.16.0",
     "@types/semver": "^7.5.8",
     "@vitest/coverage-v8": "^1.6.0",
     "ajv": "^8.17.1",
     "ci-info": "^4.0.0",
     "commander": "^12.1.0",
-    "esbuild": "^0.23.0",
+    "esbuild": "^0.23.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.11.0",
@@ -78,7 +78,7 @@
     "globals": "^15.9.0",
     "husky": "^9.1.4",
     "js-yaml": "^4.1.0",
-    "lint-staged": "^15.2.8",
+    "lint-staged": "^15.2.9",
     "lodash": "^4.17.21",
     "object-scan": "^19.0.5",
     "prettier": "^3.3.3",
@@ -88,7 +88,7 @@
     "ts-json-schema-generator": "^1.5.1",
     "typescript": "^5.5.4",
     "typescript-eslint": "^7.18.0",
-    "vite": "^5.4.0",
+    "vite": "^5.4.1",
     "vitest": "^1.6.0"
   }
 }

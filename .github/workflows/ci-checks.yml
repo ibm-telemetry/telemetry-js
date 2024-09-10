@@ -85,6 +85,7 @@ jobs:
 
       - name: Upload test coverage reports 🛫
         uses: actions/upload-artifact@v4
+        include-hidden-files: true
         with:
           name: test-coverage
           path: '**/.test-coverage/lcov.info'

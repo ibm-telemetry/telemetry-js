@@ -49,8 +49,8 @@ know about how that works:
 - When `npm install` (or equivalent) is run on the CI server (resulting in the instrumented package
   getting installed), IBM Telemetry gets installed too and runs a script which analyzes your source
   code and captures data about your usage of the instrumented package.
-- This data is anonymized and reported back to a server at IBM. For more details about exactly what
-  is captured and how sensitive data is anonymized, keep reading.
+- This data is anonymized and reported back to a server at IBM. Details on what data is captured and 
+  how data is anonymized are described below.
 - Though IBM Telemetry is installed as a regular dependency in the instrumented package, it has no
   exports and therefore **does not impact your project's source code or build output in any way.**
   Said differently: this is not a runtime package. It has no "shippable code". It is static source

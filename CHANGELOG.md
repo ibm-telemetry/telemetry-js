@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.2](https://github.com/ibm-telemetry/telemetry-js/compare/v1.6.1...v1.6.2) (2024-10-08)
+
+
+### Bug Fixes
+
+* **deps:** upgrade contributor-assistant/github-action action to v2.5.1 ([#263](https://github.com/ibm-telemetry/telemetry-js/issues/263)) ([580100f](https://github.com/ibm-telemetry/telemetry-js/commit/580100f1715764d886ddd7e6aafbc64533c52e15))
+* **deps:** upgrade devDependencies (minor) ([#264](https://github.com/ibm-telemetry/telemetry-js/issues/264)) ([d892e3e](https://github.com/ibm-telemetry/telemetry-js/commit/d892e3e33bce9be3af47c1da9bf16b9999b997ed))
+* **deps:** upgrade devDependencies (minor) ([#266](https://github.com/ibm-telemetry/telemetry-js/issues/266)) ([4740cae](https://github.com/ibm-telemetry/telemetry-js/commit/4740cae7841ab086c1ff63371cadb11e74f147b1))
+
 ## [1.6.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.6.0...v1.6.1) (2024-08-13)
 
 

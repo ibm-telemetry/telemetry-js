@@ -49,13 +49,12 @@ know about how that works:
 - When `npm install` (or equivalent) is run on the CI server (resulting in the instrumented package
   getting installed), IBM Telemetry gets installed too and runs a script which analyzes your source
   code and captures data about your usage of the instrumented package.
-- This data is fully anonymized and reported back to a server at IBM.
-- For more details about exactly what is captured and how sensitive data is anonymized, keep
-  reading.
+- This data is anonymized and reported back to a server at IBM. Details on what data is captured and
+  how data is anonymized are described below.
 - Though IBM Telemetry is installed as a regular dependency in the instrumented package, it has no
   exports and therefore **does not impact your project's source code or build output in any way.**
-  Said differently: This is not a runtime package. It has no "shippable code". It is static source
-  code analysis performed during builds and nothing more.
+  Said differently: this is not a runtime package. It has no "shippable code". It is static source
+  code analysis performed during builds.
 
 The point of capturing this data is to help the open source and inner source maintainers within IBM
 by giving them meaningful insights and metrics based on actual data. IBM Telemetry's purpose is to
@@ -93,9 +92,18 @@ been **specifically configured** by the instrumented package and other value typ
 objects or variable names) are also anonymized. This means your project-specific data supplied to
 JSX elements will never be captured.
 
-All sensitive data that may contain confidential or personally identifiable information that gets
-collected by the IBM Telemetry JS tooling gets anonymized/de-identified prior to storage in our
-database, see [anonymizing](#anonymizing--de-identifying).
+**JS data**
+
+- JavaScript tokens and functions imported by your project from the instrumented package and details
+  such as function arguments.
+
+The argument boolean, number, and string values are handled the same as JSX data with instrumented
+package allowlist configurations.
+
+Sensitive data that may contain confidential or personally identifiable information that gets
+collected by the IBM Telemetry JS tooling gets anonymized/de-identified using the SHA-256
+cryptographic function prior to storage in our database, see
+[anonymizing](#anonymizing--de-identifying).
 
 ### When does data get collected?
 
@@ -221,8 +229,8 @@ README) as follows:
 ```markdown
 ## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
 
-This package uses IBM Telemetry to collect metrics data. By installing this package as a dependency
-you are agreeing to telemetry collection. To opt out, see
+This package uses IBM Telemetry to collect de-identified and anonymized metrics data. By installing
+this package as a dependency you are agreeing to telemetry collection. To opt out, see
 [Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
 For more information on the data being collected, please see the
 [IBM Telemetry documentation](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).
@@ -233,8 +241,8 @@ For more information on the data being collected, please see the
 
 ## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
 
-This package uses IBM Telemetry to collect metrics data. By installing this package as a dependency
-you are agreeing to telemetry collection. To opt out, see
+This package uses IBM Telemetry to collect de-identified and anonymized metrics data. By installing
+this package as a dependency you are agreeing to telemetry collection. To opt out, see
 [Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
 For more information on the data being collected, please see the
 [IBM Telemetry documentation](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).
@@ -258,7 +266,3 @@ standard `v1/metrics`
 [Rest API endpoint](https://opentelemetry.io/docs/specs/otlp/#otlphttp-request). All you need to do
 is specify your collector endpoint's URL in the `endpoint` configuration setting in your
 `telemetry.yml` file.
-
-## Accessing metrics
-
-Coming soon!

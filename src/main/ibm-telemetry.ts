@@ -109,6 +109,9 @@ export class IbmTelemetry {
           [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
             repository.owner ?? ''
           }/${repository.repository ?? ''}`,
+          [CustomResourceAttributes.ANALYZED_OWNER_PATH]: `${repository.host ?? ''}/${
+            repository.owner ?? ''
+          }`,
           [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
           [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
           [CustomResourceAttributes.DATE]: date
@@ -118,6 +121,7 @@ export class IbmTelemetry {
           CustomResourceAttributes.ANALYZED_HOST,
           CustomResourceAttributes.ANALYZED_OWNER,
           CustomResourceAttributes.ANALYZED_PATH,
+          CustomResourceAttributes.ANALYZED_OWNER_PATH,
           CustomResourceAttributes.ANALYZED_REPOSITORY,
           CustomResourceAttributes.ANALYZED_REFS
         ]

@@ -27,6 +27,7 @@ export function initializeOtelForTest() {
     [CustomResourceAttributes.ANALYZED_HOST]: 'host',
     [CustomResourceAttributes.ANALYZED_OWNER]: 'owner',
     [CustomResourceAttributes.ANALYZED_PATH]: 'host/owner/repository',
+    [CustomResourceAttributes.ANALYZED_OWNER_PATH]: 'host/owner',
     [CustomResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
     [CustomResourceAttributes.ANALYZED_COMMIT]: 'commitHash',
     [CustomResourceAttributes.ANALYZED_REFS]: [],

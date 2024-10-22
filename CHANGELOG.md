@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.7.0...v1.7.1) (2024-10-22)
+
+
+### Bug Fixes
+
+* bump attributes-js version ([#280](https://github.com/ibm-telemetry/telemetry-js/issues/280)) ([9df8366](https://github.com/ibm-telemetry/telemetry-js/commit/9df83661744ce3cbd03636da0ccc87901487be75))
+
 ## [1.7.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.6.1...v1.7.0) (2024-10-18)
 
 

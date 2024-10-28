@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { isCI } from 'ci-info'
+import isInsideContainer from 'is-inside-container'
 
 interface EnvironmentConfig {
   cwd?: string
@@ -39,7 +40,7 @@ export class Environment {
   readonly cwd: string
 
   constructor(config?: EnvironmentConfig) {
-    this.isCI = isCI
+    this.isCI = isCI || isInsideContainer()
     this.isExportEnabled = process.env['IBM_TELEMETRY_EXPORT_DISABLED'] !== 'true'
     this.isTelemetryEnabled = process.env['IBM_TELEMETRY_DISABLED'] !== 'true'
     this.cwd = process.cwd()

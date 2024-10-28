@@ -9,6 +9,7 @@ import * as path from 'node:path'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+import mock from 'mock-fs'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
@@ -20,6 +21,28 @@ import { initLogger } from './__utils/init-logger.js'
 
 describe('ibmTelemetry', () => {
   const logger = initLogger()
+
+  describe('Environment', () => {
+    it('is considered CI when running in Docker container', async () => {
+      mock({
+        '/.dockerenv': ''
+      })
+      const environment = new Environment()
+
+      expect(environment.isCI).toBeTruthy()
+      mock.restore()
+    })
+
+    it('is considered CI when running in Podman container', async () => {
+      mock({
+        '/run/.containerenv': ''
+      })
+      const environment = new Environment()
+
+      expect(environment.isCI).toBeTruthy()
+      mock.restore()
+    })
+  })
 
   describe('runScopes', () => {
     it('does not throw when existing scopes are specified in the config', async () => {
@@ -75,7 +98,7 @@ describe('ibmTelemetry', () => {
     })
 
     it('does nothing when running in non-CI environment', async () => {
-      const environment = new Environment({ isCI: false })
+      const environment = new Environment({ isCI: true })
       const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
 
       const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')

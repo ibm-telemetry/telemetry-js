@@ -46,6 +46,9 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
+  "dependencies": {
+    "is-inside-container": "^1.0.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.4.1",
@@ -60,6 +63,7 @@
     "@opentelemetry/semantic-conventions": "^1.27.0",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.7",
+    "@types/mock-fs": "^4.13.4",
     "@types/node": "^20.16.5",
     "@types/semver": "^7.5.8",
     "@vitest/coverage-v8": "^1.6.0",
@@ -80,6 +84,7 @@
     "js-yaml": "^4.1.0",
     "lint-staged": "^15.2.10",
     "lodash": "^4.17.21",
+    "mock-fs": "^5.4.0",
     "object-scan": "^19.0.5",
     "prettier": "^3.3.3",
     "reflect-metadata": "^0.2.1",

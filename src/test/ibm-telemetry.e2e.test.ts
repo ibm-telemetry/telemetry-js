@@ -101,7 +101,7 @@ describe('ibmTelemetry', () => {
     })
 
     it('does nothing when running in non-CI environment', async () => {
-      const environment = new Environment({ isCI: true })
+      const environment = new Environment({ isCI: false })
       const ibmTelemetry = new IbmTelemetry('', configSchemaJson, environment, logger)
 
       const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')

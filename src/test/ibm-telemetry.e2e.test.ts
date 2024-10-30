@@ -9,6 +9,7 @@ import * as path from 'node:path'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+import isInsideContainer from 'is-inside-container'
 import mock from 'mock-fs'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -30,6 +31,7 @@ describe('ibmTelemetry', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
+      expect(isInsideContainer()).toBeTruthy()
       mock.restore()
     })
 
@@ -40,6 +42,7 @@ describe('ibmTelemetry', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
+      expect(isInsideContainer()).toBeTruthy()
       mock.restore()
     })
   })

@@ -45,10 +45,11 @@ telemetry data using IBM Telemetry. We call that an "instrumented package". Here
 know about how that works:
 
 - Telemetry data collection runs on CI servers, like GitHub Actions, Travis CI, or Jenkins. It never
-  runs locally on a developer's machine.
-- When `npm install` (or equivalent) is run on the CI server (resulting in the instrumented package
-  getting installed), IBM Telemetry gets installed too and runs a script which analyzes your source
-  code and captures data about your usage of the instrumented package.
+  runs locally on a developer's machine. However, collection will occur when running inside a
+  container, like Docker, or Podman, as we consider these environments part of CI workflows.
+- When `npm install` (or equivalent) is run on the CI server/container (resulting in the
+  instrumented package getting installed), IBM Telemetry gets installed too and runs a script which
+  analyzes your source code and captures data about your usage of the instrumented package.
 - This data is anonymized and reported back to a server at IBM. Details on what data is captured and
   how data is anonymized are described below.
 - Though IBM Telemetry is installed as a regular dependency in the instrumented package, it has no
@@ -107,9 +108,11 @@ cryptographic function prior to storage in our database, see
 
 ### When does data get collected?
 
-Telemetry collection runs exclusively in CI environments. Collection will never happen on local
-development environments or on projects that aren't configured to run automated scripts on a CI
-environment (GitHub actions, Travis CI, etc.)
+Telemetry collection runs exclusively in CI environments. Collection will never occur on local
+development environments or on projects that aren't configured to run automated scripts in a CI
+environment (e.g., GitHub Actions, Travis CI, etc.). However, if your project runs inside a
+container (e.g., Docker, Podman), telemetry may be collected, as containerized environments are
+considered production-like and thus fall under the scope of CI workflows.
 
 During a build or any other CI operation that installs package dependencies (`npm install`,
 `yarn install`, ...), IBM telemetry will run as a background process and perform data collection.

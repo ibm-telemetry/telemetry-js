@@ -110,8 +110,8 @@ cryptographic function prior to storage in our database, see
 
 Telemetry collection runs exclusively in CI environments. Collection will never occur on local
 development environments or on projects that aren't configured to run automated scripts in a CI
-environment (e.g., GitHub Actions, Travis CI, etc.). However, if your project runs inside a
-container (e.g., Docker, Podman), telemetry may be collected, as containerized environments are
+environment (e.g. GitHub Actions, Travis CI, etc.) However, if your project runs inside a
+container (e.g. Docker, Podman), telemetry may be collected, as containerized environments are
 considered production-like and thus fall under the scope of CI workflows.
 
 During a build or any other CI operation that installs package dependencies (`npm install`,

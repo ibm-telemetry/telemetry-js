@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.7.1...v1.8.0) (2024-10-31)
+
+
+### Features
+
+* **environment:** can run in containers ([#282](https://github.com/ibm-telemetry/telemetry-js/issues/282)) ([1d4e126](https://github.com/ibm-telemetry/telemetry-js/commit/1d4e1261abbb212bb70e6d1244f958c4a702d04b))
+
 ## [1.7.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.7.0...v1.7.1) (2024-10-22)
 
 

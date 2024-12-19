@@ -212,6 +212,9 @@ export class ChooChooTrain extends Loggable {
     // thus we obtain the data from the conductor's first job before the loop
     const conductorWork = this.workQueue?.[0]
     if (conductorWork) {
+      // TODO: I will be passing the data we get from here to ibmTelemetry()
+      // We are getting the analyzedPath, commit, and projectId, so might as well
+      // get everything else can make it so the function doesn't need to run twice
       await this.getRepoData(conductorWork)
 
       this.sendLogs(
@@ -343,7 +346,7 @@ export class ChooChooTrain extends Loggable {
     }
 
     try {
-      const response = await fetch(this.logEndpoint, {
+      const response = await fetch(this.logEndpoint as string, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

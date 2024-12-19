@@ -90,6 +90,7 @@ export class IbmTelemetry {
     // This will throw if config does not conform to ConfigSchema
     configValidator.validate(config)
 
+    // TODO: get this info from the train instead
     const { repository, commitHash, commitTags, commitBranches } = await new GitInfoProvider(
       cwd,
       this.logger

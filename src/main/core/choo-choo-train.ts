@@ -7,6 +7,7 @@
 import * as net from 'node:net'
 
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
+import { ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
 
 import { IbmTelemetry } from '../ibm-telemetry.js'
@@ -45,7 +46,8 @@ export class ChooChooTrain extends Loggable {
   private readonly ipcAddr: string
   private analyzedCommit?: string
   private analyzedPath?: string
-  private analyzedProjectId?: string
+  private gitInfo?: object
+  private projectId?: string
   private logEndpoint?: string
 
   /**
@@ -120,7 +122,7 @@ export class ChooChooTrain extends Loggable {
 
       server.on('error', (error) => {
         this.sendLogs(
-          `Conductor experienced error on project ${this.analyzedProjectId} against
+          `Conductor experienced error on project ${this.projectId} against
           analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
@@ -144,7 +146,7 @@ export class ChooChooTrain extends Loggable {
       socket.on('connect', () => resolve(socket))
       socket.on('error', (error) => {
         this.sendLogs(
-          `Wagon experienced error on project ${this.analyzedProjectId} against
+          `Wagon experienced error on project ${this.projectId} against
           analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
@@ -186,7 +188,7 @@ export class ChooChooTrain extends Loggable {
       socket.on('error', (error) => {
         this.sendLogs(
           `Wagon experienced error sending work to conductor 
-          on project ${this.analyzedProjectId} against analyzed 
+          on project ${this.projectId} against analyzed 
           path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
@@ -212,10 +214,7 @@ export class ChooChooTrain extends Loggable {
     // thus we obtain the data from the conductor's first job before the loop
     const conductorWork = this.workQueue?.[0]
     if (conductorWork) {
-      // TODO: I will be passing the data we get from here to ibmTelemetry()
-      // We are getting the analyzedPath, commit, and projectId, so might as well
-      // get everything else can make it so the function doesn't need to run twice
-      await this.getRepoData(conductorWork)
+      this.gitInfo = await this.getRepoData(conductorWork)
 
       this.sendLogs(
         `The ChooChooTrain ride started for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`
@@ -229,13 +228,14 @@ export class ChooChooTrain extends Loggable {
       this.logger.debug('Queue length', this.workQueue.length)
 
       const currentWork = this.workQueue.shift()
-
       if (!currentWork) {
         return
       }
 
+      const config = await this.getPackageData(currentWork)
+
       // collect for current work
-      await this.collect(new Environment({ cwd: currentWork.cwd }), currentWork.configFilePath)
+      await this.collect(new Environment({ cwd: currentWork.cwd }), config)
       totalWork++
     }
 
@@ -249,20 +249,68 @@ export class ChooChooTrain extends Loggable {
     server.close()
   }
 
+  @Trace()
+  private async getRepoData(work: Work) {
+    const gitInfo = await new GitInfoProvider(work.cwd, this.logger).getGitInfo()
+
+    const { repository, commitHash, commitTags, commitBranches } = gitInfo
+
+    const hashedData = hash(
+      {
+        [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
+        [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
+        [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
+        [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
+          repository.owner ?? ''
+        }/${repository.repository ?? ''}`,
+        [CustomResourceAttributes.ANALYZED_OWNER_PATH]: `${repository.host ?? ''}/${
+          repository.owner ?? ''
+        }`,
+        [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
+        [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches]
+      },
+      [
+        CustomResourceAttributes.ANALYZED_COMMIT,
+        CustomResourceAttributes.ANALYZED_HOST,
+        CustomResourceAttributes.ANALYZED_OWNER,
+        CustomResourceAttributes.ANALYZED_PATH,
+        CustomResourceAttributes.ANALYZED_OWNER_PATH,
+        CustomResourceAttributes.ANALYZED_REPOSITORY,
+        CustomResourceAttributes.ANALYZED_REFS
+      ]
+    )
+
+    this.analyzedCommit = hashedData[CustomResourceAttributes.ANALYZED_COMMIT]
+    this.analyzedPath = hashedData[CustomResourceAttributes.ANALYZED_PATH]
+
+    // getting the endpoint URL
+    this.getPackageData(work)
+    return hashedData
+  }
+
+  @Trace()
+  private async getPackageData(work: Work) {
+    const config = await parseYamlFile(work.configFilePath)
+    const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
+    configValidator.validate(config)
+
+    this.projectId = config.projectId
+    if (this.logEndpoint === '') {
+      this.logEndpoint = config.endpoint.split('/metrics')[0] + '/logs'
+    }
+
+    return config
+  }
+
   /**
    * This is the main entrypoint for telemetry collection.
    *
    * @param environment - Environment variable configuration for this run.
-   * @param configFilePath - Path to a config file.
+   * @param config - Parsed configFile object.
    */
   @Trace()
-  private async collect(environment: Environment, configFilePath: string) {
-    const ibmTelemetry = new IbmTelemetry(
-      configFilePath,
-      configSchemaJson,
-      environment,
-      this.logger
-    )
+  private async collect(environment: Environment, config: Record<string, unknown> & ConfigSchema) {
+    const ibmTelemetry = new IbmTelemetry(config, environment, this.gitInfo ?? {}, this.logger)
 
     try {
       await ibmTelemetry.run()
@@ -276,30 +324,6 @@ export class ChooChooTrain extends Loggable {
         this.sendLogs('Process signal error: ', String(err))
       }
     }
-  }
-
-  @Trace()
-  private async getRepoData(work: Work) {
-    const { repository, commitHash } = await new GitInfoProvider(work.cwd, this.logger).getGitInfo()
-
-    const hashedData = hash(
-      {
-        [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
-        [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
-          repository.owner ?? ''
-        }/${repository.repository ?? ''}`
-      },
-      [CustomResourceAttributes.ANALYZED_COMMIT, CustomResourceAttributes.ANALYZED_PATH]
-    )
-
-    this.analyzedCommit = hashedData[CustomResourceAttributes.ANALYZED_COMMIT]
-    this.analyzedPath = hashedData[CustomResourceAttributes.ANALYZED_PATH]
-    const config = await parseYamlFile(work.configFilePath)
-    const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
-    configValidator.validate(config)
-
-    this.analyzedProjectId = config.projectId
-    this.logEndpoint = config.endpoint as string
   }
 
   @Trace()
@@ -346,7 +370,7 @@ export class ChooChooTrain extends Loggable {
     }
 
     try {
-      const response = await fetch(this.logEndpoint as string, {
+      const response = await fetch(this.logEndpoint ?? '', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

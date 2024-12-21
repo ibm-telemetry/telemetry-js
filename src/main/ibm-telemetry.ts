@@ -26,7 +26,7 @@ import { scopeRegistry } from './scopes/scope-registry.js'
  * Instantiable class capable of collecting project-wide JS-based telemetry data.
  */
 export class IbmTelemetry {
-  private readonly config: Record<string, unknown> & ConfigSchema
+  private readonly config: ConfigSchema
   private readonly environment: Environment
   private readonly gitInfo: object
   private readonly logger: Logger
@@ -40,7 +40,7 @@ export class IbmTelemetry {
    * @param logger - A logger instance.
    */
   public constructor(
-    config: Record<string, unknown> & ConfigSchema,
+    config: ConfigSchema,
     environment: Environment,
     gitInfo: object,
     logger: Logger

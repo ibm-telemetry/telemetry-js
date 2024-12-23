@@ -217,7 +217,7 @@ export class ChooChooTrain extends Loggable {
       this.gitInfo = await this.getRepoData(conductorWork)
 
       this.sendLogs(
-        `The ChooChooTrain ride started for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`
+        `The ChooChooTrain ride for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit} has started`
       )
     }
 
@@ -242,7 +242,7 @@ export class ChooChooTrain extends Loggable {
     const totalTime = (performance.now() - start).toFixed(2)
 
     this.sendLogs(
-      `The ChooChooTrain Ride with ${totalWork} packages at analyzed path ${this.analyzedPath} 
+      `The ChooChooTrain ride with ${totalWork} packages at analyzed path ${this.analyzedPath} 
       at commit ${this.analyzedCommit} took ${totalTime}ms`
     )
 
@@ -297,6 +297,7 @@ export class ChooChooTrain extends Loggable {
     this.projectId = config.projectId
     if (this.logEndpoint === '') {
       this.logEndpoint = config.endpoint.split('/metrics')[0] + '/logs'
+      this.logger.debug('Log endpoint: ' + this.logEndpoint)
     }
 
     return config

@@ -22,10 +22,6 @@ import { initLogger } from './__utils/init-logger.js'
 describe('ibmTelemetry', async () => {
   const logger = initLogger()
 
-  console.log('==========================================')
-
-  console.log('==========================================')
-
   describe('Environment', () => {
     it('is considered CI when running in Docker container', async () => {
       mock({

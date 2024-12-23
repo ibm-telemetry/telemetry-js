@@ -120,7 +120,7 @@ export class ChooChooTrain extends Loggable {
         resolve(server)
       })
 
-      server.on('error', (error) => {
+      server.on('error', (error: Error) => {
         this.sendLogs(
           `Conductor experienced error on project ${this.projectId} against
           analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
@@ -144,7 +144,7 @@ export class ChooChooTrain extends Loggable {
       const socket = net.connect(this.ipcAddr)
 
       socket.on('connect', () => resolve(socket))
-      socket.on('error', (error) => {
+      socket.on('error', (error: Error) => {
         this.sendLogs(
           `Wagon experienced error on project ${this.projectId} against
           analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
@@ -185,7 +185,7 @@ export class ChooChooTrain extends Loggable {
       this.logger.debug('Sending work through IPC: ', JSON.stringify(work))
 
       socket.on('close', resolve)
-      socket.on('error', (error) => {
+      socket.on('error', (error: Error) => {
         this.sendLogs(
           `Wagon experienced error sending work to conductor 
           on project ${this.projectId} against analyzed 

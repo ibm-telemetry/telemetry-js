@@ -7,7 +7,7 @@
 import { isCI } from 'ci-info'
 import isInsideContainer from 'is-inside-container'
 
-interface EnvironmentConfig {
+export interface EnvironmentConfig {
   cwd?: string
   isCI?: boolean
   isExportEnabled?: boolean
@@ -58,6 +58,20 @@ export class Environment {
     }
     if (config?.cwd !== undefined) {
       this.cwd = config.cwd
+    }
+  }
+
+  /**
+   * Returns the current Environment variables in an object.
+   *
+   * @returns Object containing current environment config.
+   */
+  public getConfig(): EnvironmentConfig {
+    return {
+      cwd: this.cwd,
+      isCI: this.isCI,
+      isExportEnabled: this.isExportEnabled,
+      isTelemetryEnabled: this.isTelemetryEnabled
     }
   }
 }

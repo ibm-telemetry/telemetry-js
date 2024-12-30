@@ -13,7 +13,7 @@ import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' a
 import { IbmTelemetry } from '../ibm-telemetry.js'
 import { hash } from './anonymize/hash.js'
 import { ConfigValidator } from './config-validator.js'
-import { Environment } from './environment.js'
+import { Environment, EnvironmentConfig } from './environment.js'
 import { GitInfoProvider } from './git-info-provider.js'
 import { Loggable } from './log/loggable.js'
 import type { Logger } from './log/logger.js'
@@ -23,8 +23,22 @@ import { parseYamlFile } from './parse-yaml-file.js'
 const MAX_RETRIES = 3
 const MAX_BACKLOG = 64
 
+interface GitInfo {
+  [CustomResourceAttributes.ANALYZED_COMMIT]: string
+  [CustomResourceAttributes.ANALYZED_HOST]: string | undefined
+  [CustomResourceAttributes.ANALYZED_OWNER]: string | undefined
+  [CustomResourceAttributes.ANALYZED_PATH]: string
+  [CustomResourceAttributes.ANALYZED_OWNER_PATH]: string
+  [CustomResourceAttributes.ANALYZED_REPOSITORY]: string | undefined
+  [CustomResourceAttributes.ANALYZED_REFS]: string[]
+}
+
 interface LogPayload {
+  date: string
   message: string
+  projectId: string
+  gitInfo: GitInfo
+  environment: EnvironmentConfig
   error?:
     | {
         message?: string
@@ -46,7 +60,8 @@ export class ChooChooTrain extends Loggable {
   private readonly ipcAddr: string
   private analyzedCommit?: string
   private analyzedPath?: string
-  private gitInfo?: object
+  private environment?: Environment
+  private gitInfo?: GitInfo
   private projectId?: string
   private logEndpoint?: string
 
@@ -122,8 +137,8 @@ export class ChooChooTrain extends Loggable {
 
       server.on('error', (error: Error) => {
         this.sendLogs(
-          `Conductor experienced error on project ${this.projectId} against
-          analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
+          `Conductor experienced error on project ${this.projectId} against` +
+            `analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
           .then(() => reject(error))
@@ -146,8 +161,8 @@ export class ChooChooTrain extends Loggable {
       socket.on('connect', () => resolve(socket))
       socket.on('error', (error: Error) => {
         this.sendLogs(
-          `Wagon experienced error on project ${this.projectId} against
-          analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
+          `Wagon experienced error on project ${this.projectId} against` +
+            `analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
           .then(() => reject(error))
@@ -187,9 +202,8 @@ export class ChooChooTrain extends Loggable {
       socket.on('close', resolve)
       socket.on('error', (error: Error) => {
         this.sendLogs(
-          `Wagon experienced error sending work to conductor 
-          on project ${this.projectId} against analyzed 
-          path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
+          `Wagon experienced error sending work to conductor on project ${this.projectId}` +
+            `against analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
           .then(() => reject(error))
@@ -233,17 +247,18 @@ export class ChooChooTrain extends Loggable {
       }
 
       const config = await this.getPackageData(currentWork)
+      this.environment = new Environment({ cwd: currentWork.cwd })
 
       // collect for current work
-      await this.collect(new Environment({ cwd: currentWork.cwd }), config)
+      await this.collect(this.environment, config)
       totalWork++
     }
 
     const totalTime = (performance.now() - start).toFixed(2)
 
     this.sendLogs(
-      `The ChooChooTrain ride with ${totalWork} packages at analyzed path ${this.analyzedPath} 
-      at commit ${this.analyzedCommit} took ${totalTime}ms`
+      `The ChooChooTrain ride with ${totalWork} packages at analyzed path ${this.analyzedPath}` +
+        `at commit ${this.analyzedCommit} took ${totalTime}ms`
     )
 
     server.close()
@@ -353,10 +368,21 @@ export class ChooChooTrain extends Loggable {
    */
   @Trace()
   private async sendLogs(message: string, error?: Error | string) {
-    if (this.logEndpoint === '') return
+    if (
+      this.logEndpoint === null ||
+      this.gitInfo === undefined ||
+      this.projectId === undefined ||
+      this.environment === undefined
+    ) {
+      return
+    }
 
     const payload: LogPayload = {
-      message: message
+      date: new Date().toISOString(),
+      environment: this.environment.getConfig(),
+      gitInfo: this.gitInfo,
+      message: message,
+      projectId: this.projectId
     }
 
     if (error != undefined) {

@@ -14,6 +14,8 @@ interface EnvironmentConfig {
   isTelemetryEnabled?: boolean
 }
 
+const customEnvs = ['PIPELINE_RUN_URL', 'PIPELINE_RUN_ID', 'PIPELINE_ID']
+
 /**
  * Class containing environment configuration data.
  */
@@ -40,7 +42,7 @@ export class Environment {
   readonly cwd: string
 
   constructor(config?: EnvironmentConfig) {
-    this.isCI = isCI || isInsideContainer()
+    this.isCI = isCI || isInsideContainer() || this.customCICheck()
     this.isExportEnabled = process.env['IBM_TELEMETRY_EXPORT_DISABLED'] !== 'true'
     this.isTelemetryEnabled = process.env['IBM_TELEMETRY_DISABLED'] !== 'true'
     this.cwd = process.cwd()
@@ -59,5 +61,14 @@ export class Environment {
     if (config?.cwd !== undefined) {
       this.cwd = config.cwd
     }
+  }
+
+  /**
+   * Function to check for additional CIs that aren't covered by the ci-info package.
+   *
+   * @returns Whether env variables are found.
+   */
+  public customCICheck(): boolean {
+    return customEnvs.some((envVar) => process.env[envVar] !== undefined)
   }
 }

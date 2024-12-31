@@ -137,7 +137,7 @@ export class ChooChooTrain extends Loggable {
 
       server.on('error', (error: Error) => {
         this.sendLogs(
-          `Conductor experienced error on project ${this.projectId} against` +
+          `Conductor experienced error on project ${this.projectId} against ` +
             `analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
@@ -161,7 +161,7 @@ export class ChooChooTrain extends Loggable {
       socket.on('connect', () => resolve(socket))
       socket.on('error', (error: Error) => {
         this.sendLogs(
-          `Wagon experienced error on project ${this.projectId} against` +
+          `Wagon experienced error on project ${this.projectId} against ` +
             `analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
@@ -202,7 +202,7 @@ export class ChooChooTrain extends Loggable {
       socket.on('close', resolve)
       socket.on('error', (error: Error) => {
         this.sendLogs(
-          `Wagon experienced error sending work to conductor on project ${this.projectId}` +
+          `Wagon experienced error sending work to conductor on project ${this.projectId} ` +
             `against analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit}`,
           error
         )
@@ -257,7 +257,7 @@ export class ChooChooTrain extends Loggable {
     const totalTime = (performance.now() - start).toFixed(2)
 
     this.sendLogs(
-      `The ChooChooTrain ride with ${totalWork} packages at analyzed path ${this.analyzedPath}` +
+      `The ChooChooTrain ride with ${totalWork} packages at analyzed path ${this.analyzedPath} ` +
         `at commit ${this.analyzedCommit} took ${totalTime}ms`
     )
 

@@ -13,9 +13,11 @@ import mock from 'mock-fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
+import { getRepositoryRoot } from '../main/core/get-repository-root.js'
 import { OpenTelemetryContext } from '../main/core/open-telemetry-context.js'
 import { UnknownScopeError } from '../main/exceptions/unknown-scope-error.js'
 import { IbmTelemetry } from '../main/ibm-telemetry.js'
+import { getTelemetryPackageData } from '../main/scopes/npm/get-telemetry-package-data.js'
 import { Fixture } from './__utils/fixture.js'
 import { initLogger } from './__utils/init-logger.js'
 
@@ -72,6 +74,44 @@ describe('ibmTelemetry', async () => {
 
       const environment = new Environment()
       expect(environment.isCI).toBe(true)
+    })
+
+    it('is can return the config through getter', async () => {
+      const config = {
+        cwd: '',
+        isCI: false,
+        isExportEnabled: false,
+        isTelemetryEnabled: false
+      }
+      const environment = new Environment(config)
+
+      expect(environment.isCI).toBeFalsy()
+      expect(environment.getConfig()).toEqual(config)
+    })
+
+    it('should return mocked repository root', async () => {
+      vi.mock('../main/core/get-repository-root.js', () => ({
+        getRepositoryRoot: vi.fn(async () => '/repo-root')
+      }))
+
+      const repoRoot = await getRepositoryRoot('/fake/path', logger)
+
+      expect(repoRoot).toBe('/repo-root')
+    })
+
+    it('should return mocked telemetry package data', async () => {
+      vi.mock('../main/scopes/npm/get-telemetry-package-data.js', () => ({
+        getTelemetryPackageData: vi.fn(async () => ({
+          name: 'telemetry-package',
+          version: '1.0.0'
+        }))
+      }))
+      const telemetryData = await getTelemetryPackageData(logger)
+
+      expect(telemetryData).toEqual({
+        name: 'telemetry-package',
+        version: '1.0.0'
+      })
     })
 
     afterEach(() => {

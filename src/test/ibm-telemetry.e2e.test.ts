@@ -7,17 +7,16 @@
 import * as path from 'node:path'
 
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
+import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
 import isInsideContainer from 'is-inside-container'
 import mock from 'mock-fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
-import { getRepositoryRoot } from '../main/core/get-repository-root.js'
 import { OpenTelemetryContext } from '../main/core/open-telemetry-context.js'
 import { UnknownScopeError } from '../main/exceptions/unknown-scope-error.js'
 import { IbmTelemetry } from '../main/ibm-telemetry.js'
-import { getTelemetryPackageData } from '../main/scopes/npm/get-telemetry-package-data.js'
 import { Fixture } from './__utils/fixture.js'
 import { initLogger } from './__utils/init-logger.js'
 
@@ -89,31 +88,6 @@ describe('ibmTelemetry', async () => {
       expect(environment.getConfig()).toEqual(config)
     })
 
-    it('should return mocked repository root', async () => {
-      vi.mock('../main/core/get-repository-root.js', () => ({
-        getRepositoryRoot: vi.fn(async () => '/repo-root')
-      }))
-
-      const repoRoot = await getRepositoryRoot('/fake/path', logger)
-
-      expect(repoRoot).toBe('/repo-root')
-    })
-
-    it('should return mocked telemetry package data', async () => {
-      vi.mock('../main/scopes/npm/get-telemetry-package-data.js', () => ({
-        getTelemetryPackageData: vi.fn(async () => ({
-          name: 'telemetry-package',
-          version: '1.0.0'
-        }))
-      }))
-      const telemetryData = await getTelemetryPackageData(logger)
-
-      expect(telemetryData).toEqual({
-        name: 'telemetry-package',
-        version: '1.0.0'
-      })
-    })
-
     afterEach(() => {
       mock.restore()
       vi.clearAllMocks()
@@ -183,9 +157,10 @@ describe('ibmTelemetry', async () => {
       const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
 
       const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
+      const debugSpy = vi.spyOn(logger, 'debug')
 
       ibmTelemetry.run()
-
+      expect(debugSpy).toHaveBeenCalledWith('Telemetry disabled via environment variable')
       expect(runScopesSpy).not.toHaveBeenCalled()
     })
 
@@ -208,9 +183,10 @@ describe('ibmTelemetry', async () => {
       const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
 
       const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
+      const debugSpy = vi.spyOn(logger, 'debug')
 
       ibmTelemetry.run()
-
+      expect(debugSpy).toHaveBeenCalledWith('Telemetry disabled because not running in CI')
       expect(runScopesSpy).not.toHaveBeenCalled()
     })
   })
@@ -292,6 +268,158 @@ describe('ibmTelemetry', async () => {
       await ibmTelemetry.emitMetrics(results.resourceMetrics, config)
 
       expect(mock).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getData', () => {
+    it('returns correct projectRoot and documentObject', async () => {
+      // Mock the Date object to UTC
+      const mockDate = new Date(Date.UTC(2025, 0, 1, 0, 0, 0, 0))
+      vi.setSystemTime(mockDate)
+
+      const environment = new Environment({ cwd: '/some/path' })
+      const gitInfo = {
+        'analyzed.commit': '12345678',
+        'analyzed.host': 'github.com',
+        'analyzed.owner': 'me',
+        'analyzed.path': 'github.com/me/somerepo',
+        'analyzed.ownerPath': 'me/somerepo',
+        'analyzed.refs': ['test']
+      }
+
+      const config = { projectId: 'test-project' } as ConfigSchema
+      const ibmTelemetry = new IbmTelemetry(config, environment, gitInfo, logger)
+
+      // Mock `getRepositoryRoot` and `getTelemetryPackageData`
+      vi.mock('../main/core/get-repository-root.js', () => ({
+        getRepositoryRoot: vi.fn(async () => '/some/repository/root')
+      }))
+      vi.mock('../main/scopes/npm/get-telemetry-package-data.js', () => ({
+        getTelemetryPackageData: vi.fn(async () => ({
+          name: 'telemetry-pkg',
+          version: '1.0.0'
+        }))
+      }))
+
+      const result = await ibmTelemetry.getData()
+
+      // Validate the result
+      expect(result.projectRoot).toBe('/some/repository/root')
+      expect(result.emitterInfo).toEqual({ name: 'telemetry-pkg', version: '1.0.0' })
+
+      // Validate the documentObject structure
+      expect(result.documentObject).toMatchObject({
+        'telemetry.emitter.name': 'telemetry-pkg',
+        'telemetry.emitter.version': '1.0.0',
+        'project.id': 'test-project',
+        'analyzed.commit': '12345678',
+        'analyzed.host': 'github.com',
+        'analyzed.owner': 'me',
+        'analyzed.path': 'github.com/me/somerepo',
+        'analyzed.ownerPath': 'me/somerepo',
+        'analyzed.refs': ['test'],
+        date: '2025-01-01T00:00:00.000Z'
+      })
+
+      vi.restoreAllMocks()
+      vi.useRealTimers()
+    })
+  })
+
+  describe('run', () => {
+    it('should run successfully with telemetry enabled and CI', async () => {
+      const environment = new Environment({
+        cwd: '/some/path',
+        isTelemetryEnabled: true,
+        isCI: true,
+        isExportEnabled: true
+      })
+
+      const config = {
+        projectId: 'asdf',
+        version: 1,
+        endpoint: '',
+        collect: {
+          npm: { dependencies: null },
+          jsx: {
+            elements: {
+              allowedAttributeNames: ['firstProp', 'secondProp'],
+              allowedAttributeStringValues: ['hi', 'wow']
+            }
+          }
+        }
+      } as ConfigSchema
+
+      const gitInfo = {
+        'analyzed.commit': '12345678',
+        'analyzed.host': 'github.com',
+        'analyzed.owner': 'me',
+        'analyzed.path': 'github.com/me/somerepo',
+        'analyzed.ownerPath': 'me/somerepo',
+        'analyzed.refs': ['test']
+      }
+
+      // Create instance of IbmTelemetry
+      const ibmTelemetry = new IbmTelemetry(config, environment, gitInfo, logger)
+
+      // Mock OpenTelemetryContext
+      const otelContextMock = {
+        setAttributes: vi.fn(), // Mock setAttributes
+        getMetricReader: vi.fn(() => ({
+          collect: vi.fn().mockResolvedValue({
+            resourceMetrics: { scopeMetrics: 'value2' } // Mock resourceMetrics
+          })
+        }))
+      }
+
+      // Mock the getInstance method to return the mock OpenTelemetry context
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- No need for a full mock
+      vi.spyOn(OpenTelemetryContext, 'getInstance').mockReturnValue(otelContextMock as any)
+
+      // Mock `getData`
+      vi.spyOn(ibmTelemetry, 'getData').mockResolvedValue({
+        projectRoot: '/some/repository/root',
+        emitterInfo: { name: 'telemetry-pkg', version: '1.0.0' },
+        documentObject: {
+          'telemetry.emitter.name': 'telemetry-pkg',
+          'telemetry.emitter.version': '1.0.0',
+          'project.id': 'test-project',
+          ...gitInfo,
+          date: '2025-01-01T00:00:00.000Z'
+        }
+      })
+
+      const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
+      const emitMetricsSpy = vi.spyOn(ibmTelemetry, 'emitMetrics')
+      const collectSpy = vi.spyOn(OTLPMetricExporter.prototype, 'export')
+      const debugSpy = vi.spyOn(logger, 'debug')
+
+      await ibmTelemetry.run()
+
+      // Verify logger.debug calls
+      expect(debugSpy).toHaveBeenCalledWith('Environment: ' + JSON.stringify(environment))
+      expect(debugSpy).toHaveBeenCalledWith('Schema: ' + JSON.stringify(configSchemaJson))
+      expect(debugSpy).toHaveBeenCalledWith('Config: ' + JSON.stringify(config, undefined, 2))
+
+      expect(runScopesSpy).toHaveBeenCalled()
+
+      // Verify all data is being sent properly
+      expect(otelContextMock.setAttributes).toHaveBeenCalledWith({
+        'telemetry.emitter.name': 'telemetry-pkg',
+        'telemetry.emitter.version': '1.0.0',
+        'project.id': 'test-project',
+        'analyzed.commit': '12345678',
+        'analyzed.host': 'github.com',
+        'analyzed.owner': 'me',
+        'analyzed.path': 'github.com/me/somerepo',
+        'analyzed.ownerPath': 'me/somerepo',
+        'analyzed.refs': ['test'],
+        date: '2025-01-01T00:00:00.000Z'
+      })
+
+      expect(collectSpy).toHaveBeenCalledOnce()
+
+      expect(emitMetricsSpy).toHaveBeenCalled()
     })
   })
 })

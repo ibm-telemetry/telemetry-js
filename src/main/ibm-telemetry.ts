@@ -68,34 +68,15 @@ export class IbmTelemetry {
       return
     }
 
-    const date = new Date().toISOString()
-    this.logger.debug('Date: ' + date)
-
     this.logger.debug('Schema: ' + JSON.stringify(configSchemaJson))
-
     this.logger.debug('Config: ' + JSON.stringify(this.config, undefined, 2))
 
-    const cwd = this.environment.cwd
-    this.logger.debug('cwd: ' + cwd)
-
-    const projectRoot = await getRepositoryRoot(cwd, this.logger)
-    this.logger.debug('projectRoot: ' + projectRoot)
-
-    const emitterInfo = await getTelemetryPackageData(this.logger)
     const otelContext = OpenTelemetryContext.getInstance(true)
 
-    // values are already previously hashed
-    const documentObject = {
-      [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
-      [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
-      [CustomResourceAttributes.PROJECT_ID]: this.config.projectId,
-      ...this.gitInfo,
-      [CustomResourceAttributes.DATE]: date
-    }
+    const { projectRoot, documentObject } = await this.getData()
 
     otelContext.setAttributes(documentObject)
-
-    const promises = this.runScopes(cwd, projectRoot, this.config)
+    const promises = this.runScopes(this.environment.cwd, projectRoot, this.config)
 
     await Promise.allSettled(promises)
 
@@ -181,5 +162,37 @@ export class IbmTelemetry {
         resolve(undefined)
       })
     })
+  }
+
+  /**
+   * Returns emitter info, project root path, and the document object.
+   *
+   * @returns Promise that resolves to undefined.
+   */
+  @Trace()
+  public async getData() {
+    const date = new Date().toISOString()
+    this.logger.debug('Date: ' + date)
+
+    const cwd = this.environment.cwd
+    this.logger.debug('cwd: ' + cwd)
+
+    const projectRoot = await getRepositoryRoot(cwd, this.logger)
+    this.logger.debug('projectRoot: ' + projectRoot)
+
+    const emitterInfo = await getTelemetryPackageData(this.logger)
+
+    // values are already previously hashed
+    return {
+      projectRoot: projectRoot,
+      emitterInfo: emitterInfo,
+      documentObject: {
+        [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
+        [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
+        [CustomResourceAttributes.PROJECT_ID]: this.config.projectId,
+        ...this.gitInfo,
+        [CustomResourceAttributes.DATE]: date
+      }
+    }
   }
 }

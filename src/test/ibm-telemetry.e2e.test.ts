@@ -75,7 +75,7 @@ describe('ibmTelemetry', async () => {
       expect(environment.isCI).toBe(true)
     })
 
-    it('is can return the config through getter', async () => {
+    it('isCI can return the config through getter', async () => {
       const config = {
         cwd: '',
         isCI: false,

@@ -25,7 +25,7 @@ describe('ibmTelemetry', () => {
   const logger = initLogger()
 
   describe('Environment', () => {
-    it.only('is considered CI when running in SPS', async () => {
+    it('is considered CI when running in SPS', async () => {
       vi.stubEnv('PIPELINE_RUN_URL', 'http://example.com')
 
       const environment = new Environment()
@@ -36,7 +36,7 @@ describe('ibmTelemetry', () => {
       vi.unstubAllEnvs()
     })
 
-    it.only('is considered CI when running in SPS', async () => {
+    it('is considered CI when running in SPS', async () => {
       vi.stubEnv('PIPELINE_RUN_ID', 'runID')
 
       const environment = new Environment()

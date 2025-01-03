@@ -229,6 +229,8 @@ export class ChooChooTrain extends Loggable {
     const conductorWork = this.workQueue?.[0]
     if (conductorWork) {
       this.gitInfo = await this.getRepoData(conductorWork)
+      await this.getPackageData(conductorWork)
+      this.environment = new Environment({ cwd: conductorWork.cwd })
 
       this.sendLogs(
         `The ChooChooTrain ride for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit} has started`
@@ -299,7 +301,7 @@ export class ChooChooTrain extends Loggable {
     this.analyzedPath = hashedData[CustomResourceAttributes.ANALYZED_PATH]
 
     // getting the endpoint URL
-    this.getPackageData(work)
+    await this.getPackageData(work)
     return hashedData
   }
 
@@ -310,7 +312,7 @@ export class ChooChooTrain extends Loggable {
     configValidator.validate(config)
 
     this.projectId = config.projectId
-    if (this.logEndpoint === '') {
+    if (this.logEndpoint === undefined) {
       this.logEndpoint = config.endpoint.split('/metrics')[0] + '/logs'
       this.logger.debug('Log endpoint: ' + this.logEndpoint)
     }
@@ -369,7 +371,7 @@ export class ChooChooTrain extends Loggable {
   @Trace()
   private async sendLogs(message: string, error?: Error | string) {
     if (
-      this.logEndpoint === null ||
+      this.logEndpoint === undefined ||
       this.gitInfo === undefined ||
       this.projectId === undefined ||
       this.environment === undefined
@@ -395,6 +397,8 @@ export class ChooChooTrain extends Loggable {
         payload.error = error
       }
     }
+
+    this.logger.debug('Current log payload: ', JSON.stringify(payload))
 
     try {
       const response = await fetch(this.logEndpoint ?? '', {

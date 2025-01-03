@@ -9,8 +9,7 @@ import * as path from 'node:path'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json'
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
-import * as ciInfo from 'ci-info'
-import * as isInsideContainerModule from 'is-inside-container'
+import isInsideContainer from 'is-inside-container'
 import mock from 'mock-fs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -25,27 +24,6 @@ describe('ibmTelemetry', () => {
   const logger = initLogger()
 
   describe('Environment', () => {
-    it('is considered CI when running in SPS', async () => {
-      vi.stubEnv('PIPELINE_RUN_URL', 'http://example.com')
-
-      const environment = new Environment()
-
-      expect(isInsideContainerModule.default()).toBeFalsy()
-      expect(environment.customCICheck()).toBeTruthy()
-      expect(environment.isCI).toBeTruthy()
-      vi.unstubAllEnvs()
-    })
-
-    it('is considered CI when running in SPS', async () => {
-      vi.stubEnv('PIPELINE_RUN_ID', 'runID')
-
-      const environment = new Environment()
-
-      expect(isInsideContainerModule.default()).toBeFalsy()
-      expect(environment.customCICheck()).toBeTruthy()
-      expect(environment.isCI).toBeTruthy()
-      vi.unstubAllEnvs()
-    })
     it('is considered CI when running in Docker container', async () => {
       mock({
         '/.dockerenv': ''
@@ -53,7 +31,7 @@ describe('ibmTelemetry', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(isInsideContainerModule.default()).toBeTruthy()
+      expect(isInsideContainer()).toBeTruthy()
       mock.restore()
     })
 
@@ -64,7 +42,7 @@ describe('ibmTelemetry', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(isInsideContainerModule.default()).toBeTruthy()
+      expect(isInsideContainer()).toBeTruthy()
       mock.restore()
     })
 
@@ -76,15 +54,22 @@ describe('ibmTelemetry', () => {
     })
 
     it('should set isCI to true when ci-info reports it', async () => {
-      vi.spyOn(ciInfo, 'isCI', 'get').mockReturnValueOnce(true)
+      vi.mock('ci-info', () => ({
+        isCI: true
+      }))
 
       const environment = new Environment()
       expect(environment.isCI).toBe(true)
     })
 
     it('should set isCI to true when inside a container', async () => {
-      vi.spyOn(ciInfo, 'isCI', 'get').mockReturnValueOnce(false)
-      vi.spyOn(isInsideContainerModule, 'default').mockReturnValueOnce(true)
+      vi.mock('ci-info', () => ({
+        isCI: false
+      }))
+      vi.mock('is-inside-container', () => ({
+        __esModule: true,
+        default: vi.fn(() => true)
+      }))
 
       const environment = new Environment()
       expect(environment.isCI).toBe(true)

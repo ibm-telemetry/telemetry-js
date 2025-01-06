@@ -45,6 +45,8 @@ interface LogPayload {
         stack?: string | undefined
       }
     | string
+  totalPackages?: number
+  totalDuration?: number
 }
 
 interface Work {
@@ -64,6 +66,8 @@ export class ChooChooTrain extends Loggable {
   private gitInfo?: GitInfo
   private projectId?: string
   private logEndpoint?: string
+  private totalDuration?: number
+  private totalPackages?: number
 
   /**
    * Constructs a new ChooChooTrain instance.
@@ -237,7 +241,7 @@ export class ChooChooTrain extends Loggable {
       )
     }
 
-    let totalWork = 0
+    this.totalPackages = 0
 
     // Consume work until the queue is empty
     while (this.workQueue.length > 0) {
@@ -253,14 +257,14 @@ export class ChooChooTrain extends Loggable {
 
       // collect for current work
       await this.collect(this.environment, config)
-      totalWork++
+      this.totalPackages++
     }
 
-    const totalTime = (performance.now() - start).toFixed(2)
+    this.totalDuration = Number((performance.now() - start).toFixed(2))
 
     this.sendLogs(
-      `The ChooChooTrain ride with ${totalWork} packages at analyzed path ${this.analyzedPath} ` +
-        `at commit ${this.analyzedCommit} took ${totalTime}ms`
+      `The ChooChooTrain ride with ${this.totalPackages} packages at analyzed path ${this.analyzedPath} ` +
+        `at commit ${this.analyzedCommit} took ${this.totalDuration}ms`
     )
 
     server.close()
@@ -374,17 +378,23 @@ export class ChooChooTrain extends Loggable {
       this.logEndpoint === undefined ||
       this.gitInfo === undefined ||
       this.projectId === undefined ||
-      this.environment === undefined
+      this.environment === undefined ||
+      this.totalPackages === undefined
     ) {
       return
     }
 
     const payload: LogPayload = {
       date: new Date().toISOString(),
-      environment: this.environment.getConfig(),
+      environment: this.environment.getConfig(), // get environment
       gitInfo: this.gitInfo,
       message: message,
       projectId: this.projectId
+    }
+
+    if (this.totalDuration !== undefined && this.totalPackages !== undefined) {
+      payload.totalDuration = this.totalDuration
+      payload.totalPackages = this.totalPackages
     }
 
     if (error != undefined) {

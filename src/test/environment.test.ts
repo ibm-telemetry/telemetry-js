@@ -25,7 +25,9 @@ describe('Environment', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe('Docker')
+      expect(environment.name).toBe(
+        'e6169e958b37ce8662817b0f3e0bf450a174742fafc527800e67f430738b4b63'
+      )
     })
 
     it('is considered CI when running in Docker group', async () => {
@@ -37,7 +39,9 @@ describe('Environment', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe('Docker')
+      expect(environment.name).toBe(
+        'e6169e958b37ce8662817b0f3e0bf450a174742fafc527800e67f430738b4b63'
+      )
     })
 
     it('is considered CI when running in Podman container', async () => {
@@ -49,7 +53,9 @@ describe('Environment', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe('Podman')
+      expect(environment.name).toBe(
+        'dcf103b39c072dc6ba804fab5401897e47a5175fcd4736c8ede992d392d9fde1'
+      )
     })
 
     afterEach(() => {
@@ -76,7 +82,9 @@ describe('Environment', () => {
     const environment = new Environment()
 
     expect(environment.isCI).toBe(true)
-    expect(environment.name).toBe('Test')
+    expect(environment.name).toBe(
+      '532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25'
+    )
   })
 
   it('should set isCI to false when no env variables or files exist', async () => {

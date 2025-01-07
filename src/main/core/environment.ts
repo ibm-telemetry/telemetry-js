@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 
 import { isCI, name } from 'ci-info'
@@ -71,6 +72,12 @@ export class Environment {
     if (config?.cwd !== undefined) {
       this.cwd = config.cwd
     }
+
+    if (this.name != '') {
+      const hash = createHash('sha256')
+      hash.update(this.name)
+      this.name = hash.digest('hex')
+    }
   }
 
   /**
@@ -115,7 +122,7 @@ export class Environment {
           return true
         }
       } catch (error) {
-        console.log('Error reading /proc/self/cgroup:', error) // Handle read errors gracefully
+        console.log('Error reading /proc/self/cgroup:', error)
       }
     }
 

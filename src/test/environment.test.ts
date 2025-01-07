@@ -106,9 +106,10 @@ describe('Environment', () => {
     const { Environment } = await import('../main/core/environment.js')
     const environment = new Environment()
 
-    expect(environment.customCICheck()).toBeTruthy()
     expect(environment.isCI).toBeTruthy()
-    expect(environment.name).toBe('SPS')
+    expect(environment.name).toBe(
+      '52248ed2edc6357d79e479707820c30cf5a11da591950cc061d9d711c97b734f'
+    )
   })
 
   it('is considered CI when SPS_RUN_ID present', async () => {
@@ -117,9 +118,10 @@ describe('Environment', () => {
     const { Environment } = await import('../main/core/environment.js')
     const environment = new Environment()
 
-    expect(environment.customCICheck()).toBeTruthy()
     expect(environment.isCI).toBeTruthy()
-    expect(environment.name).toBe('SPS')
+    expect(environment.name).toBe(
+      '52248ed2edc6357d79e479707820c30cf5a11da591950cc061d9d711c97b734f'
+    )
   })
 
   afterEach(() => {

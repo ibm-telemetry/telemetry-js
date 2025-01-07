@@ -18,7 +18,7 @@ interface EnvironmentConfig {
 }
 
 const customEnvs = {
-  SPS: ['PIPELINE_RUN_URL', 'PIPELINE_RUN_ID', 'PIPELINE_ID']
+  'Secure Pipelines Services': ['PIPELINE_RUN_URL', 'PIPELINE_RUN_ID', 'PIPELINE_ID']
 }
 
 /**

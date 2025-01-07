@@ -6,10 +6,16 @@
  */
 
 import mock from 'mock-fs'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-describe('ibmTelemetry', () => {
-  describe('Environment', () => {
+describe('Environment', () => {
+  describe('Container tests', () => {
+    beforeEach(() => {
+      vi.doMock('ci-info', () => ({
+        isCI: false,
+        name: null
+      }))
+    })
     it('is considered CI when running in Docker container', async () => {
       const { Environment } = await import('../main/core/environment.js')
 
@@ -46,66 +52,71 @@ describe('ibmTelemetry', () => {
       expect(environment.name).toBe('Podman')
     })
 
-    it('uses a different cwd than default one when specified in the config', async () => {
-      const { Environment } = await import('../main/core/environment.js')
-      const environment = new Environment({ cwd: '/' })
-
-      expect(environment.cwd).toBe('/')
-      expect(environment.cwd).not.toEqual(process.cwd())
-    })
-
-    it('should set isCI to true when ci-info reports it', async () => {
-      vi.doMock('ci-info', () => ({
-        isCI: true,
-        name: 'Test'
-      }))
-
-      const { Environment } = await import('../main/core/environment.js')
-      const environment = new Environment()
-
-      expect(environment.isCI).toBe(true)
-      expect(environment.name).toBe('Test')
-    })
-
-    it('should set isCI to false when no env variables or files exist', async () => {
-      vi.doMock('ci-info', () => ({
-        isCI: false,
-        name: ''
-      }))
-
-      const { Environment } = await import('../main/core/environment.js')
-      const environment = new Environment()
-
-      expect(environment.isCI).toBe(false)
-      expect(environment.name).toBe('')
-    })
-
-    it('is considered CI when SPS_RUN_URL present', async () => {
-      vi.stubEnv('PIPELINE_RUN_URL', 'http://example.com')
-
-      const { Environment } = await import('../main/core/environment.js')
-      const environment = new Environment()
-
-      expect(environment.customCICheck()).toBeTruthy()
-      expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe('SPS')
-    })
-
-    it('is considered CI when SPS_RUN_ID present', async () => {
-      vi.stubEnv('PIPELINE_RUN_ID', 'runID')
-
-      const { Environment } = await import('../main/core/environment.js')
-      const environment = new Environment()
-
-      expect(environment.customCICheck()).toBeTruthy()
-      expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe('SPS')
-    })
-
     afterEach(() => {
       mock.restore()
-      vi.unstubAllEnvs()
       vi.resetModules()
     })
+  })
+
+  it('uses a different cwd than default one when specified in the config', async () => {
+    const { Environment } = await import('../main/core/environment.js')
+    const environment = new Environment({ cwd: '/' })
+
+    expect(environment.cwd).toBe('/')
+    expect(environment.cwd).not.toEqual(process.cwd())
+  })
+
+  it('should set isCI to true when ci-info reports it', async () => {
+    vi.doMock('ci-info', () => ({
+      isCI: true,
+      name: 'Test'
+    }))
+
+    const { Environment } = await import('../main/core/environment.js')
+    const environment = new Environment()
+
+    expect(environment.isCI).toBe(true)
+    expect(environment.name).toBe('Test')
+  })
+
+  it('should set isCI to false when no env variables or files exist', async () => {
+    vi.doMock('ci-info', () => ({
+      isCI: false,
+      name: null
+    }))
+
+    const { Environment } = await import('../main/core/environment.js')
+    const environment = new Environment()
+
+    expect(environment.isCI).toBe(false)
+    expect(environment.name).toBe('')
+  })
+
+  it('is considered CI when SPS_RUN_URL present', async () => {
+    vi.stubEnv('PIPELINE_RUN_URL', 'http://example.com')
+
+    const { Environment } = await import('../main/core/environment.js')
+    const environment = new Environment()
+
+    expect(environment.customCICheck()).toBeTruthy()
+    expect(environment.isCI).toBeTruthy()
+    expect(environment.name).toBe('SPS')
+  })
+
+  it('is considered CI when SPS_RUN_ID present', async () => {
+    vi.stubEnv('PIPELINE_RUN_ID', 'runID')
+
+    const { Environment } = await import('../main/core/environment.js')
+    const environment = new Environment()
+
+    expect(environment.customCICheck()).toBeTruthy()
+    expect(environment.isCI).toBeTruthy()
+    expect(environment.name).toBe('SPS')
+  })
+
+  afterEach(() => {
+    mock.restore()
+    vi.unstubAllEnvs()
+    vi.resetModules()
   })
 })

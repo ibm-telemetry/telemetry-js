@@ -31,7 +31,7 @@ export class Environment {
   readonly isCI: boolean
 
   /**
-   * The hashed name of the possible continguous integration environment the process is running in.
+   * The hashed name of the possible continuous integration environment the process is running in.
    */
   name: string
 

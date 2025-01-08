@@ -5,8 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { createHash } from 'node:crypto'
+
 import mock from 'mock-fs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const hash = createHash('sha256')
+hash.update('Docker')
+const dockerHash = hash.digest('hex')
+
+const hash2 = createHash('sha256')
+hash2.update('Podman')
+const podmanHash = hash2.digest('hex')
 
 describe('Environment', () => {
   describe('Container tests', () => {
@@ -25,9 +35,7 @@ describe('Environment', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe(
-        'e6169e958b37ce8662817b0f3e0bf450a174742fafc527800e67f430738b4b63'
-      )
+      expect(environment.name).toBe(dockerHash)
     })
 
     it('is considered CI when running in Docker group', async () => {
@@ -39,9 +47,7 @@ describe('Environment', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe(
-        'e6169e958b37ce8662817b0f3e0bf450a174742fafc527800e67f430738b4b63'
-      )
+      expect(environment.name).toBe(dockerHash)
     })
 
     it('is considered CI when running in Podman container', async () => {
@@ -53,9 +59,7 @@ describe('Environment', () => {
       const environment = new Environment()
 
       expect(environment.isCI).toBeTruthy()
-      expect(environment.name).toBe(
-        'dcf103b39c072dc6ba804fab5401897e47a5175fcd4736c8ede992d392d9fde1'
-      )
+      expect(environment.name).toBe(podmanHash)
     })
 
     afterEach(() => {

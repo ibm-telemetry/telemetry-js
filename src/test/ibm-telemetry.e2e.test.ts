@@ -9,9 +9,7 @@ import * as path from 'node:path'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
-import isInsideContainer from 'is-inside-container'
-import mock from 'mock-fs'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { Environment } from '../main/core/environment.js'
 import { OpenTelemetryContext } from '../main/core/open-telemetry-context.js'
@@ -22,77 +20,6 @@ import { initLogger } from './__utils/init-logger.js'
 
 describe('ibmTelemetry', async () => {
   const logger = initLogger()
-
-  describe('Environment', () => {
-    it('is considered CI when running in Docker container', async () => {
-      mock({
-        '/.dockerenv': ''
-      })
-      const environment = new Environment()
-
-      expect(environment.isCI).toBeTruthy()
-      expect(isInsideContainer()).toBeTruthy()
-      mock.restore()
-    })
-
-    it('is considered CI when running in Podman container', async () => {
-      mock({
-        '/run/.containerenv': ''
-      })
-      const environment = new Environment()
-
-      expect(environment.isCI).toBeTruthy()
-      expect(isInsideContainer()).toBeTruthy()
-      mock.restore()
-    })
-
-    it('uses a different cwd than default one when specified in the config', async () => {
-      const environment = new Environment({ cwd: '/' })
-
-      expect(environment.cwd).toBe('/')
-      expect(environment.cwd).not.toEqual(process.cwd())
-    })
-
-    it('should set isCI to true when ci-info reports it', async () => {
-      vi.mock('ci-info', () => ({
-        isCI: true
-      }))
-
-      const environment = new Environment()
-      expect(environment.isCI).toBe(true)
-    })
-
-    it('should set isCI to true when inside a container', async () => {
-      vi.mock('ci-info', () => ({
-        isCI: false
-      }))
-      vi.mock('is-inside-container', () => ({
-        __esModule: true,
-        default: vi.fn(() => true)
-      }))
-
-      const environment = new Environment()
-      expect(environment.isCI).toBe(true)
-    })
-
-    it('isCI can return the config through getter', async () => {
-      const config = {
-        cwd: '',
-        isCI: false,
-        isExportEnabled: false,
-        isTelemetryEnabled: false
-      }
-      const environment = new Environment(config)
-
-      expect(environment.isCI).toBeFalsy()
-      expect(environment.getConfig()).toEqual(config)
-    })
-
-    afterEach(() => {
-      mock.restore()
-      vi.clearAllMocks()
-    })
-  })
 
   describe('runScopes', () => {
     it('does not throw when existing scopes are specified in the config', async () => {

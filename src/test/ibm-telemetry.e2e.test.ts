@@ -38,7 +38,7 @@ describe('ibmTelemetry', async () => {
         }
       } as ConfigSchema
       const environment = new Environment({ isExportEnabled: false })
-      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger, '')
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
@@ -58,7 +58,7 @@ describe('ibmTelemetry', async () => {
         collect: { notARealScope: null }
       } as unknown as ConfigSchema
       const environment = new Environment({ isExportEnabled: false })
-      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger, '')
 
       expect(() => ibmTelemetry.runScopes('', '', config as unknown as ConfigSchema)).toThrow(
         UnknownScopeError
@@ -81,7 +81,7 @@ describe('ibmTelemetry', async () => {
         }
       } as ConfigSchema
       const environment = new Environment({ isTelemetryEnabled: false })
-      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger, '')
 
       const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
       const debugSpy = vi.spyOn(logger, 'debug')
@@ -107,7 +107,7 @@ describe('ibmTelemetry', async () => {
         }
       } as ConfigSchema
       const environment = new Environment({ isCI: false })
-      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger, '')
 
       const runScopesSpy = vi.spyOn(ibmTelemetry, 'runScopes')
       const debugSpy = vi.spyOn(logger, 'debug')
@@ -136,7 +136,7 @@ describe('ibmTelemetry', async () => {
       }
 
       const environment = new Environment({ isExportEnabled: true })
-      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger, '')
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
@@ -173,7 +173,7 @@ describe('ibmTelemetry', async () => {
         }
       }
       const environment = new Environment({ isExportEnabled: true })
-      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, {}, logger, '')
       const root = new Fixture(path.join('projects', 'basic-project'))
       const cwd = new Fixture(
         path.join('projects', 'basic-project', 'node_modules', 'instrumented')
@@ -215,7 +215,13 @@ describe('ibmTelemetry', async () => {
       }
 
       const config = { projectId: 'test-project' } as ConfigSchema
-      const ibmTelemetry = new IbmTelemetry(config, environment, gitInfo, logger)
+      const ibmTelemetry = new IbmTelemetry(
+        config,
+        environment,
+        gitInfo,
+        logger,
+        '2025-01-01T00:00:00.000Z'
+      )
 
       // Mock `getRepositoryRoot` and `getTelemetryPackageData`
       vi.mock('../main/core/get-repository-root.js', () => ({
@@ -287,7 +293,7 @@ describe('ibmTelemetry', async () => {
       }
 
       // Create instance of IbmTelemetry
-      const ibmTelemetry = new IbmTelemetry(config, environment, gitInfo, logger)
+      const ibmTelemetry = new IbmTelemetry(config, environment, gitInfo, logger, '')
 
       // Mock OpenTelemetryContext
       const otelContextMock = {

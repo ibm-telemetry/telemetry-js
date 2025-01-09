@@ -45,6 +45,7 @@ interface LogPayload {
         stack?: string | undefined
       }
     | string
+  isCompleted?: boolean
   totalPackages?: number
   totalDuration?: number
 }
@@ -62,6 +63,7 @@ export class ChooChooTrain extends Loggable {
   private readonly ipcAddr: string
   private analyzedCommit?: string
   private analyzedPath?: string
+  private date?: string
   private environment?: Environment
   private gitInfo?: GitInfo
   private projectId?: string
@@ -235,6 +237,7 @@ export class ChooChooTrain extends Loggable {
       this.gitInfo = await this.getRepoData(conductorWork)
       await this.getPackageData(conductorWork)
       this.environment = new Environment({ cwd: conductorWork.cwd })
+      this.date = new Date().toISOString()
 
       this.sendLogs(
         `The ChooChooTrain ride for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit} has started`
@@ -264,7 +267,9 @@ export class ChooChooTrain extends Loggable {
 
     this.sendLogs(
       `The ChooChooTrain ride with ${this.totalPackages} packages at analyzed path ${this.analyzedPath} ` +
-        `at commit ${this.analyzedCommit} took ${this.totalDuration}ms`
+        `at commit ${this.analyzedCommit} took ${this.totalDuration}ms`,
+      undefined,
+      true
     )
 
     server.close()
@@ -332,7 +337,13 @@ export class ChooChooTrain extends Loggable {
    */
   @Trace()
   private async collect(environment: Environment, config: Record<string, unknown> & ConfigSchema) {
-    const ibmTelemetry = new IbmTelemetry(config, environment, this.gitInfo ?? {}, this.logger)
+    const ibmTelemetry = new IbmTelemetry(
+      config,
+      environment,
+      this.gitInfo ?? {},
+      this.logger,
+      this.date ?? new Date().toISOString()
+    )
 
     try {
       await ibmTelemetry.run()
@@ -371,15 +382,15 @@ export class ChooChooTrain extends Loggable {
    *
    * @param message - The message to send to collector.
    * @param error - The optional error that caused the train to crash.
+   * @param isCompleted - The boolean to signify if ride is over.
    */
   @Trace()
-  private async sendLogs(message: string, error?: Error | string) {
+  private async sendLogs(message: string, error?: Error | string, isCompleted: boolean = false) {
     if (
       this.logEndpoint === undefined ||
       this.gitInfo === undefined ||
       this.projectId === undefined ||
-      this.environment === undefined ||
-      this.totalPackages === undefined
+      this.environment === undefined
     ) {
       return
     }
@@ -395,6 +406,10 @@ export class ChooChooTrain extends Loggable {
     if (this.totalDuration !== undefined && this.totalPackages !== undefined) {
       payload.totalDuration = this.totalDuration
       payload.totalPackages = this.totalPackages
+    }
+
+    if (isCompleted) {
+      payload.isCompleted = isCompleted
     }
 
     if (error != undefined) {

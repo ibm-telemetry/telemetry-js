@@ -27,6 +27,7 @@ import { scopeRegistry } from './scopes/scope-registry.js'
  */
 export class IbmTelemetry {
   private readonly config: ConfigSchema
+  private readonly date: string
   private readonly environment: Environment
   private readonly gitInfo: object
   private readonly logger: Logger
@@ -38,14 +39,17 @@ export class IbmTelemetry {
    * @param environment - Environment variable configuration for this run.
    * @param gitInfo - Object containing project git information.
    * @param logger - A logger instance.
+   * @param date - Date scan started.
    */
   public constructor(
     config: ConfigSchema,
     environment: Environment,
     gitInfo: object,
-    logger: Logger
+    logger: Logger,
+    date: string
   ) {
     this.config = config
+    this.date = date
     this.environment = environment
     this.gitInfo = gitInfo
     this.logger = logger
@@ -171,8 +175,7 @@ export class IbmTelemetry {
    */
   @Trace()
   public async getData() {
-    const date = new Date().toISOString()
-    this.logger.debug('Date: ' + date)
+    this.logger.debug('Date: ' + this.date)
 
     const cwd = this.environment.cwd
     this.logger.debug('cwd: ' + cwd)
@@ -191,7 +194,7 @@ export class IbmTelemetry {
         [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
         [CustomResourceAttributes.PROJECT_ID]: this.config.projectId,
         ...this.gitInfo,
-        [CustomResourceAttributes.DATE]: date
+        [CustomResourceAttributes.DATE]: this.date
       }
     }
   }

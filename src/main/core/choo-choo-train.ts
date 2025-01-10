@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { createHash } from 'node:crypto'
 import * as net from 'node:net'
 
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
@@ -23,6 +24,7 @@ import { parseYamlFile } from './parse-yaml-file.js'
 const MAX_RETRIES = 3
 const MAX_BACKLOG = 64
 
+// Objects of this type will have hashed values
 interface GitInfo {
   [CustomResourceAttributes.ANALYZED_COMMIT]: string
   [CustomResourceAttributes.ANALYZED_HOST]: string | undefined
@@ -46,6 +48,7 @@ interface LogPayload {
       }
     | string
   isCompleted?: boolean
+  scanId: string
   totalPackages?: number
   totalDuration?: number
 }
@@ -67,6 +70,7 @@ export class ChooChooTrain extends Loggable {
   private environment?: Environment
   private gitInfo?: GitInfo
   private projectId?: string
+  private scanId?: string
   private logEndpoint?: string
   private totalDuration?: number
   private totalPackages?: number
@@ -238,6 +242,12 @@ export class ChooChooTrain extends Loggable {
       await this.getPackageData(conductorWork)
       this.environment = new Environment({ cwd: conductorWork.cwd })
       this.date = new Date().toISOString()
+      const simpleDate = this.date.split('T')[0] as string
+      this.scanId = simpleDate + this.scanId
+
+      const hash = createHash('sha256')
+      hash.update(this.scanId)
+      this.scanId = hash.digest('hex')
 
       this.sendLogs(
         `The ChooChooTrain ride for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit} has started`
@@ -280,6 +290,10 @@ export class ChooChooTrain extends Loggable {
     const gitInfo = await new GitInfoProvider(work.cwd, this.logger).getGitInfo()
 
     const { repository, commitHash, commitTags, commitBranches } = gitInfo
+    const refs = [...commitTags, ...commitBranches]
+
+    // saving data to hash later
+    this.scanId = commitHash + refs
 
     const hashedData = hash(
       {
@@ -293,7 +307,7 @@ export class ChooChooTrain extends Loggable {
           repository.owner ?? ''
         }`,
         [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-        [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches]
+        [CustomResourceAttributes.ANALYZED_REFS]: refs
       },
       [
         CustomResourceAttributes.ANALYZED_COMMIT,
@@ -387,22 +401,27 @@ export class ChooChooTrain extends Loggable {
   @Trace()
   private async sendLogs(message: string, error?: Error | string, isCompleted: boolean = false) {
     if (
+      this.date === undefined ||
       this.logEndpoint === undefined ||
       this.gitInfo === undefined ||
       this.projectId === undefined ||
+      this.scanId === undefined ||
       this.environment === undefined
     ) {
       return
     }
 
+    // Necessary payload data
     const payload: LogPayload = {
-      date: new Date().toISOString(),
-      environment: this.environment.getConfig(), // get environment
+      date: this.date,
+      environment: this.environment.getConfig(),
       gitInfo: this.gitInfo,
       message: message,
-      projectId: this.projectId
+      projectId: this.projectId,
+      scanId: this.scanId
     }
 
+    // Conditional payload data
     if (this.totalDuration !== undefined && this.totalPackages !== undefined) {
       payload.totalDuration = this.totalDuration
       payload.totalPackages = this.totalPackages

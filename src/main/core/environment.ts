@@ -138,6 +138,7 @@ export class Environment {
     return {
       cwd: this.cwd,
       isCI: this.isCI,
+      name: this.name,
       isExportEnabled: this.isExportEnabled,
       isTelemetryEnabled: this.isTelemetryEnabled
     }

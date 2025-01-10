@@ -418,17 +418,14 @@ export class ChooChooTrain extends Loggable {
       gitInfo: this.gitInfo,
       message: message,
       projectId: this.projectId,
-      scanId: this.scanId
+      scanId: this.scanId,
+      isCompleted: isCompleted
     }
 
     // Conditional payload data
     if (this.totalDuration !== undefined && this.totalPackages !== undefined) {
       payload.totalDuration = this.totalDuration
       payload.totalPackages = this.totalPackages
-    }
-
-    if (isCompleted) {
-      payload.isCompleted = isCompleted
     }
 
     if (error != undefined) {

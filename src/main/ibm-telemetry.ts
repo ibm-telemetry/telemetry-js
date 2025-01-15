@@ -206,7 +206,7 @@ export class IbmTelemetry {
         [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
         [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
         [CustomResourceAttributes.PROJECT_ID]: this.config.projectId,
-        [CustomResourceAttributes.SCAN_ID]: this.config.projectId,
+        [CustomResourceAttributes.SCAN_ID]: scanId,
         ...this.gitInfo,
         [CustomResourceAttributes.DATE]: this.date
       }

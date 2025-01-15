@@ -25,7 +25,7 @@ const MAX_RETRIES = 3
 const MAX_BACKLOG = 64
 
 // Objects of this type will have hashed values
-export interface GitInfo {
+interface GitInfo {
   [CustomResourceAttributes.ANALYZED_COMMIT]: string
   [CustomResourceAttributes.ANALYZED_HOST]: string | undefined
   [CustomResourceAttributes.ANALYZED_OWNER]: string | undefined
@@ -309,7 +309,8 @@ export class ChooChooTrain extends Loggable {
         }`,
         [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
         [CustomResourceAttributes.ANALYZED_REFS]: refs,
-        [CustomResourceAttributes.ENVIRONMENT_NAME]: envName
+        [CustomResourceAttributes.ENVIRONMENT_NAME]: envName,
+        [CustomResourceAttributes.SCAN_ID]: this.scanId
       },
       [
         CustomResourceAttributes.ANALYZED_COMMIT,

@@ -294,6 +294,7 @@ export class ChooChooTrain extends Loggable {
 
     // saving data to hash later
     this.scanId = commitHash + refs
+    const envName = this.environment?.name
 
     const hashedData = hash(
       {
@@ -307,7 +308,8 @@ export class ChooChooTrain extends Loggable {
           repository.owner ?? ''
         }`,
         [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-        [CustomResourceAttributes.ANALYZED_REFS]: refs
+        [CustomResourceAttributes.ANALYZED_REFS]: refs,
+        [CustomResourceAttributes.ENVIRONMENT_NAME]: envName
       },
       [
         CustomResourceAttributes.ANALYZED_COMMIT,
@@ -316,7 +318,8 @@ export class ChooChooTrain extends Loggable {
         CustomResourceAttributes.ANALYZED_PATH,
         CustomResourceAttributes.ANALYZED_OWNER_PATH,
         CustomResourceAttributes.ANALYZED_REPOSITORY,
-        CustomResourceAttributes.ANALYZED_REFS
+        CustomResourceAttributes.ANALYZED_REFS,
+        CustomResourceAttributes.ENVIRONMENT_NAME
       ]
     )
 

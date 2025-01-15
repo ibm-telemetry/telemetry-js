@@ -25,7 +25,7 @@ const MAX_RETRIES = 3
 const MAX_BACKLOG = 64
 
 // Objects of this type will have hashed values
-interface GitInfo {
+export interface GitInfo {
   [CustomResourceAttributes.ANALYZED_COMMIT]: string
   [CustomResourceAttributes.ANALYZED_HOST]: string | undefined
   [CustomResourceAttributes.ANALYZED_OWNER]: string | undefined
@@ -238,16 +238,9 @@ export class ChooChooTrain extends Loggable {
     // thus we obtain the data from the conductor's first job before the loop
     const conductorWork = this.workQueue?.[0]
     if (conductorWork) {
+      this.environment = new Environment({ cwd: conductorWork.cwd })
       this.gitInfo = await this.getRepoData(conductorWork)
       await this.getPackageData(conductorWork)
-      this.environment = new Environment({ cwd: conductorWork.cwd })
-      this.date = new Date().toISOString()
-      const simpleDate = this.date.split('T')[0] as string
-      this.scanId = simpleDate + this.scanId
-
-      const hash = createHash('sha256')
-      hash.update(this.scanId)
-      this.scanId = hash.digest('hex')
 
       this.sendLogs(
         `The ChooChooTrain ride for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit} has started`
@@ -292,8 +285,15 @@ export class ChooChooTrain extends Loggable {
     const { repository, commitHash, commitTags, commitBranches } = gitInfo
     const refs = [...commitTags, ...commitBranches]
 
+    this.date = new Date().toISOString()
+    const simpleDate = this.date.split('T')[0] as string
+    this.scanId = simpleDate + commitHash + refs
+
+    const scanHash = createHash('sha256')
+    scanHash.update(this.scanId)
+    this.scanId = scanHash.digest('hex')
+
     // saving data to hash later
-    this.scanId = commitHash + refs
     const envName = this.environment?.name
 
     const hashedData = hash(

@@ -4,6 +4,8 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { createHash } from 'node:crypto'
+
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
@@ -11,6 +13,7 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
 import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
 import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
 
+import { GitInfo } from './core/choo-choo-train.js'
 import type { Environment } from './core/environment.js'
 import { getRepositoryRoot } from './core/get-repository-root.js'
 import { type Logger } from './core/log/logger.js'
@@ -29,7 +32,7 @@ export class IbmTelemetry {
   private readonly config: ConfigSchema
   private readonly date: string
   private readonly environment: Environment
-  private readonly gitInfo: object
+  private readonly gitInfo: GitInfo
   private readonly logger: Logger
 
   /**
@@ -44,7 +47,7 @@ export class IbmTelemetry {
   public constructor(
     config: ConfigSchema,
     environment: Environment,
-    gitInfo: object,
+    gitInfo: GitInfo,
     logger: Logger,
     date: string
   ) {
@@ -185,6 +188,16 @@ export class IbmTelemetry {
 
     const emitterInfo = await getTelemetryPackageData(this.logger)
 
+    const simpleDate = this.date.split('T')[0] as string
+    let scanId =
+      simpleDate +
+      this.gitInfo[CustomResourceAttributes.ANALYZED_COMMIT] +
+      this.gitInfo[CustomResourceAttributes.ANALYZED_REFS]
+
+    const scanHash = createHash('sha256')
+    scanHash.update(scanId)
+    scanId = scanHash.digest('hex')
+
     // values are already previously hashed
     return {
       projectRoot: projectRoot,
@@ -193,6 +206,7 @@ export class IbmTelemetry {
         [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
         [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
         [CustomResourceAttributes.PROJECT_ID]: this.config.projectId,
+        [CustomResourceAttributes.SCAN_ID]: this.config.projectId,
         ...this.gitInfo,
         [CustomResourceAttributes.DATE]: this.date
       }

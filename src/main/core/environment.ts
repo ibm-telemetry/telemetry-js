@@ -73,11 +73,9 @@ export class Environment {
       this.cwd = config.cwd
     }
 
-    if (this.name != '') {
-      const hash = createHash('sha256')
-      hash.update(this.name)
-      this.name = hash.digest('hex')
-    }
+    const hash = createHash('sha256')
+    hash.update(this.name)
+    this.name = hash.digest('hex')
   }
 
   /**

@@ -294,7 +294,7 @@ export class ChooChooTrain extends Loggable {
     this.scanId = scanHash.digest('hex')
 
     // saving data to hash later
-    const envName = this.environment?.name ?? ''
+    const envName = this.environment?.name
 
     const hashedData = hash(
       {
@@ -319,8 +319,7 @@ export class ChooChooTrain extends Loggable {
         CustomResourceAttributes.ANALYZED_PATH,
         CustomResourceAttributes.ANALYZED_OWNER_PATH,
         CustomResourceAttributes.ANALYZED_REPOSITORY,
-        CustomResourceAttributes.ANALYZED_REFS,
-        CustomResourceAttributes.ENVIRONMENT_NAME
+        CustomResourceAttributes.ANALYZED_REFS
       ]
     )
 

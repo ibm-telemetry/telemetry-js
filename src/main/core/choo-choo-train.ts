@@ -294,7 +294,7 @@ export class ChooChooTrain extends Loggable {
     this.scanId = scanHash.digest('hex')
 
     // saving data to hash later
-    const envName = this.environment?.name
+    const envName = this.environment?.name ?? ''
 
     const hashedData = hash(
       {

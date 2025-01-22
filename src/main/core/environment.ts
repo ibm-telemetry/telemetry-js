@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs'
 
 import { isCI, name } from 'ci-info'
 
-interface EnvironmentConfig {
+export interface EnvironmentConfig {
   cwd?: string
   isCI?: boolean
   isExportEnabled?: boolean
@@ -73,11 +73,9 @@ export class Environment {
       this.cwd = config.cwd
     }
 
-    if (this.name != '') {
-      const hash = createHash('sha256')
-      hash.update(this.name)
-      this.name = hash.digest('hex')
-    }
+    const hash = createHash('sha256')
+    hash.update(this.name)
+    this.name = hash.digest('hex')
   }
 
   /**
@@ -127,5 +125,20 @@ export class Environment {
     }
 
     return false
+  }
+
+  /**
+   * Returns the current Environment variables in an object.
+   *
+   * @returns Object containing current environment config.
+   */
+  public getConfig(): EnvironmentConfig {
+    return {
+      cwd: this.cwd,
+      isCI: this.isCI,
+      name: this.name,
+      isExportEnabled: this.isExportEnabled,
+      isTelemetryEnabled: this.isTelemetryEnabled
+    }
   }
 }

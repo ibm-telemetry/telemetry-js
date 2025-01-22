@@ -6,21 +6,17 @@
  */
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
+import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
 import { CompressionAlgorithm } from '@opentelemetry/otlp-exporter-base'
 import { AggregationTemporality, type ResourceMetrics } from '@opentelemetry/sdk-metrics'
-import { type Schema } from 'ajv'
 
-import { hash } from './core/anonymize/hash.js'
-import { ConfigValidator } from './core/config-validator.js'
 import type { Environment } from './core/environment.js'
 import { getRepositoryRoot } from './core/get-repository-root.js'
-import { GitInfoProvider } from './core/git-info-provider.js'
 import { type Logger } from './core/log/logger.js'
 import { safeStringify } from './core/log/safe-stringify.js'
 import { Trace } from './core/log/trace.js'
 import { OpenTelemetryContext } from './core/open-telemetry-context.js'
-import { parseYamlFile } from './core/parse-yaml-file.js'
 import { type Scope } from './core/scope.js'
 import { UnknownScopeError } from './exceptions/unknown-scope-error.js'
 import { getTelemetryPackageData } from './scopes/npm/get-telemetry-package-data.js'
@@ -30,28 +26,32 @@ import { scopeRegistry } from './scopes/scope-registry.js'
  * Instantiable class capable of collecting project-wide JS-based telemetry data.
  */
 export class IbmTelemetry {
-  private readonly configPath: string
-  private readonly configSchemaJson: Schema
+  private readonly config: ConfigSchema
+  private readonly date: string
   private readonly environment: Environment
+  private readonly gitInfo: object
   private readonly logger: Logger
 
   /**
    * Constructs a new telemetry collector.
    *
-   * @param configPath - Path to a config file.
-   * @param configSchemaJson - Path to a schema against which to validate the config file.
+   * @param config - Parsed configFile object.
    * @param environment - Environment variable configuration for this run.
+   * @param gitInfo - Object containing project git information.
    * @param logger - A logger instance.
+   * @param date - Date scan started.
    */
   public constructor(
-    configPath: string,
-    configSchemaJson: Schema,
+    config: ConfigSchema,
     environment: Environment,
-    logger: Logger
+    gitInfo: object,
+    logger: Logger,
+    date: string
   ) {
-    this.configPath = configPath
-    this.configSchemaJson = configSchemaJson
+    this.config = config
+    this.date = date
     this.environment = environment
+    this.gitInfo = gitInfo
     this.logger = logger
   }
 
@@ -72,63 +72,15 @@ export class IbmTelemetry {
       return
     }
 
-    const date = new Date().toISOString()
-    this.logger.debug('Date: ' + date)
+    this.logger.debug('Schema: ' + JSON.stringify(configSchemaJson))
+    this.logger.debug('Config: ' + JSON.stringify(this.config, undefined, 2))
 
-    this.logger.debug('Schema: ' + JSON.stringify(this.configSchemaJson))
-    const configValidator: ConfigValidator = new ConfigValidator(this.configSchemaJson, this.logger)
-
-    const config = await parseYamlFile(this.configPath)
-    this.logger.debug('Config: ' + JSON.stringify(config, undefined, 2))
-
-    const cwd = this.environment.cwd
-    this.logger.debug('cwd: ' + cwd)
-
-    const projectRoot = await getRepositoryRoot(cwd, this.logger)
-    this.logger.debug('projectRoot: ' + projectRoot)
-
-    // This will throw if config does not conform to ConfigSchema
-    configValidator.validate(config)
-
-    const { repository, commitHash, commitTags, commitBranches } = await new GitInfoProvider(
-      cwd,
-      this.logger
-    ).getGitInfo()
-    const emitterInfo = await getTelemetryPackageData(this.logger)
     const otelContext = OpenTelemetryContext.getInstance(true)
 
-    otelContext.setAttributes(
-      hash(
-        {
-          [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
-          [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
-          [CustomResourceAttributes.PROJECT_ID]: config.projectId,
-          [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
-          [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
-          [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
-          [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
-            repository.owner ?? ''
-          }/${repository.repository ?? ''}`,
-          [CustomResourceAttributes.ANALYZED_OWNER_PATH]: `${repository.host ?? ''}/${
-            repository.owner ?? ''
-          }`,
-          [CustomResourceAttributes.ANALYZED_REPOSITORY]: repository.repository,
-          [CustomResourceAttributes.ANALYZED_REFS]: [...commitTags, ...commitBranches],
-          [CustomResourceAttributes.DATE]: date
-        },
-        [
-          CustomResourceAttributes.ANALYZED_COMMIT,
-          CustomResourceAttributes.ANALYZED_HOST,
-          CustomResourceAttributes.ANALYZED_OWNER,
-          CustomResourceAttributes.ANALYZED_PATH,
-          CustomResourceAttributes.ANALYZED_OWNER_PATH,
-          CustomResourceAttributes.ANALYZED_REPOSITORY,
-          CustomResourceAttributes.ANALYZED_REFS
-        ]
-      )
-    )
+    const { projectRoot, documentObject } = await this.getData()
 
-    const promises = this.runScopes(cwd, projectRoot, config)
+    otelContext.setAttributes(documentObject)
+    const promises = this.runScopes(this.environment.cwd, projectRoot, this.config)
 
     await Promise.allSettled(promises)
 
@@ -137,7 +89,8 @@ export class IbmTelemetry {
     this.logger.debug('Collection results:')
     this.logger.debug(JSON.stringify(results, undefined, 2))
 
-    this.environment.isExportEnabled && (await this.emitMetrics(results.resourceMetrics, config))
+    this.environment.isExportEnabled &&
+      (await this.emitMetrics(results.resourceMetrics, this.config))
   }
 
   /**
@@ -213,5 +166,36 @@ export class IbmTelemetry {
         resolve(undefined)
       })
     })
+  }
+
+  /**
+   * Returns emitter info, project root path, and the document object.
+   *
+   * @returns Promise that resolves to undefined.
+   */
+  @Trace()
+  public async getData() {
+    this.logger.debug('Date: ' + this.date)
+
+    const cwd = this.environment.cwd
+    this.logger.debug('cwd: ' + cwd)
+
+    const projectRoot = await getRepositoryRoot(cwd, this.logger)
+    this.logger.debug('projectRoot: ' + projectRoot)
+
+    const emitterInfo = await getTelemetryPackageData(this.logger)
+
+    // values are already previously hashed
+    return {
+      projectRoot: projectRoot,
+      emitterInfo: emitterInfo,
+      documentObject: {
+        [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: emitterInfo.name,
+        [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: emitterInfo.version,
+        [CustomResourceAttributes.PROJECT_ID]: this.config.projectId,
+        ...this.gitInfo,
+        [CustomResourceAttributes.DATE]: this.date
+      }
+    }
   }
 }

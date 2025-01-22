@@ -101,7 +101,9 @@ describe('Environment', () => {
     const environment = new Environment()
 
     expect(environment.isCI).toBe(false)
-    expect(environment.name).toBe('')
+    expect(environment.name).toBe(
+      'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+    )
   })
 
   it('is considered CI when SPS_RUN_URL present', async () => {

@@ -31,6 +31,8 @@ export function initializeOtelForTest() {
     [CustomResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
     [CustomResourceAttributes.ANALYZED_COMMIT]: 'commitHash',
     [CustomResourceAttributes.ANALYZED_REFS]: [],
+    [CustomResourceAttributes.ENVIRONMENT_NAME]: 'test environment',
+    [CustomResourceAttributes.SCAN_ID]: 'scan id',
     [CustomResourceAttributes.DATE]: date
   })
 

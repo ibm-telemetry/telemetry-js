@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.8.0...v1.9.0) (2025-01-22)
+
+
+### Features
+
+* add logging on ChooChooTrain ([#288](https://github.com/ibm-telemetry/telemetry-js/issues/288)) ([c272c25](https://github.com/ibm-telemetry/telemetry-js/commit/c272c2505c36b5248990767f063ceef6a5503b32))
+* collect emitter environment name and custom CI check ([#290](https://github.com/ibm-telemetry/telemetry-js/issues/290)) ([7068a5c](https://github.com/ibm-telemetry/telemetry-js/commit/7068a5c02910b262d570ac3457a30e68c6f456ac))
+
 ## [1.8.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.7.1...v1.8.0) (2024-10-31)
 
 

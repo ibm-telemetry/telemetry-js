@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.9.0...v1.9.1) (2025-01-28)
+
+
+### Bug Fixes
+
+* ensure scan ID is truly unique ([#295](https://github.com/ibm-telemetry/telemetry-js/issues/295)) ([99b5276](https://github.com/ibm-telemetry/telemetry-js/commit/99b5276bbfa6d3edecfd4b9a7524db416dbe79d0))
+
 ## [1.9.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.8.0...v1.9.0) (2025-01-22)
 
 

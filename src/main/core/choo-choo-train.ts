@@ -46,6 +46,10 @@ interface LogPayload {
         message?: string
         stack?: string | undefined
       }
+    | {
+        message?: string
+        stderr?: string | undefined
+      }
     | string
   isCompleted?: boolean
   scanId: string
@@ -156,8 +160,8 @@ export class ChooChooTrain extends Loggable {
       })
 
       // Set up signal handler to gracefully close the IPC socket
-      process.on('SIGINT', () => this.handleSignal(server))
-      process.on('SIGTERM', () => this.handleSignal(server))
+      process.on('SIGINT', () => this.handleSignal(server, 'SIGINT'))
+      process.on('SIGTERM', () => this.handleSignal(server, 'SIGTERM'))
 
       server.listen(this.ipcAddr, MAX_BACKLOG)
     })
@@ -284,10 +288,13 @@ export class ChooChooTrain extends Loggable {
 
     const { repository, commitHash, commitTags, commitBranches } = gitInfo
     const refs = [...commitTags, ...commitBranches]
+    const analyzedPath = `${repository.host ?? ''}/${
+      repository.owner ?? ''
+    }/${repository.repository ?? ''}`
 
     this.date = new Date().toISOString()
     const simpleDate = this.date.split('T')[0] as string
-    this.scanId = simpleDate + commitHash + refs
+    this.scanId = simpleDate + analyzedPath + commitHash + refs
 
     const scanHash = createHash('sha256')
     scanHash.update(this.scanId)
@@ -301,9 +308,7 @@ export class ChooChooTrain extends Loggable {
         [CustomResourceAttributes.ANALYZED_COMMIT]: commitHash,
         [CustomResourceAttributes.ANALYZED_HOST]: repository.host,
         [CustomResourceAttributes.ANALYZED_OWNER]: repository.owner,
-        [CustomResourceAttributes.ANALYZED_PATH]: `${repository.host ?? ''}/${
-          repository.owner ?? ''
-        }/${repository.repository ?? ''}`,
+        [CustomResourceAttributes.ANALYZED_PATH]: analyzedPath,
         [CustomResourceAttributes.ANALYZED_OWNER_PATH]: `${repository.host ?? ''}/${
           repository.owner ?? ''
         }`,
@@ -368,19 +373,19 @@ export class ChooChooTrain extends Loggable {
       // Catch any exception thrown, log it, and quietly exit
       if (err instanceof Error) {
         this.logger.error(err)
-        this.sendLogs('Process signal error: ', err)
+        this.sendLogs('Telemetry runner error: ', err)
       } else {
         this.logger.error(String(err))
-        this.sendLogs('Process signal error: ', String(err))
+        this.sendLogs('Telemetry runner error: ', String(err))
       }
     }
   }
 
   @Trace()
-  private handleSignal(server: net.Server) {
+  private handleSignal(server: net.Server, type: string) {
     server.close((err) => {
       if (err) {
-        this.sendLogs('Process signal error: ', err).catch((sendErr) => {
+        this.sendLogs(`Process ${type} signal error: `, err).catch((sendErr) => {
           if (sendErr instanceof Error) {
             this.logger.error(sendErr)
           } else {
@@ -434,8 +439,7 @@ export class ChooChooTrain extends Loggable {
     if (error != undefined) {
       if (error instanceof Error) {
         payload.error = {
-          message: error.message,
-          stack: error.stack
+          message: error.message
         }
       } else {
         payload.error = error

@@ -6,11 +6,11 @@
  */
 
 import eslintComments from '@eslint-community/eslint-plugin-eslint-comments/configs'
+import vitest from '@vitest/eslint-plugin'
 import jsdoc from 'eslint-plugin-jsdoc'
 import n from 'eslint-plugin-n'
 import notice from 'eslint-plugin-notice'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
-import vitest from 'eslint-plugin-vitest'
 import globals from 'globals'
 import tsEslint from 'typescript-eslint'
 

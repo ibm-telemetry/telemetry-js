@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2024, 2024
+ * Copyright IBM Corp. 2024, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -169,7 +169,7 @@ const config = [
       ],
       'n/no-unpublished-import': ['error', { allowModules: ['vitest'] }],
       'n/shebang': 'off',
-      'notice/notice': ['warn', { templateFile: './.copyright.js' }],
+      'notice/notice': ['error', { templateFile: './.copyright.js' }],
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn'
     }

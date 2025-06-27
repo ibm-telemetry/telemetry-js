@@ -67,7 +67,7 @@
     "ajv": "^8.17.1",
     "ci-info": "^4.0.0",
     "commander": "^12.1.0",
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jsdoc": "^48.11.0",

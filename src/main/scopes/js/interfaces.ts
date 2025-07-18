@@ -10,6 +10,7 @@ import type { Logger } from '../../core/log/logger.js'
 import type { ComplexValue } from './complex-value.js'
 import type { JsNodeHandler } from './node-handlers/js-node-handler.js'
 import type { NodeValueHandler } from './node-handlers/value-handlers/node-value-handler.js'
+import { ParsedFile } from '../wc/interfaces.js'
 
 export interface JsImport {
   name: string
@@ -17,14 +18,16 @@ export interface JsImport {
   isDefault: boolean
   isAll: boolean
   rename?: string
+  isSideEffect?: boolean
 }
 
-type JsNodeHandlerClass<DataType> = new (
-  node: ts.SourceFile,
+export type JsNodeHandlerClass<DataType = unknown, FileType extends ParsedFile = ParsedFile> = new (
+  sourceFile: FileType,
   logger: Logger
-) => JsNodeHandler<DataType>
+) => JsNodeHandler<DataType, FileType>
 
-export type JsNodeHandlerMap = Partial<Record<ts.SyntaxKind, JsNodeHandlerClass<unknown>>>
+// `any` here means handlers can accept any subtype of ParsedFile (aka ts.SourceFile or HtmlParsedFile)
+export type JsNodeHandlerMap = Partial<Record<ts.SyntaxKind | string, JsNodeHandlerClass<any, any>>>
 
 export type NodeValue = string | number | boolean | ComplexValue | null | undefined
 
@@ -33,6 +36,7 @@ type NodeValueHandlerProducer = new (node: ts.SourceFile, logger: Logger) => Nod
 export type NodeValueHandlerMap = Partial<Record<ts.SyntaxKind, NodeValueHandlerProducer>>
 
 export interface JsImportMatcher<Element> {
+  elementType: 'jsx' | 'wc' | 'js'
   findMatch: (element: Element, imports: JsImport[]) => JsImport | undefined
 }
 

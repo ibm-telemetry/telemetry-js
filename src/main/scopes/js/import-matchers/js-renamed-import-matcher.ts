@@ -11,6 +11,7 @@ import type { JsFunction, JsImport, JsImportMatcher, JsToken } from '../interfac
  * Import matcher for all renamed imports, such as import { stuff as renamedStuff } from 'whatever'.
  */
 export class JsRenamedImportMatcher implements JsImportMatcher<JsToken | JsFunction> {
+  elementType: 'js' = 'js'
   /**
    * Determines if a given JsToken or JsFunction is a renamed import
    * (e.g.: `import {something as somethingElse} from 'package'`)

@@ -16,7 +16,7 @@ import { JsNodeHandler } from '../js-node-handler.js'
  * Holds logic to construct a JsFunction object given an CallExpression node.
  *
  */
-export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
+export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction, ts.SourceFile> {
   /**
    * Processes a CallExpression node data and adds it to the given accumulator.
    *

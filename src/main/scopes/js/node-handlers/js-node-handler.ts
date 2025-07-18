@@ -10,6 +10,7 @@ import type * as ts from 'typescript'
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'
 import type { JsAccumulator } from '../js-accumulator.js'
+import { AnyAstNode, ParsedFile } from '../../wc/interfaces.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.
@@ -17,15 +18,18 @@ import type { JsAccumulator } from '../js-accumulator.js'
  * @param node - Node element to process.
  * @param accumulator - Keeps the state of the collected data (by the handlers).
  */
-export abstract class JsNodeHandler<DataType> extends Loggable {
-  protected readonly sourceFile: ts.SourceFile
+export abstract class JsNodeHandler<
+  DataType,
+  FileType extends ParsedFile = ParsedFile
+> extends Loggable {
+  protected readonly sourceFile: FileType
 
-  constructor(sourceFile: ts.SourceFile, logger: Logger) {
+  constructor(sourceFile: FileType, logger: Logger) {
     super(logger)
-    this.sourceFile = sourceFile
+    this.sourceFile = sourceFile as FileType
   }
 
-  abstract handle(node: ts.Node, accumulator: JsAccumulator): void
+  abstract handle(node: AnyAstNode, accumulator: JsAccumulator): void
 
-  abstract getData(node: ts.Node): DataType
+  abstract getData(node: AnyAstNode): DataType
 }

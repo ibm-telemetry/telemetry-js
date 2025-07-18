@@ -16,7 +16,7 @@ import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
  * Holds node handling logic to be inherited by Jsx node handlers.
  *
  */
-export abstract class JsxNodeHandler extends JsNodeHandler<JsxElement> {
+export abstract class JsxNodeHandler extends JsNodeHandler<JsxElement, ts.SourceFile> {
   /**
    * Given a TagName node representing a JsxElement, obtains the name and prefix values.
    *

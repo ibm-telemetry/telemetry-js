@@ -10,6 +10,7 @@ import { Loggable } from '../../core/log/loggable.js'
 import { type Logger } from '../../core/log/logger.js'
 import type { JsNodeHandlerMap } from './interfaces.js'
 import type { JsAccumulator } from './js-accumulator.js'
+import { INodeAdapter, ParsedFile } from '../wc/interfaces.js'
 
 /**
  * Class to handle traversing through a node's children and calling appropriate handlers.
@@ -41,16 +42,18 @@ export class SourceFileHandler extends Loggable {
    * @param node - Node to traverse through (usually a file node).
    * @param rootNode - Root Node of node tree.
    */
-  public handle(node: ts.Node, rootNode: ts.SourceFile) {
-    const Handler = this.nodeHandlerMap[node.kind]
 
+  public handle(node: INodeAdapter, rootNode: ParsedFile) {
+    const Handler = this.nodeHandlerMap[node.getKind()]
+
+    // only does JSXElements, ImportDeclarations, JSXSelfClosingElements
     if (Handler !== undefined) {
       const handler = new Handler(rootNode, this.logger)
-      handler.handle(node, this.accumulator)
+      handler.handle(node.getNode(), this.accumulator)
     }
 
-    ts.forEachChild(node, (node) => {
-      this.handle(node, rootNode)
-    })
+    for (const child of node.getChildren()) {
+      this.handle(child, rootNode)
+    }
   }
 }

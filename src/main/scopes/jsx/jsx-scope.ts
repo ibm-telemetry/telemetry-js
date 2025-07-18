@@ -22,6 +22,7 @@ import type { JsxElement } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
+import { ParsedFile } from '../wc/interfaces.js'
 
 /**
  * Scope class dedicated to data collection from a jsx environment.
@@ -116,13 +117,16 @@ export class JsxScope extends Scope {
    * @param importMatchers - Matchers instances to use for import-element matching.
    */
   async captureFileMetrics(
-    sourceFile: ts.SourceFile,
+    sourceFile: ParsedFile,
     instrumentedPackage: PackageData,
     importMatchers: JsImportMatcher<JsxElement>[]
   ) {
     const accumulator = new JsxElementAccumulator()
 
     processFile(accumulator, sourceFile, jsxNodeHandlerMap, this.logger)
+
+    this.logger.debug('Pre0filter accumulator contents:', JSON.stringify(accumulator))
+
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
     this.resolveElementImports(accumulator, importMatchers)
 

@@ -16,13 +16,17 @@ import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { JsxElementAllImportMatcher } from '../jsx/import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from '../jsx/import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from '../jsx/import-matchers/jsx-element-renamed-import-matcher.js'
-// import { type WcElement } from './interfaces.js'
+import { type WcElement } from './interfaces.js'
 import { type JsxElement } from '../jsx/interfaces.js'
-import { ElementMetric } from '../jsx/metrics/element-metric.js'
+import { ElementMetric } from './metrics/element-metric.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
-import { jsxNodeHandlerMap } from './wc-node-handler-map.js'
+import { wcNodeHandlerMap } from './wc-node-handler-map.js'
+import { ParsedFile } from './interfaces.js'
+import { isJsxElement } from './utils/is-jsx-element.js'
+import { isWcElement } from './utils/is-wc-element.js'
+import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -77,8 +81,11 @@ export class WcScope extends Scope {
     const importMatchers = [
       new JsxElementAllImportMatcher(),
       new JsxElementNamedImportMatcher(),
-      new JsxElementRenamedImportMatcher()
-    ]
+      new JsxElementRenamedImportMatcher(),
+      new WcElementSideEffectImportMatcher()
+      // maybe HtmlElementCdnImportMatcher() TODO
+    ] as JsImportMatcher<JsxElement | WcElement>[]
+
     const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
     const sourceFiles = await findRelevantSourceFiles(
       instrumentedPackage,
@@ -93,21 +100,11 @@ export class WcScope extends Scope {
     const promises: Promise<void>[] = []
 
     for (const sourceFile of sourceFiles) {
-      // route JS/JSX differently
-
-      if (sourceFile.fileName.endsWith('html')) {
-      } else {
-      }
-
-      // if JS/JSX
       const resultPromise = this.captureFileMetrics(
         await sourceFile.createSourceFile(),
         instrumentedPackage,
-        importMatchers
+        importMatchers // NEXT THING TO DO
       )
-
-      // if html
-      //
 
       if (this.runSync) {
         await resultPromise
@@ -129,47 +126,59 @@ export class WcScope extends Scope {
    * @param importMatchers - Matchers instances to use for import-element matching.
    */
   async captureFileMetrics(
-    sourceFile: ts.SourceFile,
+    sourceFile: ParsedFile, // ts.SourceFile
     instrumentedPackage: PackageData,
-    importMatchers: JsImportMatcher<JsxElement>[]
+    importMatchers: JsImportMatcher<WcElement | JsxElement>[]
   ) {
     const accumulator = new WcElementAccumulator()
 
     // TODO make a HTML node handler
-    processFile(accumulator, sourceFile, jsxNodeHandlerMap, this.logger)
+    processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
 
-    this.logger.debug('Pre0filter accumulator contents:', JSON.stringify(accumulator))
+    this.logger.debug('Pre-filter accumulator contents:', JSON.stringify(accumulator))
 
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
     this.resolveElementImports(accumulator, importMatchers)
 
-    accumulator.elements.forEach((jsxElement) => {
-      const jsImport = accumulator.elementImports.get(jsxElement)
+    accumulator.elements.forEach((element) => {
+      const jsImport = accumulator.elementImports.get(element)
 
       if (jsImport === undefined) {
         return
       }
 
-      this.capture(
-        new ElementMetric(jsxElement, jsImport, instrumentedPackage, this.config, this.logger)
-      )
+      // type guarding was needed
+      if (isJsxElement(element) || isWcElement(element)) {
+        this.capture(
+          new ElementMetric(element, jsImport, instrumentedPackage, this.config, this.logger)
+        )
+      }
     })
   }
 
   resolveElementImports(
     accumulator: WcElementAccumulator,
-    elementMatchers: JsImportMatcher<JsxElement>[]
+    elementMatchers: JsImportMatcher<WcElement | JsxElement>[]
   ) {
-    accumulator.elements.forEach((jsxElement) => {
+    accumulator.elements.forEach((element) => {
       const jsImport = elementMatchers
-        .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.imports))
+        .map((elementMatcher) => {
+          if (elementMatcher.elementType === 'jsx' && isJsxElement(element)) {
+            return elementMatcher.findMatch(element, accumulator.imports)
+          }
+
+          if (elementMatcher.elementType === 'wc' && isWcElement(element)) {
+            return elementMatcher.findMatch(element, accumulator.imports)
+          }
+          return undefined
+        })
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {
         return
       }
 
-      accumulator.elementImports.set(jsxElement, jsImport)
+      accumulator.elementImports.set(element, jsImport)
     })
   }
 

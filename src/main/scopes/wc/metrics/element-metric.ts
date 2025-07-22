@@ -15,9 +15,9 @@ import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { JsImport } from '../../js/interfaces.js'
+import { type JsxElement } from '../../jsx/interfaces.js'
 import type { PackageData } from '../../npm/interfaces.js'
 import { type WcElement, type WcElementAttribute } from '../interfaces.js'
-import { type JsxElement } from '../../jsx/interfaces.js'
 
 /**
  * JSX scope metric that generates a jsx.element individual metric for a given element.
@@ -34,6 +34,7 @@ export class ElementMetric extends ScopeMetric {
    * Constructs a JsxElementMetric.
    *
    * @param jsxElement - Object containing name and version to extract data to generate metric from.
+   * @param element
    * @param matchingImport - Import that matched the provided JsxElement in the file.
    * @param instrumentedPackage - Data (name and version) pertaining to instrumented package.
    * @param config - Determines which attributes name and values to collect for.

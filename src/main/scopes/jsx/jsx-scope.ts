@@ -4,7 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
@@ -15,6 +14,7 @@ import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
+import { ParsedFile } from '../wc/interfaces.js'
 import { JsxElementAllImportMatcher } from './import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from './import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from './import-matchers/jsx-element-renamed-import-matcher.js'
@@ -22,7 +22,6 @@ import type { JsxElement } from './interfaces.js'
 import { JsxElementAccumulator } from './jsx-element-accumulator.js'
 import { jsxNodeHandlerMap } from './jsx-node-handler-map.js'
 import { ElementMetric } from './metrics/element-metric.js'
-import { ParsedFile } from '../wc/interfaces.js'
 
 /**
  * Scope class dedicated to data collection from a jsx environment.

@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as ts from 'typescript'
-import type { ComplexValue } from '../js/complex-value.js'
 import type { Document as HtmlDocument, Node as HtmlNode } from 'domhandler'
+import type * as ts from 'typescript'
+
+import type { ComplexValue } from '../js/complex-value.js'
 
 export interface WcElementAttribute {
   name: string
@@ -22,7 +23,7 @@ export interface WcElement {
 export type HtmlParsedFile = HtmlDocument & { fileName?: string }
 
 /**
- * A union of possible parsed file types (TS or HTML)
+ * A union of possible parsed file types (TS or HTML).
  */
 export type ParsedFile = ts.SourceFile | HtmlParsedFile
 

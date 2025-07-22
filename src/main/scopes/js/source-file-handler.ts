@@ -4,13 +4,11 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
-
 import { Loggable } from '../../core/log/loggable.js'
 import { type Logger } from '../../core/log/logger.js'
+import type { INodeAdapter, ParsedFile } from '../wc/interfaces.js'
 import type { JsNodeHandlerMap } from './interfaces.js'
 import type { JsAccumulator } from './js-accumulator.js'
-import { INodeAdapter, ParsedFile } from '../wc/interfaces.js'
 
 /**
  * Class to handle traversing through a node's children and calling appropriate handlers.
@@ -43,8 +41,15 @@ export class SourceFileHandler extends Loggable {
    * @param rootNode - Root Node of node tree.
    */
 
+  /**
+   *
+   * @param node
+   * @param rootNode
+   */
   public handle(node: INodeAdapter, rootNode: ParsedFile) {
     const Handler = this.nodeHandlerMap[node.getKind()]
+
+    this.logger.debug(`${node.getKind()}`)
 
     // only does JSXElements, ImportDeclarations, JSXSelfClosingElements
     if (Handler !== undefined) {

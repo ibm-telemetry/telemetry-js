@@ -6,7 +6,6 @@
  */
 
 import type { JsImport, JsImportMatcher } from '../../js/interfaces.js'
-import { JsxElement } from '../../jsx/interfaces.js'
 import { type WcElement } from '../interfaces.js'
 
 /**

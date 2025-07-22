@@ -5,17 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import type { Node as HtmlNode } from 'domhandler'
+
 import { type WcElement } from '../../interfaces.js'
 import { type WcElementAccumulator } from '../../wc-element-accumulator.js'
-import { isHtmlElement } from '../adapters/is-html-element.js'
+import { isHtmlElement } from '../../utils/is-html-element.js'
 import { HtmlNodeHandler } from './html-node-handler.js'
-import type { Node as HtmlNode } from 'domhandler'
 
 /**
  * Holds logic to construct a JsxElement object given a node of said kind.
  *
  */
-export class WcElementNodeHandler extends HtmlNodeHandler {
+export class WcScriptNodeHandler extends HtmlNodeHandler {
   /**
    * Processes a JsxElement node data and adds it to the given accumulator.
    *
@@ -23,7 +24,7 @@ export class WcElementNodeHandler extends HtmlNodeHandler {
    * @param accumulator - JsxAccumulator instance that holds the aggregated elements state.
    */
   handle(node: HtmlNode, accumulator: WcElementAccumulator) {
-    accumulator.elements.push(this.getData(node))
+    accumulator.scriptSources.push(this.getScriptSource(node))
   }
 
   /**
@@ -46,5 +47,15 @@ export class WcElementNodeHandler extends HtmlNodeHandler {
     }
   }
 
-  getScriptSource(node: HtmlNode) {}
+  /**
+   * Returns the script source for the currently imported file.
+   *
+   * @param node - Node element to process.
+   * @returns Script source, either file or CDN link
+   */
+  getScriptSource(node: HtmlNode): string {
+    const { attributes } = this.getData(node)
+    const rawValue = attributes.find((attr) => attr.name === 'src')?.value
+    return rawValue != null ? String(rawValue) : ''
+  }
 }

@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as ts from 'typescript'
-import { INodeAdapter } from '../../interfaces.js'
+import type * as ts from 'typescript'
+
+import type { INodeAdapter } from '../../interfaces.js'
 
 /**
  * Adapter for a TypeScript AST node that implements a common interface
@@ -16,8 +17,9 @@ export class TsNodeAdapter implements INodeAdapter<ts.Node> {
   private readonly node: ts.Node
 
   /**
-   * Instantiates a new TSNodeAdapter
-   * @param node - Node to process
+   * Instantiates a new TSNodeAdapter.
+   *
+   * @param node - Node to process.
    * @param logger - Logger instance to use.
    */
   constructor(node: ts.Node) {
@@ -56,7 +58,7 @@ export class TsNodeAdapter implements INodeAdapter<ts.Node> {
   /**
    * Returns the raw underlying TypeScript AST node.
    *
-   * @returns {ts.Node} The original ts.Node instance.
+   * @returns The original ts.Node instance.
    */
   getNode() {
     return this.node

@@ -4,29 +4,29 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
 
+import * as path from 'node:path'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
 import { findRelevantSourceFiles } from '../js/find-relevant-source-files.js'
-import type { JsImportMatcher } from '../js/interfaces.js'
+import type { JsImport, JsImportMatcher } from '../js/interfaces.js'
 import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { JsxElementAllImportMatcher } from '../jsx/import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from '../jsx/import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from '../jsx/import-matchers/jsx-element-renamed-import-matcher.js'
-import { type WcElement } from './interfaces.js'
 import { type JsxElement } from '../jsx/interfaces.js'
-import { ElementMetric } from './metrics/element-metric.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
-import { WcElementAccumulator } from './wc-element-accumulator.js'
-import { wcNodeHandlerMap } from './wc-node-handler-map.js'
+import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
+import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
+import { ElementMetric } from './metrics/element-metric.js'
 import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
-import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
+import { WcElementAccumulator } from './wc-element-accumulator.js'
+import { wcNodeHandlerMap } from './wc-node-handler-map.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -48,6 +48,7 @@ export class WcScope extends Scope {
 
   public override name = 'wc' as const
   private runSync = false
+  private importsPerFile = new Map<string, JsImport[]>()
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -95,6 +96,11 @@ export class WcScope extends Scope {
       this.logger
     )
 
+    // sort html files to the end
+    sourceFiles.sort(
+      (a, b) => Number(a.fileName.endsWith('.html')) - Number(b.fileName.endsWith('.html'))
+    )
+
     this.logger.debug('Filtered source files: ' + sourceFiles.map((f) => f.fileName))
 
     const promises: Promise<void>[] = []
@@ -103,7 +109,7 @@ export class WcScope extends Scope {
       const resultPromise = this.captureFileMetrics(
         await sourceFile.createSourceFile(),
         instrumentedPackage,
-        importMatchers // NEXT THING TO DO
+        importMatchers
       )
 
       if (this.runSync) {
@@ -130,15 +136,42 @@ export class WcScope extends Scope {
     instrumentedPackage: PackageData,
     importMatchers: JsImportMatcher<WcElement | JsxElement>[]
   ) {
+    // problem is that the accumulator resets in every file
+    // maybe have to create a new map to ensure that it captures all the imports coming from other files?
+    // or maybe just go into those files?
+
+    // make html files go dead last
+    // create a map for files and their respective files
+    // when handling a script node, check the path its importing and see what imports it gets from the map
+    // add those imports to the current accumulator
     const accumulator = new WcElementAccumulator()
 
-    // TODO make a HTML node handler
     processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
 
     this.logger.debug('Pre-filter accumulator contents:', JSON.stringify(accumulator))
 
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
+
+    this.logger.debug('This is the sourcefile', sourceFile.fileName ?? '')
+    this.logger.debug('This is the current imports', JSON.stringify(accumulator.imports))
+
+    this.logger.debug('This is the root', this.root)
+
+    // save file imports to super map
+    this.importsPerFile.set(sourceFile.fileName ?? '', accumulator.imports)
+
+    this.logger.debug(
+      'Super import map',
+      JSON.stringify(Object.fromEntries(this.importsPerFile), null, 2)
+    )
+
+    if (accumulator.scriptSources) {
+      this.resolveLinkedImports(accumulator)
+    }
+
     this.resolveElementImports(accumulator, importMatchers)
+
+    this.logger.debug('Post-filter accumulator contents:', JSON.stringify(accumulator))
 
     accumulator.elements.forEach((element) => {
       const jsImport = accumulator.elementImports.get(element)
@@ -154,6 +187,22 @@ export class WcScope extends Scope {
         )
       }
     })
+  }
+
+  resolveLinkedImports(accumulator: WcElementAccumulator) {
+    const mergedImports = [...accumulator.imports]
+
+    for (const scriptSource of accumulator.scriptSources) {
+      const absolutePath = this.findByRelativePath(scriptSource)
+      const scriptImports = this.importsPerFile.get(absolutePath)
+
+      this.logger.debug('Relative path', scriptSource)
+      this.logger.debug('Absolute path', absolutePath)
+      if (scriptImports) {
+        mergedImports.push(...scriptImports)
+        accumulator.imports = mergedImports
+      }
+    }
   }
 
   resolveElementImports(
@@ -191,5 +240,18 @@ export class WcScope extends Scope {
    */
   setRunSync(runSync: boolean) {
     this.runSync = runSync
+  }
+
+  /**
+   * Given a relative path, and the root directory, resolves the relative path
+   * to an absolute path and returns the matching value from the map.
+   *
+   * @param absolutePathMap - Map with absolute paths as keys
+   * @param relativePath - Relative path to resolve and match
+   * @param rootDir - Root directory to resolve the relative path against
+   * @returns The matched value from the map or undefined if not found
+   */
+  findByRelativePath(relativePath: string): string {
+    return path.normalize(path.resolve(this.root, relativePath))
   }
 }

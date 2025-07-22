@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type * as ts from 'typescript'
-
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'
+import type { AnyAstNode, ParsedFile } from '../../wc/interfaces.js'
 import type { JsAccumulator } from '../js-accumulator.js'
-import { AnyAstNode, ParsedFile } from '../../wc/interfaces.js'
 
 /**
  * Defines API to process typescript AST nodes and capture elements and imports.

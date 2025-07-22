@@ -6,7 +6,8 @@
  */
 
 import * as ts from 'typescript'
-import { JsImport } from '../interfaces.js'
+
+import type { JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
 /**
@@ -15,10 +16,11 @@ import { ImportParser } from './import-parser.js'
  */
 export class SideEffectImportParser extends ImportParser {
   /**
-   * Parses side-effect-only imports like `import 'some/module'`
+   * Parses side-effect-only imports like `import 'some/module'`.
    *
-   * @param importNode - The full ImportDeclaration node
-   * @returns Array of JsImport
+   * @param importNode - The full ImportDeclaration node.
+   * @param importPath
+   * @returns Array of JsImport.
    */
   parse(importNode: ts.ImportDeclaration, importPath: string): JsImport[] {
     const sideEffectImports: JsImport[] = []

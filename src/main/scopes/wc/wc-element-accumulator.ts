@@ -16,10 +16,12 @@ import { type WcElement } from './interfaces.js'
 export class WcElementAccumulator extends JsAccumulator {
   public readonly elements: (WcElement | JsxElement)[]
   public readonly elementImports: Map<WcElement | JsxElement, JsImport>
+  public readonly scriptSources: string[]
 
   constructor() {
     super()
     this.elements = []
     this.elementImports = new Map()
+    this.scriptSources = []
   }
 }

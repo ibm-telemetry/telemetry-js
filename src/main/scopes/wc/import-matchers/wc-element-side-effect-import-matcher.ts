@@ -26,8 +26,14 @@ export class WcElementSideEffectImportMatcher implements JsImportMatcher<WcEleme
    * undefined otherwise.
    */
   findMatch(element: WcElement, imports: JsImport[]) {
+    // TODO: the element name MIGHT lack the "cds-" prefix and thus fail
+    // also the
     return imports.find(
-      (i) => !i.isDefault && !i.isAll && i.isSideEffect && i.name === element.name
+      (i) =>
+        !i.isDefault &&
+        !i.isAll &&
+        i.isSideEffect &&
+        (i.name === element.name || `cds-${i.name}` === element.name)
     )
   }
 }

@@ -33,10 +33,7 @@ export class SideEffectImportParser extends ImportParser {
     ) {
       // extracts file name and builds a possible component name
       // e.g. "components/button/button.ts" -> "cds-button"
-      const componentName = `cds-${importPath
-        .split('/')
-        .pop()
-        ?.replace(/\.[^/.]+$/, '')}`
+      const componentName = this.getComponentName(importPath)
 
       sideEffectImports.push({
         name: componentName,
@@ -48,5 +45,28 @@ export class SideEffectImportParser extends ImportParser {
     }
 
     return sideEffectImports
+  }
+
+  /**
+   * Analyzes a file path string and returns the component name.
+   *
+   * - If the last segment is "index" or "index.js", returns the name of the parent directory.
+   * - Otherwise, returns the file name without extension.
+   *
+   * @param filePath - A relative path string like './foo/index.js' or './bar.js'
+   * @returns The normalized component name, e.g., 'foo' or 'bar'
+   */
+  getComponentName(filePath: string): string {
+    const parts = filePath.split('/')
+    const last = parts[parts.length - 1]
+
+    // strip file extension (if any)
+    const fileName = last?.replace(/\.[^/.]+$/, '')
+
+    if (fileName === 'index' && parts.length > 1) {
+      return parts[parts.length - 2] ?? '' // return parent folder name
+    }
+
+    return fileName ?? '' // return filename without extension
   }
 }

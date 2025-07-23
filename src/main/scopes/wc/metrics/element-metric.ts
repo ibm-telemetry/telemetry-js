@@ -48,13 +48,14 @@ export class ElementMetric extends ScopeMetric {
     logger: Logger
   ) {
     super(logger)
+    this.logger.debug('Element Metric started for', JSON.stringify(element))
     this.element = element
     this.matchingImport = matchingImport
     this.instrumentedPackage = instrumentedPackage
 
-    this.allowedAttributeNames = config.collect.jsx?.elements?.allowedAttributeNames ?? []
+    this.allowedAttributeNames = config.collect.wc?.elements?.allowedAttributeNames ?? []
     this.allowedAttributeStringValues =
-      config.collect.jsx?.elements?.allowedAttributeStringValues ?? []
+      config.collect.wc?.elements?.allowedAttributeStringValues ?? []
   }
 
   /**

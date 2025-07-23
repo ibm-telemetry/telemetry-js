@@ -27,6 +27,7 @@ import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
+import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -47,8 +48,9 @@ export class WcScope extends Scope {
   ]
 
   public override name = 'wc' as const
-  private runSync = false
+  private runSync = true
   private importsPerFile = new Map<string, JsImport[]>()
+  private packageIndexMap: Map<string, string[]> = new Map()
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -96,7 +98,19 @@ export class WcScope extends Scope {
       this.logger
     )
 
-    // sort html files to the end
+    // Build up map containing contents of `index.js` files
+    this.packageIndexMap = await buildIndexImportsMap(
+      this.root,
+      instrumentedPackage.name,
+      this.logger
+    )
+
+    this.logger.debug(
+      'this is the package index map',
+      JSON.stringify(Object.fromEntries(this.packageIndexMap), null, 2)
+    )
+
+    // Sort html files to the end
     sourceFiles.sort(
       (a, b) => Number(a.fileName.endsWith('.html')) - Number(b.fileName.endsWith('.html'))
     )
@@ -141,7 +155,7 @@ export class WcScope extends Scope {
     // or maybe just go into those files?
 
     // make html files go dead last
-    // create a map for files and their respective files
+    // create a map for files and their respective imports
     // when handling a script node, check the path its importing and see what imports it gets from the map
     // add those imports to the current accumulator
     const accumulator = new WcElementAccumulator()
@@ -149,6 +163,12 @@ export class WcScope extends Scope {
     processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
 
     this.logger.debug('Pre-filter accumulator contents:', JSON.stringify(accumulator))
+
+    // get all the imports that an index.js file is importing from a component
+    // e.g. @carbon/web-components/es/components/button/index.js
+    this.resolveIndexImports(accumulator, instrumentedPackage.name)
+
+    this.logger.debug('Post resolve index accumulator contents:', JSON.stringify(accumulator))
 
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
 
@@ -180,6 +200,8 @@ export class WcScope extends Scope {
         return
       }
 
+      this.logger.debug('Element to be captured is', JSON.stringify(element))
+
       // type guarding was needed
       if (isJsxElement(element) || isWcElement(element)) {
         this.capture(
@@ -189,6 +211,39 @@ export class WcScope extends Scope {
     })
   }
 
+  resolveIndexImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
+    const newImports: JsImport[] = []
+
+    for (const jsImport of accumulator.imports) {
+      if (jsImport.path.endsWith('index.js') || jsImport.path.endsWith('index')) {
+        this.logger.debug('The import is', JSON.stringify(jsImport))
+
+        const componentPath = buildAbsolutePath(this.root, instrumentedPackage, jsImport.name)
+        const indexImports = this.packageIndexMap.get(componentPath) ?? []
+
+        this.logger.debug('The built absolute path is', JSON.stringify(componentPath))
+        this.logger.debug('The index imports are', JSON.stringify(indexImports))
+
+        for (const importPath of indexImports) {
+          const segments = importPath.split('/')
+          const componentName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
+
+          newImports.push({
+            name: `cds-${componentName}`,
+            path: instrumentedPackage,
+            isDefault: false,
+            isAll: false,
+            isSideEffect: true
+          })
+        }
+      } else {
+        newImports.push(jsImport)
+      }
+    }
+
+    accumulator.imports = newImports
+  }
+
   resolveLinkedImports(accumulator: WcElementAccumulator) {
     const mergedImports = [...accumulator.imports]
 
@@ -196,8 +251,11 @@ export class WcScope extends Scope {
       const absolutePath = this.findByRelativePath(scriptSource)
       const scriptImports = this.importsPerFile.get(absolutePath)
 
+      this.logger.debug('The scriptImports are', JSON.stringify(scriptImports))
+
       this.logger.debug('Relative path', scriptSource)
       this.logger.debug('Absolute path', absolutePath)
+
       if (scriptImports) {
         mergedImports.push(...scriptImports)
         accumulator.imports = mergedImports
@@ -212,6 +270,13 @@ export class WcScope extends Scope {
     accumulator.elements.forEach((element) => {
       const jsImport = elementMatchers
         .map((elementMatcher) => {
+          this.logger.debug(
+            'Type is ',
+            elementMatcher.elementType,
+            'element is',
+            JSON.stringify(element)
+          )
+
           if (elementMatcher.elementType === 'jsx' && isJsxElement(element)) {
             return elementMatcher.findMatch(element, accumulator.imports)
           }
@@ -226,6 +291,9 @@ export class WcScope extends Scope {
       if (jsImport === undefined) {
         return
       }
+
+      // TODO: for some reason web components inside a JSX/react component isn't being added to the
+      // elementsImports, BUT they are inside the imports array. super weird.
 
       accumulator.elementImports.set(element, jsImport)
     })

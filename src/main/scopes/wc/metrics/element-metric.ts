@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JsxScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
+import { WcScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import type { Attributes } from '@opentelemetry/api'
 
@@ -91,10 +91,10 @@ export class ElementMetric extends ScopeMetric {
     )
 
     let metricData: Attributes = {
-      [JsxScopeAttributes.NAME]: this.element.name,
-      [JsxScopeAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
-      [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
-      [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
+      [WcScopeAttributes.NAME]: this.element.name,
+      [WcScopeAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
+      [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
+      [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
         String(attr)
       ),
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
@@ -109,7 +109,7 @@ export class ElementMetric extends ScopeMetric {
 
     // Handle renamed elements
     if (this.matchingImport.rename !== undefined) {
-      metricData[JsxScopeAttributes.NAME] = this.element.name.replace(
+      metricData[WcScopeAttributes.NAME] = this.element.name.replace(
         this.matchingImport.rename,
         this.matchingImport.name
       )

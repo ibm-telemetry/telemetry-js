@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const wcPrefixMap = new Map()
-
-wcPrefixMap.set('@carbon/web-components/es', 'cds')
-wcPrefixMap.set('@carbon/web-components/es-custom', 'cds-custom')
-wcPrefixMap.set('@carbon/ibmdotcom-web-components/es', 'c4d')
-wcPrefixMap.set('@carbon/ibm-products-web-components/es', 'c4p')
-wcPrefixMap.set('@carbon/ibm-products-web-components/es-custom', 'c4p')
+const wcPrefixMap = new Map([
+  ['@carbon/web-components/es', 'cds'],
+  ['@carbon/web-components/es-custom', 'cds-custom'],
+  ['@carbon/ibmdotcom-web-components/es', 'c4d'],
+  ['@carbon/ibm-products-web-components/es', 'c4p'],
+  ['@carbon/ibm-products-web-components/es-custom', 'c4p']
+])
 
 export { wcPrefixMap }

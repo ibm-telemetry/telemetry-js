@@ -7,6 +7,7 @@
 
 import * as ts from 'typescript'
 
+import { getWcPrefix } from '../../wc/utils/get-wc-prefix.js'
 import type { JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
@@ -53,20 +54,22 @@ export class SideEffectImportParser extends ImportParser {
    * - If the last segment is "index" or "index.js", returns the name of the parent directory.
    * - Otherwise, returns the file name without extension.
    *
-   * @param filePath - A relative path string like './foo/index.js' or './bar.js'
-   * @returns The normalized component name, e.g., 'foo' or 'bar'
+   * @param filePath - A relative path string like './foo/index.js' or './bar.js'.
+   * @returns The normalized component name, e.g., 'foo' or 'bar'.
    */
   getComponentName(filePath: string): string {
     const parts = filePath.split('/')
     const last = parts[parts.length - 1]
 
     // strip file extension (if any)
-    const fileName = last?.replace(/\.[^/.]+$/, '')
+    let fileName = last?.replace(/\.[^/.]+$/, '')
 
     if (fileName === 'index' && parts.length > 1) {
-      return parts[parts.length - 2] ?? '' // return parent folder name
+      fileName = parts[parts.length - 2] ?? '' // use parent folder name
     }
 
-    return fileName ?? '' // return filename without extension
+    const prefix = getWcPrefix(parts)
+
+    return `${prefix}-${fileName}`
   }
 }

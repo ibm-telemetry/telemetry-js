@@ -6,6 +6,7 @@
  */
 
 import * as path from 'node:path'
+
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -23,11 +24,12 @@ import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-s
 import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
+import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
+import { getWcPrefix } from './utils/get-wc-prefix.js'
 import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
-import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -226,10 +228,12 @@ export class WcScope extends Scope {
 
         for (const importPath of indexImports) {
           const segments = importPath.split('/')
-          const componentName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
+          const fileName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
+          const prefix = getWcPrefix(segments)
+          const componentName = `${prefix}-${fileName}`
 
           newImports.push({
-            name: `cds-${componentName}`,
+            name: componentName,
             path: instrumentedPackage,
             isDefault: false,
             isAll: false,
@@ -314,10 +318,10 @@ export class WcScope extends Scope {
    * Given a relative path, and the root directory, resolves the relative path
    * to an absolute path and returns the matching value from the map.
    *
-   * @param absolutePathMap - Map with absolute paths as keys
-   * @param relativePath - Relative path to resolve and match
-   * @param rootDir - Root directory to resolve the relative path against
-   * @returns The matched value from the map or undefined if not found
+   * @param absolutePathMap - Map with absolute paths as keys.
+   * @param relativePath - Relative path to resolve and match.
+   * @param rootDir - Root directory to resolve the relative path against.
+   * @returns The matched value from the map or undefined if not found.
    */
   findByRelativePath(relativePath: string): string {
     return path.normalize(path.resolve(this.root, relativePath))

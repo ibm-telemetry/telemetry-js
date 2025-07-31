@@ -5,7 +5,8 @@
     <title>title</title>
   </head>
   <body>
-    <cds-button one="one" two three="three">button2</cds-button>
-    <script type="module" src="/js-file-with-import.js"></script>
+    <cds-button one="one" two three="three">Not imported thus not collected</cds-button>
+    <accordion firstProp="hi" two secondProp="wow">This one will actually be collected</accordion>
+    <script type="module" src="./js-file-with-import.js"></script>
   </body>
 </html>

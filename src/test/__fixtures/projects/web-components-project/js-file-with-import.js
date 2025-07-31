@@ -1,1 +1,1 @@
-import 'instrumented/button'
+import 'instrumented/accordion'

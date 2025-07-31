@@ -62,14 +62,14 @@ export class SideEffectImportParser extends ImportParser {
     const last = parts[parts.length - 1]
 
     // strip file extension (if any)
-    let fileName = last?.replace(/\.[^/.]+$/, '')
+    let fileName = last?.replace(/\.[^/.]+$/, '') ?? ''
 
     if (fileName === 'index' && parts.length > 1) {
       fileName = parts[parts.length - 2] ?? '' // use parent folder name
     }
 
-    const prefix = getWcPrefix(parts)
+    const prefix = getWcPrefix(filePath)
 
-    return `${prefix}-${fileName}`
+    return prefix === '' ? `${prefix}-${fileName}` : fileName
   }
 }

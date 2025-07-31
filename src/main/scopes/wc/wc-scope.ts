@@ -229,8 +229,8 @@ export class WcScope extends Scope {
         for (const importPath of indexImports) {
           const segments = importPath.split('/')
           const fileName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
-          const prefix = getWcPrefix(segments)
-          const componentName = `${prefix}-${fileName}`
+          const prefix = getWcPrefix(importPath)
+          const componentName = prefix === '' ? `${prefix}-${fileName}` : fileName
 
           newImports.push({
             name: componentName,

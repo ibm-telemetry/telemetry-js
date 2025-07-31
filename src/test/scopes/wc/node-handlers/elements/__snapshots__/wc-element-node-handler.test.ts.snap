@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: WcElementNodeHandler > correctly returns the WC elements for an html file fixture 1`] = `
+[
+  {
+    "attributes": [
+      {
+        "name": "one",
+        "value": "one",
+      },
+      {
+        "name": "two",
+        "value": true,
+      },
+      {
+        "name": "three",
+        "value": "three",
+      },
+    ],
+    "name": "cds-button",
+  },
+]
+`;

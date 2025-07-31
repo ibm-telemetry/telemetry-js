@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`processHtmlFile > correctly detects web components in a given html file > elements 1`] = `
+[
+  {
+    "attributes": [
+      {
+        "name": "one",
+        "value": "one",
+      },
+      {
+        "name": "two",
+        "value": true,
+      },
+      {
+        "name": "three",
+        "value": "three",
+      },
+    ],
+    "name": "cds-button",
+  },
+]
+`;

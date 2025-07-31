@@ -23,11 +23,15 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([
       path.join(root.path, 'test.cjs'),
+      path.join(root.path, 'test.htm'),
+      path.join(root.path, 'test.html'),
       path.join(root.path, 'test.js'),
       path.join(root.path, 'test.jsx'),
       path.join(root.path, 'test.mjs'),
@@ -43,7 +47,9 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([root.path])
@@ -57,7 +63,9 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([])
@@ -71,9 +79,19 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([])
+  })
+
+  it('correctly parses raw html file into AST', async () => {
+    const root = new Fixture('projects/web-component-project')
+
+    const parsedHtmlFiles = await getTrackedSourceFiles(process.cwd(), root.path, logger, ['.html'])
+
+    expect(parsedHtmlFiles[0]).toMatchSnapshot()
   })
 })

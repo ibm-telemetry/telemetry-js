@@ -3,6 +3,31 @@
 exports[`processHtmlFile > correctly detects web components in a given html file > elements 1`] = `
 [
   {
+    "attributes": [],
+    "name": "html",
+  },
+  {
+    "attributes": [],
+    "name": "head",
+  },
+  {
+    "attributes": [
+      {
+        "name": "charset",
+        "value": "UTF-8",
+      },
+    ],
+    "name": "meta",
+  },
+  {
+    "attributes": [],
+    "name": "title",
+  },
+  {
+    "attributes": [],
+    "name": "body",
+  },
+  {
     "attributes": [
       {
         "name": "one",
@@ -10,7 +35,7 @@ exports[`processHtmlFile > correctly detects web components in a given html file
       },
       {
         "name": "two",
-        "value": true,
+        "value": "",
       },
       {
         "name": "three",
@@ -18,6 +43,23 @@ exports[`processHtmlFile > correctly detects web components in a given html file
       },
     ],
     "name": "cds-button",
+  },
+  {
+    "attributes": [
+      {
+        "name": "firstprop",
+        "value": "hi",
+      },
+      {
+        "name": "two",
+        "value": "",
+      },
+      {
+        "name": "secondprop",
+        "value": "wow",
+      },
+    ],
+    "name": "accordion",
   },
 ]
 `;

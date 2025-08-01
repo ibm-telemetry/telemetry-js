@@ -14,7 +14,7 @@ import { createNodeAdapter } from '../../../../../main/scopes/wc/node-handlers/a
 import { WcElementNodeHandler } from '../../../../../main/scopes/wc/node-handlers/elements/wc-element-node-handler.js'
 import { WcElementAccumulator } from '../../../../../main/scopes/wc/wc-element-accumulator.js'
 import { WcScope } from '../../../../../main/scopes/wc/wc-scope.js'
-import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
+import { findDomNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
@@ -24,12 +24,13 @@ describe('class: WcElementNodeHandler', async () => {
   const sourceFile = (await (
     await getTrackedSourceFiles(fixture.path, fixture.path, logger, WcScope.fileExtensions)
   )[0]?.createSourceFile()) as HtmlParsedFile
+
   const accumulator = new WcElementAccumulator()
   const handler = new WcElementNodeHandler(sourceFile, logger)
-  it('correctly returns the WC elements for an html file fixture', async () => {
+  it('correctly returns the html elements for an html file fixture', async () => {
     const rootAdapter = createNodeAdapter(sourceFile) as INodeAdapter
     //@ts-expect-error typescript not accepting adapter for type ts source file
-    const wcElements = findNodesByType(rootAdapter, 'HtmlElement') as HtmlNode[]
+    const wcElements = findDomNodesByType(rootAdapter, 'HtmlElement') as HtmlNode[]
 
     wcElements.forEach((element) => {
       handler.handle(element, accumulator)

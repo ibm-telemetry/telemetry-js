@@ -11,10 +11,10 @@ import { getTrackedSourceFiles } from '../../../../../main/core/get-tracked-sour
 import type { HtmlParsedFile } from '../../../../../main/scopes/wc/interfaces.js'
 import type { INodeAdapter } from '../../../../../main/scopes/wc/interfaces.js'
 import { createNodeAdapter } from '../../../../../main/scopes/wc/node-handlers/adapters/create-node-adapters.js'
-import { WcScriptNodeHandler } from '../../../../../main/scopes/wc/node-handlers/elements/html-script-node-handler.js'
+import { WcScriptNodeHandler } from '../../../../../main/scopes/wc/node-handlers/elements/wc-script-node-handler.js'
 import { WcElementAccumulator } from '../../../../../main/scopes/wc/wc-element-accumulator.js'
 import { WcScope } from '../../../../../main/scopes/wc/wc-scope.js'
-import { findNodesByType } from '../../../../__utils/find-nodes-by-type.js'
+import { findDomNodesByType } from '../../../../__utils/find-nodes-by-type.js'
 import { Fixture } from '../../../../__utils/fixture.js'
 import { initLogger } from '../../../../__utils/init-logger.js'
 
@@ -29,7 +29,7 @@ describe('class: WcScriptNodeHandler', async () => {
   it('correctly returns the script sources for an html file fixture', async () => {
     const rootAdapter = createNodeAdapter(sourceFile) as INodeAdapter
     //@ts-expect-error typescript not accepting adapter for type ts source file
-    const wcScriptSourceNodes = findNodesByType(rootAdapter, 'HtmlScript') as HtmlNode[]
+    const wcScriptSourceNodes = findDomNodesByType(rootAdapter, 'HtmlScript') as HtmlNode[]
 
     wcScriptSourceNodes.forEach((scriptSource) => {
       handler.handle(scriptSource, accumulator)

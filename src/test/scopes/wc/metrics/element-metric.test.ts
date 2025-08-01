@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { JsxScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
+import { WcScopeAttributes, NpmScopeAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
@@ -68,10 +68,10 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsxScopeAttributes.NAME]: 'theName',
-          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
-          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
-          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
+          [WcScopeAttributes.NAME]: 'theName',
+          [WcScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
+          [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: undefined,
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',
@@ -141,10 +141,10 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [JsxScopeAttributes.NAME]: 'theName',
-          [JsxScopeAttributes.MODULE_SPECIFIER]: 'path',
-          [JsxScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
-          [JsxScopeAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
+          [WcScopeAttributes.NAME]: 'theName',
+          [WcScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
+          [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
           [NpmScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',
           [NpmScopeAttributes.INSTRUMENTED_OWNER]: '@instrumented',
           [NpmScopeAttributes.INSTRUMENTED_NAME]: 'instrumented',

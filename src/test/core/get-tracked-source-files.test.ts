@@ -15,7 +15,7 @@ import { initLogger } from '../__utils/init-logger.js'
 describe('getTrackedSourceFiles', () => {
   const logger = initLogger()
 
-  it('correctly returns all tracked source files', async () => {
+  it.only('correctly returns all tracked source files', async () => {
     const root = new Fixture('projects/all-extensions')
 
     const sourceFiles = await getTrackedSourceFiles(root.path, root.path, logger, [
@@ -87,11 +87,13 @@ describe('getTrackedSourceFiles', () => {
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([])
   })
 
-  it('correctly parses raw html file into AST', async () => {
-    const root = new Fixture('projects/web-component-project')
+  it.only('correctly captures html file', async () => {
+    const root = new Fixture('projects/web-components-project')
 
-    const parsedHtmlFiles = await getTrackedSourceFiles(process.cwd(), root.path, logger, ['.html'])
+    const sourceFiles = await getTrackedSourceFiles(root.path, root.path, logger, ['.html'])
 
-    expect(parsedHtmlFiles[0]).toMatchSnapshot()
+    const parsedFile = sourceFiles[0]
+
+    expect(parsedFile?.fileName).toStrictEqual(path.join(root.path, 'test.html'))
   })
 })

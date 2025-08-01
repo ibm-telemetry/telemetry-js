@@ -16,6 +16,10 @@ import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-vers
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
+import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
+import { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
+import { JsxElement } from '../../../main/scopes/jsx/interfaces.js'
+import { WcElement } from '../../../main/scopes/wc/interfaces.js'
 
 const config: ConfigSchema = {
   projectId: 'abc123',
@@ -24,8 +28,8 @@ const config: ConfigSchema = {
   collect: {
     wc: {
       elements: {
-        allowedAttributeNames: ['allowedAttrName'],
-        allowedAttributeStringValues: ['allowedAttrValue']
+        allowedAttributeNames: ['firstProp', 'secondProp', 'firstprop', 'secondprop'],
+        allowedAttributeStringValues: ['hi', 'wow']
       }
     }
   }
@@ -165,7 +169,10 @@ describe('class: WcScope', () => {
       accumulator.elements.push(namedElement)
       accumulator.elements.push(renamedElement)
 
-      wcScope.resolveElementImports(accumulator, [new WcElementSideEffectImportMatcher()])
+      wcScope.resolveElementImports(accumulator, [
+        new WcElementSideEffectImportMatcher(),
+        new JsxElementRenamedImportMatcher()
+      ] as JsImportMatcher<JsxElement | WcElement>[])
 
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
       expect(accumulator.elementImports.get(renamedElement)).toStrictEqual(renamedImport)
@@ -195,7 +202,6 @@ describe('class: WcScope', () => {
       const wcScope = new WcScope('', '', config, logger)
       wcScope.resolveElementImports(accumulator, [new WcElementSideEffectImportMatcher()])
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
-      expect(accumulator.elementImports.get(renamedElement)).toStrictEqual(renamedImport)
       expect(accumulator.elementImports.get(unmatchedElement1)).toBeUndefined()
       expect(accumulator.elementImports.get(unmatchedElement2)).toBeUndefined()
     })

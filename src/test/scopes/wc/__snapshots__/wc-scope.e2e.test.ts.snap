@@ -55,24 +55,24 @@ exports[`class: WcScope > run > captures metrics for workspace files when instru
             "dataPoints": [
               {
                 "attributes": {
-                  "wc.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "wc.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "wc.element.module.specifier": "instrumented-top-level",
-                  "wc.element.name": "PackageComp",
                   "npm.dependency.instrumented.name": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
                   "npm.dependency.instrumented.raw": "460da73f7e63aeb72106788158261156d165376633de24e4a6673122ce2470aa",
                   "npm.dependency.instrumented.version.major": "1",
                   "npm.dependency.instrumented.version.minor": "0",
                   "npm.dependency.instrumented.version.patch": "0",
                   "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                  "wc.element.attributes.names": [
+                    "firstProp",
+                    "[redacted17]",
+                    "[redacted19]",
+                  ],
+                  "wc.element.attributes.values": [
+                    "[redacted16]",
+                    "[redacted18]",
+                    "[redacted6]",
+                  ],
+                  "wc.element.module.specifier": "instrumented-top-level",
+                  "wc.element.name": "PackageComp",
                 },
                 "endTime": [
                   0,
@@ -162,24 +162,24 @@ exports[`class: WcScope > run > captures metrics when instrumented package is in
             "dataPoints": [
               {
                 "attributes": {
-                  "wc.element.attributes.names": [
-                    "firstProp",
-                    "[redacted2]",
-                    "[redacted4]",
-                  ],
-                  "wc.element.attributes.values": [
-                    "[redacted1]",
-                    "[redacted3]",
-                    "[redacted5]",
-                  ],
-                  "wc.element.module.specifier": "instrumented",
-                  "wc.element.name": "PackageComp",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "1",
                   "npm.dependency.instrumented.version.minor": "0",
                   "npm.dependency.instrumented.version.patch": "0",
                   "npm.dependency.instrumented.version.raw": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+                  "wc.element.attributes.names": [
+                    "firstProp",
+                    "[redacted17]",
+                    "[redacted19]",
+                  ],
+                  "wc.element.attributes.values": [
+                    "[redacted16]",
+                    "[redacted18]",
+                    "[redacted6]",
+                  ],
+                  "wc.element.module.specifier": "instrumented",
+                  "wc.element.name": "PackageComp",
                 },
                 "endTime": [
                   0,
@@ -269,34 +269,34 @@ exports[`class: WcScope > run > correctly captures wc element metric data 1`] = 
             "dataPoints": [
               {
                 "attributes": {
-                  "wc.element.attributes.names": [
-                    "firstProp",
-                    "secondProp",
-                    "[redacted6]",
-                    "[redacted8]",
-                    "[redacted10]",
-                    "[redacted11]",
-                    "[redacted12]",
-                    "[redacted14]",
-                  ],
-                  "wc.element.attributes.values": [
-                    "hi",
-                    "wow",
-                    "[redacted7]",
-                    "[redacted9]",
-                    "[redacted5]",
-                    "[redacted5]",
-                    "[redacted13]",
-                    "[redacted15]",
-                  ],
-                  "wc.element.module.specifier": "instrumented",
-                  "wc.element.name": "ImaginaryThing",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",
                   "npm.dependency.instrumented.version.minor": "1",
                   "npm.dependency.instrumented.version.patch": "0",
                   "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                  "wc.element.attributes.names": [
+                    "firstProp",
+                    "secondProp",
+                    "[redacted1]",
+                    "[redacted3]",
+                    "[redacted5]",
+                    "[redacted7]",
+                    "[redacted8]",
+                    "[redacted10]",
+                  ],
+                  "wc.element.attributes.values": [
+                    "hi",
+                    "wow",
+                    "[redacted2]",
+                    "[redacted4]",
+                    "[redacted6]",
+                    "[redacted6]",
+                    "[redacted9]",
+                    "[redacted11]",
+                  ],
+                  "wc.element.module.specifier": "instrumented",
+                  "wc.element.name": "ImaginaryThing",
                 },
                 "endTime": [
                   0,
@@ -310,24 +310,24 @@ exports[`class: WcScope > run > correctly captures wc element metric data 1`] = 
               },
               {
                 "attributes": {
-                  "wc.element.attributes.names": [
-                    "one",
-                    "two",
-                    "three",
-                  ],
-                  "wc.element.attributes.values": [
-                    "[redacted1]",
-                    "true",
-                    "[redacted2]",
-                  ],
-                  "wc.element.module.specifier": "instrumented",
-                  "wc.element.name": "cds-button",
                   "npm.dependency.instrumented.name": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.raw": "ec46e364d52dab2e207d33617267a84df5838926793c1b0a2974899fe28229f1",
                   "npm.dependency.instrumented.version.major": "0",
                   "npm.dependency.instrumented.version.minor": "1",
                   "npm.dependency.instrumented.version.patch": "0",
                   "npm.dependency.instrumented.version.raw": "6ad9613a455798d6d92e5f5f390ab4baa70596bc869ed6b17f5cdd2b28635f06",
+                  "wc.element.attributes.names": [
+                    "firstprop",
+                    "[redacted12]",
+                    "secondprop",
+                  ],
+                  "wc.element.attributes.values": [
+                    "hi",
+                    "[redacted13]",
+                    "wow",
+                  ],
+                  "wc.element.module.specifier": "instrumented/accordion",
+                  "wc.element.name": "accordion",
                 },
                 "endTime": [
                   0,
@@ -337,7 +337,7 @@ exports[`class: WcScope > run > correctly captures wc element metric data 1`] = 
                   0,
                   0,
                 ],
-                "value": 2,
+                "value": 1,
               },
             ],
             "descriptor": {

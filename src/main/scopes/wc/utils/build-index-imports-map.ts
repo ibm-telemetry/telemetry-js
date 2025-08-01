@@ -1,6 +1,9 @@
 import { readdir, readFile } from 'node:fs/promises'
 import * as path from 'node:path'
 import { Logger } from '../../../core/log/logger.js'
+import { Dirent } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 /**
  * Scans all components in a package's `es` directory and extracts side-effect import paths from each component's `index.js`.
@@ -17,14 +20,28 @@ import { Logger } from '../../../core/log/logger.js'
  * @throws Throws if reading an `index.js` fails due to unexpected errors other than missing files.
  */
 export async function buildIndexImportsMap(
-  baseDir: string,
   packageName: string,
   logger: Logger
 ): Promise<Map<string, string[]>> {
-  const componentsDir = path.join(baseDir, 'node_modules', packageName, 'es', 'components')
+  let componentsDir: string
   const result: Map<string, string[]> = new Map()
 
-  const entries = await readdir(componentsDir, { withFileTypes: true })
+  try {
+    componentsDir = await resolveComponentDir(packageName)
+  } catch (err) {
+    logger.error(`Failed to resolve component directory for ${packageName}`)
+    return result
+  }
+
+  let entries: Dirent[] = []
+
+  try {
+    entries = await readdir(componentsDir, { withFileTypes: true })
+  } catch (err: any) {
+    logger.error(`Failed to read directory ${componentsDir}:`)
+    return result
+  }
+
   logger.debug('The entries are', JSON.stringify(entries))
 
   for (const entry of entries) {
@@ -32,9 +49,8 @@ export async function buildIndexImportsMap(
       continue
     }
 
-    const componentName = entry.name
-
-    const indexPath = buildAbsolutePath(baseDir, packageName, componentName)
+    const componentDir = join(componentsDir, entry.name)
+    const indexPath = join(componentDir, 'index.js')
 
     try {
       const content = await readFile(indexPath, 'utf-8')
@@ -51,11 +67,12 @@ export async function buildIndexImportsMap(
         // Deduplicate and sort imports
         result.set(indexPath, Array.from(new Set(imports)).sort())
       }
-    } catch (error: any) {
-      logger.debug('THIS IS THE ERROR', JSON.stringify(entry))
-      logger.error(error)
-
-      //   throw new Error(error)
+    } catch (err) {
+      if (err instanceof Error) {
+        logger.error(err)
+      } else {
+        logger.error(String(err))
+      }
     }
   }
 
@@ -75,4 +92,13 @@ export function buildAbsolutePath(
 export function buildPackagePath(packageName: string, componentName: string): string {
   const componentsDir = path.join(packageName, 'es', 'components')
   return path.join(componentsDir, componentName, 'index.js')
+}
+
+export async function resolveComponentDir(packageName: string): Promise<string> {
+  const entryPath = fileURLToPath(await import.meta.resolve(packageName))
+  const packageRoot = dirname(entryPath)
+
+  // Walk up until we hit the actual package root (not the entry)
+  const possibleComponentsDir = join(packageRoot, 'components')
+  return possibleComponentsDir
 }

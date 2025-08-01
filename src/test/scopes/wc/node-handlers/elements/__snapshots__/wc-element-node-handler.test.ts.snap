@@ -1,0 +1,129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: WcElementNodeHandler > correctly returns the WC elements for an html file fixture 1`] = `
+[
+  {
+    "attributes": [],
+    "name": "html",
+  },
+  {
+    "attributes": [],
+    "name": "head",
+  },
+  {
+    "attributes": [
+      {
+        "name": "charset",
+        "value": "UTF-8",
+      },
+    ],
+    "name": "meta",
+  },
+  {
+    "attributes": [],
+    "name": "title",
+  },
+  {
+    "attributes": [],
+    "name": "body",
+  },
+  {
+    "attributes": [
+      {
+        "name": "one",
+        "value": "one",
+      },
+      {
+        "name": "two",
+        "value": "",
+      },
+      {
+        "name": "three",
+        "value": "three",
+      },
+    ],
+    "name": "cds-button",
+  },
+  {
+    "attributes": [
+      {
+        "name": "firstprop",
+        "value": "hi",
+      },
+      {
+        "name": "two",
+        "value": "",
+      },
+      {
+        "name": "secondprop",
+        "value": "wow",
+      },
+    ],
+    "name": "accordion",
+  },
+]
+`;
+
+exports[`class: WcElementNodeHandler > correctly returns the html elements for an html file fixture 1`] = `
+[
+  {
+    "attributes": [],
+    "name": "html",
+  },
+  {
+    "attributes": [],
+    "name": "head",
+  },
+  {
+    "attributes": [
+      {
+        "name": "charset",
+        "value": "UTF-8",
+      },
+    ],
+    "name": "meta",
+  },
+  {
+    "attributes": [],
+    "name": "title",
+  },
+  {
+    "attributes": [],
+    "name": "body",
+  },
+  {
+    "attributes": [
+      {
+        "name": "one",
+        "value": "one",
+      },
+      {
+        "name": "two",
+        "value": "",
+      },
+      {
+        "name": "three",
+        "value": "three",
+      },
+    ],
+    "name": "cds-button",
+  },
+  {
+    "attributes": [
+      {
+        "name": "firstprop",
+        "value": "hi",
+      },
+      {
+        "name": "two",
+        "value": "",
+      },
+      {
+        "name": "secondprop",
+        "value": "wow",
+      },
+    ],
+    "name": "accordion",
+  },
+]
+`;

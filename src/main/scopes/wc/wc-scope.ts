@@ -99,11 +99,7 @@ export class WcScope extends Scope {
     )
 
     // Build up map containing contents of `index.js` files
-    this.packageIndexMap = await buildIndexImportsMap(
-      this.root,
-      instrumentedPackage.name,
-      this.logger
-    )
+    this.packageIndexMap = await buildIndexImportsMap(instrumentedPackage.name, this.logger)
 
     this.logger.debug(
       'this is the package index map',

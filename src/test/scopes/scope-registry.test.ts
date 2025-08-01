@@ -12,5 +12,6 @@ describe('scopeRegistry', () => {
   it('has all scope keys defined', () => {
     expect(scopeRegistry.npm).toBeDefined()
     expect(scopeRegistry.jsx).toBeDefined()
+    expect(scopeRegistry.wc).toBeDefined()
   })
 })

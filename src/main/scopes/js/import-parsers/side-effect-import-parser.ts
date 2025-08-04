@@ -70,6 +70,6 @@ export class SideEffectImportParser extends ImportParser {
 
     const prefix = getWcPrefix(filePath)
 
-    return prefix === '' ? `${prefix}-${fileName}` : fileName
+    return prefix !== '' ? `${prefix}-${fileName}` : fileName
   }
 }

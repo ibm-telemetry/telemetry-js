@@ -14,11 +14,10 @@ import { wcPrefixMap } from '../wc-prefix-map.js'
  * @returns - The expected web component tag prefix (string) or ''
  */
 export function getWcPrefix(path: string): string {
-  const importPathPatterns = [...wcPrefixMap.keys()]
-  const match = importPathPatterns.find((key: RegExp) => key.test(path))
-  let prefix
-  if (match) {
-    prefix = wcPrefixMap.get(match)
+  for (const [pattern, prefix] of wcPrefixMap) {
+    if (pattern.test(path)) {
+      return prefix
+    }
   }
-  return prefix ?? ''
+  return ''
 }

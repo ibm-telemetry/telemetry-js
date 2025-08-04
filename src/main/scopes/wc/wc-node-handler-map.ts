@@ -11,7 +11,7 @@ import { ImportNodeHandler } from '../js/node-handlers/import-node-handler.js'
 import { JsxElementNodeHandler } from '../jsx/node-handlers/elements/jsx-element-node-handler.js'
 import { JsxSelfClosingElementNodeHandler } from '../jsx/node-handlers/elements/jsx-self-closing-element-node-handler.js'
 import { WcElementNodeHandler } from './node-handlers/elements/wc-element-node-handler.js'
-import { WcScriptNodeHandler } from './node-handlers/elements/html-script-node-handler.js'
+import { WcScriptNodeHandler } from './node-handlers/elements/wc-script-node-handler.js'
 //
 /**
  * Maps node kinds to handlers that know how to process them to generate JsxElement metrics for the

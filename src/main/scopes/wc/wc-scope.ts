@@ -24,7 +24,11 @@ import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-s
 import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
-import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
+import {
+  buildComponentIndexAbsolutePath,
+  buildIndexImportsMap,
+  resolveComponentsDir
+} from './utils/build-index-imports-map.js'
 import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'

@@ -35,9 +35,11 @@ export class SideEffectImportParser extends ImportParser {
       // extracts file name and builds a possible component name
       // e.g. "components/button/button.ts" -> "cds-button"
       const componentName = this.getComponentName(importPath)
+      const componentPrefix = getWcPrefix(importPath)
 
       sideEffectImports.push({
         name: componentName,
+        prefix: componentPrefix,
         path: importPath,
         isDefault: false,
         isAll: false,
@@ -62,14 +64,12 @@ export class SideEffectImportParser extends ImportParser {
     const last = parts[parts.length - 1]
 
     // strip file extension (if any)
-    let fileName = last?.replace(/\.[^/.]+$/, '') ?? ''
+    const fileName = last?.replace(/\.[^/.]+$/, '')
 
     if (fileName === 'index' && parts.length > 1) {
-      fileName = parts[parts.length - 2] ?? '' // use parent folder name
+      return parts[parts.length - 2] ?? '' // return parent folder name
     }
 
-    const prefix = getWcPrefix(filePath)
-
-    return prefix !== '' ? `${prefix}-${fileName}` : fileName
+    return fileName ?? '' // return filename without extension
   }
 }

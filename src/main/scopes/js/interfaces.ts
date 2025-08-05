@@ -17,6 +17,7 @@ export interface JsImport {
   path: string
   isDefault: boolean
   isAll: boolean
+  prefix?: string
   rename?: string
   isSideEffect?: boolean
 }

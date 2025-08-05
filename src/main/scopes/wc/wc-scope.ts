@@ -30,6 +30,10 @@ import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
+<<<<<<< HEAD
+=======
+import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
+>>>>>>> d943cbd (fix: include prefix as separate property of a JS import)
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -228,12 +232,11 @@ export class WcScope extends Scope {
 
         for (const importPath of indexImports) {
           const segments = importPath.split('/')
-          const fileName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
-          const prefix = getWcPrefix(importPath)
-          const componentName = prefix !== '' ? `${prefix}-${fileName}` : fileName
+          const componentName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
 
           newImports.push({
             name: componentName,
+            prefix: jsImport.prefix ?? '',
             path: instrumentedPackage,
             isDefault: false,
             isAll: false,

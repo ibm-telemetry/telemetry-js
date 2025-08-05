@@ -27,7 +27,11 @@ export class WcElementSideEffectImportMatcher implements JsImportMatcher<WcEleme
    */
   findMatch(element: WcElement, imports: JsImport[]) {
     return imports.find(
-      (i) => !i.isDefault && !i.isAll && i.isSideEffect && i.name === element.name
+      (i) =>
+        !i.isDefault &&
+        !i.isAll &&
+        i.isSideEffect &&
+        (i.name === element.name || `${i.prefix}-${i.name}` === element.name)
     )
   }
 }

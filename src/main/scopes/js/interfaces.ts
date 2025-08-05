@@ -27,7 +27,8 @@ export type JsNodeHandlerClass<DataType = unknown, FileType extends ParsedFile =
   logger: Logger
 ) => JsNodeHandler<DataType, FileType>
 
-// `any` here means handlers can accept any subtype of ParsedFile (aka ts.SourceFile or HtmlParsedFile)
+// Explanation: `any` here means handlers can accept any subtype of ParsedFile
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- allow subtype flexibility
 export type JsNodeHandlerMap = Partial<Record<ts.SyntaxKind | string, JsNodeHandlerClass<any, any>>>
 
 export type NodeValue = string | number | boolean | ComplexValue | null | undefined

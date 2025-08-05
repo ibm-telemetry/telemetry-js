@@ -12,15 +12,14 @@ import { JsNodeHandler } from '../../../js/node-handlers/js-node-handler.js'
 import { HtmlParsedFile, WcElement, WcElementAttribute } from '../../interfaces.js'
 
 /**
- * Holds node handling logic to be inherited by Jsx node handlers.
+ * Holds node handling logic to be inherited by Wc node handlers.
  *
  */
 export abstract class HtmlNodeHandler extends JsNodeHandler<WcElement, HtmlParsedFile> {
   /**
-   * Given a TagName node representing a JsxElement, obtains the name and prefix values.
+   * Given a TagName node representing a WcElement, obtains the name and prefix values.
    *
-   * @param tagName - TagName node of JsxElement to obtain name and prefix for.
-   * @param node
+   * @param node - Node to query.
    * @returns Object containing name and prefix (as strings).
    */
   @Trace({ argFormatter: (arg: HtmlElement) => arg.name })
@@ -29,17 +28,16 @@ export abstract class HtmlNodeHandler extends JsNodeHandler<WcElement, HtmlParse
   }
 
   /**
-   * Parses JsxAttribute nodes into an array of JsxElementAttribute.
+   * Parses WcAttribute nodes into an array of WcElementAttribute.
    *
-   * @param attributes - JsxAttributes node to parse attributes for.
-   * @param element
+   * @param element - WcAttributes node to parse attributes for.
    * @returns Array of parsed attributes.
    */
   @Trace({ argFormatter: (arg: HtmlElement) => arg.attribs })
   protected getElementAttributes(element: HtmlElement): WcElementAttribute[] {
     const attrs: WcElementAttribute[] = []
 
-    if (!element.attribs) {
+    if (element.attribs == undefined) {
       return attrs
     }
 

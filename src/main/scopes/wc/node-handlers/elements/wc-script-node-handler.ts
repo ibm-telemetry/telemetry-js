@@ -8,8 +8,8 @@
 import type { Node as HtmlNode } from 'domhandler'
 
 import { type WcElement } from '../../interfaces.js'
-import { type WcElementAccumulator } from '../../wc-element-accumulator.js'
 import { isHtmlElement } from '../../utils/is-html-element.js'
+import { type WcElementAccumulator } from '../../wc-element-accumulator.js'
 import { HtmlNodeHandler } from './html-node-handler.js'
 
 /**
@@ -32,6 +32,7 @@ export class WcScriptNodeHandler extends HtmlNodeHandler {
    *
    * @param node - Node element to process.
    * @returns Constructed JsxElement object.
+   * @throws Error if it's not an HtmlElement.
    */
   getData(node: HtmlNode): WcElement {
     if (!isHtmlElement(node)) {
@@ -51,7 +52,7 @@ export class WcScriptNodeHandler extends HtmlNodeHandler {
    * Returns the script source for the currently imported file.
    *
    * @param node - Node element to process.
-   * @returns Script source, either file or CDN link
+   * @returns Script source, either file or CDN link.
    */
   getScriptSource(node: HtmlNode): string {
     const { attributes } = this.getData(node)

@@ -7,8 +7,10 @@
 import type { Element, Node } from 'domhandler'
 
 /**
+ * Function to determine if an element is an HtmlElement.
  *
- * @param node
+ * @param node - Element to check.
+ * @returns Boolean determining if element is an HtmlElement.
  */
 export function isHtmlElement(node: Node): node is Element {
   return node.type === 'tag' || node.type === 'script' || node.type === 'style'

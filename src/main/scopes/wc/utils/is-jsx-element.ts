@@ -6,10 +6,14 @@
  */
 import type { JsxElement } from '../../jsx/interfaces.js'
 
+/* eslint-disable @typescript-eslint/no-explicit-any -- allow subtype flexibility */
 /**
+ * Function to determine if an element is a JsxElement.
  *
- * @param element
+ * @param element - Element to check.
+ * @returns Boolean determining if element is a a JsxElement.
  */
 export function isJsxElement(element: any): element is JsxElement {
   return 'prefix' in element && 'attributes' in element
 }
+/* eslint-enable @typescript-eslint/no-explicit-any -- re-enabling rule after specific use */

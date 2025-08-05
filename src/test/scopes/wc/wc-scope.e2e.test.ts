@@ -8,7 +8,11 @@ import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { describe, expect, it } from 'vitest'
 
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
+import type { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
+import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
+import type { JsxElement } from '../../../main/scopes/jsx/interfaces.js'
 import { WcElementSideEffectImportMatcher } from '../../../main/scopes/wc/import-matchers/wc-element-side-effect-import-matcher.js'
+import type { WcElement } from '../../../main/scopes/wc/interfaces.js'
 import { WcElementAccumulator } from '../../../main/scopes/wc/wc-element-accumulator.js'
 import { WcScope } from '../../../main/scopes/wc/wc-scope.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
@@ -16,10 +20,6 @@ import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-vers
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
-import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
-import { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
-import { JsxElement } from '../../../main/scopes/jsx/interfaces.js'
-import { WcElement } from '../../../main/scopes/wc/interfaces.js'
 
 const config: ConfigSchema = {
   projectId: 'abc123',

@@ -1,21 +1,29 @@
+/*
+ * Copyright IBM Corp. 2025, 2025
+ *
+ * This source code is licensed under the Apache-2.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import type { Dirent } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import * as path from 'node:path'
-import { Logger } from '../../../core/log/logger.js'
-import { Dirent } from 'node:fs'
 import { join } from 'node:path'
 
+import type { Logger } from '../../../core/log/logger.js'
+
 /**
- * Scans all components in a package's `es` directory and extracts side-effect import paths from each component's `index.js`.
+ * Scans all components in a package's `es` directory and extracts side-effect import paths
+ * from each component's `index.js`.
  *
- * Side-effect imports are import statements without bindings, e.g.:
+ * Side-effect imports are import statements without bindings, e.g.:.
  * ```ts
  * import './some-file.js';
  * ```
  *
- * @param baseDir - The root directory where the package is installed (e.g., 'node_modules')
- * @param packageName - The package folder name (e.g., '@carbon/web-components')
- * @returns A Promise resolving to an object mapping each component name to an array of side-effect import paths found in its `index.js`.
- *
+ * @param componentsDir - The directory where all the component directories are.
+ * @param logger - The logger instance.
+ * @returns A Promise resolving to an object mapping each component name to an array of side-effect
+ *  import paths found in its `index.js`.
  * @throws Throws if reading an `index.js` fails due to unexpected errors other than missing files.
  */
 export async function buildIndexImportsMap(
@@ -28,8 +36,9 @@ export async function buildIndexImportsMap(
 
   try {
     entries = await readdir(componentsDir, { withFileTypes: true })
-  } catch (err: any) {
+  } catch (err) {
     logger.error(`Failed to read directory ${componentsDir}:`)
+    logger.error(err as Error)
     return result
   }
 
@@ -71,6 +80,13 @@ export async function buildIndexImportsMap(
   return result
 }
 
+/**
+ * Builds the path to the current component's index file, if it exists.
+ *
+ * @param componentsDir - The components directory to base the path in.
+ * @param componentName - The component name.
+ * @returns Absolute path of the current component directory.
+ */
 export function buildComponentIndexAbsolutePath(
   componentsDir: string,
   componentName: string
@@ -81,9 +97,9 @@ export function buildComponentIndexAbsolutePath(
 /**
  * Resolves the absolute path to the 'components' directory inside a given installed package.
  *
- * @param baseDir - The root directory where the package is installed (e.g., your app or fixture root)
- * @param packageName - The name of the installed package (e.g., '@carbon/web-components')
- * @returns A promise to the absolute path to the 'components' directory within the package
+ * @param baseDir - The root directory where the package is installed.
+ * @param packageName - The name of the installed package (e.g. '@carbon/web-components').
+ * @returns A promise to the absolute path to the 'components' directory within the package.
  */
 export async function resolveComponentsDir(
   baseDir: string,
@@ -103,7 +119,7 @@ export async function resolveComponentsDir(
         }
 
         const found = await findComponentsDir(fullPath)
-        if (found) return found
+        if (found !== undefined) return found
       }
     }
 

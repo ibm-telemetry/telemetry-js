@@ -37,14 +37,8 @@ export class SourceFileHandler extends Loggable {
    * Visits each child (recursively) of the supplied node and calls out to the appropriate node
    * handlers.
    *
-   * @param node - Node to traverse through (usually a file node).
+   * @param node - Node adapter to traverse through (usually a file node).
    * @param rootNode - Root Node of node tree.
-   */
-
-  /**
-   *
-   * @param node
-   * @param rootNode
    */
   public handle(node: INodeAdapter, rootNode: ParsedFile) {
     const Handler = this.nodeHandlerMap[node.getKind()]

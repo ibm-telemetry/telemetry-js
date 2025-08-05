@@ -9,8 +9,10 @@ import type ts from 'typescript'
 import type { ParsedFile } from '../interfaces.js'
 
 /**
+ * Function to determine if an element is a ts.SourceFile.
  *
- * @param node
+ * @param node - Element to check.
+ * @returns Boolean determining if element is a ts.SourceFile.
  */
 export function isTsSourceFile(node: ParsedFile): node is ts.SourceFile {
   return (

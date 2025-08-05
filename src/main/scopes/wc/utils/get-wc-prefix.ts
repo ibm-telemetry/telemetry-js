@@ -8,10 +8,10 @@
 import { wcPrefixMap } from '../wc-prefix-map.js'
 
 /**
- * Return the expected web component prefix value based on a given JS import path
+ * Return the expected web component prefix value based on a given JS import path.
  *
- * @param path - The JS import path (string)
- * @returns - The expected web component tag prefix (string) or ''
+ * @param path - The JS import path (string).
+ * @returns - The expected web component tag prefix (string) or ''.
  */
 export function getWcPrefix(path: string): string {
   for (const [pattern, prefix] of wcPrefixMap) {

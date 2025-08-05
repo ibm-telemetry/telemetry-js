@@ -20,7 +20,7 @@ export class SideEffectImportParser extends ImportParser {
    * Parses side-effect-only imports like `import 'some/module'`.
    *
    * @param importNode - The full ImportDeclaration node.
-   * @param importPath
+   * @param importPath - The path to parse.
    * @returns Array of JsImport.
    */
   parse(importNode: ts.ImportDeclaration, importPath: string): JsImport[] {

@@ -20,7 +20,6 @@ export class TsNodeAdapter implements INodeAdapter<ts.Node> {
    * Instantiates a new TSNodeAdapter.
    *
    * @param node - Node to process.
-   * @param logger - Logger instance to use.
    */
   constructor(node: ts.Node) {
     this.node = node
@@ -45,11 +44,10 @@ export class TsNodeAdapter implements INodeAdapter<ts.Node> {
    */
   *getChildren(): Iterable<INodeAdapter<ts.Node>> {
     const node = this.node
-    let child: ts.Node | undefined = node.getChildAt(0)
 
     for (let i = 0; i < node.getChildCount(); i++) {
-      child = node.getChildAt(i)
-      if (child) {
+      const child = node.getChildAt(i)
+      if (child != undefined) {
         yield new TsNodeAdapter(child)
       }
     }

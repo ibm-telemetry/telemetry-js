@@ -11,7 +11,7 @@ import type { JsFunction, JsImport, JsImportMatcher, JsToken } from '../interfac
  * Import matcher for all (*) imports, such as import * as stuff from 'whatever'.
  */
 export class JsAllImportMatcher implements JsImportMatcher<JsToken | JsFunction> {
-  elementType: 'js' = 'js'
+  elementType: 'js' = 'js' as const
   /**
    * Determines if a given JsToken or JsFunction is an all(*) import
    * (.e.g: import * as something from 'package')

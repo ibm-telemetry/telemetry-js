@@ -20,7 +20,6 @@ export class HtmlNodeAdapter implements INodeAdapter<HtmlNode> {
    * Instantiates a new TSNodeAdapter.
    *
    * @param node - Node to process.
-   * @param logger - Logger instance to use.
    */
   constructor(node: HtmlNode) {
     this.node = node

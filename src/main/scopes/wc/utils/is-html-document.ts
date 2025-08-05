@@ -9,8 +9,10 @@ import type { Document } from 'domhandler'
 import type { ParsedFile } from '../interfaces.js'
 
 /**
+ * Function to determine if an element is a htmlparser2.Document.
  *
- * @param node
+ * @param node - Element to check.
+ * @returns Boolean determining if element is a htmlparser2.Document.
  */
 export function isHtmlDocument(node: ParsedFile): node is Document {
   return typeof (node as Document).type === 'string' && Array.isArray((node as Document).children)

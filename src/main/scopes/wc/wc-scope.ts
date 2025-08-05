@@ -155,14 +155,6 @@ export class WcScope extends Scope {
     instrumentedPackage: PackageData,
     importMatchers: JsImportMatcher<WcElement | JsxElement>[]
   ) {
-    // problem is that the accumulator resets in every file
-    // maybe have to create a new map to ensure that it captures all the imports coming from other files?
-    // or maybe just go into those files?
-
-    // make html files go dead last
-    // create a map for files and their respective imports
-    // when handling a script node, check the path its importing and see what imports it gets from the map
-    // add those imports to the current accumulator
     const accumulator = new WcElementAccumulator()
 
     processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
@@ -190,7 +182,7 @@ export class WcScope extends Scope {
       JSON.stringify(Object.fromEntries(this.importsPerFile), null, 2)
     )
 
-    if (accumulator.scriptSources) {
+    if (accumulator.scriptSources.length > 0) {
       this.resolveLinkedImports(accumulator)
     }
 
@@ -319,13 +311,10 @@ export class WcScope extends Scope {
   }
 
   /**
-   * Given a relative path, and the root directory, resolves the relative path
-   * to an absolute path and returns the matching value from the map.
+   * Given a relative path, resolves the relative path to an absolute path.
    *
-   * @param absolutePathMap - Map with absolute paths as keys.
-   * @param relativePath - Relative path to resolve and match.
-   * @param rootDir - Root directory to resolve the relative path against.
-   * @returns The matched value from the map or undefined if not found.
+   * @param relativePath - Relative path to resolve.
+   * @returns The absolute path.
    */
   findByRelativePath(relativePath: string): string {
     return path.normalize(path.resolve(this.root, relativePath))

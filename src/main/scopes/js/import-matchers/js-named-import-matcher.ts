@@ -11,7 +11,7 @@ import type { JsFunction, JsImport, JsImportMatcher, JsToken } from '../interfac
  * Import matcher for all named imports, such as import { stuff } from 'whatever'.
  */
 export class JsNamedImportMatcher implements JsImportMatcher<JsToken | JsFunction> {
-  elementType: 'js' = 'js'
+  elementType: 'js' = 'js' as const
   /**
    * Determines if a given JsToken or JsFunction is a named import
    * (e.g.: `import {something} from 'package'`).

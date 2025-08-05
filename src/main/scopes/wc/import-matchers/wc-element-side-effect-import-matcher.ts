@@ -16,7 +16,7 @@ import { type WcElement } from '../interfaces.js'
  * @returns A JsImport if matched, otherwise undefined.
  */
 export class WcElementSideEffectImportMatcher implements JsImportMatcher<WcElement> {
-  elementType: 'wc' = 'wc'
+  elementType: 'wc' = 'wc' as const
   /**
    * Determines if a given WcElement is a named import (e.g.: `import {something} from 'package'`).
    *

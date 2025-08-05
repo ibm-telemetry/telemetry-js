@@ -46,6 +46,9 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },
+  "dependencies": {
+    "htmlparser2": "^10.0.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.4.1",
@@ -68,6 +71,8 @@
     "ajv": "^8.17.1",
     "ci-info": "^4.0.0",
     "commander": "^12.1.0",
+    "domhandler": "^5.0.3",
+    "domutils": "^3.2.2",
     "esbuild": "^0.23.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.30.0",
@@ -92,8 +97,5 @@
     "typescript-eslint": "^7.18.0",
     "vite": "^5.4.3",
     "vitest": "^1.6.0"
-  },
-  "dependencies": {
-    "htmlparser2": "^10.0.0"
   }
 }

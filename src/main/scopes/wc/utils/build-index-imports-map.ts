@@ -2,8 +2,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import * as path from 'node:path'
 import { Logger } from '../../../core/log/logger.js'
 import { Dirent } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 
 /**
  * Scans all components in a package's `es` directory and extracts side-effect import paths from each component's `index.js`.
@@ -20,18 +19,10 @@ import { dirname, join } from 'node:path'
  * @throws Throws if reading an `index.js` fails due to unexpected errors other than missing files.
  */
 export async function buildIndexImportsMap(
-  packageName: string,
+  componentsDir: string,
   logger: Logger
 ): Promise<Map<string, string[]>> {
-  let componentsDir: string
   const result: Map<string, string[]> = new Map()
-
-  try {
-    componentsDir = await resolveComponentDir(packageName)
-  } catch (err) {
-    logger.error(`Failed to resolve component directory for ${packageName}`)
-    return result
-  }
 
   let entries: Dirent[] = []
 
@@ -80,25 +71,44 @@ export async function buildIndexImportsMap(
   return result
 }
 
-export function buildAbsolutePath(
-  baseDir: string,
-  packageName: string,
+export function buildComponentIndexAbsolutePath(
+  componentsDir: string,
   componentName: string
 ): string {
-  const componentsDir = path.join(baseDir, 'node_modules', packageName, 'es', 'components')
   return path.join(componentsDir, componentName, 'index.js')
 }
 
-export function buildPackagePath(packageName: string, componentName: string): string {
-  const componentsDir = path.join(packageName, 'es', 'components')
-  return path.join(componentsDir, componentName, 'index.js')
-}
+/**
+ * Resolves the absolute path to the 'components' directory inside a given installed package.
+ *
+ * @param baseDir - The root directory where the package is installed (e.g., your app or fixture root)
+ * @param packageName - The name of the installed package (e.g., '@carbon/web-components')
+ * @returns A promise to the absolute path to the 'components' directory within the package
+ */
+export async function resolveComponentsDir(
+  baseDir: string,
+  packageName: string
+): Promise<string | undefined> {
+  const pkgDir = join(baseDir, 'node_modules', packageName)
 
-export async function resolveComponentDir(packageName: string): Promise<string> {
-  const entryPath = fileURLToPath(await import.meta.resolve(packageName))
-  const packageRoot = dirname(entryPath)
+  async function findComponentsDir(dir: string): Promise<string | undefined> {
+    const entries = await readdir(dir, { withFileTypes: true })
 
-  // Walk up until we hit the actual package root (not the entry)
-  const possibleComponentsDir = join(packageRoot, 'components')
-  return possibleComponentsDir
+    for (const entry of entries) {
+      const fullPath = join(dir, entry.name)
+
+      if (entry.isDirectory()) {
+        if (entry.name === 'components') {
+          return fullPath
+        }
+
+        const found = await findComponentsDir(fullPath)
+        if (found) return found
+      }
+    }
+
+    return undefined
+  }
+
+  return findComponentsDir(pkgDir)
 }

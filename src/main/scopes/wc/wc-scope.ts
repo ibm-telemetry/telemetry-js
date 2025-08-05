@@ -27,7 +27,11 @@ import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
-import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
+import {
+  buildComponentIndexAbsolutePath,
+  buildIndexImportsMap,
+  resolveComponentsDir
+} from './utils/build-index-imports-map.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -51,6 +55,7 @@ export class WcScope extends Scope {
   private runSync = true
   private importsPerFile = new Map<string, JsImport[]>()
   private packageIndexMap: Map<string, string[]> = new Map()
+  private componentsDir: string = ''
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
@@ -98,8 +103,11 @@ export class WcScope extends Scope {
       this.logger
     )
 
+    // build package component directory
+    this.componentsDir = (await resolveComponentsDir(this.root, instrumentedPackage.name)) ?? ''
+
     // Build up map containing contents of `index.js` files
-    this.packageIndexMap = await buildIndexImportsMap(instrumentedPackage.name, this.logger)
+    this.packageIndexMap = await buildIndexImportsMap(this.componentsDir, this.logger)
 
     this.logger.debug(
       'this is the package index map',
@@ -214,7 +222,7 @@ export class WcScope extends Scope {
       if (jsImport.path.endsWith('index.js') || jsImport.path.endsWith('index')) {
         this.logger.debug('The import is', JSON.stringify(jsImport))
 
-        const componentPath = buildAbsolutePath(this.root, instrumentedPackage, jsImport.name)
+        const componentPath = buildComponentIndexAbsolutePath(this.componentsDir, jsImport.name)
         const indexImports = this.packageIndexMap.get(componentPath) ?? []
 
         this.logger.debug('The built absolute path is', JSON.stringify(componentPath))

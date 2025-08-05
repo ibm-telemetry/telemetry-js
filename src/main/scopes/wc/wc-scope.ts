@@ -25,15 +25,10 @@ import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
-import { getWcPrefix } from './utils/get-wc-prefix.js'
 import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
-<<<<<<< HEAD
-=======
-import { buildAbsolutePath, buildIndexImportsMap } from './utils/build-index-imports-map.js'
->>>>>>> d943cbd (fix: include prefix as separate property of a JS import)
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.

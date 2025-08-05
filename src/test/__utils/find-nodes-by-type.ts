@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import * as ts from 'typescript'
+import type { Node as HtmlNode } from 'domhandler'
+import { HtmlNodeAdapter } from '../../main/scopes/wc/node-handlers/adapters/html-node-adapter.js'
 
 /**
  * Given a sourceNode, returns all nodes of a given type contained in the node's tree.
@@ -35,4 +37,21 @@ export function findNodesByType<T = ts.Node>(
   visit(sourceNode)
 
   return nodes as T[]
+}
+
+export function findDomNodesByType(root: HtmlNodeAdapter, kind: string): HtmlNode[] {
+  const results: HtmlNode[] = []
+
+  function visit(node: HtmlNodeAdapter) {
+    if (node.getKind() === kind) {
+      results.push(node.getNode())
+    }
+
+    for (const child of node.getChildren()) {
+      visit(child as HtmlNodeAdapter)
+    }
+  }
+
+  visit(root)
+  return results
 }

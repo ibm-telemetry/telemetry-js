@@ -7,6 +7,7 @@
 
 import * as ts from 'typescript'
 
+import { getWcPrefix } from '../../wc/utils/get-wc-prefix.js'
 import type { JsImport } from '../interfaces.js'
 import { ImportParser } from './import-parser.js'
 
@@ -34,9 +35,11 @@ export class SideEffectImportParser extends ImportParser {
       // extracts file name and builds a possible component name
       // e.g. "components/button/button.ts" -> "cds-button"
       const componentName = this.getComponentName(importPath)
+      const componentPrefix = getWcPrefix(importPath)
 
       sideEffectImports.push({
         name: componentName,
+        prefix: componentPrefix,
         path: importPath,
         isDefault: false,
         isAll: false,
@@ -53,8 +56,8 @@ export class SideEffectImportParser extends ImportParser {
    * - If the last segment is "index" or "index.js", returns the name of the parent directory.
    * - Otherwise, returns the file name without extension.
    *
-   * @param filePath - A relative path string like './foo/index.js' or './bar.js'
-   * @returns The normalized component name, e.g., 'foo' or 'bar'
+   * @param filePath - A relative path string like './foo/index.js' or './bar.js'.
+   * @returns The normalized component name, e.g., 'foo' or 'bar'.
    */
   getComponentName(filePath: string): string {
     const parts = filePath.split('/')

@@ -169,13 +169,13 @@ export class WcScope extends Scope {
 
     this.logger.debug('Pre-filter accumulator contents:', JSON.stringify(accumulator))
 
+    removeIrrelevantImports(accumulator, instrumentedPackage.name)
+
     // get all the imports that an index.js file is importing from a component
     // e.g. @carbon/web-components/es/components/button/index.js
     this.resolveIndexImports(accumulator, instrumentedPackage.name)
 
     this.logger.debug('Post resolve index accumulator contents:', JSON.stringify(accumulator))
-
-    removeIrrelevantImports(accumulator, instrumentedPackage.name)
 
     this.logger.debug('This is the sourcefile', sourceFile.fileName ?? '')
     this.logger.debug('This is the current imports', JSON.stringify(accumulator.imports))
@@ -232,15 +232,17 @@ export class WcScope extends Scope {
         for (const importPath of indexImports) {
           const segments = importPath.split('/')
           const componentName = segments[segments.length - 1]?.replace(/\.js$/, '') ?? ''
-
-          newImports.push({
+          const indexImport: JsImport = {
             name: componentName,
-            prefix: jsImport.prefix ?? '',
             path: instrumentedPackage,
             isDefault: false,
             isAll: false,
             isSideEffect: true
-          })
+          }
+          if (jsImport.hasOwnProperty('prefix')) {
+            indexImport.prefix = jsImport.prefix
+          }
+          newImports.push(indexImport)
         }
       } else {
         newImports.push(jsImport)

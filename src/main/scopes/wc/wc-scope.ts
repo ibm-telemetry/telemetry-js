@@ -82,8 +82,8 @@ export class WcScope extends Scope {
   }
 
   /**
-   * Generates metrics for all discovered instrumented jsx elements found in the current working
-   * directory's project.
+   * Generates metrics for all discovered instrumented wc and jsx elements found
+   * in the current working directory's project.
    */
   @Trace()
   async captureAllMetrics(): Promise<void> {
@@ -142,7 +142,7 @@ export class WcScope extends Scope {
   }
 
   /**
-   * Generates metrics for all discovered instrumented jsx elements found
+   * Generates metrics for all discovered instrumented wc or jsx elements found
    * in the supplied SourceFile node.
    *
    * @param sourceFile - The sourcefile node to generate metrics for.
@@ -301,7 +301,7 @@ export class WcScope extends Scope {
 
   /**
    * **For testing purposes only.**
-   * Makes the JsxScope collection run "synchronously" (one source file at a time). Defaults to
+   * Makes the WcScope collection run "synchronously" (one source file at a time). Defaults to
    * `false`.
    *
    * @param runSync - Boolean of whether or not to run synchronously.

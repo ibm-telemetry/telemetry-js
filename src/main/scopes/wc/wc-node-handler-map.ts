@@ -14,8 +14,8 @@ import { WcElementNodeHandler } from './node-handlers/elements/wc-element-node-h
 import { WcScriptNodeHandler } from './node-handlers/elements/wc-script-node-handler.js'
 //
 /**
- * Maps node kinds to handlers that know how to process them to generate JsxElement metrics for the
- * JsxScope.
+ * Maps node kinds to handlers that know how to process them to generate WcElement metrics for the
+ * WcScope.
  */
 export const wcNodeHandlerMap: JsNodeHandlerMap = {
   [ts.SyntaxKind.ImportDeclaration]: ImportNodeHandler,

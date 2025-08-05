@@ -20,7 +20,7 @@ export class WcElementSideEffectImportMatcher implements JsImportMatcher<WcEleme
   /**
    * Determines if a given WcElement is a named import (e.g.: `import {something} from 'package'`).
    *
-   * @param element - JsxElement to evaluate.
+   * @param element - WcElement to evaluate.
    * @param imports - Import elements to use for comparison.
    * @returns Corresponding JsImport if element was imported as a name import,
    * undefined otherwise.

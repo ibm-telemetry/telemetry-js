@@ -20,7 +20,7 @@ import type { PackageData } from '../../npm/interfaces.js'
 import { type WcElement, type WcElementAttribute } from '../interfaces.js'
 
 /**
- * JSX scope metric that generates a jsx.element individual metric for a given element.
+ * Wc scope metric that generates a wc.element individual metric for a given element.
  */
 export class ElementMetric extends ScopeMetric {
   public override name = 'wc.element' as const
@@ -31,10 +31,10 @@ export class ElementMetric extends ScopeMetric {
   private readonly instrumentedPackage: PackageData
 
   /**
-   * Constructs a JsxElementMetric.
+   * Constructs a WcElementMetric.
    *
    * @param element - Object containing name and version to extract data to generate metric from.
-   * @param matchingImport - Import that matched the provided JsxElement in the file.
+   * @param matchingImport - Import that matched the provided WcElement in the file.
    * @param instrumentedPackage - Data (name and version) pertaining to instrumented package.
    * @param config - Determines which attributes name and values to collect for.
    * @param logger - Logger instance.

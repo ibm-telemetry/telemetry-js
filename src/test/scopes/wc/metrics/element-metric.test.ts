@@ -42,7 +42,7 @@ describe('class: ElementMetric', () => {
   }
   const jsImport: JsImport = {
     name: 'theName',
-    path: 'path',
+    path: 'instrumented',
     isDefault: false,
     isAll: false,
     isSideEffect: true
@@ -69,7 +69,7 @@ describe('class: ElementMetric', () => {
       hash(
         {
           [WcScopeAttributes.NAME]: 'theName',
-          [WcScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [WcScopeAttributes.MODULE_SPECIFIER]: 'instrumented',
           [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(subs),
           [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(subs),
           [NpmScopeAttributes.INSTRUMENTED_RAW]: 'instrumented',
@@ -142,7 +142,7 @@ describe('class: ElementMetric', () => {
       hash(
         {
           [WcScopeAttributes.NAME]: 'theName',
-          [WcScopeAttributes.MODULE_SPECIFIER]: 'path',
+          [WcScopeAttributes.MODULE_SPECIFIER]: '@instrumented/instrumented',
           [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
           [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
           [NpmScopeAttributes.INSTRUMENTED_RAW]: '@instrumented/instrumented',

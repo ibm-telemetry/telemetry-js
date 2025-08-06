@@ -231,7 +231,6 @@ export class WcScope extends Scope {
           newImports.push(indexImport)
         }
       } else {
-        jsImport.path = instrumentedPackage
         newImports.push(jsImport)
       }
     }

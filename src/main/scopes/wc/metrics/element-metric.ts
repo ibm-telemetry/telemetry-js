@@ -114,6 +114,11 @@ export class ElementMetric extends ScopeMetric {
       )
     }
 
+    // Handle different import path from module specifier
+    if (this.matchingImport.path !== this.instrumentedPackage.name) {
+      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.instrumentedPackage.name
+    }
+
     metricData = hash(metricData, [
       NpmScopeAttributes.INSTRUMENTED_RAW,
       NpmScopeAttributes.INSTRUMENTED_OWNER,

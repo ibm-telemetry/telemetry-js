@@ -109,8 +109,8 @@ export class ElementMetric extends ScopeMetric {
     // Handle renamed elements
     if (this.matchingImport.rename !== undefined) {
       metricData[WcScopeAttributes.NAME] = this.element.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
+        this.matchingImport.name,
+        this.matchingImport.rename
       )
     }
 

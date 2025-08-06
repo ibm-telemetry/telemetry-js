@@ -168,11 +168,6 @@ export class WcScope extends Scope {
 
     this.logger.debug('Post resolve index accumulator contents:', JSON.stringify(accumulator))
 
-    this.logger.debug('This is the sourcefile', sourceFile.fileName ?? '')
-    this.logger.debug('This is the current imports', JSON.stringify(accumulator.imports))
-
-    this.logger.debug('This is the root', this.root)
-
     // save file imports to super map
     this.importsPerFile.set(sourceFile.fileName ?? '', accumulator.imports)
 
@@ -236,6 +231,7 @@ export class WcScope extends Scope {
           newImports.push(indexImport)
         }
       } else {
+        jsImport.path = instrumentedPackage
         newImports.push(jsImport)
       }
     }

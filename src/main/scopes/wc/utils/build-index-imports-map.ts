@@ -65,7 +65,12 @@ export async function buildIndexImportsMap(
 
       if (imports.length > 0) {
         // Deduplicate and sort imports
-        result.set(indexPath, Array.from(new Set(imports)).sort())
+        result.set(
+          indexPath,
+          Array.from(new Set(imports)).sort((a, b) =>
+            a.toLowerCase().localeCompare(b.toLowerCase())
+          )
+        )
       }
     } catch (err) {
       if (err instanceof Error) {

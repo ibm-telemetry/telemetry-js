@@ -54,7 +54,7 @@ export class WcScope extends Scope {
 
   public override name = 'wc' as const
   private runSync = true
-  private importsPerFile = new Map<string, JsImport[]>()
+  private readonly importsPerFile = new Map<string, JsImport[]>()
   private packageIndexMap: Map<string, string[]> = new Map()
   private componentsDir: string = ''
 
@@ -92,7 +92,6 @@ export class WcScope extends Scope {
       new JsxElementNamedImportMatcher(),
       new JsxElementRenamedImportMatcher(),
       new WcElementSideEffectImportMatcher()
-      // maybe HtmlElementCdnImportMatcher() TODO
     ] as JsImportMatcher<JsxElement | WcElement>[]
 
     const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
@@ -291,9 +290,6 @@ export class WcScope extends Scope {
       if (jsImport === undefined) {
         return
       }
-
-      // TODO: for some reason web components inside a JSX/react component isn't being added to the
-      // elementsImports, BUT they are inside the imports array. super weird.
 
       accumulator.elementImports.set(element, jsImport)
     })

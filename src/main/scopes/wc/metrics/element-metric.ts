@@ -24,7 +24,7 @@ import { type WcElement, type WcElementAttribute } from '../interfaces.js'
  */
 export class ElementMetric extends ScopeMetric {
   public override name = 'wc.element' as const
-  private readonly element: WcElement
+  private readonly element: WcElement | JsxElement
   private readonly matchingImport: JsImport
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
@@ -112,6 +112,9 @@ export class ElementMetric extends ScopeMetric {
         this.matchingImport.name,
         this.matchingImport.rename
       )
+      metricData[WcScopeAttributes.FRAMEWORK_WRAPPER] = 'react'
+    } else {
+      metricData[WcScopeAttributes.FRAMEWORK_WRAPPER] = 'none'
     }
 
     // Handle different import path from module specifier

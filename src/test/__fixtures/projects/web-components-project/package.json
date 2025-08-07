@@ -1,0 +1,14 @@
+{
+  "name": "web-components-project",
+  "description": "",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "author": "IBM",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "foo": "^1.0.0",
+    "instrumented": "^0.1.0"
+  }
+}

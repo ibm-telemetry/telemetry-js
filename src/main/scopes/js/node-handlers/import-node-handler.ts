@@ -11,6 +11,7 @@ import { AllImportParser } from '../import-parsers/all-import-parser.js'
 import { DefaultImportParser } from '../import-parsers/default-import-parser.js'
 import { NamedImportParser } from '../import-parsers/named-import-parser.js'
 import { RenamedImportParser } from '../import-parsers/renamed-import-parser.js'
+import { SideEffectImportParser } from '../import-parsers/side-effect-import-parser.js'
 import type { JsImport } from '../interfaces.js'
 import { JsNodeHandler } from './js-node-handler.js'
 
@@ -18,7 +19,7 @@ import { JsNodeHandler } from './js-node-handler.js'
  * Holds logic to construct a JsImport object given an ImportDeclaration node.
  *
  */
-export class ImportNodeHandler extends JsNodeHandler<JsImport[]> {
+export class ImportNodeHandler extends JsNodeHandler<JsImport[], ts.SourceFile> {
   /**
    * Processes an ImportDeclaration node data and adds it to the given accumulator.
    *
@@ -51,6 +52,9 @@ export class ImportNodeHandler extends JsNodeHandler<JsImport[]> {
 
     if (importClause) {
       importParsers.forEach((parser) => results.push(...parser.parse(importClause, importPath)))
+    } else {
+      // Side effect imports have no importClause (found in Web Components)
+      results.push(...new SideEffectImportParser().parse(node, importPath))
     }
 
     return results

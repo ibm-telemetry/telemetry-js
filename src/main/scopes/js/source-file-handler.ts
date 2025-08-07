@@ -4,10 +4,9 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as ts from 'typescript'
-
 import { Loggable } from '../../core/log/loggable.js'
 import { type Logger } from '../../core/log/logger.js'
+import type { INodeAdapter, ParsedFile } from '../wc/interfaces.js'
 import type { JsNodeHandlerMap } from './interfaces.js'
 import type { JsAccumulator } from './js-accumulator.js'
 
@@ -38,19 +37,22 @@ export class SourceFileHandler extends Loggable {
    * Visits each child (recursively) of the supplied node and calls out to the appropriate node
    * handlers.
    *
-   * @param node - Node to traverse through (usually a file node).
+   * @param node - Node adapter to traverse through (usually a file node).
    * @param rootNode - Root Node of node tree.
    */
-  public handle(node: ts.Node, rootNode: ts.SourceFile) {
-    const Handler = this.nodeHandlerMap[node.kind]
+  public handle(node: INodeAdapter, rootNode: ParsedFile) {
+    const Handler = this.nodeHandlerMap[node.getKind()]
 
+    this.logger.debug(`${node.getKind()}`)
+
+    // only does JSXElements, ImportDeclarations, JSXSelfClosingElements
     if (Handler !== undefined) {
       const handler = new Handler(rootNode, this.logger)
-      handler.handle(node, this.accumulator)
+      handler.handle(node.getNode(), this.accumulator)
     }
 
-    ts.forEachChild(node, (node) => {
-      this.handle(node, rootNode)
-    })
+    for (const child of node.getChildren()) {
+      this.handle(child, rootNode)
+    }
   }
 }

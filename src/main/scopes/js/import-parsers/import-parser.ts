@@ -13,5 +13,5 @@ import type { JsImport } from '../interfaces.js'
  * Defines API to construct JsImports from ImportClause nodes.
  */
 export abstract class ImportParser {
-  abstract parse(importNode: ts.ImportClause, importPath: string): JsImport[]
+  abstract parse(importNode: ts.ImportClause | ts.ImportDeclaration, importPath: string): JsImport[]
 }

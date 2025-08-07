@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`class: WcScriptNodeHandler > correctly returns the script sources for an html file fixture 1`] = `
+[
+  "./js-file-with-import.js",
+]
+`;

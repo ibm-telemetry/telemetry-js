@@ -61,8 +61,8 @@ export class AccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
    */
   getData(node: ts.ElementAccessExpression | ts.PropertyAccessExpression): JsToken {
     return {
-      name: node.getText(this.sourceFile),
-      accessPath: getAccessPath(node, this.sourceFile, this.logger),
+      name: node.getText(this.sourceFile as ts.SourceFile),
+      accessPath: getAccessPath(node, this.sourceFile as ts.SourceFile, this.logger),
       startPos: node.pos,
       endPos: node.end
     }

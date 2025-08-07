@@ -109,9 +109,14 @@ export class ElementMetric extends ScopeMetric {
     // Handle renamed elements
     if (this.matchingImport.rename !== undefined) {
       metricData[WcScopeAttributes.NAME] = this.element.name.replace(
-        this.matchingImport.rename,
-        this.matchingImport.name
+        this.matchingImport.name,
+        this.matchingImport.rename
       )
+    }
+
+    // Handle different import path from module specifier
+    if (this.matchingImport.path !== this.instrumentedPackage.name) {
+      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.instrumentedPackage.name
     }
 
     metricData = hash(metricData, [

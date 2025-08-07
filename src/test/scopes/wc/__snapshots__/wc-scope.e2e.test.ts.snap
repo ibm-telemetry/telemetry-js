@@ -326,7 +326,7 @@ exports[`class: WcScope > run > correctly captures wc element metric data 1`] = 
                     "[redacted13]",
                     "wow",
                   ],
-                  "wc.element.module.specifier": "instrumented/accordion",
+                  "wc.element.module.specifier": "instrumented",
                   "wc.element.name": "accordion",
                 },
                 "endTime": [

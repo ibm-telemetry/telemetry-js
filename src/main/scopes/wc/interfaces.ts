@@ -20,6 +20,13 @@ export interface WcElement {
   attributes: WcElementAttribute[]
 }
 
+export interface CdnImport {
+  name: string
+  path: string
+  package: string
+  isLatest: boolean
+}
+
 export type HtmlParsedFile = HtmlDocument & { fileName?: string }
 
 /**

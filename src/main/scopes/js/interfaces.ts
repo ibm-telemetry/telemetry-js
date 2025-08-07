@@ -7,7 +7,7 @@
 import type * as ts from 'typescript'
 
 import type { Logger } from '../../core/log/logger.js'
-import type { ParsedFile } from '../wc/interfaces.js'
+import type { CdnImport, ParsedFile } from '../wc/interfaces.js'
 import type { ComplexValue } from './complex-value.js'
 import type { JsNodeHandler } from './node-handlers/js-node-handler.js'
 import type { NodeValueHandler } from './node-handlers/value-handlers/node-value-handler.js'
@@ -39,7 +39,10 @@ export type NodeValueHandlerMap = Partial<Record<ts.SyntaxKind, NodeValueHandler
 
 export interface JsImportMatcher<Element> {
   elementType: 'jsx' | 'wc' | 'js'
-  findMatch: (element: Element, imports: JsImport[]) => JsImport | undefined
+  findMatch: (
+    element: Element,
+    imports: (JsImport | CdnImport)[]
+  ) => (JsImport | CdnImport) | undefined
 }
 
 export interface JsFunction {

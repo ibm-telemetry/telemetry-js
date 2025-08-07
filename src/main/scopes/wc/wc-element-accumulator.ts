@@ -7,19 +7,19 @@
 import type { JsxElement } from 'typescript'
 
 import type { JsImport } from '../js/interfaces.js'
-import { JsAccumulator } from '../js/js-accumulator.js'
-import { type WcElement } from './interfaces.js'
+import { CdnImport, type WcElement } from './interfaces.js'
 
 /**
  * Responsible for maintaining an aggregated state of imports and elements.
  */
-export class WcElementAccumulator extends JsAccumulator {
+export class WcElementAccumulator {
+  public imports: (JsImport | CdnImport)[]
   public readonly elements: (WcElement | JsxElement)[]
-  public readonly elementImports: Map<WcElement | JsxElement, JsImport>
+  public readonly elementImports: Map<WcElement | JsxElement, JsImport | CdnImport>
   public readonly scriptSources: string[]
 
   constructor() {
-    super()
+    this.imports = []
     this.elements = []
     this.elementImports = new Map()
     this.scriptSources = []

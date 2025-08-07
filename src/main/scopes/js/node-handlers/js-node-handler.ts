@@ -8,6 +8,7 @@
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'
 import type { AnyAstNode, ParsedFile } from '../../wc/interfaces.js'
+import { WcElementAccumulator } from '../../wc/wc-element-accumulator.js'
 import type { JsAccumulator } from '../js-accumulator.js'
 
 /**
@@ -27,7 +28,7 @@ export abstract class JsNodeHandler<
     this.sourceFile = sourceFile as FileType
   }
 
-  abstract handle(node: AnyAstNode, accumulator: JsAccumulator): void
+  abstract handle(node: AnyAstNode, accumulator: JsAccumulator | WcElementAccumulator): void
 
   abstract getData(node: AnyAstNode): DataType
 }

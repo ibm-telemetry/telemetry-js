@@ -17,7 +17,7 @@ import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { JsImport } from '../../js/interfaces.js'
 import { type JsxElement } from '../../jsx/interfaces.js'
 import type { PackageData } from '../../npm/interfaces.js'
-import { type WcElement, type WcElementAttribute } from '../interfaces.js'
+import { CdnImport, type WcElement, type WcElementAttribute } from '../interfaces.js'
 
 /**
  * Wc scope metric that generates a wc.element individual metric for a given element.
@@ -25,7 +25,7 @@ import { type WcElement, type WcElementAttribute } from '../interfaces.js'
 export class ElementMetric extends ScopeMetric {
   public override name = 'wc.element' as const
   private readonly element: WcElement
-  private readonly matchingImport: JsImport
+  private readonly matchingImport: JsImport | CdnImport
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
   private readonly instrumentedPackage: PackageData
@@ -41,7 +41,7 @@ export class ElementMetric extends ScopeMetric {
    */
   public constructor(
     element: WcElement | JsxElement,
-    matchingImport: JsImport,
+    matchingImport: JsImport | CdnImport,
     instrumentedPackage: PackageData,
     config: ConfigSchema,
     logger: Logger

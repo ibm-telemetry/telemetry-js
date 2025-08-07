@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { WcElementAccumulator } from '../wc/wc-element-accumulator.js'
 import type { JsAccumulator } from './js-accumulator.js'
 
 /**
@@ -13,7 +14,10 @@ import type { JsAccumulator } from './js-accumulator.js'
  * @param accumulator - The accumulator in which to import data is stored.
  * @param packageName - Name of the package to filter imports for.
  */
-export function removeIrrelevantImports(accumulator: JsAccumulator, packageName: string) {
+export function removeIrrelevantImports(
+  accumulator: JsAccumulator | WcElementAccumulator,
+  packageName: string
+) {
   accumulator.imports = accumulator.imports.filter((jsImport) => {
     return jsImport.path === packageName || jsImport.path.startsWith(`${packageName}/`)
   })

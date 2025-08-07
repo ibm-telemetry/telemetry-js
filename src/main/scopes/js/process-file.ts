@@ -15,6 +15,7 @@ import type { Logger } from '../../core/log/logger.js'
 // import { safeStringify } from '../../core/log/safe-stringify.js'
 import type { ParsedFile } from '../wc/interfaces.js'
 import { createNodeAdapter } from '../wc/node-handlers/adapters/create-node-adapters.js'
+import { WcElementAccumulator } from '../wc/wc-element-accumulator.js'
 import type { JsNodeHandlerMap } from './interfaces.js'
 import type { JsAccumulator } from './js-accumulator.js'
 import { SourceFileHandler } from './source-file-handler.js'
@@ -30,7 +31,7 @@ import { SourceFileHandler } from './source-file-handler.js'
  * @param logger - Logger instance.
  */
 export function processFile(
-  accumulator: JsAccumulator,
+  accumulator: JsAccumulator | WcElementAccumulator,
   sourceFile: ParsedFile,
   jsNodeHandlerMap: JsNodeHandlerMap,
   logger: Logger

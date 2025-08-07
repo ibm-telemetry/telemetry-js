@@ -21,7 +21,7 @@ import { type JsxElement } from '../jsx/interfaces.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
 import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
-import { type WcElement } from './interfaces.js'
+import { type WcElement, CdnImport } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import {
@@ -33,6 +33,8 @@ import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
+import { isCdnImport } from './utils/is-cdn-import.js'
+import { parseCdnImport } from './utils/parse-cdn-import.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -54,7 +56,7 @@ export class WcScope extends Scope {
 
   public override name = 'wc' as const
   private runSync = true
-  private readonly importsPerFile = new Map<string, JsImport[]>()
+  private readonly importsPerFile = new Map<string, (JsImport | CdnImport)[]>()
   private packageIndexMap: Map<string, string[]> = new Map()
   private componentsDir: string = ''
 
@@ -203,7 +205,7 @@ export class WcScope extends Scope {
   }
 
   resolveIndexImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
-    const newImports: JsImport[] = []
+    const newImports: (JsImport | CdnImport)[] = []
 
     for (const jsImport of accumulator.imports) {
       if (jsImport.path.endsWith('index.js') || jsImport.path.endsWith('index')) {
@@ -242,13 +244,18 @@ export class WcScope extends Scope {
     const mergedImports = [...accumulator.imports]
 
     for (const scriptSource of accumulator.scriptSources) {
-      const absolutePath = this.findByRelativePath(scriptSource)
-      const scriptImports = this.importsPerFile.get(absolutePath)
-
+      const scriptImports: (JsImport | CdnImport)[] = []
+      if (isCdnImport(scriptSource)) {
+        const cdnImport = parseCdnImport(scriptSource)
+        this.logger.debug('The CDN import is', JSON.stringify(cdnImport))
+        scriptImports.push(cdnImport)
+      } else {
+        const absolutePath = this.findByRelativePath(scriptSource)
+        scriptImports.concat(this.importsPerFile.get(absolutePath) ?? [])
+        this.logger.debug('The import relative path is', scriptSource)
+        this.logger.debug('Absolute path', absolutePath)
+      }
       this.logger.debug('The scriptImports are', JSON.stringify(scriptImports))
-
-      this.logger.debug('Relative path', scriptSource)
-      this.logger.debug('Absolute path', absolutePath)
 
       if (scriptImports) {
         mergedImports.push(...scriptImports)
@@ -256,6 +263,8 @@ export class WcScope extends Scope {
       }
     }
   }
+
+  //TODO function to handle CDN import links
 
   resolveElementImports(
     accumulator: WcElementAccumulator,

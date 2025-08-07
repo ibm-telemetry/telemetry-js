@@ -47,6 +47,14 @@ describe('class: ElementMetric', () => {
     isAll: false,
     isSideEffect: true
   }
+  const reactWrapperImport: JsImport = {
+    name: 'theName',
+    rename: 'rename',
+    path: 'instrumented',
+    isDefault: false,
+    isAll: false,
+    isSideEffect: true
+  }
 
   it('returns the correct attributes for an element', () => {
     const attributes = new ElementMetric(
@@ -79,7 +87,8 @@ describe('class: ElementMetric', () => {
           [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
           [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
           [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined,
+          [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'none'
         },
         [
           'npm.dependency.instrumented.raw',
@@ -116,7 +125,7 @@ describe('class: ElementMetric', () => {
     }
     const attributes = new ElementMetric(
       elementWithAllowedAttrs,
-      jsImport,
+      reactWrapperImport,
       {
         name: '@instrumented/instrumented',
         version: '1.0.0+123456'
@@ -141,7 +150,7 @@ describe('class: ElementMetric', () => {
     expect(attributes).toStrictEqual(
       hash(
         {
-          [WcScopeAttributes.NAME]: 'theName',
+          [WcScopeAttributes.NAME]: 'rename',
           [WcScopeAttributes.MODULE_SPECIFIER]: '@instrumented/instrumented',
           [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(substitutedAttributes),
           [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(substitutedAttributes),
@@ -152,7 +161,8 @@ describe('class: ElementMetric', () => {
           [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: '1',
           [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: '0',
           [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: '0',
-          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined
+          [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: undefined,
+          [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'react'
         },
         [
           NpmScopeAttributes.INSTRUMENTED_RAW,

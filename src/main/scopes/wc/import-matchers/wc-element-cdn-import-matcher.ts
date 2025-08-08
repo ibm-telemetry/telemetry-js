@@ -24,6 +24,6 @@ export class WcElementCdnImportMatcher implements CdnImportMatcher<WcElement> {
    * undefined otherwise.
    */
   findMatch(element: WcElement, imports: CdnImport[]) {
-    return imports.find((i) => i.name === element.name || `cds-${i.name}` === element.name)
+    return imports.find((i) => i.name === element.name || `${i.prefix}-${i.name}` === element.name)
   }
 }

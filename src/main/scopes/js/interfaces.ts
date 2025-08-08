@@ -16,7 +16,6 @@ import type { Import } from '../../interfaces.js'
 export interface JsImport extends Import {
   isDefault: boolean
   isAll: boolean
-  prefix?: string
   rename?: string
   isSideEffect?: boolean
 }

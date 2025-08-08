@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { CdnImport } from '../interfaces.js'
+import { getWcPrefix } from './get-wc-prefix.js'
 
 const CDN_ENDING = '.min.js'
 const CDN_PACKAGES = new Map([
@@ -14,11 +15,13 @@ const CDN_PACKAGES = new Map([
 
 export function parseCdnImport(scriptSource: string) {
   const segments = scriptSource.split('/')
-  const componentName = segments.pop()?.split(CDN_ENDING)[0]
+  const componentName = segments.pop()?.split(CDN_ENDING)[0] ?? ''
   const [packageName, version] = getPackageInfo(scriptSource)
+  const componentPrefix = getWcPrefix(packageName)
   const cdnImport: CdnImport = {
-    name: componentName ?? '',
+    name: componentName,
     path: scriptSource,
+    prefix: componentPrefix,
     package: packageName,
     version: version
   }

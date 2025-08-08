@@ -20,10 +20,6 @@ import { clearTelemetrySdkVersion } from '../../__utils/clear-telemetry-sdk-vers
 import { Fixture } from '../../__utils/fixture.js'
 import { initLogger } from '../../__utils/init-logger.js'
 import { initializeOtelForTest } from '../../__utils/initialize-otel-for-test.js'
-import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
-import { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
-import { JsxElement } from '../../../main/scopes/jsx/interfaces.js'
-import { WcElement } from '../../../main/scopes/wc/interfaces.js'
 import type { CdnImportMatcher } from '../../../main/scopes/wc/interfaces.js'
 import { WcElementCdnImportMatcher } from '../../../main/scopes/wc/import-matchers/wc-element-cdn-import-matcher.js'
 

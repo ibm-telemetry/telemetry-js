@@ -6,20 +6,18 @@
  */
 
 const packages = {
-  carbonWc: '@carbon/web-components',
-  carbonDotComWc: '@carbon/ibmdotcom-web-components',
-  carbonProductsWc: '@carbon/ibm-products-web-components'
+  CARBON_WC: '@carbon/web-components',
+  CARBON_DOT_COM_WC: '@carbon/ibmdotcom-web-components',
+  CARBON_PRODUCTS_WC: '@carbon/ibm-products-web-components'
 }
 
 const buildFolders = {
-  es: 'es',
-  esCustom: 'es-custom'
+  ES_CUSTOM: 'es-custom'
 }
 
 export const wcPrefixMap: Map<RegExp, string> = new Map([
-  [new RegExp('(^' + packages.carbonWc + '/' + buildFolders.es + '/)'), 'cds'],
-  [new RegExp('(^' + packages.carbonWc + '/' + buildFolders.esCustom + '/)'), 'cds-custom'],
-  [new RegExp('(^' + packages.carbonDotComWc + '/' + buildFolders.es + '/)'), 'c4d'],
-  [new RegExp('(^' + packages.carbonProductsWc + '/' + buildFolders.es + '/)'), 'c4p'],
-  [new RegExp('(^' + packages.carbonProductsWc + '/' + buildFolders.esCustom + '/)'), 'c4p']
+  [new RegExp('(^' + packages.CARBON_WC + '/' + buildFolders.ES_CUSTOM + '/)'), 'cds-custom'],
+  [new RegExp('(^' + packages.CARBON_WC + ')'), 'cds'],
+  [new RegExp('(^' + packages.CARBON_DOT_COM_WC + ')'), 'c4d'],
+  [new RegExp('(^' + packages.CARBON_PRODUCTS_WC + ')'), 'c4p']
 ])

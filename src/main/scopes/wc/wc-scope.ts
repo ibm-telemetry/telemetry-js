@@ -33,7 +33,6 @@ import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
-import { isCdnImport } from './utils/is-cdn-import.js'
 import { isCdnLink } from './utils/is-cdn-link.js'
 import { parseCdnImport } from './utils/parse-cdn-import.js'
 import type { CdnImportMatcher } from './interfaces.js'
@@ -59,7 +58,7 @@ export class WcScope extends Scope {
 
   public override name = 'wc' as const
   private runSync = true
-  private readonly jsImportsPerFile = new Map<string, (JsImport | CdnImport)[]>()
+  private readonly jsImportsPerFile = new Map<string, JsImport[]>()
   private packageIndexMap: Map<string, string[]> = new Map()
   private componentsDir: string = ''
 

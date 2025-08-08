@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2023, 2025
+ * Copyright IBM Corp. 2025, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ import { type JsxElement } from '../jsx/interfaces.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
 import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
-import { type WcElement, CdnImport } from './interfaces.js'
+import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
 import {
@@ -34,7 +34,10 @@ import { isWcElement } from './utils/is-wc-element.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
 import { isCdnImport } from './utils/is-cdn-import.js'
+import { isCdnLink } from './utils/is-cdn-link.js'
 import { parseCdnImport } from './utils/parse-cdn-import.js'
+import type { CdnImportMatcher } from './interfaces.js'
+import { WcElementCdnImportMatcher } from './import-matchers/wc-element-cdn-import-matcher.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.
@@ -56,7 +59,7 @@ export class WcScope extends Scope {
 
   public override name = 'wc' as const
   private runSync = true
-  private readonly importsPerFile = new Map<string, (JsImport | CdnImport)[]>()
+  private readonly jsImportsPerFile = new Map<string, (JsImport | CdnImport)[]>()
   private packageIndexMap: Map<string, string[]> = new Map()
   private componentsDir: string = ''
 
@@ -89,12 +92,14 @@ export class WcScope extends Scope {
    */
   @Trace()
   async captureAllMetrics(): Promise<void> {
-    const importMatchers = [
+    const jsImportMatchers = [
       new JsxElementAllImportMatcher(),
       new JsxElementNamedImportMatcher(),
       new JsxElementRenamedImportMatcher(),
       new WcElementSideEffectImportMatcher()
     ] as JsImportMatcher<JsxElement | WcElement>[]
+
+    const cdnImportMatchers = [new WcElementCdnImportMatcher()] as CdnImportMatcher<WcElement>[]
 
     const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
     const sourceFiles = await findRelevantSourceFiles(
@@ -129,7 +134,8 @@ export class WcScope extends Scope {
       const resultPromise = this.captureFileMetrics(
         await sourceFile.createSourceFile(),
         instrumentedPackage,
-        importMatchers
+        jsImportMatchers,
+        cdnImportMatchers
       )
 
       if (this.runSync) {
@@ -149,12 +155,14 @@ export class WcScope extends Scope {
    * @param sourceFile - The sourcefile node to generate metrics for.
    * @param instrumentedPackage - Name and version of the instrumented package
    * to capture metrics for.
-   * @param importMatchers - Matchers instances to use for import-element matching.
+   * @param jsImportMatchers - Matchers instances to use for js import to element matching.
+   * @param cdnImportMatchers - Matchers instances to use for cdn import to element matching.
    */
   async captureFileMetrics(
     sourceFile: ParsedFile, // ts.SourceFile
     instrumentedPackage: PackageData,
-    importMatchers: JsImportMatcher<WcElement | JsxElement>[]
+    jsImportMatchers: JsImportMatcher<WcElement | JsxElement>[],
+    cdnImportMatchers: CdnImportMatcher<WcElement>[]
   ) {
     const accumulator = new WcElementAccumulator()
 
@@ -170,26 +178,33 @@ export class WcScope extends Scope {
 
     this.logger.debug('Post resolve index accumulator contents:', JSON.stringify(accumulator))
 
+    removeIrrelevantImports(accumulator, instrumentedPackage.name)
+
+    this.logger.debug('This is the sourcefile', sourceFile.fileName ?? '')
+    this.logger.debug('This is the current jsImports', JSON.stringify(accumulator.jsImports))
+
+    this.logger.debug('This is the root', this.root)
+
     // save file imports to super map
-    this.importsPerFile.set(sourceFile.fileName ?? '', accumulator.imports)
+    this.jsImportsPerFile.set(sourceFile.fileName ?? '', accumulator.jsImports)
 
     this.logger.debug(
       'Super import map',
-      JSON.stringify(Object.fromEntries(this.importsPerFile), null, 2)
+      JSON.stringify(Object.fromEntries(this.jsImportsPerFile), null, 2)
     )
 
     if (accumulator.scriptSources.length > 0) {
       this.resolveLinkedImports(accumulator)
     }
 
-    this.resolveElementImports(accumulator, importMatchers)
+    this.resolveElementImports(accumulator, jsImportMatchers, cdnImportMatchers)
 
     this.logger.debug('Post-filter accumulator contents:', JSON.stringify(accumulator))
 
     accumulator.elements.forEach((element) => {
-      const jsImport = accumulator.elementImports.get(element)
+      const componentImport = accumulator.elementImports.get(element)
 
-      if (jsImport === undefined) {
+      if (componentImport === undefined) {
         return
       }
 
@@ -198,16 +213,16 @@ export class WcScope extends Scope {
       // type guarding was needed
       if (isJsxElement(element) || isWcElement(element)) {
         this.capture(
-          new ElementMetric(element, jsImport, instrumentedPackage, this.config, this.logger)
+          new ElementMetric(element, componentImport, instrumentedPackage, this.config, this.logger)
         )
       }
     })
   }
 
   resolveIndexImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
-    const newImports: (JsImport | CdnImport)[] = []
+    const newImports: JsImport[] = []
 
-    for (const jsImport of accumulator.imports) {
+    for (const jsImport of accumulator.jsImports) {
       if (jsImport.path.endsWith('index.js') || jsImport.path.endsWith('index')) {
         this.logger.debug('The import is', JSON.stringify(jsImport))
 
@@ -237,41 +252,63 @@ export class WcScope extends Scope {
       }
     }
 
-    accumulator.imports = newImports
+    accumulator.jsImports = newImports
   }
 
   resolveLinkedImports(accumulator: WcElementAccumulator) {
-    const mergedImports = [...accumulator.imports]
+    const mergedJsImports = [...accumulator.jsImports]
 
     for (const scriptSource of accumulator.scriptSources) {
-      const scriptImports: (JsImport | CdnImport)[] = []
-      if (isCdnImport(scriptSource)) {
+      if (isCdnLink(scriptSource)) {
         const cdnImport = parseCdnImport(scriptSource)
         this.logger.debug('The CDN import is', JSON.stringify(cdnImport))
-        scriptImports.push(cdnImport)
+        accumulator.cdnImports.push(cdnImport)
       } else {
         const absolutePath = this.findByRelativePath(scriptSource)
-        scriptImports.concat(this.importsPerFile.get(absolutePath) ?? [])
-        this.logger.debug('The import relative path is', scriptSource)
-        this.logger.debug('Absolute path', absolutePath)
-      }
-      this.logger.debug('The scriptImports are', JSON.stringify(scriptImports))
+        const scriptImports = this.jsImportsPerFile.get(absolutePath)
 
-      if (scriptImports) {
-        mergedImports.push(...scriptImports)
-        accumulator.imports = mergedImports
+        this.logger.debug('The scriptImports are', JSON.stringify(scriptImports))
+
+        this.logger.debug('Relative path', scriptSource)
+        this.logger.debug('Absolute path', absolutePath)
+
+        if (scriptImports) {
+          mergedJsImports.push(...scriptImports)
+          accumulator.jsImports = mergedJsImports
+        }
       }
     }
   }
 
-  //TODO function to handle CDN import links
+  matchCdnImport(
+    element: WcElement,
+    cdnImportMatchers: CdnImportMatcher<WcElement>[],
+    accumulator: WcElementAccumulator
+  ) {
+    const cdnImport = cdnImportMatchers
+      .map((elementMatcher) => {
+        this.logger.debug(
+          'Type is ',
+          elementMatcher.elementType,
+          'element is',
+          JSON.stringify(element)
+        )
+        return elementMatcher.findMatch(element, accumulator.cdnImports)
+      })
+      .find((cdnImport) => cdnImport !== undefined)
+    if (cdnImport === undefined) {
+      return
+    }
+    accumulator.elementImports.set(element, cdnImport)
+  }
 
   resolveElementImports(
     accumulator: WcElementAccumulator,
-    elementMatchers: JsImportMatcher<WcElement | JsxElement>[]
+    jsImportMatchers: JsImportMatcher<WcElement | JsxElement>[],
+    cdnImportMatchers: CdnImportMatcher<WcElement>[]
   ) {
     accumulator.elements.forEach((element) => {
-      const jsImport = elementMatchers
+      const jsImport = jsImportMatchers
         .map((elementMatcher) => {
           this.logger.debug(
             'Type is ',
@@ -281,11 +318,15 @@ export class WcScope extends Scope {
           )
 
           if (elementMatcher.elementType === 'jsx' && isJsxElement(element)) {
-            return elementMatcher.findMatch(element, accumulator.imports)
+            return elementMatcher.findMatch(element, accumulator.jsImports)
           }
 
           if (elementMatcher.elementType === 'wc' && isWcElement(element)) {
-            return elementMatcher.findMatch(element, accumulator.imports)
+            const matchedImport = elementMatcher.findMatch(element, accumulator.jsImports)
+            if (matchedImport !== undefined) {
+              return matchedImport
+            }
+            return this.matchCdnImport(element, cdnImportMatchers, accumulator)
           }
           return undefined
         })

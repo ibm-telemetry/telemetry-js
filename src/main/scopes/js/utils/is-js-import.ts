@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { Import } from '../../../interfaces.js'
-import type { CdnImport } from '../interfaces.js'
+import type { JsImport } from '../interfaces.js'
 
 /**
  *
  * @param someImport
  */
-export function isCdnImport(someImport: Import): someImport is CdnImport {
-  return 'package' in someImport && 'version' in someImport
+export function isJsImport(someImport: Import): someImport is JsImport {
+  return 'isDefault' in someImport && 'isAll' in someImport
 }

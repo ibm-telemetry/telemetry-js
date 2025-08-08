@@ -148,7 +148,7 @@ export class JsxScope extends Scope {
   ) {
     accumulator.elements.forEach((jsxElement) => {
       const jsImport = elementMatchers
-        .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.imports))
+        .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.jsImports))
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {

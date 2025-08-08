@@ -18,6 +18,8 @@ import type { JsImport } from '../../js/interfaces.js'
 import { type JsxElement } from '../../jsx/interfaces.js'
 import type { PackageData } from '../../npm/interfaces.js'
 import { CdnImport, type WcElement, type WcElementAttribute } from '../interfaces.js'
+import { isJsImport } from '../../js/utils/is-js-import.js'
+import { isCdnImport } from '../utils/is-cdn-import.js'
 
 /**
  * Wc scope metric that generates a wc.element individual metric for a given element.
@@ -91,7 +93,9 @@ export class ElementMetric extends ScopeMetric {
 
     let metricData: Attributes = {
       [WcScopeAttributes.NAME]: this.element.name,
-      [WcScopeAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
+      [WcScopeAttributes.MODULE_SPECIFIER]: isCdnImport(this.matchingImport)
+        ? this.matchingImport.package
+        : this.matchingImport.path,
       [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
       [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
         String(attr)
@@ -107,11 +111,14 @@ export class ElementMetric extends ScopeMetric {
     }
 
     // Handle renamed elements
-    if (this.matchingImport.rename !== undefined) {
-      metricData[WcScopeAttributes.NAME] = this.element.name.replace(
-        this.matchingImport.name,
-        this.matchingImport.rename
-      )
+    if (isJsImport(this.matchingImport)) {
+      // type guarding needed
+      if (this.matchingImport.rename !== undefined) {
+        metricData[WcScopeAttributes.NAME] = this.element.name.replace(
+          this.matchingImport.rename,
+          this.matchingImport.name
+        )
+      }
     }
 
     // Handle different import path from module specifier

@@ -30,6 +30,6 @@ describe('class: ImportNodeHandler', async () => {
       handler.handle(importDeclaration as ts.ImportDeclaration, accumulator)
     })
 
-    expect(accumulator.imports).toMatchSnapshot()
+    expect(accumulator.jsImports).toMatchSnapshot()
   })
 })

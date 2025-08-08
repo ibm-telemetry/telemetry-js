@@ -6,6 +6,7 @@
  */
 
 import type { Document as HtmlDocument, Node as HtmlNode } from 'domhandler'
+import type { Import } from '../../interfaces.js'
 import type * as ts from 'typescript'
 
 import type { ComplexValue } from '../js/complex-value.js'
@@ -20,11 +21,14 @@ export interface WcElement {
   attributes: WcElementAttribute[]
 }
 
-export interface CdnImport {
-  name: string
-  path: string
+export interface CdnImport extends Import {
   package: string
-  isLatest: boolean
+  version: string
+}
+
+export interface CdnImportMatcher<Element> {
+  elementType: 'wc'
+  findMatch: (element: Element, imports: CdnImport[]) => CdnImport | undefined
 }
 
 export type HtmlParsedFile = HtmlDocument & { fileName?: string }

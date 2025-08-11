@@ -4,7 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-export const CDN_DOMAIN = '1.www.s81c.com'
+export const CDN_DOMAINS = ['1.www.s81c.com']
 
 /**
  *
@@ -12,8 +12,10 @@ export const CDN_DOMAIN = '1.www.s81c.com'
  */
 export function isCdnLink(scriptSource: string): boolean {
   const parsedLink = scriptSource.split(':')[1]?.replace(/\//gi, '')
-  if (parsedLink?.startsWith(CDN_DOMAIN)) {
-    return true
+  for (const domain of CDN_DOMAINS) {
+    if (parsedLink?.startsWith(domain)) {
+      return true
+    }
   }
   return false
 }

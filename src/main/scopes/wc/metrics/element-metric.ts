@@ -93,21 +93,16 @@ export class ElementMetric extends ScopeMetric {
 
     let metricData: Attributes = {
       [WcScopeAttributes.NAME]: this.element.name,
-      [WcScopeAttributes.MODULE_SPECIFIER]: isCdnImport(this.matchingImport)
-        ? this.matchingImport.package
-        : this.matchingImport.path,
+      [WcScopeAttributes.MODULE_SPECIFIER]: this.matchingImport.path,
       [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
       [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
         String(attr)
       ),
+      [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'vanilla',
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
       [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
-      [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: this.instrumentedPackage.version,
-      [NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR]: instrumentedMajor?.toString(),
-      [NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR]: instrumentedMinor?.toString(),
-      [NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH]: instrumentedPatch?.toString(),
-      [NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE]: instrumentedPreRelease?.join('.')
+      [NpmScopeAttributes.INSTRUMENTED_VERSION_RAW]: this.instrumentedPackage.version
     }
 
     // Handle renamed elements
@@ -125,6 +120,23 @@ export class ElementMetric extends ScopeMetric {
     if (this.matchingImport.path !== this.instrumentedPackage.name) {
       metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.instrumentedPackage.name
     }
+
+    if (isCdnImport(this.matchingImport)) {
+      // add/update CDN import fields
+      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.package
+      metricData[WcScopeAttributes.IMPORT_SOURCE] = 'cdn'
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.matchingImport.version
+    } else {
+      // add npm import fields
+      metricData[WcScopeAttributes.IMPORT_SOURCE] = 'npm'
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = instrumentedMajor?.toString()
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = instrumentedMinor?.toString()
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH] = instrumentedPatch?.toString()
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE] =
+        instrumentedPreRelease?.join('.')
+    }
+
+    // Handle wrappers
 
     metricData = hash(metricData, [
       NpmScopeAttributes.INSTRUMENTED_RAW,

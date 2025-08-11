@@ -33,11 +33,14 @@ function getPackageInfo(scriptSource: string): [string, string] {
     if (scriptSource.includes(pkgPath)) {
       const details = scriptSource.split(pkgPath)[1]
       const segments = details?.split('/')
-      if (segments !== undefined && segments[0] === 'version' && segments[1] !== undefined) {
+      if (segments === undefined) {
+        return ['', '']
+      }
+      if (segments[0] === 'version' && segments[1] !== undefined) {
         return [pkgName, segments[1]]
       }
-      if (segments?.includes('tag') && segments.includes('latest')) {
-        return [pkgName, 'latest']
+      if (segments[0] === 'tag' && segments[1] !== undefined && segments[2] !== undefined) {
+        return [pkgName, segments[1] + '/' + segments[2]]
       }
     }
   }

@@ -5,19 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const packages = {
+const PACKAGES = {
   CARBON_WC: '@carbon/web-components',
   CARBON_DOT_COM_WC: '@carbon/ibmdotcom-web-components',
   CARBON_PRODUCTS_WC: '@carbon/ibm-products-web-components'
 }
 
-const buildFolders = {
+const BUILD_FOLDERS = {
   ES_CUSTOM: 'es-custom'
 }
 
 export const wcPrefixMap: Map<RegExp, string> = new Map([
-  [new RegExp('(^' + packages.CARBON_WC + '/' + buildFolders.ES_CUSTOM + '/)'), 'cds-custom'],
-  [new RegExp('(^' + packages.CARBON_WC + ')'), 'cds'],
-  [new RegExp('(^' + packages.CARBON_DOT_COM_WC + ')'), 'c4d'],
-  [new RegExp('(^' + packages.CARBON_PRODUCTS_WC + ')'), 'c4p']
+  [new RegExp('(^' + PACKAGES.CARBON_WC + '/' + BUILD_FOLDERS.ES_CUSTOM + ')'), 'cds-custom'],
+  [new RegExp('(^' + PACKAGES.CARBON_WC + ')'), 'cds'],
+  [new RegExp('(^' + PACKAGES.CARBON_DOT_COM_WC + ')'), 'c4d'],
+  [new RegExp('(^' + PACKAGES.CARBON_PRODUCTS_WC + ')'), 'c4p']
 ])

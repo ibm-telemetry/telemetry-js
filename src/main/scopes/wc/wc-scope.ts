@@ -193,7 +193,7 @@ export class WcScope extends Scope {
     )
 
     if (accumulator.scriptSources.length > 0) {
-      this.resolveLinkedImports(accumulator)
+      this.resolveLinkedImports(accumulator, instrumentedPackage.name)
     }
 
     this.resolveElementImports(accumulator, jsImportMatchers, cdnImportMatchers)
@@ -254,14 +254,17 @@ export class WcScope extends Scope {
     accumulator.jsImports = newImports
   }
 
-  resolveLinkedImports(accumulator: WcElementAccumulator) {
+  resolveLinkedImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
     const mergedJsImports = [...accumulator.jsImports]
 
     for (const scriptSource of accumulator.scriptSources) {
       if (isCdnLink(scriptSource)) {
         const cdnImport = parseCdnImport(scriptSource)
         this.logger.debug('The CDN import is', JSON.stringify(cdnImport))
-        accumulator.cdnImports.push(cdnImport)
+        if (cdnImport.package === instrumentedPackage) {
+          this.logger.debug('CDN import matches instrumented package')
+          accumulator.cdnImports.push(cdnImport)
+        }
       } else {
         const absolutePath = this.findByRelativePath(scriptSource)
         const scriptImports = this.jsImportsPerFile.get(absolutePath)
@@ -307,7 +310,7 @@ export class WcScope extends Scope {
     cdnImportMatchers: CdnImportMatcher<WcElement>[]
   ) {
     accumulator.elements.forEach((element) => {
-      const jsImport = jsImportMatchers
+      const elemImport = jsImportMatchers
         .map((elementMatcher) => {
           this.logger.debug(
             'Type is ',
@@ -331,11 +334,11 @@ export class WcScope extends Scope {
         })
         .find((jsImport) => jsImport !== undefined)
 
-      if (jsImport === undefined) {
+      if (elemImport === undefined) {
         return
       }
 
-      accumulator.elementImports.set(element, jsImport)
+      accumulator.elementImports.set(element, elemImport)
     })
   }
 

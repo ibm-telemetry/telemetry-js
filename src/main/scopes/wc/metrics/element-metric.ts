@@ -20,6 +20,8 @@ import type { PackageData } from '../../npm/interfaces.js'
 import { CdnImport, type WcElement, type WcElementAttribute } from '../interfaces.js'
 import { isJsImport } from '../../js/utils/is-js-import.js'
 import { isCdnImport } from '../utils/is-cdn-import.js'
+import { isJsxElement } from '../utils/is-jsx-element.js'
+import { WC_PACKAGE_REACT_WRAPPERS } from '../wc-defs.js'
 
 /**
  * Wc scope metric that generates a wc.element individual metric for a given element.
@@ -97,21 +99,21 @@ export class ElementMetric extends ScopeMetric {
       [WcScopeAttributes.ATTRIBUTE_VALUES]: Object.values(anonymizedAttributes).map((attr) =>
         String(attr)
       ),
-      [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'vanilla',
       [NpmScopeAttributes.INSTRUMENTED_RAW]: this.instrumentedPackage.name,
       [NpmScopeAttributes.INSTRUMENTED_OWNER]: instrumentedOwner,
-      [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName
+      [NpmScopeAttributes.INSTRUMENTED_NAME]: instrumentedName,
+      [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'none'
     }
 
     if (isCdnImport(this.matchingImport)) {
-      // add/update CDN import fields
-      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.package
+      // add fields specific to CDN imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'cdn'
+      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.package
       metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.matchingImport.version
     } else {
-      // add npm import fields
-      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.path
+      // add fields specific to npm imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'npm'
+      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.path
       metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.instrumentedPackage.version
       metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = instrumentedMajor?.toString()
       metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = instrumentedMinor?.toString()
@@ -125,8 +127,8 @@ export class ElementMetric extends ScopeMetric {
       // type guarding needed
       if (this.matchingImport.rename !== undefined) {
         metricData[WcScopeAttributes.NAME] = this.element.name.replace(
-          this.matchingImport.rename,
-          this.matchingImport.name
+          this.matchingImport.name,
+          this.matchingImport.rename
         )
       }
     }
@@ -136,13 +138,20 @@ export class ElementMetric extends ScopeMetric {
       metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.instrumentedPackage.name
     }
 
-    // Handle wrappers
+    // Handle React wrappers
+    if (isJsxElement(this.element)) {
+      const parsedPath = this.matchingImport.path.split(this.instrumentedPackage.name)[1]
+      const wrapperFolder = WC_PACKAGE_REACT_WRAPPERS.get(this.instrumentedPackage.name)
+      if (wrapperFolder !== undefined && parsedPath?.split('/').includes(wrapperFolder)) {
+        metricData[WcScopeAttributes.FRAMEWORK_WRAPPER] = 'react'
+      }
+    }
 
     metricData = hash(metricData, [
       NpmScopeAttributes.INSTRUMENTED_RAW,
       NpmScopeAttributes.INSTRUMENTED_OWNER,
       NpmScopeAttributes.INSTRUMENTED_NAME,
-      NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
+      // NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
       NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
     ])
 

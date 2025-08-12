@@ -5,13 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { CdnImport } from '../interfaces.js'
+import { CDN_PACKAGES, CDN_ENDING } from '../wc-defs.js'
 import { getWcPrefix } from './get-wc-prefix.js'
-
-const CDN_ENDING = '.min.js'
-const CDN_PACKAGES = new Map([
-  ['@carbon/web-components', '/carbon/web-components/'],
-  ['@carbon/ibmdotcom-web-components', '/carbon-for-ibm-dotcom/']
-])
 
 export function parseCdnImport(scriptSource: string) {
   const segments = scriptSource.split('/')

@@ -15,12 +15,13 @@ import type { CdnImport, CdnImportMatcher, WcElement } from '../interfaces.js'
  * @returns A CdnImport if matched, otherwise undefined.
  */
 export class WcElementCdnImportMatcher implements CdnImportMatcher<WcElement> {
-  elementType: 'wc' = 'wc'
+  elementType: 'wc' = 'wc' as const
   /**
+   * Finds the matching CdnImport for a given WcElement.
    *
    * @param element - WcElement to evaluate.
-   * @param imports
-   * @returns Corresponding CdnImport if element was imported from a cdn,
+   * @param imports - CdnImports to use for comparison.
+   * @returns Corresponding CdnImport if element was imported through a CDN in `imports`,
    * undefined otherwise.
    */
   findMatch(element: WcElement, imports: CdnImport[]) {

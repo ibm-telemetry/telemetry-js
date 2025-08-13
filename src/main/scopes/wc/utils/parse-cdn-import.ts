@@ -9,8 +9,10 @@ import { CDN_ENDING, CDN_PACKAGES } from '../wc-defs.js'
 import { getWcPrefix } from './get-wc-prefix.js'
 
 /**
+ * Parse info from a CDN link and return a CdnImport object.
  *
- * @param scriptSource
+ * @param scriptSource - A CDN link from an HTML `<script>` tag.
+ * @returns - A CdnImport object containing the info parsed from `scriptSource`.
  */
 export function parseCdnImport(scriptSource: string) {
   const segments = scriptSource.split('/')
@@ -27,6 +29,12 @@ export function parseCdnImport(scriptSource: string) {
   return cdnImport
 }
 
+/**
+ * Parse a package name and version from a CDN link.
+ *
+ * @param scriptSource - A CDN link from an HTML `<script>` tag.
+ * @returns - An array [packageName, packageVersion] parsed from `scriptSource`.
+ */
 function getPackageInfo(scriptSource: string): [string, string] {
   for (const [pkgName, pkgPath] of CDN_PACKAGES) {
     if (scriptSource.includes(pkgPath)) {

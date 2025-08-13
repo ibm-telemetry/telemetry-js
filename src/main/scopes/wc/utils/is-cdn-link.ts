@@ -7,8 +7,10 @@
 import { CDN_DOMAINS } from '../wc-defs.js'
 
 /**
+ * Checks whether a (string) script source is a valid CDN link.
  *
- * @param scriptSource
+ * @param scriptSource - The script source to evaluate.
+ * @returns - (boolean) whether `scriptSource` is a valid CDN link.
  */
 export function isCdnLink(scriptSource: string): boolean {
   const parsedLink = scriptSource.split(':')[1]?.replace(/\//gi, '')

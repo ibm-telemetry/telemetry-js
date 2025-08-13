@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.2](https://github.com/ibm-telemetry/telemetry-js/compare/v1.9.1...v1.9.2) (2025-08-13)
+
+
+### Bug Fixes
+
+* **deps:** Replace dependency eslint-plugin-vitest with @vitest/eslint-plugin ^1.0.1 ([#275](https://github.com/ibm-telemetry/telemetry-js/issues/275)) ([a8c02c6](https://github.com/ibm-telemetry/telemetry-js/commit/a8c02c66fff67a659fe8419c382b6034b6ae30fd))
+* **deps:** upgrade dependency esbuild to ^0.25.0 [SECURITY] ([#298](https://github.com/ibm-telemetry/telemetry-js/issues/298)) ([c32c5bb](https://github.com/ibm-telemetry/telemetry-js/commit/c32c5bb71e077580ddaf4bd2fdbc4658745a3e01))
+
 ## [1.9.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.9.0...v1.9.1) (2025-01-28)
 
 

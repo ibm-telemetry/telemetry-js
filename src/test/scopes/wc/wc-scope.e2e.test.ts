@@ -30,7 +30,7 @@ const config: ConfigSchema = {
   collect: {
     wc: {
       elements: {
-        allowedAttributeNames: ['firstProp', 'secondProp', 'firstprop', 'secondprop'],
+        allowedAttributeNames: ['first', 'second', 'third', 'firstProp', 'secondProp'],
         allowedAttributeStringValues: ['hi', 'wow']
       }
     }
@@ -40,10 +40,27 @@ const config: ConfigSchema = {
 describe('class: WcScope', () => {
   const logger = initLogger()
   describe('run', () => {
-    it('correctly captures wc element metric data', async () => {
+    it('correctly captures metric data for wc elements imported through a JsImport', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture('projects/web-components-project')
       const cwd = new Fixture('projects/web-components-project/node_modules/instrumented')
+      const wcScope = new WcScope(cwd.path, root.path, config, logger)
+
+      wcScope.setRunSync(true)
+      await wcScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('correctly captures metric data for a wc element imported through a CDN', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture('projects/web-components-project')
+      const cwd = new Fixture('projects/web-components-project/node_modules/@carbon/web-components')
       const wcScope = new WcScope(cwd.path, root.path, config, logger)
 
       wcScope.setRunSync(true)

@@ -6,9 +6,9 @@
  */
 
 import type { Document as HtmlDocument, Node as HtmlNode } from 'domhandler'
-import type { Import } from '../../interfaces.js'
 import type * as ts from 'typescript'
 
+import type { Import } from '../../interfaces.js'
 import type { ComplexValue } from '../js/complex-value.js'
 
 export interface WcElementAttribute {

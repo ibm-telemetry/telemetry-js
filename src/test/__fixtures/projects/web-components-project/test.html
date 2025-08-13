@@ -3,10 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <title>title</title>
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/tag.min.js"
+    ></script>
   </head>
   <body>
-    <cds-button one="one" two three="three">Not imported thus not collected</cds-button>
-    <accordion firstProp="hi" two secondProp="wow">This one will actually be collected</accordion>
+    <cds-button first="hi" second third="wow" notAllowed="notAllowed"
+      >Not imported thus not collected</cds-button
+    >
+    <accordion first="hi" second third="wow" notAllowed="notAllowed"
+      >This will be collected when instrumented package is "instrumented"</accordion
+    >
+    <cds-tag first="hi" second third="wow" notAllowed="notAllowed"
+      >This will be collected when instrumented package is "@carbon/web-components"</cds-tag
+    >
     <script type="module" src="./js-file-with-import.js"></script>
   </body>
 </html>

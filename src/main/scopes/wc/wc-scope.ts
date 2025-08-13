@@ -20,7 +20,9 @@ import { JsxElementRenamedImportMatcher } from '../jsx/import-matchers/jsx-eleme
 import { type JsxElement } from '../jsx/interfaces.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
+import { WcElementCdnImportMatcher } from './import-matchers/wc-element-cdn-import-matcher.js'
 import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
+import type { CdnImportMatcher } from './interfaces.js'
 import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
@@ -29,14 +31,12 @@ import {
   buildIndexImportsMap,
   resolveComponentsDir
 } from './utils/build-index-imports-map.js'
+import { isCdnLink } from './utils/is-cdn-link.js'
 import { isJsxElement } from './utils/is-jsx-element.js'
 import { isWcElement } from './utils/is-wc-element.js'
+import { parseCdnImport } from './utils/parse-cdn-import.js'
 import { WcElementAccumulator } from './wc-element-accumulator.js'
 import { wcNodeHandlerMap } from './wc-node-handler-map.js'
-import { isCdnLink } from './utils/is-cdn-link.js'
-import { parseCdnImport } from './utils/parse-cdn-import.js'
-import type { CdnImportMatcher } from './interfaces.js'
-import { WcElementCdnImportMatcher } from './import-matchers/wc-element-cdn-import-matcher.js'
 
 /**
  * Scope class dedicated to data collection from a DOM-based environment.

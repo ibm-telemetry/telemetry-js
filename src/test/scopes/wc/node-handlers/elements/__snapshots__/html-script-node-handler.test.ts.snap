@@ -2,6 +2,7 @@
 
 exports[`class: WcScriptNodeHandler > correctly returns the script sources for an html file fixture 1`] = `
 [
+  "https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/tag.min.js",
   "./js-file-with-import.js",
 ]
 `;

@@ -30,16 +30,20 @@ exports[`processHtmlFile > correctly detects web components in a given html file
   {
     "attributes": [
       {
-        "name": "one",
-        "value": "one",
+        "name": "first",
+        "value": "hi",
       },
       {
-        "name": "two",
+        "name": "second",
         "value": "",
       },
       {
-        "name": "three",
-        "value": "three",
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
       },
     ],
     "name": "cds-button",
@@ -47,19 +51,44 @@ exports[`processHtmlFile > correctly detects web components in a given html file
   {
     "attributes": [
       {
-        "name": "firstprop",
+        "name": "first",
         "value": "hi",
       },
       {
-        "name": "two",
+        "name": "second",
         "value": "",
       },
       {
-        "name": "secondprop",
+        "name": "third",
         "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
       },
     ],
     "name": "accordion",
+  },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "cds-tag",
   },
 ]
 `;

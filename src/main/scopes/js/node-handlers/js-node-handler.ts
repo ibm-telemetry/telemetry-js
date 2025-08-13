@@ -8,7 +8,7 @@
 import { Loggable } from '../../../core/log/loggable.js'
 import { type Logger } from '../../../core/log/logger.js'
 import type { AnyAstNode, ParsedFile } from '../../wc/interfaces.js'
-import { WcElementAccumulator } from '../../wc/wc-element-accumulator.js'
+import type { WcElementAccumulator } from '../../wc/wc-element-accumulator.js'
 import type { JsAccumulator } from '../js-accumulator.js'
 
 /**

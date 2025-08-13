@@ -15,10 +15,11 @@ import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { JsImport } from '../../js/interfaces.js'
+import { isJsImport } from '../../js/utils/is-js-import.js'
 import { type JsxElement } from '../../jsx/interfaces.js'
 import type { PackageData } from '../../npm/interfaces.js'
-import { CdnImport, type WcElement, type WcElementAttribute } from '../interfaces.js'
-import { isJsImport } from '../../js/utils/is-js-import.js'
+import type { CdnImport } from '../interfaces.js'
+import { type WcElement, type WcElementAttribute } from '../interfaces.js'
 import { isCdnImport } from '../utils/is-cdn-import.js'
 import { isJsxElement } from '../utils/is-jsx-element.js'
 import { WC_PACKAGE_REACT_WRAPPERS } from '../wc-defs.js'
@@ -151,7 +152,7 @@ export class ElementMetric extends ScopeMetric {
       NpmScopeAttributes.INSTRUMENTED_RAW,
       NpmScopeAttributes.INSTRUMENTED_OWNER,
       NpmScopeAttributes.INSTRUMENTED_NAME,
-      // NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
+      NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
       NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
     ])
 

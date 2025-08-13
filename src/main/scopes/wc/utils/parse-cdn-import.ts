@@ -5,9 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { CdnImport } from '../interfaces.js'
-import { CDN_PACKAGES, CDN_ENDING } from '../wc-defs.js'
+import { CDN_ENDING, CDN_PACKAGES } from '../wc-defs.js'
 import { getWcPrefix } from './get-wc-prefix.js'
 
+/**
+ *
+ * @param scriptSource
+ */
 export function parseCdnImport(scriptSource: string) {
   const segments = scriptSource.split('/')
   const componentName = segments.pop()?.split(CDN_ENDING)[0] ?? ''

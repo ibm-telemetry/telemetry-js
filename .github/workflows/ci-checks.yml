@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node 🏗
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.4'
           cache: 'npm'
 
       - name: Install Node Modules 🔧
@@ -50,7 +50,7 @@ jobs:
       - name: Setup Node 🏗
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.4'
           cache: 'npm'
 
       - name: Install Node Modules 🔧
@@ -74,7 +74,7 @@ jobs:
       - name: Setup Node 🏗
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.4'
           cache: 'npm'
 
       - name: Install Node Modules 🔧

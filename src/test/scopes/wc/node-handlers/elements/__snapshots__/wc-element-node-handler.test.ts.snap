@@ -90,5 +90,26 @@ exports[`class: WcElementNodeHandler > correctly returns the html elements for a
     ],
     "name": "cds-tag",
   },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "cds-code-snippet",
+  },
 ]
 `;

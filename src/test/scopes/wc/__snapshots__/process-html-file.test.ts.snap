@@ -90,5 +90,26 @@ exports[`processHtmlFile > correctly detects web components in a given html file
     ],
     "name": "cds-tag",
   },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "cds-code-snippet",
+  },
 ]
 `;

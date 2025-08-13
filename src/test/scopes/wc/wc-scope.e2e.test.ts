@@ -57,7 +57,7 @@ describe('class: WcScope', () => {
       expect(results).toMatchSnapshot()
     })
 
-    it('correctly captures metric data for a wc element imported through a CDN', async () => {
+    it('correctly captures metric data for wc elements imported through a CDN', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture('projects/web-components-project')
       const cwd = new Fixture('projects/web-components-project/node_modules/@carbon/web-components')

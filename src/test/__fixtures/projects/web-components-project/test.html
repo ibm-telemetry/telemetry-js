@@ -7,6 +7,14 @@
       type="module"
       src="https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/tag.min.js"
     ></script>
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/code-snippet.min.js"
+    ></script>
+     <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/not-matching-package/button.js"
+    ></script>
   </head>
   <body>
     <cds-button first="hi" second third="wow" notAllowed="notAllowed"
@@ -16,7 +24,10 @@
       >This will be collected when instrumented package is "instrumented"</accordion
     >
     <cds-tag first="hi" second third="wow" notAllowed="notAllowed"
-      >This will be collected when instrumented package is "@carbon/web-components"</cds-tag
+      >This has a specified version and will be collected when instrumented package is "@carbon/web-components"</cds-tag
+    >
+    <cds-code-snippet first="hi" second third="wow" notAllowed="notAllowed"
+      >This uses the "latest" version tag and will be collected when instrumented package is "@carbon/web-components"</cds-tag
     >
     <script type="module" src="./js-file-with-import.js"></script>
   </body>

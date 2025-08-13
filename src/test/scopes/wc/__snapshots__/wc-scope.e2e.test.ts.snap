@@ -218,7 +218,7 @@ exports[`class: WcScope > run > captures metrics when instrumented package is in
 }
 `;
 
-exports[`class: WcScope > run > correctly captures metric data for a wc element imported through a CDN 1`] = `
+exports[`class: WcScope > run > correctly captures metric data for wc elements imported through a CDN 1`] = `
 {
   "errors": [],
   "resourceMetrics": {
@@ -293,6 +293,39 @@ exports[`class: WcScope > run > correctly captures metric data for a wc element 
                   "wc.element.importSource": "cdn",
                   "wc.element.module.specifier": "@carbon/web-components",
                   "wc.element.name": "cds-tag",
+                },
+                "endTime": [
+                  0,
+                  0,
+                ],
+                "startTime": [
+                  0,
+                  0,
+                ],
+                "value": 1,
+              },
+              {
+                "attributes": {
+                  "npm.dependency.instrumented.name": "42e6f853e8f0a88976bf920d8e3538bf451f94631104b115d9ecf46e52d441f3",
+                  "npm.dependency.instrumented.owner": "0fcb80b945f24dcf6154642421ec704bdd967d880e42d338cabce855bb334e26",
+                  "npm.dependency.instrumented.raw": "6896bea85c8c0cf45abc7cb1cd7aa0d73c01661b3974f4c08120f9e9ce485eb3",
+                  "npm.dependency.instrumented.version.raw": "0f76a729185c3f899b3df3711ebbdd82b4ac54533c84a5d8fbfcd1d3cec1477c",
+                  "wc.element.attributes.names": [
+                    "first",
+                    "second",
+                    "third",
+                    "[redacted3]",
+                  ],
+                  "wc.element.attributes.values": [
+                    "hi",
+                    "[redacted2]",
+                    "wow",
+                    "[redacted1]",
+                  ],
+                  "wc.element.frameworkWrapper": "none",
+                  "wc.element.importSource": "cdn",
+                  "wc.element.module.specifier": "@carbon/web-components",
+                  "wc.element.name": "cds-code-snippet",
                 },
                 "endTime": [
                   0,

@@ -106,11 +106,23 @@ export class ElementMetric extends ScopeMetric {
       [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'none'
     }
 
+    let hashVersionRaw = true
+
     if (isCdnImport(this.matchingImport)) {
       // add fields specific to CDN imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'cdn'
       metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.package
       metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.matchingImport.version
+      const importTag = this.matchingImport.version.split('/')[1]
+      if (!(importTag === 'latest') && !(importTag === 'next')) {
+        // CDN import expected to specify version
+        const parsedVersion = this.matchingImport.version.split('v')[1]?.split('.') ?? []
+        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = parsedVersion[0]
+        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = parsedVersion[1]
+        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH] = parsedVersion[2]
+      } else {
+        hashVersionRaw = false
+      }
     } else {
       // add fields specific to npm imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'npm'
@@ -148,13 +160,18 @@ export class ElementMetric extends ScopeMetric {
       }
     }
 
-    metricData = hash(metricData, [
+    const hashedAttributes = [
       NpmScopeAttributes.INSTRUMENTED_RAW,
       NpmScopeAttributes.INSTRUMENTED_OWNER,
       NpmScopeAttributes.INSTRUMENTED_NAME,
-      NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
       NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
-    ])
+    ] as [string | number, ...(string | number)[]]
+
+    if (hashVersionRaw) {
+      hashedAttributes.push(NpmScopeAttributes.INSTRUMENTED_VERSION_RAW)
+    }
+
+    metricData = hash(metricData, hashedAttributes)
 
     return metricData
   }

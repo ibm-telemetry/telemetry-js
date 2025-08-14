@@ -177,8 +177,6 @@ export class WcScope extends Scope {
 
     this.logger.debug('Post resolve index accumulator contents:', JSON.stringify(accumulator))
 
-    removeIrrelevantImports(accumulator, instrumentedPackage.name)
-
     this.logger.debug('This is the sourcefile', sourceFile.fileName ?? '')
     this.logger.debug('This is the current jsImports', JSON.stringify(accumulator.jsImports))
 

@@ -186,10 +186,10 @@ describe('class: JsxScope', () => {
 
     it('correctly identifies elements with their matchers', () => {
       const accumulator = new JsxElementAccumulator()
-      accumulator.imports.push(defaultImport)
-      accumulator.imports.push(allImport)
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(defaultImport)
+      accumulator.jsImports.push(allImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.elements.push(defaultElement)
       accumulator.elements.push(allElement)
       accumulator.elements.push(namedElement)
@@ -221,10 +221,10 @@ describe('class: JsxScope', () => {
         attributes: []
       }
       const accumulator = new JsxElementAccumulator()
-      accumulator.imports.push(defaultImport)
-      accumulator.imports.push(allImport)
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(defaultImport)
+      accumulator.jsImports.push(allImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.elements.push(defaultElement)
       accumulator.elements.push(namedElement)
       accumulator.elements.push(renamedElement)

@@ -11,19 +11,7 @@ import OtherThing from '@not/instrumented'
 export const MyComponent = ({ other, ...spreadObj }) => {
   return (
     <OtherThing firstProp="hi">
-      <ImaginaryThing
-        firstProp="hi"
-        secondProp="wow"
-        numberProp={5}
-        undefinedProp={undefined}
-        nullProp={null}
-        objectProp={{ key: 'value' }}
-        isCool
-        isExplicitlyCool={true}
-        isNotCool={false}
-        objAccess={obj['accessKey']}
-        {...spreadObj}
-      />
+      <ImaginaryThing firstProp="hi" secondProp="wow" notAllowed="notAllowed" />
     </OtherThing>
   )
 }

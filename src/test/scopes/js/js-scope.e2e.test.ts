@@ -191,10 +191,10 @@ describe('class: JsScope', () => {
 
     it('correctly identifies tokens with their matchers', () => {
       const accumulator = new JsFunctionTokenAccumulator()
-      accumulator.imports.push(defaultImport)
-      accumulator.imports.push(allImport)
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(defaultImport)
+      accumulator.jsImports.push(allImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.tokens.push(defaultToken)
       accumulator.tokens.push(allToken)
       accumulator.tokens.push(namedToken)
@@ -230,10 +230,10 @@ describe('class: JsScope', () => {
         endPos: 0
       }
       const accumulator = new JsFunctionTokenAccumulator()
-      accumulator.imports.push(defaultImport)
-      accumulator.imports.push(allImport)
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(defaultImport)
+      accumulator.jsImports.push(allImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.tokens.push(defaultToken)
       accumulator.tokens.push(namedToken)
       accumulator.tokens.push(renamedToken)
@@ -327,10 +327,10 @@ describe('class: JsScope', () => {
 
     it('correctly identifies functions with their matchers', () => {
       const accumulator = new JsFunctionTokenAccumulator()
-      accumulator.imports.push(defaultImport)
-      accumulator.imports.push(allImport)
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(defaultImport)
+      accumulator.jsImports.push(allImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.functions.push(defaultFunction)
       accumulator.functions.push(allFunction)
       accumulator.functions.push(namedFunction)
@@ -368,10 +368,10 @@ describe('class: JsScope', () => {
         endPos: 0
       }
       const accumulator = new JsFunctionTokenAccumulator()
-      accumulator.imports.push(defaultImport)
-      accumulator.imports.push(allImport)
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(defaultImport)
+      accumulator.jsImports.push(allImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.functions.push(defaultFunction)
       accumulator.functions.push(namedFunction)
       accumulator.functions.push(renamedFunction)

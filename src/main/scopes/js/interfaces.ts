@@ -7,17 +7,15 @@
 import type * as ts from 'typescript'
 
 import type { Logger } from '../../core/log/logger.js'
+import type { Import } from '../../interfaces.js'
 import type { ParsedFile } from '../wc/interfaces.js'
 import type { ComplexValue } from './complex-value.js'
 import type { JsNodeHandler } from './node-handlers/js-node-handler.js'
 import type { NodeValueHandler } from './node-handlers/value-handlers/node-value-handler.js'
 
-export interface JsImport {
-  name: string
-  path: string
+export interface JsImport extends Import {
   isDefault: boolean
   isAll: boolean
-  prefix?: string
   rename?: string
   isSideEffect?: boolean
 }

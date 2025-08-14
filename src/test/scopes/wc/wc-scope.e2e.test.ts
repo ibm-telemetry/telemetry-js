@@ -11,8 +11,10 @@ import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import type { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
 import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
 import type { JsxElement } from '../../../main/scopes/jsx/interfaces.js'
+import { WcElementCdnImportMatcher } from '../../../main/scopes/wc/import-matchers/wc-element-cdn-import-matcher.js'
 import { WcElementSideEffectImportMatcher } from '../../../main/scopes/wc/import-matchers/wc-element-side-effect-import-matcher.js'
 import type { WcElement } from '../../../main/scopes/wc/interfaces.js'
+import type { CdnImportMatcher } from '../../../main/scopes/wc/interfaces.js'
 import { WcElementAccumulator } from '../../../main/scopes/wc/wc-element-accumulator.js'
 import { WcScope } from '../../../main/scopes/wc/wc-scope.js'
 import { clearDataPointTimes } from '../../__utils/clear-data-point-times.js'
@@ -28,7 +30,7 @@ const config: ConfigSchema = {
   collect: {
     wc: {
       elements: {
-        allowedAttributeNames: ['firstProp', 'secondProp', 'firstprop', 'secondprop'],
+        allowedAttributeNames: ['first', 'second', 'third', 'firstProp', 'secondProp'],
         allowedAttributeStringValues: ['hi', 'wow']
       }
     }
@@ -38,10 +40,27 @@ const config: ConfigSchema = {
 describe('class: WcScope', () => {
   const logger = initLogger()
   describe('run', () => {
-    it('correctly captures wc element metric data', async () => {
+    it('correctly captures metric data for wc elements imported through a JsImport', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
       const root = new Fixture('projects/web-components-project')
       const cwd = new Fixture('projects/web-components-project/node_modules/instrumented')
+      const wcScope = new WcScope(cwd.path, root.path, config, logger)
+
+      wcScope.setRunSync(true)
+      await wcScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('correctly captures metric data for wc elements imported through a CDN', async () => {
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture('projects/web-components-project')
+      const cwd = new Fixture('projects/web-components-project/node_modules/@carbon/web-components')
       const wcScope = new WcScope(cwd.path, root.path, config, logger)
 
       wcScope.setRunSync(true)
@@ -164,15 +183,19 @@ describe('class: WcScope', () => {
 
     it('correctly identifies elements with their matchers', () => {
       const accumulator = new WcElementAccumulator()
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.elements.push(namedElement)
       accumulator.elements.push(renamedElement)
 
-      wcScope.resolveElementImports(accumulator, [
-        new WcElementSideEffectImportMatcher(),
-        new JsxElementRenamedImportMatcher()
-      ] as JsImportMatcher<JsxElement | WcElement>[])
+      wcScope.resolveElementImports(
+        accumulator,
+        [
+          new WcElementSideEffectImportMatcher(),
+          new JsxElementRenamedImportMatcher()
+        ] as JsImportMatcher<JsxElement | WcElement>[],
+        [new WcElementCdnImportMatcher()] as CdnImportMatcher<WcElement>[]
+      )
 
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
       expect(accumulator.elementImports.get(renamedElement)).toStrictEqual(renamedImport)
@@ -192,15 +215,19 @@ describe('class: WcScope', () => {
         attributes: []
       }
       const accumulator = new WcElementAccumulator()
-      accumulator.imports.push(namedImport)
-      accumulator.imports.push(renamedImport)
+      accumulator.jsImports.push(namedImport)
+      accumulator.jsImports.push(renamedImport)
       accumulator.elements.push(namedElement)
       accumulator.elements.push(renamedElement)
       accumulator.elements.push(unmatchedElement1)
       accumulator.elements.push(unmatchedElement2)
 
       const wcScope = new WcScope('', '', config, logger)
-      wcScope.resolveElementImports(accumulator, [new WcElementSideEffectImportMatcher()])
+      wcScope.resolveElementImports(
+        accumulator,
+        [new WcElementSideEffectImportMatcher()],
+        [new WcElementCdnImportMatcher()]
+      )
       expect(accumulator.elementImports.get(namedElement)).toStrictEqual(namedImport)
       expect(accumulator.elementImports.get(unmatchedElement1)).toBeUndefined()
       expect(accumulator.elementImports.get(unmatchedElement2)).toBeUndefined()
@@ -209,7 +236,7 @@ describe('class: WcScope', () => {
     it('can accept empty array', () => {
       const accumulator = new WcElementAccumulator()
       expect(() => {
-        wcScope.resolveElementImports(accumulator, [])
+        wcScope.resolveElementImports(accumulator, [], [])
       }).not.toThrow()
     })
   })

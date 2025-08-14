@@ -112,16 +112,17 @@ export class ElementMetric extends ScopeMetric {
       // add fields specific to CDN imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'cdn'
       metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.package
-      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.matchingImport.version
       const importTag = this.matchingImport.version.split('/')[1]
-      if (!(importTag === 'latest') && !(importTag === 'next')) {
+      if (importTag === 'latest' || importTag === 'next') {
+        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.matchingImport.version
+        hashVersionRaw = false
+      } else {
         // CDN import expected to specify version
         const parsedVersion = this.matchingImport.version.split('v')[1]?.split('.') ?? []
+        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = parsedVersion.join('.')
         metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = parsedVersion[0]
         metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = parsedVersion[1]
         metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH] = parsedVersion[2]
-      } else {
-        hashVersionRaw = false
       }
     } else {
       // add fields specific to npm imports

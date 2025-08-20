@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2023, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,7 @@ import { type JsxElement, type JsxElementAttribute } from '../../interfaces.js'
  * Holds node handling logic to be inherited by Jsx node handlers.
  *
  */
-export abstract class JsxNodeHandler extends JsNodeHandler<JsxElement> {
+export abstract class JsxNodeHandler extends JsNodeHandler<JsxElement, ts.SourceFile> {
   /**
    * Given a TagName node representing a JsxElement, obtains the name and prefix values.
    *

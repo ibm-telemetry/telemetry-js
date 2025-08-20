@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2024, 2024
+ * Copyright IBM Corp. 2024, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -90,7 +90,7 @@ export class JsScope extends Scope {
 
     for (const sourceFile of sourceFiles) {
       const resultPromise = this.captureFileMetrics(
-        await sourceFile.createSourceFile(),
+        (await sourceFile.createSourceFile()) as ts.SourceFile,
         instrumentedPackage,
         importMatchers,
         collectorKeys
@@ -214,7 +214,7 @@ export class JsScope extends Scope {
   ) {
     accumulator.tokens.forEach((jsToken) => {
       const jsImport = tokenMatchers
-        .map((tokenMatcher) => tokenMatcher.findMatch(jsToken, accumulator.imports))
+        .map((tokenMatcher) => tokenMatcher.findMatch(jsToken, accumulator.jsImports))
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {
@@ -231,7 +231,7 @@ export class JsScope extends Scope {
   ) {
     accumulator.functions.forEach((jsFunction) => {
       const jsImport = functionMatchers
-        .map((functionMatcher) => functionMatcher.findMatch(jsFunction, accumulator.imports))
+        .map((functionMatcher) => functionMatcher.findMatch(jsFunction, accumulator.jsImports))
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {

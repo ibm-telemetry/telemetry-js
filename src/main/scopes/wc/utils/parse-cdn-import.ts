@@ -1,0 +1,55 @@
+/*
+ * Copyright IBM Corp. 2025, 2025
+ *
+ * This source code is licensed under the Apache-2.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import type { CdnImport } from '../interfaces.js'
+import { CDN_ENDING, CDN_PACKAGES } from '../wc-defs.js'
+import { getWcPrefix } from './get-wc-prefix.js'
+
+/**
+ * Parse info from a CDN link and return a CdnImport object.
+ *
+ * @param scriptSource - A CDN link from an HTML `<script>` tag.
+ * @returns - A CdnImport object containing the info parsed from `scriptSource`.
+ */
+export function parseCdnImport(scriptSource: string) {
+  const segments = scriptSource.split('/')
+  const componentName = segments.pop()?.split(CDN_ENDING)[0] ?? ''
+  const [packageName, version] = getPackageInfo(scriptSource)
+  const componentPrefix = getWcPrefix(packageName)
+  const cdnImport: CdnImport = {
+    name: componentName,
+    path: scriptSource,
+    prefix: componentPrefix,
+    package: packageName,
+    version: version
+  }
+  return cdnImport
+}
+
+/**
+ * Parse a package name and version from a CDN link.
+ *
+ * @param scriptSource - A CDN link from an HTML `<script>` tag.
+ * @returns - An array [packageName, packageVersion] parsed from `scriptSource`.
+ */
+function getPackageInfo(scriptSource: string): [string, string] {
+  for (const [pkgName, pkgPath] of CDN_PACKAGES) {
+    if (scriptSource.includes(pkgPath)) {
+      const details = scriptSource.split(pkgPath)[1]
+      const segments = details?.split('/')
+      if (segments === undefined) {
+        return ['', '']
+      }
+      if (segments[0] === 'version' && segments[1] !== undefined) {
+        return [pkgName, segments[1]]
+      }
+      if (segments[0] === 'tag' && segments[1] !== undefined && segments[2] !== undefined) {
+        return [pkgName, segments[1] + '/' + segments[2]]
+      }
+    }
+  }
+  return ['', '']
+}

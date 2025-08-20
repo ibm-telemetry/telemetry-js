@@ -7,8 +7,11 @@
 import { readFile } from 'node:fs/promises'
 import * as path from 'node:path'
 
+import type { Document as HtmlDocument } from 'domhandler'
+import { parseDocument } from 'htmlparser2'
 import * as ts from 'typescript'
 
+import type { HtmlParsedFile } from '../scopes/wc/interfaces.js'
 import { type Logger } from './log/logger.js'
 import { TrackedFileEnumerator } from './tracked-file-enumerator.js'
 
@@ -48,7 +51,19 @@ export async function getTrackedSourceFiles(
   const promises = files.map(async (file) => {
     return {
       fileName: file,
-      async createSourceFile(): Promise<ts.SourceFile> {
+      async createSourceFile(): Promise<ts.SourceFile | HtmlDocument> {
+        logger.debug('Filename: ', file)
+
+        // Parse html file with `htmlparser2
+        if (file.endsWith('html') || file.endsWith('htm')) {
+          const parsedFile = parseDocument((await readFile(file)).toString()) as HtmlParsedFile
+          parsedFile.fileName = file
+          logger.debug('Returned parsed file: ', file)
+
+          return parsedFile
+        }
+
+        // Parse any other files
         return ts.createSourceFile(
           file,
           (await readFile(file)).toString(),

@@ -1,0 +1,115 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`processHtmlFile > correctly detects web components in a given html file > elements 1`] = `
+[
+  {
+    "attributes": [],
+    "name": "html",
+  },
+  {
+    "attributes": [],
+    "name": "head",
+  },
+  {
+    "attributes": [
+      {
+        "name": "charset",
+        "value": "UTF-8",
+      },
+    ],
+    "name": "meta",
+  },
+  {
+    "attributes": [],
+    "name": "title",
+  },
+  {
+    "attributes": [],
+    "name": "body",
+  },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "cds-button",
+  },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "accordion",
+  },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "cds-tag",
+  },
+  {
+    "attributes": [
+      {
+        "name": "first",
+        "value": "hi",
+      },
+      {
+        "name": "second",
+        "value": "",
+      },
+      {
+        "name": "third",
+        "value": "wow",
+      },
+      {
+        "name": "notallowed",
+        "value": "notAllowed",
+      },
+    ],
+    "name": "cds-code-snippet",
+  },
+]
+`;

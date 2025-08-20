@@ -28,6 +28,6 @@ describe('processFile', () => {
 
     processFile(accumulator, sourceFile, jsxNodeHandlerMap, logger)
     expect(accumulator.elements).toMatchSnapshot('elements')
-    expect(accumulator.imports).toMatchSnapshot('imports')
+    expect(accumulator.jsImports).toMatchSnapshot('imports')
   })
 })

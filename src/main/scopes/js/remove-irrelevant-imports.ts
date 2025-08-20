@@ -14,7 +14,7 @@ import type { JsAccumulator } from './js-accumulator.js'
  * @param packageName - Name of the package to filter imports for.
  */
 export function removeIrrelevantImports(accumulator: JsAccumulator, packageName: string) {
-  accumulator.imports = accumulator.imports.filter((jsImport) => {
+  accumulator.jsImports = accumulator.jsImports.filter((jsImport) => {
     return jsImport.path === packageName || jsImport.path.startsWith(`${packageName}/`)
   })
 }

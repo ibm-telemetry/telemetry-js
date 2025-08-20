@@ -4,7 +4,10 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { Node as HtmlNode } from 'domhandler'
 import * as ts from 'typescript'
+
+import type { HtmlNodeAdapter } from '../../main/scopes/wc/node-handlers/adapters/html-node-adapter.js'
 
 /**
  * Given a sourceNode, returns all nodes of a given type contained in the node's tree.
@@ -35,4 +38,28 @@ export function findNodesByType<T = ts.Node>(
   visit(sourceNode)
 
   return nodes as T[]
+}
+
+/**
+ * Given a HtmlNodeAdapter, returns all nodes of a given type contained in the node's tree.
+ *
+ * @param root - Top-level node to start analysis from.
+ * @param kind - Node kind to find nodes for.
+ * @returns Array of nodes that match the specified kind.
+ */
+export function findDomNodesByType(root: HtmlNodeAdapter, kind: string): HtmlNode[] {
+  const results: HtmlNode[] = []
+
+  function visit(node: HtmlNodeAdapter) {
+    if (node.getKind() === kind) {
+      results.push(node.getNode())
+    }
+
+    for (const child of node.getChildren()) {
+      visit(child as HtmlNodeAdapter)
+    }
+  }
+
+  visit(root)
+  return results
 }

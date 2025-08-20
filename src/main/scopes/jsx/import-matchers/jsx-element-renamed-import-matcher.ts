@@ -12,6 +12,7 @@ import { type JsxElement } from '../interfaces.js'
  * Identifies JsxElements that have been imported as renamed imports.
  */
 export class JsxElementRenamedImportMatcher implements JsImportMatcher<JsxElement> {
+  elementType: 'jsx' = 'jsx' as const
   /**
    * Determines if a given JsxElement is a renamed import
    * (e.g.: `import {something as somethingElse} from 'package'`)

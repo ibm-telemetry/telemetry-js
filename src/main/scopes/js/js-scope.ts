@@ -90,7 +90,7 @@ export class JsScope extends Scope {
 
     for (const sourceFile of sourceFiles) {
       const resultPromise = this.captureFileMetrics(
-        await sourceFile.createSourceFile(),
+        (await sourceFile.createSourceFile()) as ts.SourceFile,
         instrumentedPackage,
         importMatchers,
         collectorKeys
@@ -214,7 +214,7 @@ export class JsScope extends Scope {
   ) {
     accumulator.tokens.forEach((jsToken) => {
       const jsImport = tokenMatchers
-        .map((tokenMatcher) => tokenMatcher.findMatch(jsToken, accumulator.imports))
+        .map((tokenMatcher) => tokenMatcher.findMatch(jsToken, accumulator.jsImports))
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {
@@ -231,7 +231,7 @@ export class JsScope extends Scope {
   ) {
     accumulator.functions.forEach((jsFunction) => {
       const jsImport = functionMatchers
-        .map((functionMatcher) => functionMatcher.findMatch(jsFunction, accumulator.imports))
+        .map((functionMatcher) => functionMatcher.findMatch(jsFunction, accumulator.jsImports))
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {

@@ -13,6 +13,8 @@ import { type JsxElement } from '../interfaces.js'
  * and returns an import element match (if any) or undefined otherwise.
  */
 export class JsxElementAllImportMatcher implements JsImportMatcher<JsxElement> {
+  elementType: 'jsx' = 'jsx' as const
+
   /**
    * Determines if a given JsxElement is an all(*) import
    * (.e.g: import * as something from 'package')

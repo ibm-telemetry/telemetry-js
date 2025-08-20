@@ -4,7 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type * as ts from 'typescript'
 
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
@@ -15,6 +14,7 @@ import { processFile } from '../js/process-file.js'
 import { removeIrrelevantImports } from '../js/remove-irrelevant-imports.js'
 import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
+import { ParsedFile } from '../wc/interfaces.js'
 import { JsxElementAllImportMatcher } from './import-matchers/jsx-element-all-import-matcher.js'
 import { JsxElementNamedImportMatcher } from './import-matchers/jsx-element-named-import-matcher.js'
 import { JsxElementRenamedImportMatcher } from './import-matchers/jsx-element-renamed-import-matcher.js'
@@ -116,13 +116,16 @@ export class JsxScope extends Scope {
    * @param importMatchers - Matchers instances to use for import-element matching.
    */
   async captureFileMetrics(
-    sourceFile: ts.SourceFile,
+    sourceFile: ParsedFile,
     instrumentedPackage: PackageData,
     importMatchers: JsImportMatcher<JsxElement>[]
   ) {
     const accumulator = new JsxElementAccumulator()
 
     processFile(accumulator, sourceFile, jsxNodeHandlerMap, this.logger)
+
+    this.logger.debug('Pre0filter accumulator contents:', JSON.stringify(accumulator))
+
     removeIrrelevantImports(accumulator, instrumentedPackage.name)
     this.resolveElementImports(accumulator, importMatchers)
 
@@ -145,7 +148,7 @@ export class JsxScope extends Scope {
   ) {
     accumulator.elements.forEach((jsxElement) => {
       const jsImport = elementMatchers
-        .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.imports))
+        .map((elementMatcher) => elementMatcher.findMatch(jsxElement, accumulator.jsImports))
         .find((jsImport) => jsImport !== undefined)
 
       if (jsImport === undefined) {

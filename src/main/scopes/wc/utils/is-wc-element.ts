@@ -8,12 +8,14 @@ import type { WcElement } from '../interfaces.js'
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- allow subtype flexibility */
 /**
- * Function to determine if an element is a web component.
+ * Function to determine if an element is of type WcElement.
  *
  * @param element - Element to check.
  * @returns Boolean determining if element is a web component.
  */
 export function isWcElement(element: any): element is WcElement {
-  return 'name' in element && 'attributes' in element
+  return (
+    typeof element.name === 'string' && Array.isArray(element.attributes) && !('prefix' in element)
+  )
 }
 /* eslint-enable @typescript-eslint/no-explicit-any -- re-enabling rule after specific use */

@@ -288,7 +288,7 @@ export class WcScope extends Scope {
     const cdnImport = cdnImportMatchers
       .map((elementMatcher) => {
         this.logger.debug(
-          'Type is ',
+          'Import matcher type is ',
           elementMatcher.elementType,
           'element is',
           JSON.stringify(element)
@@ -311,7 +311,7 @@ export class WcScope extends Scope {
       const elemImport = jsImportMatchers
         .map((elementMatcher) => {
           this.logger.debug(
-            'Type is ',
+            'Import matcher type is ',
             elementMatcher.elementType,
             'element is',
             JSON.stringify(element)
@@ -321,7 +321,10 @@ export class WcScope extends Scope {
             return elementMatcher.findMatch(element, accumulator.jsImports)
           }
 
-          if (elementMatcher.elementType === 'wc' && isWcElement(element)) {
+          if (
+            elementMatcher.elementType === 'wc' &&
+            (isWcElement(element) || isJsxElement(element))
+          ) {
             const matchedImport = elementMatcher.findMatch(element, accumulator.jsImports)
             if (matchedImport !== undefined) {
               return matchedImport

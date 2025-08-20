@@ -14,6 +14,8 @@ import type { JsxElement } from '../../jsx/interfaces.js'
  * @returns Boolean determining if element is a a JsxElement.
  */
 export function isJsxElement(element: any): element is JsxElement {
-  return 'prefix' in element && 'attributes' in element
+  return (
+    typeof element.name === 'string' && Array.isArray(element.attributes) && 'prefix' in element
+  )
 }
 /* eslint-enable @typescript-eslint/no-explicit-any -- re-enabling rule after specific use */

@@ -1,0 +1,62 @@
+/*
+ * Copyright IBM Corp. 2025, 2025
+ *
+ * This source code is licensed under the Apache-2.0 license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+import type { Node as HtmlNode } from 'domhandler'
+
+import { type WcElement } from '../../interfaces.js'
+import { isHtmlElement } from '../../utils/is-html-element.js'
+import { type WcElementAccumulator } from '../../wc-element-accumulator.js'
+import { HtmlNodeHandler } from './html-node-handler.js'
+
+/**
+ * Holds logic to construct a WcElement object given a node of said kind.
+ *
+ */
+export class WcScriptNodeHandler extends HtmlNodeHandler {
+  /**
+   * Processes a WcElement node data and adds it to the given accumulator.
+   *
+   * @param node - Node element to process.
+   * @param accumulator - WcAccumulator instance that holds the aggregated elements state.
+   */
+  handle(node: HtmlNode, accumulator: WcElementAccumulator) {
+    accumulator.scriptSources.push(this.getScriptSource(node))
+  }
+
+  /**
+   * Constructs a WcElement object from a given WcElement type AST node.
+   *
+   * @param node - Node element to process.
+   * @returns Constructed WcElement object.
+   * @throws Error if it's not an HtmlElement.
+   */
+  getData(node: HtmlNode): WcElement {
+    if (!isHtmlElement(node)) {
+      throw new Error('Expected an Element node')
+    }
+
+    const name = this.getElementName(node)
+    const attributes = this.getElementAttributes(node)
+
+    return {
+      name,
+      attributes
+    }
+  }
+
+  /**
+   * Returns the script source for the currently imported file.
+   *
+   * @param node - Node element to process.
+   * @returns Script source, either file or CDN link.
+   */
+  getScriptSource(node: HtmlNode): string {
+    const { attributes } = this.getData(node)
+    const rawValue = attributes.find((attr) => attr.name === 'src')?.value
+    return rawValue != null ? String(rawValue) : ''
+  }
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2024, 2024
+ * Copyright IBM Corp. 2024, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,7 @@ import { JsNodeHandler } from '../js-node-handler.js'
  * Holds logic to construct a JsFunction object given an CallExpression node.
  *
  */
-export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction> {
+export class CallExpressionNodeHandler extends JsNodeHandler<JsFunction, ts.SourceFile> {
   /**
    * Processes a CallExpression node data and adds it to the given accumulator.
    *

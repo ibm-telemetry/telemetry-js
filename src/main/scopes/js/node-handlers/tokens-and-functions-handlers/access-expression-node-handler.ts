@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2024, 2024
+ * Copyright IBM Corp. 2024, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -61,8 +61,8 @@ export class AccessExpressionNodeHandler extends JsNodeHandler<JsToken> {
    */
   getData(node: ts.ElementAccessExpression | ts.PropertyAccessExpression): JsToken {
     return {
-      name: node.getText(this.sourceFile),
-      accessPath: getAccessPath(node, this.sourceFile, this.logger),
+      name: node.getText(this.sourceFile as ts.SourceFile),
+      accessPath: getAccessPath(node, this.sourceFile as ts.SourceFile, this.logger),
       startPos: node.pos,
       endPos: node.end
     }

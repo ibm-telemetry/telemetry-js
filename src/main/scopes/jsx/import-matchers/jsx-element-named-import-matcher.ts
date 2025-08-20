@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2023, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import { type JsxElement } from '../interfaces.js'
  * and returns an import element match (if any) or undefined otherwise.
  */
 export class JsxElementNamedImportMatcher implements JsImportMatcher<JsxElement> {
+  elementType: 'jsx' = 'jsx' as const
   /**
    * Determines if a given JsxElement is a named import (e.g.: `import {something} from 'package'`).
    *

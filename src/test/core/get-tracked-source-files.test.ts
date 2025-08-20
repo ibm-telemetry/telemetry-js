@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corp. 2023, 2024
+ * Copyright IBM Corp. 2023, 2025
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,11 +23,15 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([
       path.join(root.path, 'test.cjs'),
+      path.join(root.path, 'test.htm'),
+      path.join(root.path, 'test.html'),
       path.join(root.path, 'test.js'),
       path.join(root.path, 'test.jsx'),
       path.join(root.path, 'test.mjs'),
@@ -43,7 +47,9 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([root.path])
@@ -57,7 +63,9 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([])
@@ -71,9 +79,21 @@ describe('getTrackedSourceFiles', () => {
       '.mjs',
       '.cjs',
       '.jsx',
-      '.tsx'
+      '.tsx',
+      '.html',
+      '.htm'
     ])
 
     expect(sourceFiles.map((file) => file.fileName)).toStrictEqual([])
+  })
+
+  it('correctly captures html file', async () => {
+    const root = new Fixture('projects/web-components-project')
+
+    const sourceFiles = await getTrackedSourceFiles(root.path, root.path, logger, ['.html'])
+
+    const parsedFile = sourceFiles[0]
+
+    expect(parsedFile?.fileName).toStrictEqual(path.join(root.path, 'test.html'))
   })
 })

@@ -73,7 +73,7 @@
     "commander": "^12.1.0",
     "domhandler": "^5.0.3",
     "domutils": "^3.2.2",
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jsdoc": "^48.11.0",

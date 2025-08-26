@@ -24,6 +24,8 @@ export const CDN_DOMAINS = ['1.www.s81c.com']
 
 export const CDN_ENDING = '.min.js'
 
+export const CDN_NPM_TAGS = ['canary', 'latest', 'next']
+
 export const CDN_PACKAGES = new Map([
   [WC_PACKAGES.CARBON_WC, '/carbon/web-components/'],
   [WC_PACKAGES.CARBON_DOT_COM_WC, '/carbon-for-ibm-dotcom/']

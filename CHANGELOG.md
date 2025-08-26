@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.10.0...v1.10.1) (2025-08-26)
+
+
+### Bug Fixes
+
+* handle canary npm tag in cdn links ([#315](https://github.com/ibm-telemetry/telemetry-js/issues/315)) ([c0c3fd4](https://github.com/ibm-telemetry/telemetry-js/commit/c0c3fd4d8f37820878cd45369bc785254e284423))
+
 ## [1.10.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.9.1...v1.10.0) (2025-08-20)
 
 

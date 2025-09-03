@@ -102,27 +102,41 @@ export class ChooChooTrain extends Loggable {
 
   /**
    * Establishes ourself as either the conductor or a client.
+   * Attempts connection to an existing conductor 3 times.
+   * If not connection is made, it attempts to become a client instead.
+   *
    * If we are the conductor, run all work in the queue (including our work).
    * If we are a client, send our work to the conductor.
    */
   public async run(): Promise<void> {
     let connection: net.Socket | net.Server | undefined
 
-    for (let i = 0; i < MAX_RETRIES && !connection; i++) {
-      // Try to be the server
+    try {
+      connection = await this.tryConnectToServerWithBackoff()
+    } catch {
+      // no conductor found, safe to become conductor
+    }
+
+    if (!connection) {
       try {
         connection = await this.createServerSocket(this.handleServerConnection.bind(this))
-      } catch {}
-
-      if (!connection) {
-        // Try to be the client
-        try {
-          connection = await this.createClientSocket()
-        } catch {}
+      } catch (err) {
+        // another package became conductor, convert to client instead
+        if (err instanceof Error && (err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
+          try {
+            connection = await this.tryConnectToServerWithBackoff()
+          } catch {
+            // give up 🥲
+            this.logger.debug('Could not establish server or client connection. Exiting')
+            return
+          }
+        } else if (err instanceof Error) {
+          this.logger.error(err)
+          return
+        }
       }
     }
 
-    // give up 🥲
     if (!connection) {
       this.logger.debug('Could not establish server or client connection. Exiting')
       return
@@ -146,6 +160,7 @@ export class ChooChooTrain extends Loggable {
 
       server.on('connection', onConnect)
       server.on('listening', () => {
+        this.logger.debug('Server listening at', this.ipcAddr)
         resolve(server)
       })
 
@@ -167,12 +182,29 @@ export class ChooChooTrain extends Loggable {
     })
   }
 
+  private async tryConnectToServerWithBackoff(): Promise<net.Socket | undefined> {
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        return await this.createClientSocket()
+      } catch {
+        // randomized delay to avoid all connecting at the same time
+        await new Promise((r) => setTimeout(r, Math.random() * 50 + 50))
+      }
+    }
+    this.logger.error('Unable to connect to conductor after retries')
+    return
+  }
+
   @Trace()
   private createClientSocket(): Promise<net.Socket> {
     return new Promise((resolve, reject) => {
       const socket = net.connect(this.ipcAddr)
 
-      socket.on('connect', () => resolve(socket))
+      socket.on('connect', () => {
+        this.logger.debug('Client connected to conductor at', this.ipcAddr)
+        resolve(socket)
+      })
+
       socket.on('error', (error: Error) => {
         this.sendLogs(
           `Wagon experienced error on project ${this.projectId} against ` +
@@ -211,7 +243,7 @@ export class ChooChooTrain extends Loggable {
     return new Promise((resolve, reject) => {
       const work = this.workQueue.shift()
 
-      this.logger.debug('Sending work through IPC: ', JSON.stringify(work))
+      this.logger.debug(`Sending work through IPC ${this.ipcAddr}:  ${JSON.stringify(work)}`)
 
       socket.on('close', resolve)
       socket.on('error', (error: Error) => {
@@ -261,6 +293,8 @@ export class ChooChooTrain extends Loggable {
       if (!currentWork) {
         return
       }
+
+      this.logger.debug('Current work is ', JSON.stringify(currentWork))
 
       const config = await this.getPackageData(currentWork)
       this.environment = new Environment({ cwd: currentWork.cwd })

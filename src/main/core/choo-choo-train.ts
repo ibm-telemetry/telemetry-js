@@ -62,6 +62,9 @@ interface Work {
   configFilePath: string
 }
 
+import * as fs from 'fs'
+const LOCK_FILE = '/tmp/ibmtelemetry.lock'
+
 /**
  * Encapsulates all logic for orchestrating the running of multiple telemetry processes.
  */
@@ -78,6 +81,7 @@ export class ChooChooTrain extends Loggable {
   private logEndpoint?: string
   private totalDuration?: number
   private totalPackages?: number
+  private isConductor: boolean
 
   /**
    * Constructs a new ChooChooTrain instance.
@@ -95,6 +99,7 @@ export class ChooChooTrain extends Loggable {
   ) {
     super(logger)
 
+    this.isConductor = false
     this.ipcAddr = ipcAddr
 
     this.workQueue.push({ cwd: environment.cwd, configFilePath })
@@ -111,18 +116,26 @@ export class ChooChooTrain extends Loggable {
   public async run(): Promise<void> {
     let connection: net.Socket | net.Server | undefined
 
+    // Try to acquire the lock
     try {
-      connection = await this.tryConnectToServerWithBackoff()
-    } catch {
-      // no conductor found, safe to become conductor
+      const fd = fs.openSync(LOCK_FILE, 'wx') // atomic creation
+      fs.writeSync(fd, `${process.pid}`)
+      fs.closeSync(fd)
+      this.isConductor = true
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException)?.code === 'EEXIST') {
+        this.isConductor = false // another process already owns the lock
+      } else {
+        throw err
+      }
     }
 
-    if (!connection) {
+    if (this.isConductor) {
       try {
         connection = await this.createServerSocket(this.handleServerConnection.bind(this))
       } catch (err) {
-        // another package became conductor, convert to client instead
-        if (err instanceof Error && (err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
+        // Fallback to client if someone else created server first
+        if ((err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
           try {
             connection = await this.tryConnectToServerWithBackoff()
           } catch {
@@ -134,6 +147,13 @@ export class ChooChooTrain extends Loggable {
           this.logger.error(err)
           return
         }
+      }
+    } else {
+      try {
+        connection = await this.tryConnectToServerWithBackoff()
+      } catch {
+        this.logger.debug('Could not connect to conductor. Exiting')
+        return
       }
     }
 
@@ -175,6 +195,7 @@ export class ChooChooTrain extends Loggable {
       })
 
       // Set up signal handler to gracefully close the IPC socket
+      process.on('exit', () => this.handleSignal(server, 'exit'))
       process.on('SIGINT', () => this.handleSignal(server, 'SIGINT'))
       process.on('SIGTERM', () => this.handleSignal(server, 'SIGTERM'))
 
@@ -417,8 +438,17 @@ export class ChooChooTrain extends Loggable {
 
   @Trace()
   private handleSignal(server: net.Server, type: string) {
+    if (this.isConductor) {
+      try {
+        fs.unlinkSync(LOCK_FILE)
+        if (fs.existsSync(this.ipcAddr)) {
+          fs.unlinkSync(this.ipcAddr)
+        }
+      } catch {}
+    }
+
     server.close((err) => {
-      if (err) {
+      if (err && type !== 'exit') {
         this.sendLogs(`Process ${type} signal error: `, err).catch((sendErr) => {
           if (sendErr instanceof Error) {
             this.logger.error(sendErr)

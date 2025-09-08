@@ -60,22 +60,33 @@ interface LogPayload {
 interface Work {
   cwd: string
   configFilePath: string
+  parsedConfig?: Record<string, unknown> & ConfigSchema
 }
 
+import * as os from 'node:os'
+import * as path from 'node:path'
+
 import * as fs from 'fs'
-const LOCK_FILE = '/tmp/ibmtelemetry.lock'
+
+const LOCK_FILE = path.join(os.tmpdir(), 'ibmtelemetry.lock')
+const WC_LOCK_FILE = path.join(os.tmpdir(), 'ibmtelemetry-wc.lock')
+
+const IPC_ADDR = path.join(os.tmpdir(), 'ibmtelemetry-ipc')
+const WC_IPC_ADDR = path.join(os.tmpdir(), 'ibmtelemetry-wc-ipc')
 
 /**
  * Encapsulates all logic for orchestrating the running of multiple telemetry processes.
  */
 export class ChooChooTrain extends Loggable {
   private readonly workQueue: Work[] = []
-  private readonly ipcAddr: string
+  private ipcAddr: string
   private analyzedCommit?: string
   private analyzedPath?: string
+  private configPath: string
   private date?: string
   private environment?: Environment
   private gitInfo?: GitInfo
+  private parsedConfig?: Record<string, unknown> & ConfigSchema
   private projectId?: string
   private scanId?: string
   private logEndpoint?: string
@@ -86,21 +97,18 @@ export class ChooChooTrain extends Loggable {
   /**
    * Constructs a new ChooChooTrain instance.
    *
-   * @param ipcAddr - The address of the IPC pipe.
    * @param environment - Environment variable configuration for this run.
    * @param configFilePath - Path to a config file.
    * @param logger - A logger instance.
    */
-  public constructor(
-    ipcAddr: string,
-    environment: Environment,
-    configFilePath: string,
-    logger: Logger
-  ) {
+  public constructor(environment: Environment, configFilePath: string, logger: Logger) {
     super(logger)
 
     this.isConductor = false
-    this.ipcAddr = ipcAddr
+    this.ipcAddr = IPC_ADDR
+
+    this.logger.debug('Working environment:', environment.cwd)
+    this.configPath = configFilePath
 
     this.workQueue.push({ cwd: environment.cwd, configFilePath })
   }
@@ -115,13 +123,27 @@ export class ChooChooTrain extends Loggable {
    */
   public async run(): Promise<void> {
     let connection: net.Socket | net.Server | undefined
+    let lockFileName: string = LOCK_FILE
+
+    this.parsedConfig = await this.getPackageData(this.configPath)
+
+    // is now using the Web Components server
+    const wc = this.parsedConfig?.collect?.wc
+
+    if (wc !== undefined) {
+      this.logger.debug('Package has web components scope')
+      this.ipcAddr = WC_IPC_ADDR
+      lockFileName = WC_LOCK_FILE
+    }
 
     // Try to acquire the lock
     try {
-      const fd = fs.openSync(LOCK_FILE, 'wx') // atomic creation
+      const fd = fs.openSync(lockFileName, 'wx') // atomic creation
       fs.writeSync(fd, `${process.pid}`)
       fs.closeSync(fd)
       this.isConductor = true
+
+      this.logger.debug('This is now a web components IPC server')
     } catch (err) {
       if ((err as NodeJS.ErrnoException)?.code === 'EEXIST') {
         this.isConductor = false // another process already owns the lock
@@ -265,6 +287,10 @@ export class ChooChooTrain extends Loggable {
     return new Promise((resolve, reject) => {
       const work = this.workQueue.shift()
 
+      if (work !== undefined && this.parsedConfig !== undefined) {
+        work['parsedConfig'] = this.parsedConfig
+      }
+
       this.logger.debug(`Sending work through IPC ${this.ipcAddr}:  ${JSON.stringify(work)}`)
 
       socket.on('close', resolve)
@@ -295,10 +321,10 @@ export class ChooChooTrain extends Loggable {
     // Both server and clients will have the same data due to being provided from git,
     // thus we obtain the data from the conductor's first job before the loop
     const conductorWork = this.workQueue?.[0]
-    if (conductorWork) {
+    if (conductorWork && this.parsedConfig !== undefined) {
       this.environment = new Environment({ cwd: conductorWork.cwd })
       this.gitInfo = await this.getRepoData(conductorWork)
-      await this.getPackageData(conductorWork)
+      conductorWork['parsedConfig'] = this.parsedConfig
 
       this.sendLogs(
         `The ChooChooTrain ride for analyzed path ${this.analyzedPath} at commit ${this.analyzedCommit} has started`
@@ -319,12 +345,14 @@ export class ChooChooTrain extends Loggable {
 
       this.logger.debug('Current work is ', JSON.stringify(currentWork))
 
-      const config = await this.getPackageData(currentWork)
+      const config = currentWork.parsedConfig
       this.environment = new Environment({ cwd: currentWork.cwd })
 
-      // collect for current work
-      await this.collect(this.environment, config)
-      this.totalPackages++
+      if (config !== undefined) {
+        // collect for current work
+        await this.collect(this.environment, config)
+        this.totalPackages++
+      }
     }
 
     this.totalDuration = Number((performance.now() - start).toFixed(2))
@@ -398,14 +426,12 @@ export class ChooChooTrain extends Loggable {
     this.analyzedCommit = hashedData[CustomResourceAttributes.ANALYZED_COMMIT]
     this.analyzedPath = hashedData[CustomResourceAttributes.ANALYZED_PATH]
 
-    // getting the endpoint URL
-    await this.getPackageData(work)
     return hashedData
   }
 
   @Trace()
-  private async getPackageData(work: Work) {
-    const config = await parseYamlFile(work.configFilePath)
+  private async getPackageData(configFilePath: string) {
+    const config = await parseYamlFile(configFilePath)
     const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
     configValidator.validate(config)
 

@@ -136,6 +136,7 @@ export class ChooChooTrain extends Loggable {
       } catch (err) {
         // Fallback to client if someone else created server first
         if ((err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
+          this.logger.debug('Address is in use, however we try to connect')
           try {
             connection = await this.tryConnectToServerWithBackoff()
           } catch {
@@ -309,6 +310,7 @@ export class ChooChooTrain extends Loggable {
     // Consume work until the queue is empty
     while (this.workQueue.length > 0) {
       this.logger.debug('Queue length', this.workQueue.length)
+      this.logger.debug('Current queue:', JSON.stringify(this.workQueue))
 
       const currentWork = this.workQueue.shift()
       if (!currentWork) {
@@ -334,7 +336,17 @@ export class ChooChooTrain extends Loggable {
       true
     )
 
-    server.close()
+    server.close(() => {
+      this.logger.debug('Server closing')
+      if (this.isConductor) {
+        try {
+          fs.unlinkSync(LOCK_FILE)
+          if (fs.existsSync(this.ipcAddr)) {
+            fs.unlinkSync(this.ipcAddr)
+          }
+        } catch {}
+      }
+    })
   }
 
   @Trace()

@@ -115,7 +115,7 @@ export class ChooChooTrain extends Loggable {
 
   /**
    * Establishes ourself as either the conductor or a client.
-   * Attempts connection to an existing conductor 3 times.
+   * Attempts connection to an existing conductor up to `MAX_RETRIES` times.
    * If not connection is made, it attempts to become a client instead.
    *
    * If we are the conductor, run all work in the queue (including our work).

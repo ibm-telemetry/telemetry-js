@@ -142,8 +142,6 @@ export class ChooChooTrain extends Loggable {
       fs.writeSync(fd, `${process.pid}`)
       fs.closeSync(fd)
       this.isConductor = true
-
-      this.logger.debug('This is now a web components IPC server')
     } catch (err) {
       if ((err as NodeJS.ErrnoException)?.code === 'EEXIST') {
         this.isConductor = false // another process already owns the lock
@@ -200,10 +198,10 @@ export class ChooChooTrain extends Loggable {
   private async createServerSocket(onConnect: (socket: net.Socket) => void): Promise<net.Server> {
     return new Promise((resolve, reject) => {
       const server = net.createServer({})
+      this.logger.debug('Server created at', this.ipcAddr)
 
       server.on('connection', onConnect)
       server.on('listening', () => {
-        this.logger.debug('Server listening at', this.ipcAddr)
         resolve(server)
       })
 

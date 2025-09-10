@@ -4,7 +4,6 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import * as os from 'node:os'
 import * as path from 'node:path'
 
 import * as commander from 'commander'
@@ -18,8 +17,6 @@ interface CommandLineOptions {
   config: string
   log?: string
 }
-
-const IPC_ADDR = path.join(os.tmpdir(), 'ibmtelemetry-ipc')
 
 const { Command } = commander
 
@@ -57,7 +54,7 @@ async function runBackgroundProcess(opts: CommandLineOptions) {
 
   logger.traceEnter('', 'runBackgroundProcess', [opts])
 
-  const chooChooTrain = new ChooChooTrain(IPC_ADDR, new Environment(), fullConfigPath, logger)
+  const chooChooTrain = new ChooChooTrain(new Environment(), fullConfigPath, logger)
 
   try {
     await chooChooTrain.run()

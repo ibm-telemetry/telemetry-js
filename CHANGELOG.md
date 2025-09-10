@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/ibm-telemetry/telemetry-js/compare/v1.10.1...v1.10.2) (2025-09-10)
+
+
+### Bug Fixes
+
+* ChooChooTrain performance improvements ([#318](https://github.com/ibm-telemetry/telemetry-js/issues/318)) ([547ede1](https://github.com/ibm-telemetry/telemetry-js/commit/547ede1426be7dbe22b95a25cfae64d138c435e0))
+
 ## [1.10.1](https://github.com/ibm-telemetry/telemetry-js/compare/v1.10.0...v1.10.1) (2025-08-26)
 
 

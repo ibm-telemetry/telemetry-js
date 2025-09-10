@@ -43,7 +43,6 @@
     "lint": "scripts/lint",
     "lint:fix": "scripts/lint_and_fix",
     "prepare": "husky",
-    "publish:alpha": "npm version prerelease --preid=alpha && npm publish --tag alpha",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage"
   },

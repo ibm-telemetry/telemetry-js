@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { createHash } from 'node:crypto'
+import { existsSync } from 'node:fs'
 import * as net from 'node:net'
 
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
@@ -12,14 +13,23 @@ import { ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
 
 import { IbmTelemetry } from '../ibm-telemetry.js'
+import { processFile } from '../scopes/js/process-file.js'
+import { isCdnLink } from '../scopes/wc/utils/is-cdn-link.js'
+import { parseCdnImport } from '../scopes/wc/utils/parse-cdn-import.js'
+import { WcElementAccumulator } from '../scopes/wc/wc-element-accumulator.js'
+import { wcNodeHandlerMap } from '../scopes/wc/wc-node-handler-map.js'
 import { hash } from './anonymize/hash.js'
+import { fetchCdnPackageConfig } from './cdn-config-fetcher.js'
+import { CdnRegistry } from './cdn-registry.js'
 import { ConfigValidator } from './config-validator.js'
 import { Environment, EnvironmentConfig } from './environment.js'
+import { getRepositoryRoot } from './get-repository-root.js'
+import { getTrackedSourceFiles } from './get-tracked-source-files.js'
 import { GitInfoProvider } from './git-info-provider.js'
 import { Loggable } from './log/loggable.js'
 import type { Logger } from './log/logger.js'
 import { Trace } from './log/trace.js'
-import { parseYamlFile } from './parse-yaml-file.js'
+import { parseYamlFile, parseYamlString } from './parse-yaml-file.js'
 
 const MAX_RETRIES = 3
 const MAX_BACKLOG = 64
@@ -125,6 +135,8 @@ export class ChooChooTrain extends Loggable {
     let connection: net.Socket | net.Server | undefined
     let lockFileName: string = LOCK_FILE
 
+    this.logger.debug('Starting ChooChooTrain Run()', this.configPath)
+
     this.parsedConfig = await this.getPackageData(this.configPath)
 
     // is now using the Web Components server
@@ -142,55 +154,65 @@ export class ChooChooTrain extends Loggable {
       fs.writeSync(fd, `${process.pid}`)
       fs.closeSync(fd)
       this.isConductor = true
+      this.logger.debug('Created lock file', lockFileName)
     } catch (err) {
       if ((err as NodeJS.ErrnoException)?.code === 'EEXIST') {
         this.isConductor = false // another process already owns the lock
+        this.logger.debug('Lock file already exists:', lockFileName)
       } else {
         throw err
       }
     }
 
-    if (this.isConductor) {
-      try {
-        connection = await this.createServerSocket(this.handleServerConnection.bind(this))
-      } catch (err) {
-        // Fallback to client if someone else created server first
-        if ((err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
-          this.logger.debug('Address is in use, however we try to connect')
-          try {
-            connection = await this.tryConnectToServerWithBackoff()
-          } catch {
-            // give up 🥲
-            this.logger.debug('Could not establish server or client connection. Exiting')
+    try {
+      if (this.isConductor) {
+        try {
+          this.logger.debug('Creating server socket...')
+          connection = await this.createServerSocket(this.handleServerConnection.bind(this))
+        } catch (err) {
+          // Fallback to client if someone else created server first
+          if ((err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
+            this.logger.debug('Address is in use, however we try to connect')
+            try {
+              connection = await this.tryConnectToServerWithBackoff()
+            } catch {
+              // give up 🥲
+              this.logger.debug('Could not establish server or client connection. Exiting')
+              return
+            }
+          } else if (err instanceof Error) {
+            this.logger.error(err)
             return
           }
-        } else if (err instanceof Error) {
-          this.logger.error(err)
+        }
+      } else {
+        try {
+          connection = await this.tryConnectToServerWithBackoff()
+        } catch {
+          this.logger.debug('Could not connect to conductor. Exiting')
           return
         }
       }
-    } else {
-      try {
-        connection = await this.tryConnectToServerWithBackoff()
-      } catch {
-        this.logger.debug('Could not connect to conductor. Exiting')
+
+      if (!connection) {
+        this.logger.debug('Could not establish server or client connection. Exiting')
         return
       }
-    }
 
-    if (!connection) {
-      this.logger.debug('Could not establish server or client connection. Exiting')
-      return
-    }
-
-    try {
-      if (connection instanceof net.Server) {
-        await this.doWork(connection)
-      } else {
-        await this.sendWorkToConductor(connection)
+      try {
+        if (connection instanceof net.Server) {
+          await this.doWork(connection)
+        } else {
+          await this.sendWorkToConductor(connection)
+        }
+      } finally {
+        await this.logger.close()
       }
     } finally {
-      await this.logger.close()
+      // Always clean up lock and IPC files if we are the conductor
+      if (this.isConductor) {
+        this.cleanupLockFiles(lockFileName)
+      }
     }
   }
 
@@ -329,7 +351,10 @@ export class ChooChooTrain extends Loggable {
       )
     }
 
-    this.totalPackages = 0
+    // Pre-scan HTML files for CDN imports once before processing all packages
+    const cdnPackages = await this.preScanHtmlForCdn()
+
+    this.totalPackages = 0 + cdnPackages
 
     // Consume work until the queue is empty
     while (this.workQueue.length > 0) {
@@ -364,14 +389,8 @@ export class ChooChooTrain extends Loggable {
 
     server.close(() => {
       this.logger.debug('Server closing')
-      if (this.isConductor) {
-        try {
-          fs.unlinkSync(LOCK_FILE)
-          if (fs.existsSync(this.ipcAddr)) {
-            fs.unlinkSync(this.ipcAddr)
-          }
-        } catch {}
-      }
+      // Lock cleanup is now handled by the finally block in run()
+      // This ensures cleanup happens even if doWork() completes normally
     })
   }
 
@@ -429,7 +448,9 @@ export class ChooChooTrain extends Loggable {
 
   @Trace()
   private async getPackageData(configFilePath: string) {
-    const config = await parseYamlFile(configFilePath)
+    const config = existsSync(configFilePath)
+      ? await parseYamlFile(configFilePath)
+      : parseYamlString(configFilePath)
     const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
     configValidator.validate(config)
 
@@ -438,6 +459,24 @@ export class ChooChooTrain extends Loggable {
       this.logEndpoint = config.endpoint.split('/metrics')[0] + '/logs'
       this.logger.debug('Log endpoint: ' + this.logEndpoint)
     }
+
+    return config
+  }
+
+  /**
+   * Parses and validates a config file without modifying instance properties.
+   * Used for CDN configs to avoid overwriting conductor's projectId and endpoint.
+   *
+   * @param configFilePath - Path to config file or YAML string.
+   * @returns Parsed and validated config object.
+   */
+  @Trace()
+  private async parseAndValidateConfig(configFilePath: string) {
+    const config = existsSync(configFilePath)
+      ? await parseYamlFile(configFilePath)
+      : parseYamlString(configFilePath)
+    const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
+    configValidator.validate(config)
 
     return config
   }
@@ -472,15 +511,38 @@ export class ChooChooTrain extends Loggable {
     }
   }
 
+  /**
+   * Cleans up lock file and IPC socket file.
+   * Safe to call multiple times - ignores errors if files don't exist.
+   *
+   * @param lockFileName - Path to the lock file to remove.
+   */
+  private cleanupLockFiles(lockFileName: string): void {
+    try {
+      if (fs.existsSync(lockFileName)) {
+        fs.unlinkSync(lockFileName)
+        this.logger.debug('Removed lock file', lockFileName)
+      }
+      if (fs.existsSync(this.ipcAddr)) {
+        fs.unlinkSync(this.ipcAddr)
+        this.logger.debug('Removed IPC socket', this.ipcAddr)
+      }
+    } catch (err) {
+      // Ignore cleanup errors - best effort
+      if (err instanceof Error) {
+        this.logger.debug('Error during lock cleanup (ignored):', err.message)
+      } else {
+        this.logger.debug('Error during lock cleanup (ignored):', String(err))
+      }
+    }
+  }
+
   @Trace()
   private handleSignal(server: net.Server, type: string) {
     if (this.isConductor) {
-      try {
-        fs.unlinkSync(LOCK_FILE)
-        if (fs.existsSync(this.ipcAddr)) {
-          fs.unlinkSync(this.ipcAddr)
-        }
-      } catch {}
+      // Determine which lock file to clean up based on IPC address
+      const lockFileName = this.ipcAddr === WC_IPC_ADDR ? WC_LOCK_FILE : LOCK_FILE
+      this.cleanupLockFiles(lockFileName)
     }
 
     server.close((err) => {
@@ -494,6 +556,174 @@ export class ChooChooTrain extends Loggable {
         })
       }
     })
+  }
+
+  /**
+   * Pre-scans HTML files for CDN imports before processing packages.
+   * This ensures CDN usage is captured even when WC packages aren't installed.
+   * Runs only once per conductor process. Reuses existing WC infrastructure.
+   */
+  @Trace()
+  private async preScanHtmlForCdn(): Promise<number> {
+    const registry = CdnRegistry.getInstance()
+    let totalCdnPackages = 0
+
+    // Check if pre-scan was already completed
+    if (registry.isPreScanCompleted()) {
+      this.logger.debug('HTML CDN pre-scan already completed, skipping')
+      return 0
+    }
+
+    this.logger.debug('Starting HTML CDN pre-scan at conductor level')
+
+    try {
+      if (!this.environment) {
+        this.logger.debug('Environment not initialized, skipping CDN pre-scan')
+        return 0
+      }
+
+      // Get repository root for file discovery
+      const root = await getRepositoryRoot(this.environment.cwd, this.logger)
+
+      // Find all tracked HTML files in the project
+      // Note: We use getTrackedSourceFiles directly here because we want ALL HTML files
+      // regardless of package dependencies, unlike findRelevantSourceFiles which filters
+      // based on installed packages
+      const htmlFiles = await getTrackedSourceFiles(this.environment.cwd, root, this.logger, [
+        '.html',
+        '.htm'
+      ])
+
+      if (htmlFiles.length === 0) {
+        this.logger.debug('No HTML files found for CDN pre-scan')
+        registry.markPreScanCompleted()
+        return 0
+      }
+
+      this.logger.debug(`Found ${htmlFiles.length} HTML files for CDN pre-scan`)
+
+      // Group elements and CDN imports by package
+      const packageData = new Map<string, { elements: any[]; cdnImports: any[] }>()
+
+      // Process each HTML file using existing WC infrastructure
+      for (const htmlFile of htmlFiles) {
+        const sourceFile = await htmlFile.createSourceFile()
+        const accumulator = new WcElementAccumulator()
+
+        // Reuse existing processFile with WC node handlers
+        processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
+
+        // Extract CDN imports from script sources
+        accumulator.cdnImports = accumulator.scriptSources
+          .filter((src) => isCdnLink(src))
+          .map((src) => parseCdnImport(src))
+          .filter((cdn) => cdn.package && cdn.version)
+
+        if (accumulator.cdnImports.length > 0) {
+          registry.registerCdnImports(htmlFile.fileName, accumulator.cdnImports)
+          this.logger.debug(
+            `Registered ${accumulator.cdnImports.length} CDN imports for ${htmlFile.fileName}`
+          )
+
+          // Group by package
+          for (const cdnImport of accumulator.cdnImports) {
+            if (!packageData.has(cdnImport.package)) {
+              packageData.set(cdnImport.package, { elements: [], cdnImports: [] })
+            }
+            const pkgData = packageData.get(cdnImport.package)
+            if (!pkgData) continue
+            pkgData.cdnImports.push(cdnImport)
+            pkgData.elements.push(...accumulator.elements)
+          }
+        }
+      }
+
+      registry.markPreScanCompleted()
+      this.logger.debug('HTML CDN pre-scan completed at conductor level')
+
+      if (registry.hasCdnImports()) {
+        const packageVersions = registry.getDiscoveredPackageVersions()
+        this.logger.debug(
+          `Discovered CDN package versions: ${packageVersions.map((pv) => `${pv.package}@${pv.version}`).join(', ')}`
+        )
+
+        // Capture metrics for each unique package@version combination
+        for (const { package: pkg, version: cdnVersion } of packageVersions) {
+          this.logger.debug(`Processing CDN package: ${pkg}@${cdnVersion}`)
+
+          const { config: cdnAttributeConfig, resolvedVersion } = await fetchCdnPackageConfig(
+            pkg,
+            cdnVersion,
+            this.logger
+          )
+
+          this.logger.debug(
+            `CDN attribute config for ${pkg}@${cdnVersion} (resolved: ${resolvedVersion}):`,
+            cdnAttributeConfig
+          )
+
+          // Update all CDN imports for this package@version with the resolved version
+          registry.updateCdnImportVersions(pkg, cdnVersion, resolvedVersion)
+
+          // Enable CDN-only mode before running metrics collection
+          // Use resolved version (e.g., "2.46.0" instead of "latest")
+          registry.enableCdnOnlyMode(pkg, resolvedVersion)
+          this.logger.debug(`Enabled CDN-only mode for ${pkg}@${resolvedVersion}`)
+
+          // Process CDN metrics directly instead of creating a new ChooChooTrain instance
+          // This avoids IPC queueing issues where CDN work would be processed after conductor work
+          if (cdnAttributeConfig && this.environment) {
+            // Use parseAndValidateConfig to avoid overwriting conductor's projectId and endpoint
+            const cdnConfig = await this.parseAndValidateConfig(cdnAttributeConfig)
+
+            // Filter config to only include WC and NPM scopes for CDN packages
+            const wc = cdnConfig?.collect?.wc
+            const npm = cdnConfig?.collect?.npm
+
+            if (wc || npm) {
+              // Only include defined scopes to avoid TypeScript exactOptionalPropertyTypes errors
+              cdnConfig.collect = {}
+              if (wc) {
+                cdnConfig.collect.wc = wc
+              }
+              if (npm) {
+                cdnConfig.collect.npm = npm
+              }
+
+              if (1 + 1 == 2) {
+                cdnConfig.projectId = 'carbon-web-components-id'
+                cdnConfig.endpoint = 'http://localhost:3000/v1/metrics'
+              }
+
+              await this.collect(this.environment, cdnConfig)
+
+              // TODO: only increase if its different packages
+              totalCdnPackages++
+            }
+          }
+
+          // Disable CDN-only mode after collection completes
+          registry.disableCdnOnlyMode()
+          this.logger.debug('Scope succeeded: cdn')
+          this.logger.debug(`Disabled CDN-only mode for ${pkg}@${resolvedVersion}`)
+        }
+        return totalCdnPackages
+      } else {
+        this.logger.debug('No CDN imports found in HTML files')
+      }
+
+      // Mark pre-scan as completed
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error(error)
+      } else {
+        this.logger.error(`HTML CDN pre-scan failed: ${String(error)}`)
+      }
+      // Mark as completed even on error to avoid retrying
+      registry.markPreScanCompleted()
+      return totalCdnPackages
+    }
+    return totalCdnPackages
   }
 
   /**

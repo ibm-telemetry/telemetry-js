@@ -28,3 +28,14 @@ export async function parseYamlFile(filePath: string): Promise<Record<string, un
 
   return yaml.load(contents) as Record<string, unknown>
 }
+
+/**
+ * Parses YAML content from a string and returns its object representation.
+ *
+ * @param yamlContent - YAML content as a string.
+ * @returns Object containing parsed content.
+ * @throws A YAMLException exception if there is an error parsing the content.
+ */
+export function parseYamlString(yamlContent: string): Record<string, unknown> {
+  return yaml.load(yamlContent) as Record<string, unknown>
+}

@@ -5,8 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { readFile } from 'node:fs/promises'
 import * as path from 'node:path'
 
+import { parseDocument } from 'htmlparser2'
+
+import { CdnRegistry } from '../../core/cdn-registry.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -22,7 +26,7 @@ import { getPackageData } from '../npm/get-package-data.js'
 import type { PackageData } from '../npm/interfaces.js'
 import { WcElementCdnImportMatcher } from './import-matchers/wc-element-cdn-import-matcher.js'
 import { WcElementSideEffectImportMatcher } from './import-matchers/wc-element-side-effect-import-matcher.js'
-import type { CdnImportMatcher } from './interfaces.js'
+import type { CdnImport, CdnImportMatcher } from './interfaces.js'
 import { type WcElement } from './interfaces.js'
 import { ParsedFile } from './interfaces.js'
 import { ElementMetric } from './metrics/element-metric.js'
@@ -91,6 +95,18 @@ export class WcScope extends Scope {
    */
   @Trace()
   async captureAllMetrics(): Promise<void> {
+    const registry = CdnRegistry.getInstance()
+
+    // Check if we're in CDN-only mode
+    if (registry.isCdnOnlyMode()) {
+      this.logger.debug('Running in CDN-only mode - processing only CDN imports from registry')
+      await this.captureCdnOnlyMetrics()
+      return
+    }
+
+    this.logger.debug('Running WC normally - processing all imports')
+
+    // Regular mode - process all files
     const jsImportMatchers = [
       new JsxElementAllImportMatcher(),
       new JsxElementNamedImportMatcher(),
@@ -148,6 +164,135 @@ export class WcScope extends Scope {
   }
 
   /**
+   * Captures metrics for CDN imports only, using data from the CDN registry.
+   * This is used when running in CDN-only mode after the pre-scan phase.
+   */
+  @Trace()
+  private async captureCdnOnlyMetrics(): Promise<void> {
+    const registry = CdnRegistry.getInstance()
+    const cdnImportMatchers = [new WcElementCdnImportMatcher()] as CdnImportMatcher<WcElement>[]
+
+    // Get the current CDN package being processed from the registry
+    const currentCdnPackage = registry.getCurrentCdnPackage()
+    if (!currentCdnPackage) {
+      this.logger.error('CDN-only mode enabled but no current CDN package set')
+      return
+    }
+
+    // Create package data from the CDN package information
+    // The version is already resolved (e.g., "2.46.0" instead of "latest")
+    const instrumentedPackage: PackageData = {
+      name: currentCdnPackage.name,
+      version: currentCdnPackage.version
+    }
+
+    this.logger.debug(
+      `Processing CDN-only metrics for package: ${instrumentedPackage.name}@${instrumentedPackage.version}`
+    )
+
+    // Get all files that have CDN imports
+    const filesWithCdnImports = registry.getFilesWithCdnImports()
+
+    this.logger.debug(`Processing ${filesWithCdnImports.length} files with CDN imports`)
+
+    const promises: Promise<void>[] = []
+
+    for (const filePath of filesWithCdnImports) {
+      const cdnImports = registry.getCdnImports(filePath)
+      if (!cdnImports || cdnImports.length === 0) {
+        continue
+      }
+
+      this.logger.debug(`Processing CDN imports for file: ${filePath}`)
+
+      // Create an accumulator with only CDN imports
+      const accumulator = new WcElementAccumulator()
+      accumulator.cdnImports = cdnImports
+
+      // Process the file to get elements
+      const resultPromise = this.captureCdnFileMetrics(
+        filePath,
+        accumulator,
+        instrumentedPackage,
+        cdnImportMatchers
+      )
+
+      if (this.runSync) {
+        await resultPromise
+      } else {
+        promises.push(resultPromise)
+      }
+    }
+
+    await Promise.allSettled(promises)
+  }
+
+  /**
+   * Captures metrics for a single file in CDN-only mode.
+   *
+   * @param filePath - Path to the file being processed.
+   * @param accumulator - Accumulator with CDN imports already populated.
+   * @param instrumentedPackage - Package data for the instrumented package.
+   * @param cdnImportMatchers - Matchers for CDN imports.
+   */
+  private async captureCdnFileMetrics(
+    filePath: string,
+    accumulator: WcElementAccumulator,
+    instrumentedPackage: PackageData,
+    cdnImportMatchers: CdnImportMatcher<WcElement>[]
+  ): Promise<void> {
+    try {
+      // Read and parse the HTML file directly
+      const content = await readFile(filePath, 'utf-8')
+      const parsedFile = parseDocument(content) as ParsedFile
+      if ('fileName' in parsedFile) {
+        parsedFile.fileName = filePath
+      }
+
+      // Process the file to extract elements
+      processFile(accumulator, parsedFile, wcNodeHandlerMap, this.logger)
+
+      this.logger.debug('CDN-only accumulator contents:', JSON.stringify(accumulator))
+
+      // Resolve element imports using only CDN matchers
+      accumulator.elements.forEach((element) => {
+        if (isWcElement(element) || isJsxElement(element)) {
+          this.matchCdnImport(element, cdnImportMatchers, accumulator)
+        }
+      })
+
+      // Capture metrics for matched elements
+      accumulator.elements.forEach((element) => {
+        const componentImport = accumulator.elementImports.get(element)
+
+        if (componentImport === undefined) {
+          return
+        }
+
+        this.logger.debug('CDN element to be captured:', JSON.stringify(element))
+
+        if (isJsxElement(element) || isWcElement(element)) {
+          this.capture(
+            new ElementMetric(
+              element,
+              componentImport,
+              instrumentedPackage,
+              this.config,
+              this.logger
+            )
+          )
+        }
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error(error)
+      } else {
+        this.logger.error(`Failed to process CDN file ${filePath}: ${String(error)}`)
+      }
+    }
+  }
+
+  /**
    * Generates metrics for all discovered instrumented wc or jsx elements found
    * in the supplied SourceFile node.
    *
@@ -193,6 +338,9 @@ export class WcScope extends Scope {
     if (accumulator.scriptSources.length > 0) {
       this.resolveLinkedImports(accumulator, instrumentedPackage.name)
     }
+
+    // Check if CDN imports were already processed during pre-scan
+    this.filterAlreadyProcessedCdnImports(sourceFile.fileName ?? '')
 
     this.resolveElementImports(accumulator, jsImportMatchers, cdnImportMatchers)
 
@@ -252,12 +400,75 @@ export class WcScope extends Scope {
     accumulator.jsImports = newImports
   }
 
+  /**
+   * Filters out CDN imports that were already processed during the pre-scan phase.
+   * This prevents duplicate metric collection when WC packages are installed.
+   *
+   * @param accumulator - The accumulator containing CDN imports.
+   * @param filePath - Path to the current file being processed.
+   */
+  @Trace()
+  private filterAlreadyProcessedCdnImports(filePath: string): void {
+    const registry = CdnRegistry.getInstance()
+    const preScanCdnImports = registry.getCdnImports(filePath)
+
+    if (preScanCdnImports === undefined || preScanCdnImports.length === 0) {
+      return
+    }
+
+    this.logger.debug(`Found ${preScanCdnImports.length} pre-scanned CDN imports for ${filePath}`)
+
+    // Mark all pre-scanned CDN imports as processed
+    for (const cdnImport of preScanCdnImports) {
+      registry.markAsProcessed(cdnImport)
+      this.logger.debug(`Marked CDN import as processed: ${cdnImport.package}@${cdnImport.version}`)
+    }
+  }
+
+  /**
+   * Finds a CDN import in the registry by matching the script source URL.
+   * This ensures we use the registry's version (which may have been resolved from tags like 'latest')
+   * instead of parsing the URL fresh.
+   *
+   * @param scriptSource - The CDN URL from the HTML script tag.
+   * @param registry - The CDN registry instance.
+   * @returns The CDN import from the registry, or undefined if not found.
+   */
+  private findCdnImportInRegistry(
+    scriptSource: string,
+    registry: CdnRegistry
+  ): CdnImport | undefined {
+    // Get all files with CDN imports
+    const filesWithCdnImports = registry.getFilesWithCdnImports()
+
+    // Search through all registered CDN imports to find one matching this URL
+    for (const filePath of filesWithCdnImports) {
+      const cdnImports = registry.getCdnImports(filePath)
+      if (!cdnImports) continue
+
+      // Find a CDN import with matching path (URL)
+      const matchingImport = cdnImports.find((cdnImport) => cdnImport.path === scriptSource)
+      if (matchingImport) {
+        return matchingImport
+      }
+    }
+
+    return undefined
+  }
+
   resolveLinkedImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
     const mergedJsImports = [...accumulator.jsImports]
+    const registry = CdnRegistry.getInstance()
 
     for (const scriptSource of accumulator.scriptSources) {
       if (isCdnLink(scriptSource)) {
-        const cdnImport = parseCdnImport(scriptSource)
+        // First, try to get the CDN import from the registry (which has updated versions)
+        // If not found, parse it fresh from the URL
+        let cdnImport = this.findCdnImportInRegistry(scriptSource, registry)
+        if (!cdnImport) {
+          cdnImport = parseCdnImport(scriptSource)
+        }
+
         this.logger.debug('The CDN import is', JSON.stringify(cdnImport))
         if (cdnImport.package === instrumentedPackage) {
           this.logger.debug('CDN import matches instrumented package')
@@ -296,9 +507,20 @@ export class WcScope extends Scope {
         return elementMatcher.findMatch(element, accumulator.cdnImports)
       })
       .find((cdnImport) => cdnImport !== undefined)
+
     if (cdnImport === undefined) {
       return
     }
+
+    // Check if this CDN import was already processed during pre-scan
+    const registry = CdnRegistry.getInstance()
+    if (registry.isProcessed(cdnImport)) {
+      this.logger.debug(
+        `Skipping already processed CDN import: ${cdnImport.package}@${cdnImport.version}`
+      )
+      return
+    }
+
     accumulator.elementImports.set(element, cdnImport)
   }
 

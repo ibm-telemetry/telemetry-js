@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { CdnRegistry } from '../../core/cdn-registry.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
 import { EmptyScopeError } from '../../exceptions/empty-scope.error.js'
@@ -23,6 +24,43 @@ export class NpmScope extends Scope {
    */
   @Trace()
   private async collectDependencies(): Promise<void> {
+    const registry = CdnRegistry.getInstance()
+
+    // Check if we're in CDN-only mode
+    if (registry.isCdnOnlyMode()) {
+      const cdnPackage = registry.getCurrentCdnPackage()
+      if (!cdnPackage) {
+        this.logger.debug('CDN-only mode enabled but no current CDN package found')
+        return
+      }
+
+      this.logger.debug(
+        `Collecting self-referential NPM dependency for CDN package: ${cdnPackage.name}@${cdnPackage.version}`
+      )
+
+      // Create a self-referential dependency metric for the CDN package
+      // This represents the CDN package as its own dependency
+      const instrumentedPackage = {
+        name: cdnPackage.name,
+        version: cdnPackage.version
+      }
+
+      this.capture(
+        new DependencyMetric(
+          {
+            rawName: cdnPackage.name,
+            rawVersion: cdnPackage.version,
+            isInstrumented: 'true'
+          },
+          instrumentedPackage,
+          this.logger
+        )
+      )
+
+      return
+    }
+
+    // Normal mode: collect dependencies from the actual environment
     const instrumentedPackage = await getPackageData(this.cwd, this.cwd, this.logger)
     const installingPackages = await findInstallingPackages(
       this.cwd,

@@ -94,6 +94,11 @@ export class ElementMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
+    this.logger.debug(
+      'The package details are',
+      JSON.stringify(this.instrumentedPackage, undefined, 2)
+    )
+
     let metricData: Attributes = {
       [WcScopeAttributes.NAME]: this.element.name,
       [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
@@ -118,8 +123,17 @@ export class ElementMetric extends ScopeMetric {
         hashVersionRaw = false
       } else {
         // CDN import expected to specify version
-        const [version, preRelease] = this.matchingImport.version.split('v')[1]?.split('-') ?? []
+        // Version can be in format "v2.46.0" or "2.46.0" (resolved version)
+        this.logger.debug('The CDN import version is ', this.matchingImport.version)
+
+        // Remove leading 'v' if present
+        const versionString = this.matchingImport.version.startsWith('v')
+          ? this.matchingImport.version.slice(1)
+          : this.matchingImport.version
+
+        const [version, preRelease] = versionString.split('-')
         const parsedVersion = version?.split('.') ?? []
+
         metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = parsedVersion.join('.')
         metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = parsedVersion[0]
         metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = parsedVersion[1]

@@ -19,6 +19,7 @@ export class CdnRegistry {
   private cdnOnlyMode: boolean = false
   private currentCdnPackage: string | undefined
   private currentCdnVersion: string | undefined
+  private readonly installedPackages: Set<string> = new Set()
 
   private constructor() {}
 
@@ -224,6 +225,25 @@ export class CdnRegistry {
   }
 
   /**
+   * Marks a package as installed (will be processed via npm scope).
+   *
+   * @param packageName - The package name to mark as installed.
+   */
+  public markPackageAsInstalled(packageName: string): void {
+    this.installedPackages.add(packageName)
+  }
+
+  /**
+   * Checks if a package is marked as installed.
+   *
+   * @param packageName - The package name to check.
+   * @returns True if the package is installed, false otherwise.
+   */
+  public isPackageInstalled(packageName: string): boolean {
+    return this.installedPackages.has(packageName)
+  }
+
+  /**
    * Clears all stored CDN import data.
    */
   public clear(): void {
@@ -233,5 +253,6 @@ export class CdnRegistry {
     this.cdnOnlyMode = false
     this.currentCdnPackage = undefined
     this.currentCdnVersion = undefined
+    this.installedPackages.clear()
   }
 }

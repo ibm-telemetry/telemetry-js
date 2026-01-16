@@ -352,7 +352,12 @@ export class ChooChooTrain extends Loggable {
     }
 
     // Pre-scan HTML files for CDN imports once before processing all packages
-    const cdnPackages = await this.preScanHtmlForCdn()
+    // This will check if packages are installed and defer CDN metrics if needed
+
+    let cdnPackages = 0
+    if (1 + 1 == 3) {
+      cdnPackages = await this.preScanHtmlForCdn()
+    }
 
     this.totalPackages = 0 + cdnPackages
 
@@ -559,9 +564,62 @@ export class ChooChooTrain extends Loggable {
   }
 
   /**
+   * Checks which packages are listed in the root package.json dependencies.
+   * Marks these packages in the CDN registry so we can skip CDN metrics for them.
+   *
+   * @param root - Root directory of the project.
+   */
+  @Trace()
+  private async checkRootDependencies(root: string): Promise<void> {
+    const registry = CdnRegistry.getInstance()
+
+    try {
+      const { readFile } = await import('node:fs/promises')
+      const { join } = await import('node:path')
+
+      // Read the root package.json
+      const packageJsonPath = join(root, 'package.json')
+      const packageJsonContent = await readFile(packageJsonPath, 'utf-8')
+      const packageJson = JSON.parse(packageJsonContent)
+
+      // Collect all dependencies (dependencies, devDependencies, peerDependencies, optionalDependencies)
+      const allDependencies = new Set<string>()
+
+      if (packageJson.dependencies) {
+        Object.keys(packageJson.dependencies).forEach((dep) => allDependencies.add(dep))
+      }
+      if (packageJson.devDependencies) {
+        Object.keys(packageJson.devDependencies).forEach((dep) => allDependencies.add(dep))
+      }
+      if (packageJson.peerDependencies) {
+        Object.keys(packageJson.peerDependencies).forEach((dep) => allDependencies.add(dep))
+      }
+      if (packageJson.optionalDependencies) {
+        Object.keys(packageJson.optionalDependencies).forEach((dep) => allDependencies.add(dep))
+      }
+
+      // Mark all dependencies as installed in the registry
+      for (const pkg of allDependencies) {
+        registry.markPackageAsInstalled(pkg)
+      }
+
+      this.logger.debug(`Found ${allDependencies.size} packages in package.json dependencies`)
+    } catch (error) {
+      // If we can't read package.json, we'll just process all CDN metrics immediately
+      this.logger.debug('Could not read package.json, will process all CDN metrics immediately')
+      if (error instanceof Error) {
+        this.logger.debug(error.message)
+      }
+    }
+  }
+
+  /**
    * Pre-scans HTML files for CDN imports before processing packages.
    * This ensures CDN usage is captured even when WC packages aren't installed.
    * Runs only once per conductor process. Reuses existing WC infrastructure.
+   *
+   * If a CDN package is also installed via npm, the CDN metrics will be deferred
+   * and appended when the installed package is processed to avoid rate limiting.
    */
   @Trace()
   private async preScanHtmlForCdn(): Promise<number> {
@@ -584,6 +642,9 @@ export class ChooChooTrain extends Loggable {
 
       // Get repository root for file discovery
       const root = await getRepositoryRoot(this.environment.cwd, this.logger)
+
+      // Check which packages are installed by examining the dependency tree
+      await this.checkRootDependencies(root)
 
       // Find all tracked HTML files in the project
       // Note: We use getTrackedSourceFiles directly here because we want ALL HTML files
@@ -647,65 +708,87 @@ export class ChooChooTrain extends Loggable {
           `Discovered CDN package versions: ${packageVersions.map((pv) => `${pv.package}@${pv.version}`).join(', ')}`
         )
 
-        // Capture metrics for each unique package@version combination
-        for (const { package: pkg, version: cdnVersion } of packageVersions) {
-          this.logger.debug(`Processing CDN package: ${pkg}@${cdnVersion}`)
+        // Group CDN versions by package to consolidate into single payload
+        const packageVersionsMap = new Map<string, string[]>()
+        for (const { package: pkg, version } of packageVersions) {
+          if (!packageVersionsMap.has(pkg)) {
+            packageVersionsMap.set(pkg, [])
+          }
+          packageVersionsMap.get(pkg)?.push(version)
+        }
 
-          const { config: cdnAttributeConfig, resolvedVersion } = await fetchCdnPackageConfig(
-            pkg,
-            cdnVersion,
-            this.logger
-          )
+        // Process each unique package
+        for (const [pkg, versions] of packageVersionsMap.entries()) {
+          this.logger.debug(`Processing CDN package: ${pkg} with versions: ${versions.join(', ')}`)
 
-          this.logger.debug(
-            `CDN attribute config for ${pkg}@${cdnVersion} (resolved: ${resolvedVersion}):`,
-            cdnAttributeConfig
-          )
+          // Check if this package is installed via npm
+          const isInstalled = registry.isPackageInstalled(pkg)
 
-          // Update all CDN imports for this package@version with the resolved version
-          registry.updateCdnImportVersions(pkg, cdnVersion, resolvedVersion)
+          if (isInstalled) {
+            this.logger.debug(
+              `Package ${pkg} is installed via npm. Skipping CDN metrics (will be captured via npm install).`
+            )
 
-          // Enable CDN-only mode before running metrics collection
-          // Use resolved version (e.g., "2.46.0" instead of "latest")
-          registry.enableCdnOnlyMode(pkg, resolvedVersion)
-          this.logger.debug(`Enabled CDN-only mode for ${pkg}@${resolvedVersion}`)
-
-          // Process CDN metrics directly instead of creating a new ChooChooTrain instance
-          // This avoids IPC queueing issues where CDN work would be processed after conductor work
-          if (cdnAttributeConfig && this.environment) {
-            // Use parseAndValidateConfig to avoid overwriting conductor's projectId and endpoint
-            const cdnConfig = await this.parseAndValidateConfig(cdnAttributeConfig)
-
-            // Filter config to only include WC and NPM scopes for CDN packages
-            const wc = cdnConfig?.collect?.wc
-            const npm = cdnConfig?.collect?.npm
-
-            if (wc || npm) {
-              // Only include defined scopes to avoid TypeScript exactOptionalPropertyTypes errors
-              cdnConfig.collect = {}
-              if (wc) {
-                cdnConfig.collect.wc = wc
-              }
-              if (npm) {
-                cdnConfig.collect.npm = npm
-              }
-
-              if (1 + 1 == 2) {
-                cdnConfig.projectId = 'carbon-web-components-id'
-                cdnConfig.endpoint = 'http://localhost:3000/v1/metrics'
-              }
-
-              await this.collect(this.environment, cdnConfig)
-
-              // TODO: only increase if its different packages
-              totalCdnPackages++
-            }
+            // Skip this package entirely - it will be processed when the installed package runs
+            continue
           }
 
-          // Disable CDN-only mode after collection completes
-          registry.disableCdnOnlyMode()
+          this.logger.debug(`Package ${pkg} is NOT installed. Processing CDN metrics immediately.`)
+
+          // Process all versions for this package in a single collection
+          for (const cdnVersion of versions) {
+            const { config: cdnAttributeConfig, resolvedVersion } = await fetchCdnPackageConfig(
+              pkg,
+              cdnVersion,
+              this.logger
+            )
+
+            this.logger.debug(
+              `CDN attribute config for ${pkg}@${cdnVersion} (resolved: ${resolvedVersion}):`,
+              cdnAttributeConfig
+            )
+
+            // Update all CDN imports for this package@version with the resolved version
+            registry.updateCdnImportVersions(pkg, cdnVersion, resolvedVersion)
+
+            // Enable CDN-only mode before running metrics collection
+            registry.enableCdnOnlyMode(pkg, resolvedVersion)
+            this.logger.debug(`Enabled CDN-only mode for ${pkg}@${resolvedVersion}`)
+
+            // Process CDN metrics directly
+            if (cdnAttributeConfig && this.environment) {
+              const cdnConfig = await this.parseAndValidateConfig(cdnAttributeConfig)
+
+              // Filter config to only include WC and NPM scopes for CDN packages
+              const wc = cdnConfig?.collect?.wc
+              const npm = cdnConfig?.collect?.npm
+
+              if (wc || npm) {
+                cdnConfig.collect = {}
+                if (wc) {
+                  cdnConfig.collect.wc = wc
+                }
+                if (npm) {
+                  cdnConfig.collect.npm = npm
+                }
+
+                if (1 + 1 == 2) {
+                  cdnConfig.projectId = 'carbon-web-components-id'
+                  cdnConfig.endpoint = 'http://localhost:3000/v1/metrics'
+                }
+
+                await this.collect(this.environment, cdnConfig)
+              }
+            }
+
+            // Disable CDN-only mode after collection completes
+            registry.disableCdnOnlyMode()
+            this.logger.debug(`Disabled CDN-only mode for ${pkg}@${resolvedVersion}`)
+          }
+
+          // Only count once per package, not per version
+          totalCdnPackages++
           this.logger.debug('Scope succeeded: cdn')
-          this.logger.debug(`Disabled CDN-only mode for ${pkg}@${resolvedVersion}`)
         }
         return totalCdnPackages
       } else {

@@ -15,7 +15,7 @@ import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' a
 import { IbmTelemetry } from '../ibm-telemetry.js'
 import { processFile } from '../scopes/js/process-file.js'
 import { isCdnLink } from '../scopes/wc/utils/is-cdn-link.js'
-import { parseCdnImport } from '../scopes/wc/utils/parse-cdn-import.js'
+import { parseCdnImport, parseCdnImportWithExpansion } from '../scopes/wc/utils/parse-cdn-import.js'
 import { WcElementAccumulator } from '../scopes/wc/wc-element-accumulator.js'
 import { wcNodeHandlerMap } from '../scopes/wc/wc-node-handler-map.js'
 import { hash } from './anonymize/hash.js'
@@ -355,7 +355,7 @@ export class ChooChooTrain extends Loggable {
     // This will check if packages are installed and defer CDN metrics if needed
 
     let cdnPackages = 0
-    if (1 + 1 == 3) {
+    if (1 + 1 == 2) {
       cdnPackages = await this.preScanHtmlForCdn()
     }
 
@@ -675,18 +675,51 @@ export class ChooChooTrain extends Loggable {
         processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
 
         // Extract CDN imports from script sources
-        accumulator.cdnImports = accumulator.scriptSources
-          .filter((src) => isCdnLink(src))
+        const cdnLinks = accumulator.scriptSources.filter((src) => isCdnLink(src))
+
+        // First, parse CDN imports without expansion to get package names
+        const basicCdnImports = cdnLinks
           .map((src) => parseCdnImport(src))
           .filter((cdn) => cdn.package && cdn.version)
 
-        if (accumulator.cdnImports.length > 0) {
-          registry.registerCdnImports(htmlFile.fileName, accumulator.cdnImports)
-          this.logger.debug(
-            `Registered ${accumulator.cdnImports.length} CDN imports for ${htmlFile.fileName}`
-          )
+        // Filter to only non-installed packages BEFORE expanding
+        const cdnLinksToExpand = cdnLinks.filter((src) => {
+          const basicImport = parseCdnImport(src)
+          return basicImport.package && !registry.isPackageInstalled(basicImport.package)
+        })
 
-          // Group by package
+        this.logger.debug(
+          `Found ${cdnLinks.length} CDN links, expanding ${cdnLinksToExpand.length} ` +
+            `(skipped ${cdnLinks.length - cdnLinksToExpand.length} for installed packages)`
+        )
+
+        // Only expand CDN imports for non-installed packages
+        const expandedImportsPromises = cdnLinksToExpand.map((src) =>
+          parseCdnImportWithExpansion(src, this.logger)
+        )
+
+        const expandedImportsArrays = await Promise.all(expandedImportsPromises)
+
+        this.logger.debug(JSON.stringify(expandedImportsArrays, undefined, 2))
+        const cdnImportsToRegister = expandedImportsArrays
+          .flat()
+          .filter((cdn) => cdn.package && cdn.version)
+
+        if (cdnImportsToRegister.length > 0) {
+          // Store both original and expanded imports
+          registry.registerCdnImports(htmlFile.fileName, cdnImportsToRegister)
+          registry.registerExpandedCdnImports(htmlFile.fileName, cdnImportsToRegister)
+
+          this.logger.debug(
+            `Registered ${cdnImportsToRegister.length} expanded CDN imports for ${htmlFile.fileName}`
+          )
+        }
+
+        // Use all basic imports (including installed packages) for grouping
+        accumulator.cdnImports = basicCdnImports
+
+        if (accumulator.cdnImports.length > 0) {
+          // Group by package (process all CDN imports, but only non-installed ones will be registered)
           for (const cdnImport of accumulator.cdnImports) {
             if (!packageData.has(cdnImport.package)) {
               packageData.set(cdnImport.package, { elements: [], cdnImports: [] })
@@ -772,8 +805,8 @@ export class ChooChooTrain extends Loggable {
                   cdnConfig.collect.npm = npm
                 }
 
+                // Testing purpose only
                 if (1 + 1 == 2) {
-                  cdnConfig.projectId = 'carbon-web-components-id'
                   cdnConfig.endpoint = 'http://localhost:3000/v1/metrics'
                 }
 

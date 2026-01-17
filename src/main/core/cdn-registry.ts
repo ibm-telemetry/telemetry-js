@@ -15,6 +15,7 @@ export class CdnRegistry {
   private static instance: CdnRegistry | undefined
   private readonly cdnImportsByFile: Map<string, CdnImport[]> = new Map()
   private readonly processedCdnImports: Set<string> = new Set()
+  private readonly expandedCdnImports: Map<string, CdnImport[]> = new Map()
   private preScanCompleted: boolean = false
   private cdnOnlyMode: boolean = false
   private currentCdnPackage: string | undefined
@@ -54,11 +55,34 @@ export class CdnRegistry {
 
   /**
    * Gets CDN imports for a specific HTML file.
+   * If expanded imports exist for this file, returns those instead.
    *
    * @param filePath - Absolute path to the HTML file.
    * @returns Array of CDN imports, or undefined if file not registered.
    */
   public getCdnImports(filePath: string): CdnImport[] | undefined {
+    // Return expanded imports if available, otherwise return original imports
+    return this.expandedCdnImports.get(filePath) ?? this.cdnImportsByFile.get(filePath)
+  }
+
+  /**
+   * Stores expanded CDN imports for a file (after fetching and parsing CDN content).
+   * These expanded imports replace the original imports when retrieving.
+   *
+   * @param filePath - Absolute path to the HTML file.
+   * @param expandedImports - Array of expanded CDN imports.
+   */
+  public registerExpandedCdnImports(filePath: string, expandedImports: CdnImport[]): void {
+    this.expandedCdnImports.set(filePath, expandedImports)
+  }
+
+  /**
+   * Gets the original (non-expanded) CDN imports for a specific HTML file.
+   *
+   * @param filePath - Absolute path to the HTML file.
+   * @returns Array of original CDN imports, or undefined if file not registered.
+   */
+  public getOriginalCdnImports(filePath: string): CdnImport[] | undefined {
     return this.cdnImportsByFile.get(filePath)
   }
 
@@ -249,6 +273,7 @@ export class CdnRegistry {
   public clear(): void {
     this.cdnImportsByFile.clear()
     this.processedCdnImports.clear()
+    this.expandedCdnImports.clear()
     this.preScanCompleted = false
     this.cdnOnlyMode = false
     this.currentCdnPackage = undefined

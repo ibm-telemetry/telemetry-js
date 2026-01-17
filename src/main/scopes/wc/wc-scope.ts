@@ -336,7 +336,7 @@ export class WcScope extends Scope {
     )
 
     if (accumulator.scriptSources.length > 0) {
-      this.resolveLinkedImports(accumulator, instrumentedPackage.name)
+      await this.resolveLinkedImports(accumulator, instrumentedPackage.name)
     }
 
     // Check if CDN imports were already processed during pre-scan
@@ -426,53 +426,69 @@ export class WcScope extends Scope {
   }
 
   /**
-   * Finds a CDN import in the registry by matching the script source URL.
-   * This ensures we use the registry's version (which may have been resolved from tags like 'latest')
-   * instead of parsing the URL fresh.
+   * Finds CDN imports in the registry by matching the script source URL.
+   * This ensures we use the registry's expanded imports (which may include multiple components)
+   * and resolved versions instead of parsing the URL fresh.
    *
    * @param scriptSource - The CDN URL from the HTML script tag.
    * @param registry - The CDN registry instance.
-   * @returns The CDN import from the registry, or undefined if not found.
+   * @returns Array of CDN imports from the registry, or undefined if not found.
    */
-  private findCdnImportInRegistry(
+  private findCdnImportsInRegistry(
     scriptSource: string,
     registry: CdnRegistry
-  ): CdnImport | undefined {
+  ): CdnImport[] | undefined {
     // Get all files with CDN imports
     const filesWithCdnImports = registry.getFilesWithCdnImports()
 
-    // Search through all registered CDN imports to find one matching this URL
+    // Search through all registered CDN imports to find ones matching this URL
     for (const filePath of filesWithCdnImports) {
       const cdnImports = registry.getCdnImports(filePath)
       if (!cdnImports) continue
 
-      // Find a CDN import with matching path (URL)
-      const matchingImport = cdnImports.find((cdnImport) => cdnImport.path === scriptSource)
-      if (matchingImport) {
-        return matchingImport
+      // Find all CDN imports with matching path (URL)
+      const matchingImports = cdnImports.filter((cdnImport) => cdnImport.path === scriptSource)
+      if (matchingImports.length > 0) {
+        return matchingImports
       }
     }
 
     return undefined
   }
 
-  resolveLinkedImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
+  async resolveLinkedImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
     const mergedJsImports = [...accumulator.jsImports]
     const registry = CdnRegistry.getInstance()
 
     for (const scriptSource of accumulator.scriptSources) {
       if (isCdnLink(scriptSource)) {
-        // First, try to get the CDN import from the registry (which has updated versions)
-        // If not found, parse it fresh from the URL
-        let cdnImport = this.findCdnImportInRegistry(scriptSource, registry)
-        if (!cdnImport) {
-          cdnImport = parseCdnImport(scriptSource)
+        // First, try to get the CDN imports from the registry (which has expanded and updated versions)
+        const registryCdnImports = this.findCdnImportsInRegistry(scriptSource, registry)
+
+        let cdnImports: CdnImport[]
+        if (registryCdnImports && registryCdnImports.length > 0) {
+          // Use pre-scanned expanded imports from registry
+          cdnImports = registryCdnImports
+          this.logger.debug(
+            `Found ${cdnImports.length} CDN imports in registry for ${scriptSource}`
+          )
+        } else {
+          // If not in registry, this package is installed - just parse the single component from URL
+          // Don't expand because the package is installed and will be processed via npm scope
+          const singleImport = parseCdnImport(scriptSource)
+          cdnImports = [singleImport]
+          this.logger.debug(
+            `Package is installed, using single CDN import from URL: ${singleImport.name}`
+          )
         }
 
-        this.logger.debug('The CDN import is', JSON.stringify(cdnImport))
-        if (cdnImport.package === instrumentedPackage) {
-          this.logger.debug('CDN import matches instrumented package')
-          accumulator.cdnImports.push(cdnImport)
+        // Add all matching CDN imports to the accumulator
+        for (const cdnImport of cdnImports) {
+          this.logger.debug('The CDN import is', JSON.stringify(cdnImport))
+          if (cdnImport.package === instrumentedPackage) {
+            this.logger.debug('CDN import matches instrumented package')
+            accumulator.cdnImports.push(cdnImport)
+          }
         }
       } else {
         const absolutePath = this.findByRelativePath(scriptSource)

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CDN Only Test Project</title>
+    <!-- CDN imports for @carbon/web-components with specific version -->
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/button.min.js"
+    ></script>
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/tag.min.js"
+    ></script>
+    <!-- CDN import with "latest" version tag -->
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/accordion.min.js"
+    ></script>
+  </head>
+  <body>
+    <h1>CDN-Only Project Test</h1>
+
+    <!-- Web components imported via CDN -->
+    <cds-button size="lg" kind="primary">Click Me</cds-button>
+    <cds-tag type="blue">Tag Component</cds-tag>
+    <cds-accordion>
+      <cds-accordion-item>Content 1</cds-accordion-item>
+      <cds-accordion-item>Content 2</cds-accordion-item>
+    </cds-accordion>
+  </body>
+</html>

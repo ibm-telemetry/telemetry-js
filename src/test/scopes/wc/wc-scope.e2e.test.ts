@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
+import { CdnRegistry } from '../../../main/core/cdn-registry.js'
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import type { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
 import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
@@ -39,6 +40,12 @@ const config: ConfigSchema = {
 
 describe('class: WcScope', () => {
   const logger = initLogger()
+
+  afterEach(() => {
+    // Reset CDN registry after each test to ensure clean state
+    CdnRegistry.reset()
+  })
+
   describe('run', () => {
     it('correctly captures metric data for wc elements imported through a JsImport', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
@@ -70,6 +77,100 @@ describe('class: WcScope', () => {
 
       clearTelemetrySdkVersion(results)
       clearDataPointTimes(results)
+
+      expect(results).toMatchSnapshot()
+    })
+
+    it('captures metrics in CDN-only mode when instrumented package is NOT in node_modules', async () => {
+      // This test simulates the scenario where:
+      // 1. A project uses @carbon/web-components via CDN (not installed in node_modules)
+      // 2. The pre-scan phase has already discovered and registered the CDN imports
+      // 3. The WC scope runs in CDN-only mode to collect metrics for the CDN-imported components
+      //
+      // This is the key difference from the previous test: the instrumented package
+      // (@carbon/web-components) is NOT installed, so it can only be detected via CDN.
+
+      const metricReader = initializeOtelForTest().getMetricReader()
+      const root = new Fixture('projects/cdn-only-project')
+      const cwd = new Fixture('projects/cdn-only-project/node_modules/non-wc-package')
+
+      // Simulate the pre-scan phase by manually populating the CDN registry
+      // In production, this would be done by ChooChooTrain.preScanHtmlForCdn()
+      const registry = CdnRegistry.getInstance()
+      const indexHtmlPath = `${root.path}/index.html`
+      const aboutHtmlPath = `${root.path}/about.html`
+
+      // Register CDN imports from index.html (version 2.35.0 and v2/latest)
+      registry.registerCdnImports(indexHtmlPath, [
+        {
+          name: 'button',
+          path: 'https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/button.min.js',
+          prefix: 'cds',
+          package: '@carbon/web-components',
+          version: '2.35.0'
+        },
+        {
+          name: 'tag',
+          path: 'https://1.www.s81c.com/common/carbon/web-components/version/v2.35.0/tag.min.js',
+          prefix: 'cds',
+          package: '@carbon/web-components',
+          version: '2.35.0'
+        },
+        {
+          name: 'accordion',
+          path: 'https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/accordion.min.js',
+          prefix: 'cds',
+          package: '@carbon/web-components',
+          version: 'v2/latest'
+        }
+      ])
+
+      // Register CDN imports from about.html (version 2.40.0)
+      registry.registerCdnImports(aboutHtmlPath, [
+        {
+          name: 'dropdown',
+          path: 'https://1.www.s81c.com/common/carbon/web-components/version/v2.40.0/dropdown.min.js',
+          prefix: 'cds',
+          package: '@carbon/web-components',
+          version: '2.40.0'
+        },
+        {
+          name: 'modal',
+          path: 'https://1.www.s81c.com/common/carbon/web-components/version/v2.40.0/modal.min.js',
+          prefix: 'cds',
+          package: '@carbon/web-components',
+          version: '2.40.0'
+        }
+      ])
+
+      // Mark pre-scan as completed and enable CDN-only mode
+      // This signals to WC scope that it should process CDN imports from the registry
+      registry.markPreScanCompleted()
+      registry.enableCdnOnlyMode('@carbon/web-components')
+
+      const wcScope = new WcScope(cwd.path, root.path, config, logger)
+      wcScope.setRunSync(true)
+      await wcScope.run()
+
+      const results = await metricReader.collect()
+
+      clearTelemetrySdkVersion(results)
+      clearDataPointTimes(results)
+
+      // Verify metrics were captured for CDN-only components
+      const dataPoints = results.resourceMetrics.scopeMetrics[0]?.metrics[0]?.dataPoints
+      expect(dataPoints).toBeDefined()
+      if (dataPoints) {
+        expect(dataPoints.length).toBeGreaterThan(0)
+
+        // Verify multiple versions are captured (2.35.0, 2.40.0, and v2/latest)
+        const versions = new Set(
+          dataPoints
+            .map((dp) => dp.attributes?.['npm.dependency.instrumented.version.raw'])
+            .filter(Boolean)
+        )
+        expect(versions.size).toBeGreaterThanOrEqual(2) // At least 2.35.0 and 2.40.0
+      }
 
       expect(results).toMatchSnapshot()
     })

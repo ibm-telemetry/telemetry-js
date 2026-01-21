@@ -1,0 +1,13 @@
+{
+  "name": "cdn-only-project",
+  "description": "Test project with only CDN imports, no web component packages installed",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "author": "IBM",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "non-wc-package": "^1.0.0"
+  }
+}

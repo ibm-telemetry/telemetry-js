@@ -45,12 +45,14 @@ export class CdnRegistry {
 
   /**
    * Stores CDN imports discovered in an HTML file.
+   * If imports already exist for this file, appends to them.
    *
    * @param filePath - Absolute path to the HTML file.
    * @param cdnImports - Array of CDN imports found in the file.
    */
   public registerCdnImports(filePath: string, cdnImports: CdnImport[]): void {
-    this.cdnImportsByFile.set(filePath, cdnImports)
+    const existing = this.cdnImportsByFile.get(filePath) ?? []
+    this.cdnImportsByFile.set(filePath, [...existing, ...cdnImports])
   }
 
   /**
@@ -68,12 +70,14 @@ export class CdnRegistry {
   /**
    * Stores expanded CDN imports for a file (after fetching and parsing CDN content).
    * These expanded imports replace the original imports when retrieving.
+   * If expanded imports already exist for this file, appends to them.
    *
    * @param filePath - Absolute path to the HTML file.
    * @param expandedImports - Array of expanded CDN imports.
    */
   public registerExpandedCdnImports(filePath: string, expandedImports: CdnImport[]): void {
-    this.expandedCdnImports.set(filePath, expandedImports)
+    const existing = this.expandedCdnImports.get(filePath) ?? []
+    this.expandedCdnImports.set(filePath, [...existing, ...expandedImports])
   }
 
   /**
@@ -88,6 +92,8 @@ export class CdnRegistry {
 
   /**
    * Updates all CDN imports for a specific package@version with a resolved version.
+   * Updates both original and expanded imports that match the package, version, AND path.
+   * This ensures that only imports from the same CDN URL get updated together.
    *
    * @param packageName - The package name to update.
    * @param originalVersion - The original version to match (e.g., "v2/latest").
@@ -98,14 +104,46 @@ export class CdnRegistry {
     originalVersion: string,
     resolvedVersion: string
   ): void {
+    // Track which paths we've seen for this package@version to update them together
+    const pathsToUpdate = new Set<string>()
+
+    // First pass: identify all unique paths for this package@version
+    for (const cdnImports of this.cdnImportsByFile.values()) {
+      for (const cdnImport of cdnImports) {
+        if (cdnImport.package === packageName && cdnImport.version === originalVersion) {
+          pathsToUpdate.add(cdnImport.path)
+        }
+      }
+    }
+
+    // Update original imports - only those matching package, version, AND one of the identified paths
     for (const [filePath, cdnImports] of this.cdnImportsByFile.entries()) {
       const updatedImports = cdnImports.map((cdnImport) => {
-        if (cdnImport.package === packageName && cdnImport.version === originalVersion) {
+        if (
+          cdnImport.package === packageName &&
+          cdnImport.version === originalVersion &&
+          pathsToUpdate.has(cdnImport.path)
+        ) {
           return { ...cdnImport, version: resolvedVersion }
         }
         return cdnImport
       })
       this.cdnImportsByFile.set(filePath, updatedImports)
+    }
+
+    // Update expanded imports - only those matching package, version, AND one of the identified paths
+    for (const [filePath, cdnImports] of this.expandedCdnImports.entries()) {
+      const updatedImports = cdnImports.map((cdnImport) => {
+        if (
+          cdnImport.package === packageName &&
+          cdnImport.version === originalVersion &&
+          pathsToUpdate.has(cdnImport.path)
+        ) {
+          return { ...cdnImport, version: resolvedVersion }
+        }
+        return cdnImport
+      })
+      this.expandedCdnImports.set(filePath, updatedImports)
     }
   }
 
@@ -199,11 +237,12 @@ export class CdnRegistry {
 
   /**
    * Enables CDN-only mode, which signals that only CDN metrics should be collected.
+   * When enabled, ALL versions of the package will be processed in a single burst.
    *
    * @param packageName - The CDN package name being processed.
-   * @param version - The CDN package version being processed.
+   * @param version - Optional version for context/logging (not used for filtering).
    */
-  public enableCdnOnlyMode(packageName: string, version: string): void {
+  public enableCdnOnlyMode(packageName: string, version?: string): void {
     this.cdnOnlyMode = true
     this.currentCdnPackage = packageName
     this.currentCdnVersion = version
@@ -221,11 +260,15 @@ export class CdnRegistry {
   /**
    * Gets the current CDN package being processed in CDN-only mode.
    *
-   * @returns The package name and version, or undefined if not in CDN-only mode.
+   * @returns The package name and optional version, or undefined if not in CDN-only mode.
    */
-  public getCurrentCdnPackage(): { name: string; version: string } | undefined {
-    if (this.currentCdnPackage && this.currentCdnVersion) {
-      return { name: this.currentCdnPackage, version: this.currentCdnVersion }
+  public getCurrentCdnPackage(): { name: string; version?: string } | undefined {
+    if (this.currentCdnPackage) {
+      const result: { name: string; version?: string } = { name: this.currentCdnPackage }
+      if (this.currentCdnVersion !== undefined) {
+        result.version = this.currentCdnVersion
+      }
+      return result
     }
     return undefined
   }

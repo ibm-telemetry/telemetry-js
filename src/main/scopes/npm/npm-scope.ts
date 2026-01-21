@@ -34,28 +34,37 @@ export class NpmScope extends Scope {
         return
       }
 
+      // Get all unique versions for this package from the registry
+      const packageVersions = registry.getDiscoveredPackageVersions()
+      const uniqueVersions = packageVersions
+        .filter((pv) => pv.package === cdnPackage.name)
+        .map((pv) => pv.version)
+
       this.logger.debug(
-        `Collecting self-referential NPM dependency for CDN package: ${cdnPackage.name}@${cdnPackage.version}`
+        `Collecting ${uniqueVersions.length} self-referential NPM dependencies for CDN package: ${cdnPackage.name}`
       )
 
-      // Create a self-referential dependency metric for the CDN package
-      // This represents the CDN package as its own dependency
-      const instrumentedPackage = {
-        name: cdnPackage.name,
-        version: cdnPackage.version
-      }
+      // Create a self-referential dependency metric for each unique version
+      for (const version of uniqueVersions) {
+        const instrumentedPackage = {
+          name: cdnPackage.name,
+          version: version
+        }
 
-      this.capture(
-        new DependencyMetric(
-          {
-            rawName: cdnPackage.name,
-            rawVersion: cdnPackage.version,
-            isInstrumented: 'true'
-          },
-          instrumentedPackage,
-          this.logger
+        this.capture(
+          new DependencyMetric(
+            {
+              rawName: cdnPackage.name,
+              rawVersion: version,
+              isInstrumented: 'true'
+            },
+            instrumentedPackage,
+            this.logger
+          )
         )
-      )
+
+        this.logger.debug(`Created npm dependency metric for ${cdnPackage.name}@${version}`)
+      }
 
       return
     }

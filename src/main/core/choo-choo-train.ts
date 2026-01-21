@@ -677,11 +677,6 @@ export class ChooChooTrain extends Loggable {
         // Extract CDN imports from script sources
         const cdnLinks = accumulator.scriptSources.filter((src) => isCdnLink(src))
 
-        // First, parse CDN imports without expansion to get package names
-        const basicCdnImports = cdnLinks
-          .map((src) => parseCdnImport(src))
-          .filter((cdn) => cdn.package && cdn.version)
-
         // Filter to only non-installed packages BEFORE expanding
         const cdnLinksToExpand = cdnLinks.filter((src) => {
           const basicImport = parseCdnImport(src)
@@ -693,41 +688,36 @@ export class ChooChooTrain extends Loggable {
             `(skipped ${cdnLinks.length - cdnLinksToExpand.length} for installed packages)`
         )
 
-        // Only expand CDN imports for non-installed packages
-        const expandedImportsPromises = cdnLinksToExpand.map((src) =>
-          parseCdnImportWithExpansion(src, this.logger)
-        )
+        // Expand each CDN import individually to keep them separate
+        for (let i = 0; i < cdnLinksToExpand.length; i++) {
+          const cdnUrl = cdnLinksToExpand[i]
+          if (!cdnUrl) continue
 
-        const expandedImportsArrays = await Promise.all(expandedImportsPromises)
+          const expandedImports = await parseCdnImportWithExpansion(cdnUrl, this.logger)
 
-        this.logger.debug(JSON.stringify(expandedImportsArrays, undefined, 2))
-        const cdnImportsToRegister = expandedImportsArrays
-          .flat()
-          .filter((cdn) => cdn.package && cdn.version)
+          // Filter valid imports
+          const validExpandedImports = expandedImports.filter((cdn) => cdn.package && cdn.version)
 
-        if (cdnImportsToRegister.length > 0) {
-          // Store both original and expanded imports
-          registry.registerCdnImports(htmlFile.fileName, cdnImportsToRegister)
-          registry.registerExpandedCdnImports(htmlFile.fileName, cdnImportsToRegister)
+          if (validExpandedImports.length > 0) {
+            // Register each CDN URL's expanded imports separately
+            // This keeps components from different URLs isolated
+            registry.registerCdnImports(htmlFile.fileName, validExpandedImports)
+            registry.registerExpandedCdnImports(htmlFile.fileName, validExpandedImports)
 
-          this.logger.debug(
-            `Registered ${cdnImportsToRegister.length} expanded CDN imports for ${htmlFile.fileName}`
-          )
-        }
+            this.logger.debug(
+              `Registered ${validExpandedImports.length} expanded CDN imports for ${cdnUrl}`
+            )
 
-        // Use all basic imports (including installed packages) for grouping
-        accumulator.cdnImports = basicCdnImports
-
-        if (accumulator.cdnImports.length > 0) {
-          // Group by package (process all CDN imports, but only non-installed ones will be registered)
-          for (const cdnImport of accumulator.cdnImports) {
-            if (!packageData.has(cdnImport.package)) {
-              packageData.set(cdnImport.package, { elements: [], cdnImports: [] })
+            // Group by package for metric collection
+            for (const cdnImport of validExpandedImports) {
+              if (!packageData.has(cdnImport.package)) {
+                packageData.set(cdnImport.package, { elements: [], cdnImports: [] })
+              }
+              const pkgData = packageData.get(cdnImport.package)
+              if (!pkgData) continue
+              pkgData.cdnImports.push(cdnImport)
+              pkgData.elements.push(...accumulator.elements)
             }
-            const pkgData = packageData.get(cdnImport.package)
-            if (!pkgData) continue
-            pkgData.cdnImports.push(cdnImport)
-            pkgData.elements.push(...accumulator.elements)
           }
         }
       }
@@ -750,6 +740,16 @@ export class ChooChooTrain extends Loggable {
           packageVersionsMap.get(pkg)?.push(version)
         }
 
+        // this.logger.debug(
+        //   'Current CDN package version map',
+        //   JSON.stringify(Object.fromEntries(packageVersionsMap), undefined, 2)
+        // )
+
+        // this.logger.debug(
+        //   `Package data`,
+        //   JSON.stringify(Object.fromEntries(packageData), undefined, 2)
+        // )
+
         // Process each unique package
         for (const [pkg, versions] of packageVersionsMap.entries()) {
           this.logger.debug(`Processing CDN package: ${pkg} with versions: ${versions.join(', ')}`)
@@ -768,56 +768,128 @@ export class ChooChooTrain extends Loggable {
 
           this.logger.debug(`Package ${pkg} is NOT installed. Processing CDN metrics immediately.`)
 
-          // Process all versions for this package in a single collection
+          // Fetch configs and resolve versions for ALL versions upfront
+          const configs: Array<{ version: string; config: any; hasWc: boolean }> = []
+
           for (const cdnVersion of versions) {
-            const { config: cdnAttributeConfig, resolvedVersion } = await fetchCdnPackageConfig(
+            const { config, resolvedVersion } = await fetchCdnPackageConfig(
               pkg,
               cdnVersion,
               this.logger
             )
 
             this.logger.debug(
-              `CDN attribute config for ${pkg}@${cdnVersion} (resolved: ${resolvedVersion}):`,
-              cdnAttributeConfig
+              `CDN attribute config for ${pkg}@${cdnVersion} (resolved: ${resolvedVersion})`
             )
 
             // Update all CDN imports for this package@version with the resolved version
             registry.updateCdnImportVersions(pkg, cdnVersion, resolvedVersion)
 
-            // Enable CDN-only mode before running metrics collection
-            registry.enableCdnOnlyMode(pkg, resolvedVersion)
-            this.logger.debug(`Enabled CDN-only mode for ${pkg}@${resolvedVersion}`)
-
-            // Process CDN metrics directly
-            if (cdnAttributeConfig && this.environment) {
-              const cdnConfig = await this.parseAndValidateConfig(cdnAttributeConfig)
-
-              // Filter config to only include WC and NPM scopes for CDN packages
-              const wc = cdnConfig?.collect?.wc
-              const npm = cdnConfig?.collect?.npm
-
-              if (wc || npm) {
-                cdnConfig.collect = {}
-                if (wc) {
-                  cdnConfig.collect.wc = wc
-                }
-                if (npm) {
-                  cdnConfig.collect.npm = npm
-                }
-
-                // Testing purpose only
-                if (1 + 1 == 2) {
-                  cdnConfig.endpoint = 'http://localhost:3000/v1/metrics'
-                }
-
-                await this.collect(this.environment, cdnConfig)
+            // Parse and store each config
+            if (config) {
+              try {
+                const parsedConfig = await this.parseAndValidateConfig(config)
+                const hasWc = parsedConfig?.collect?.wc !== undefined
+                configs.push({ version: resolvedVersion, config: parsedConfig, hasWc })
+                this.logger.debug(`Config for ${pkg}@${resolvedVersion} has WC scope: ${hasWc}`)
+              } catch (error) {
+                this.logger.debug(
+                  `Failed to parse config for ${pkg}@${resolvedVersion}: ${String(error)}`
+                )
               }
             }
-
-            // Disable CDN-only mode after collection completes
-            registry.disableCdnOnlyMode()
-            this.logger.debug(`Disabled CDN-only mode for ${pkg}@${resolvedVersion}`)
           }
+
+          // Find configs with WC scope
+          // Find configs with WC scope - we need at least one to process WC metrics
+          const configsWithWc = configs.filter((c) => c.hasWc)
+
+          if (configsWithWc.length === 0) {
+            this.logger.debug(
+              `No configs with WC scope found for ${pkg}, skipping (npm metrics will be collected via npm scope)`
+            )
+            continue
+          }
+
+          // Merge all WC configs to get the union of all allowed attributes
+          const mergedConfig = configsWithWc[0]?.config
+          if (!mergedConfig) {
+            this.logger.debug(`No valid config found for ${pkg}`)
+            continue
+          }
+
+          // Merge allowedAttributeNames and allowedAttributeStringValues from all configs
+          const allAllowedAttributeNames = new Set<string>()
+          const allAllowedAttributeStringValues = new Set<string>()
+
+          for (const { config, version } of configsWithWc) {
+            const wcConfig = config?.collect?.wc
+            if (wcConfig?.elements?.allowedAttributeNames) {
+              wcConfig.elements.allowedAttributeNames.forEach((name: string) =>
+                allAllowedAttributeNames.add(name)
+              )
+            }
+            if (wcConfig?.elements?.allowedAttributeStringValues) {
+              wcConfig.elements.allowedAttributeStringValues.forEach((value: string) =>
+                allAllowedAttributeStringValues.add(value)
+              )
+            }
+            this.logger.debug(
+              `Merged WC config from ${pkg}@${version}: ` +
+                `${wcConfig?.elements?.allowedAttributeNames?.length ?? 0} attribute names, ` +
+                `${wcConfig?.elements?.allowedAttributeStringValues?.length ?? 0} string values`
+            )
+          }
+
+          // Apply merged attributes to the config
+          if (mergedConfig.collect?.wc?.elements) {
+            mergedConfig.collect.wc.elements.allowedAttributeNames =
+              Array.from(allAllowedAttributeNames)
+            mergedConfig.collect.wc.elements.allowedAttributeStringValues = Array.from(
+              allAllowedAttributeStringValues
+            )
+          }
+
+          this.logger.debug(
+            `Merged ${configsWithWc.length} WC configs for ${pkg}: ` +
+              `${allAllowedAttributeNames.size} total attribute names, ` +
+              `${allAllowedAttributeStringValues.size} total string values`
+          )
+
+          // Enable CDN-only mode ONCE for the entire package (not per version)
+          registry.enableCdnOnlyMode(pkg, versions[0] ?? '')
+          this.logger.debug(`Enabled CDN-only mode for package: ${pkg}`)
+
+          // Process CDN metrics for ALL versions in a SINGLE collection burst
+          if (mergedConfig && this.environment) {
+            // Filter config to only include WC and NPM scopes for CDN packages
+            const wc = mergedConfig?.collect?.wc
+            const npm = mergedConfig?.collect?.npm
+
+            if (wc || npm) {
+              mergedConfig.collect = {}
+              if (wc) {
+                mergedConfig.collect.wc = wc
+              }
+              if (npm) {
+                mergedConfig.collect.npm = npm
+              }
+
+              // Testing purpose only
+              if (1 + 1 == 2) {
+                mergedConfig.endpoint = 'http://localhost:3000/v1/metrics'
+              }
+
+              this.logger.debug(`Collecting for package ${pkg} (all versions in single burst)`)
+
+              // This single collect() call will process ALL versions of the package
+              await this.collect(this.environment, mergedConfig)
+            }
+          }
+
+          // Disable CDN-only mode after collection completes
+          registry.disableCdnOnlyMode()
+          this.logger.debug(`Disabled CDN-only mode for package: ${pkg}`)
 
           // Only count once per package, not per version
           totalCdnPackages++

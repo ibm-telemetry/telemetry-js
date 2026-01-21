@@ -166,6 +166,7 @@ export class WcScope extends Scope {
   /**
    * Captures metrics for CDN imports only, using data from the CDN registry.
    * This is used when running in CDN-only mode after the pre-scan phase.
+   * Processes ALL versions of the current package in a single burst.
    */
   @Trace()
   private async captureCdnOnlyMetrics(): Promise<void> {
@@ -179,15 +180,24 @@ export class WcScope extends Scope {
       return
     }
 
+    // Get all versions for this package to use the first one as context
+    // The actual version for each element comes from the individual CDN import
+    const packageVersions = registry.getDiscoveredPackageVersions()
+    const versions = packageVersions
+      .filter((pv) => pv.package === currentCdnPackage.name)
+      .map((pv) => pv.version)
+
+    // Use first version as context (doesn't matter which, each element has its own version)
+    const contextVersion = versions[0] ?? '0.0.0'
+
     // Create package data from the CDN package information
-    // The version is already resolved (e.g., "2.46.0" instead of "latest")
     const instrumentedPackage: PackageData = {
       name: currentCdnPackage.name,
-      version: currentCdnPackage.version
+      version: contextVersion
     }
 
     this.logger.debug(
-      `Processing CDN-only metrics for package: ${instrumentedPackage.name}@${instrumentedPackage.version}`
+      `Processing CDN-only metrics for package: ${instrumentedPackage.name} (${versions.length} versions: ${versions.join(', ')})`
     )
 
     // Get all files that have CDN imports
@@ -198,14 +208,24 @@ export class WcScope extends Scope {
     const promises: Promise<void>[] = []
 
     for (const filePath of filesWithCdnImports) {
-      const cdnImports = registry.getCdnImports(filePath)
-      if (!cdnImports || cdnImports.length === 0) {
+      const allCdnImports = registry.getCdnImports(filePath)
+      if (!allCdnImports || allCdnImports.length === 0) {
         continue
       }
 
-      this.logger.debug(`Processing CDN imports for file: ${filePath}`)
+      // Filter to only imports from the current package (ALL versions)
+      const cdnImports = allCdnImports.filter((imp) => imp.package === currentCdnPackage.name)
 
-      // Create an accumulator with only CDN imports
+      if (cdnImports.length === 0) {
+        this.logger.debug(`Skipping file ${filePath} - no imports from ${currentCdnPackage.name}`)
+        continue
+      }
+
+      this.logger.debug(
+        `Processing ${cdnImports.length} CDN imports from ${currentCdnPackage.name} (all versions) for file: ${filePath}`
+      )
+
+      // Create an accumulator with CDN imports from the current package (all versions)
       const accumulator = new WcElementAccumulator()
       accumulator.cdnImports = cdnImports
 

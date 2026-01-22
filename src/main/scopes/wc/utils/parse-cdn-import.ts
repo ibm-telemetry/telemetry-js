@@ -43,12 +43,14 @@ export function parseCdnImport(scriptSource: string) {
  * @param scriptSource - A CDN link from an HTML `<script>` tag.
  * @param logger - Logger instance for debugging.
  * @param collectorEndpoint - Optional collector endpoint URL for fetching component maps.
+ * @param resolvedVersion - Optional resolved version (e.g., "2.46.0" instead of "v2/canary").
  * @returns - Array of CdnImport objects, one for each component found.
  */
 export async function parseCdnImportWithExpansion(
   scriptSource: string,
   logger: Logger,
-  collectorEndpoint?: string
+  collectorEndpoint?: string,
+  resolvedVersion?: string
 ): Promise<CdnImport[]> {
   const [packageName, version] = getPackageInfo(scriptSource)
   const componentPrefix = getWcPrefix(packageName)
@@ -58,7 +60,13 @@ export async function parseCdnImportWithExpansion(
   const filenameComponent = segments.pop()?.split(CDN_ENDING)[0] ?? ''
 
   // Fetch the component map from collector or CDN file directly
-  const componentNames = await fetchCdnComponentImports(scriptSource, logger, collectorEndpoint)
+  // Use resolved version if provided, otherwise fall back to CDN version
+  const componentNames = await fetchCdnComponentImports(
+    scriptSource,
+    logger,
+    collectorEndpoint,
+    resolvedVersion
+  )
 
   // If no components found (fetch failed or file has no imports),
   // fall back to parsing just the single component from the URL
@@ -75,16 +83,29 @@ export async function parseCdnImportWithExpansion(
   }
 
   // Create a CdnImport for each component found
-  const cdnImports: CdnImport[] = Array.from(allComponentNames).map((componentName) => ({
-    name: componentName,
-    path: scriptSource,
-    prefix: componentPrefix,
-    package: packageName,
-    version: version
-  }))
+  // Use resolved version if provided, otherwise fall back to CDN version
+  const versionToUse = resolvedVersion || version
+  const cdnImports: CdnImport[] = Array.from(allComponentNames).map((componentName) => {
+    // Strip the prefix from component name if it starts with the prefix
+    // Component names from collector include prefix (e.g., "c4d-card")
+    // but CdnImport.name should be without prefix (e.g., "card")
+    const nameWithoutPrefix = componentName.startsWith(componentPrefix + '-')
+      ? componentName.slice(componentPrefix.length + 1)
+      : componentName
+
+    return {
+      name: nameWithoutPrefix,
+      path: scriptSource,
+      prefix: componentPrefix,
+      package: packageName,
+      version: versionToUse
+    }
+  })
 
   logger.debug(
-    `Expanded CDN import ${scriptSource} into ${cdnImports.length} components: ${Array.from(allComponentNames).join(', ')}`
+    `Expanded CDN import ${scriptSource} into ${cdnImports.length} components: ${Array.from(
+      allComponentNames
+    ).join(', ')}`
   )
 
   return cdnImports

@@ -672,7 +672,13 @@ export class ChooChooTrain extends Loggable {
 
       // Process each HTML file using existing WC infrastructure
       for (const htmlFile of htmlFiles) {
-        const sourceFile = await htmlFile.createSourceFile()
+        let sourceFile
+        try {
+          sourceFile = await htmlFile.createSourceFile()
+        } catch {
+          this.logger.debug(`Failed to create source file for ${htmlFile.fileName}`)
+          continue
+        }
         const accumulator = new WcElementAccumulator()
 
         // Reuse existing processFile with WC node handlers
@@ -697,12 +703,27 @@ export class ChooChooTrain extends Loggable {
           const cdnUrl = cdnLinksToExpand[i]
           if (!cdnUrl) continue
 
-          // Pass the collector endpoint if available for efficient component map fetching
-          const collectorEndpoint = this.parsedConfig?.endpoint
+          // Parse basic import info to get package and version
+          const basicImport = parseCdnImport(cdnUrl)
+
+          // Fetch telemetry config to resolve the version (e.g., "v2/canary" -> "2.46.0")
+          // This call is cached, so the later call at line ~801 will hit the cache
+          const { resolvedVersion } = await fetchCdnPackageConfig(
+            basicImport.package,
+            basicImport.version,
+            this.logger
+          )
+
+          this.logger.debug(
+            `Resolved CDN version ${basicImport.version} to ${resolvedVersion} for ${basicImport.package}`
+          )
+
+          // Pass the collector endpoint and resolved version for efficient component map fetching
           const expandedImports = await parseCdnImportWithExpansion(
             cdnUrl,
             this.logger,
-            collectorEndpoint
+            this.logEndpoint,
+            resolvedVersion
           )
 
           // Filter valid imports

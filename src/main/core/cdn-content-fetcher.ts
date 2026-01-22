@@ -20,12 +20,14 @@ const contentCache = new Map<string, string[]>()
  * @param cdnUrl - The full CDN URL (e.g., https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js).
  * @param logger - Logger instance.
  * @param collectorEndpoint - Optional collector endpoint URL (e.g., 'https://collector.example.com/v1/metrics'). If not provided, falls back to fetching CDN content directly.
+ * @param resolvedVersion - Optional resolved version (e.g., "2.46.0" instead of "v2/canary"). If provided, this will be used instead of parsing from the URL.
  * @returns Array of component names for the CDN file, or empty array if fetch fails.
  */
 export async function fetchCdnComponentImports(
   cdnUrl: string,
   logger: Logger,
-  collectorEndpoint?: string
+  collectorEndpoint?: string,
+  resolvedVersion?: string
 ): Promise<string[]> {
   // Check cache first
   const cachedComponents = contentCache.get(cdnUrl)
@@ -36,7 +38,7 @@ export async function fetchCdnComponentImports(
 
   // If collector endpoint is provided, use it to fetch component map
   if (collectorEndpoint) {
-    return fetchFromCollector(cdnUrl, logger, collectorEndpoint)
+    return fetchFromCollector(cdnUrl, logger, collectorEndpoint, resolvedVersion)
   }
 
   // Fallback to old behavior: fetch and parse CDN content directly
@@ -49,27 +51,45 @@ export async function fetchCdnComponentImports(
  * @param cdnUrl - The CDN URL.
  * @param logger - Logger instance.
  * @param collectorEndpoint - The collector metrics endpoint URL.
+ * @param resolvedVersion - Optional resolved version to use instead of parsing from URL.
  * @returns Array of component names.
  */
 async function fetchFromCollector(
   cdnUrl: string,
   logger: Logger,
-  collectorEndpoint: string
+  collectorEndpoint: string,
+  resolvedVersion?: string
 ): Promise<string[]> {
   // Extract package info from CDN URL
-  const { packageName, version, fileName } = parseCdnUrl(cdnUrl, logger)
+  const { packageName, version: cdnVersion, fileName } = parseCdnUrl(cdnUrl, logger)
 
-  if (!packageName || !version) {
-    logger.debug(`Could not extract package info from CDN URL: ${cdnUrl}`)
+  if (!packageName) {
+    logger.debug(`Could not extract package name from CDN URL: ${cdnUrl}`)
+    contentCache.set(cdnUrl, [])
+    return []
+  }
+
+  // Use resolved version if provided, otherwise use CDN version
+  const versionToUse = resolvedVersion || cdnVersion
+
+  if (!versionToUse) {
+    logger.debug(`No version available for ${packageName}`)
     contentCache.set(cdnUrl, [])
     return []
   }
 
   try {
-    // Convert metrics endpoint to imports-map endpoint
-    // e.g., 'https://collector.example.com/v1/metrics' -> 'https://collector.example.com/v1/imports-map'
-    const importsMapEndpoint = collectorEndpoint.split('/metrics')[0] + '/imports-map'
-    const importsMapUrl = `${importsMapEndpoint}/${encodeURIComponent(packageName)}/${encodeURIComponent(version)}`
+    // Convert endpoint to imports-map endpoint
+    // Handle both metrics endpoint and logs endpoint formats:
+    // - 'https://collector.example.com/v1/metrics' -> 'https://collector.example.com/v1/imports-map'
+    // - 'https://collector.example.com/v1/logs' -> 'https://collector.example.com/v1/imports-map'
+    let baseEndpoint = collectorEndpoint
+    if (baseEndpoint.includes('/metrics')) {
+      baseEndpoint = baseEndpoint.split('/metrics')[0] ?? baseEndpoint
+    } else if (baseEndpoint.includes('/logs')) {
+      baseEndpoint = baseEndpoint.split('/logs')[0] ?? baseEndpoint
+    }
+    const importsMapUrl = `${baseEndpoint}/imports-map/${encodeURIComponent(packageName)}/${encodeURIComponent(versionToUse)}`
 
     logger.debug(`Fetching component map from: ${importsMapUrl}`)
 

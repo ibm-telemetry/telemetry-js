@@ -855,6 +855,10 @@ export class ChooChooTrain extends Loggable {
             continue
           }
 
+          // Enable CDN-only mode ONCE for the entire package (not per version)
+          registry.enableCdnOnlyMode(pkg, versions[0] ?? '')
+          this.logger.debug(`Enabled CDN-only mode for package: ${pkg}`)
+
           // Merge all WC configs to get the union of all allowed attributes
           const mergedConfig = configsWithWc[0]?.config
           if (!mergedConfig) {
@@ -920,6 +924,10 @@ export class ChooChooTrain extends Loggable {
               await this.collect(this.environment, mergedConfig, true)
             }
           }
+
+          // Disable CDN-only mode after collection completes
+          registry.disableCdnOnlyMode()
+          this.logger.debug(`Disabled CDN-only mode for package: ${pkg}`)
 
           // Only count once per package, not per version
           totalCdnPackages++

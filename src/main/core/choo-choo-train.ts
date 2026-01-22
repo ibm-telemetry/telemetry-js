@@ -356,7 +356,11 @@ export class ChooChooTrain extends Loggable {
 
     let cdnPackages = 0
     if (1 + 1 == 2) {
+      const startTime = performance.now()
       cdnPackages = await this.preScanHtmlForCdn()
+      const endTime = performance.now()
+      const duration = endTime - startTime
+      this.logger.debug(`preScanHtmlForCdn() took ${duration.toFixed(2)}ms`)
     }
 
     this.totalPackages = 0 + cdnPackages
@@ -693,7 +697,13 @@ export class ChooChooTrain extends Loggable {
           const cdnUrl = cdnLinksToExpand[i]
           if (!cdnUrl) continue
 
-          const expandedImports = await parseCdnImportWithExpansion(cdnUrl, this.logger)
+          // Pass the collector endpoint if available for efficient component map fetching
+          const collectorEndpoint = this.parsedConfig?.endpoint
+          const expandedImports = await parseCdnImportWithExpansion(
+            cdnUrl,
+            this.logger,
+            collectorEndpoint
+          )
 
           // Filter valid imports
           const validExpandedImports = expandedImports.filter((cdn) => cdn.package && cdn.version)
@@ -822,7 +832,7 @@ export class ChooChooTrain extends Loggable {
           const allAllowedAttributeNames = new Set<string>()
           const allAllowedAttributeStringValues = new Set<string>()
 
-          for (const { config, version } of configsWithWc) {
+          for (const { config } of configsWithWc) {
             const wcConfig = config?.collect?.wc
             if (wcConfig?.elements?.allowedAttributeNames) {
               wcConfig.elements.allowedAttributeNames.forEach((name: string) =>
@@ -834,11 +844,6 @@ export class ChooChooTrain extends Loggable {
                 allAllowedAttributeStringValues.add(value)
               )
             }
-            this.logger.debug(
-              `Merged WC config from ${pkg}@${version}: ` +
-                `${wcConfig?.elements?.allowedAttributeNames?.length ?? 0} attribute names, ` +
-                `${wcConfig?.elements?.allowedAttributeStringValues?.length ?? 0} string values`
-            )
           }
 
           // Apply merged attributes to the config
@@ -879,7 +884,6 @@ export class ChooChooTrain extends Loggable {
               if (1 + 1 == 2) {
                 mergedConfig.endpoint = 'http://localhost:3000/v1/metrics'
               }
-
               this.logger.debug(`Collecting for package ${pkg} (all versions in single burst)`)
 
               // This single collect() call will process ALL versions of the package

@@ -7,29 +7,106 @@
 
 import type { Logger } from './log/logger.js'
 
-// Cache for fetched CDN content to avoid repeated network requests
+// Cache for fetched component maps to avoid repeated network requests
 const contentCache = new Map<string, string[]>()
 
 /**
- * Fetches the content of a CDN JavaScript file and extracts component names
- * from import statements.
+ * Fetches the component map for a CDN package from the collector service.
  *
- * This is used when a CDN import points to an index file that imports multiple
- * components. We need to fetch the actual file to discover all the components
- * it imports.
+ * This queries the collector's imports-map endpoint which contains pre-computed
+ * mappings of CDN files to their imported components, avoiding the need to
+ * fetch and parse minified CDN content.
  *
- * @param cdnUrl - The full CDN URL to fetch (e.g., https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js).
+ * @param cdnUrl - The full CDN URL (e.g., https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js).
  * @param logger - Logger instance.
- * @returns Array of component names found in the file's imports, or empty array if fetch fails.
+ * @param collectorEndpoint - Optional collector endpoint URL (e.g., 'https://collector.example.com/v1/metrics'). If not provided, falls back to fetching CDN content directly.
+ * @returns Array of component names for the CDN file, or empty array if fetch fails.
  */
-export async function fetchCdnComponentImports(cdnUrl: string, logger: Logger): Promise<string[]> {
+export async function fetchCdnComponentImports(
+  cdnUrl: string,
+  logger: Logger,
+  collectorEndpoint?: string
+): Promise<string[]> {
   // Check cache first
   const cachedComponents = contentCache.get(cdnUrl)
   if (cachedComponents !== undefined) {
-    logger.debug(`CDN content cache hit for ${cdnUrl}`)
+    logger.debug(`Component map cache hit for ${cdnUrl}`)
     return cachedComponents
   }
 
+  // If collector endpoint is provided, use it to fetch component map
+  if (collectorEndpoint) {
+    return fetchFromCollector(cdnUrl, logger, collectorEndpoint)
+  }
+
+  // Fallback to old behavior: fetch and parse CDN content directly
+  return fetchFromCdn(cdnUrl, logger)
+}
+
+/**
+ * Fetches component map from the collector service.
+ *
+ * @param cdnUrl - The CDN URL.
+ * @param logger - Logger instance.
+ * @param collectorEndpoint - The collector metrics endpoint URL.
+ * @returns Array of component names.
+ */
+async function fetchFromCollector(
+  cdnUrl: string,
+  logger: Logger,
+  collectorEndpoint: string
+): Promise<string[]> {
+  // Extract package info from CDN URL
+  const { packageName, version, fileName } = parseCdnUrl(cdnUrl, logger)
+
+  if (!packageName || !version) {
+    logger.debug(`Could not extract package info from CDN URL: ${cdnUrl}`)
+    contentCache.set(cdnUrl, [])
+    return []
+  }
+
+  try {
+    // Convert metrics endpoint to imports-map endpoint
+    // e.g., 'https://collector.example.com/v1/metrics' -> 'https://collector.example.com/v1/imports-map'
+    const importsMapEndpoint = collectorEndpoint.split('/metrics')[0] + '/imports-map'
+    const importsMapUrl = `${importsMapEndpoint}/${encodeURIComponent(packageName)}/${encodeURIComponent(version)}`
+
+    logger.debug(`Fetching component map from: ${importsMapUrl}`)
+
+    const response = await fetch(importsMapUrl)
+
+    if (!response.ok) {
+      logger.debug(
+        `Failed to fetch component map from ${importsMapUrl}: ${response.status} ${response.statusText}`
+      )
+      contentCache.set(cdnUrl, [])
+      return []
+    }
+
+    const componentMap: Record<string, string[]> = await response.json()
+
+    // Match the CDN file name with the component map keys
+    const components = matchComponentsFromMap(componentMap, fileName, logger)
+
+    logger.debug(`Found ${components.length} components for ${fileName}: ${components.join(', ')}`)
+
+    contentCache.set(cdnUrl, components)
+    return components
+  } catch (error) {
+    logger.debug(`Error fetching component map from collector: ${String(error)}`)
+    contentCache.set(cdnUrl, [])
+    return []
+  }
+}
+
+/**
+ * Fetches and parses CDN content directly (fallback method).
+ *
+ * @param cdnUrl - The CDN URL.
+ * @param logger - Logger instance.
+ * @returns Array of component names.
+ */
+async function fetchFromCdn(cdnUrl: string, logger: Logger): Promise<string[]> {
   try {
     logger.debug(`Fetching CDN content from: ${cdnUrl}`)
 
@@ -44,7 +121,7 @@ export async function fetchCdnComponentImports(cdnUrl: string, logger: Logger): 
     }
 
     const content = await response.text()
-    const components = extractComponentNames(content, logger)
+    const components = extractComponentNamesFromCDN(content, logger)
 
     logger.debug(
       `Extracted ${components.length} components from ${cdnUrl}: ${components.join(', ')}`
@@ -60,6 +137,115 @@ export async function fetchCdnComponentImports(cdnUrl: string, logger: Logger): 
 }
 
 /**
+ * Parses a CDN URL to extract package name, version, and file name.
+ *
+ * Handles CDN URL formats like:
+ * - https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js
+ * - https://1.www.s81c.com/carbon/web-components/tag/v2/canary/button.min.js
+ *
+ * @param cdnUrl - The CDN URL to parse.
+ * @param logger - Logger instance.
+ * @returns Object containing packageName, version, and fileName.
+ */
+function parseCdnUrl(
+  cdnUrl: string,
+  logger: Logger
+): { packageName: string; version: string; fileName: string } {
+  try {
+    // Known CDN package paths
+    const cdnPackages = new Map([
+      ['/carbon/web-components/', '@carbon/web-components'],
+      ['/carbon-for-ibm-dotcom/', '@carbon/ibmdotcom-web-components']
+    ])
+
+    let packageName = ''
+    let packagePath = ''
+
+    // Find which package this URL belongs to
+    for (const [path, name] of cdnPackages) {
+      if (cdnUrl.includes(path)) {
+        packageName = name
+        packagePath = path
+        break
+      }
+    }
+
+    if (!packageName) {
+      logger.debug(`Unknown CDN package in URL: ${cdnUrl}`)
+      return { packageName: '', version: '', fileName: '' }
+    }
+
+    // Extract version and file name
+    const afterPackage = cdnUrl.split(packagePath)[1]
+    if (!afterPackage) {
+      return { packageName: '', version: '', fileName: '' }
+    }
+
+    const segments = afterPackage.split('/')
+    let version = ''
+    let fileName = ''
+
+    // Handle version format: /version/2.46.0/...
+    if (segments[0] === 'version' && segments[1]) {
+      version = segments[1]
+      fileName = segments[segments.length - 1]?.replace('.min.js', '') ?? ''
+    }
+    // Handle tag format: /tag/v2/canary/...
+    else if (segments[0] === 'tag' && segments[1] && segments[2]) {
+      version = `${segments[1]}/${segments[2]}`
+      fileName = segments[segments.length - 1]?.replace('.min.js', '') ?? ''
+    }
+
+    logger.debug(`Parsed CDN URL: package=${packageName}, version=${version}, file=${fileName}`)
+    return { packageName, version, fileName }
+  } catch (error) {
+    logger.debug(`Error parsing CDN URL ${cdnUrl}: ${String(error)}`)
+    return { packageName: '', version: '', fileName: '' }
+  }
+}
+
+/**
+ * Matches a CDN file name with the component map to find all imported components.
+ *
+ * The component map has keys like "cds-button", "cds-accordion", etc., and values
+ * are arrays of component names that file imports.
+ *
+ * @param componentMap - The component map from the collector.
+ * @param fileName - The CDN file name (without .min.js extension).
+ * @param logger - Logger instance.
+ * @returns Array of component names found for this file.
+ */
+function matchComponentsFromMap(
+  componentMap: Record<string, string[]>,
+  fileName: string,
+  logger: Logger
+): string[] {
+  // The fileName from the CDN URL should match a key in the component map
+  // e.g., "button" should match "cds-button" key
+
+  // Try exact match first (with common prefixes)
+  const prefixes = ['cds-', 'c4d-', 'c4p-', 'cds-custom-']
+
+  for (const prefix of prefixes) {
+    const key = `${prefix}${fileName}`
+    if (componentMap[key]) {
+      logger.debug(`Found exact match for ${fileName} with key ${key}`)
+      return componentMap[key] ?? []
+    }
+  }
+
+  // Try matching without prefix (in case the key is just the component name)
+  if (componentMap[fileName]) {
+    logger.debug(`Found match for ${fileName} without prefix`)
+    return componentMap[fileName] ?? []
+  }
+
+  // If no match found, return empty array
+  logger.debug(`No match found in component map for file: ${fileName}`)
+  return []
+}
+
+/**
  * Extracts component names from JavaScript content by parsing import statements.
  *
  * Handles various import patterns including minified code:
@@ -72,7 +258,7 @@ export async function fetchCdnComponentImports(cdnUrl: string, logger: Logger): 
  * @param logger - Logger instance.
  * @returns Array of component names extracted from imports.
  */
-function extractComponentNames(content: string, logger: Logger): string[] {
+function extractComponentNamesFromCDN(content: string, logger: Logger): string[] {
   const components = new Set<string>()
 
   // Log content length and find where imports start

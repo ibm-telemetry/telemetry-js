@@ -36,16 +36,19 @@ export function parseCdnImport(scriptSource: string) {
  * Parse info from a CDN link and expand it to include all components
  * if the URL points to a file that imports multiple components.
  *
- * This function fetches the CDN file content and extracts all component
- * imports, returning an array of CdnImport objects for each component.
+ * This function fetches the component map from the collector service (if endpoint provided)
+ * or falls back to fetching CDN file content directly, extracting all component
+ * imports and returning an array of CdnImport objects for each component.
  *
  * @param scriptSource - A CDN link from an HTML `<script>` tag.
  * @param logger - Logger instance for debugging.
+ * @param collectorEndpoint - Optional collector endpoint URL for fetching component maps.
  * @returns - Array of CdnImport objects, one for each component found.
  */
 export async function parseCdnImportWithExpansion(
   scriptSource: string,
-  logger: Logger
+  logger: Logger,
+  collectorEndpoint?: string
 ): Promise<CdnImport[]> {
   const [packageName, version] = getPackageInfo(scriptSource)
   const componentPrefix = getWcPrefix(packageName)
@@ -54,8 +57,8 @@ export async function parseCdnImportWithExpansion(
   const segments = scriptSource.split('/')
   const filenameComponent = segments.pop()?.split(CDN_ENDING)[0] ?? ''
 
-  // Fetch the CDN file to see if it imports multiple components
-  const componentNames = await fetchCdnComponentImports(scriptSource, logger)
+  // Fetch the component map from collector or CDN file directly
+  const componentNames = await fetchCdnComponentImports(scriptSource, logger, collectorEndpoint)
 
   // If no components found (fetch failed or file has no imports),
   // fall back to parsing just the single component from the URL

@@ -351,19 +351,20 @@ export class ChooChooTrain extends Loggable {
       )
     }
 
-    // Pre-scan HTML files for CDN imports once before processing all packages
+    // Pre-scan HTML files for CDN imports in parallel with processing packages
     // This will check if packages are installed and defer CDN metrics if needed
-
-    let cdnPackages = 0
-    if (1 + 1 == 2) {
+    const cdnPrescanPromise = (async () => {
+      let cdnPackages = 0
       const startTime = performance.now()
       cdnPackages = await this.preScanHtmlForCdn()
       const endTime = performance.now()
       const duration = endTime - startTime
       this.logger.debug(`preScanHtmlForCdn() took ${duration.toFixed(2)}ms`)
-    }
+      return cdnPackages
+    })()
 
-    this.totalPackages = 0 + cdnPackages
+    // Initialize package counter
+    this.totalPackages = 0
 
     // Consume work until the queue is empty
     while (this.workQueue.length > 0) {
@@ -386,6 +387,10 @@ export class ChooChooTrain extends Loggable {
         this.totalPackages++
       }
     }
+
+    // Wait for CDN prescan to complete and add to total packages
+    const cdnPackages = await cdnPrescanPromise
+    this.totalPackages += cdnPackages
 
     this.totalDuration = Number((performance.now() - start).toFixed(2))
 
@@ -630,9 +635,12 @@ export class ChooChooTrain extends Loggable {
     const registry = CdnRegistry.getInstance()
     let totalCdnPackages = 0
 
-    // Check if pre-scan was already completed
-    if (registry.isPreScanCompleted()) {
-      this.logger.debug('HTML CDN pre-scan already completed, skipping')
+    // Attempt to claim the pre-scan work
+    const shouldRunPreScan = registry.claimPreScan()
+    if (!shouldRunPreScan) {
+      this.logger.debug(
+        'HTML CDN pre-scan already completed or in progress by another conductor, skipping'
+      )
       return 0
     }
 
@@ -661,7 +669,7 @@ export class ChooChooTrain extends Loggable {
 
       if (htmlFiles.length === 0) {
         this.logger.debug('No HTML files found for CDN pre-scan')
-        registry.markPreScanCompleted()
+        registry.releasePreScan()
         return 0
       }
 
@@ -926,6 +934,7 @@ export class ChooChooTrain extends Loggable {
       }
 
       // Mark pre-scan as completed
+      registry.releasePreScan()
     } catch (error) {
       if (error instanceof Error) {
         this.logger.error(error)
@@ -933,7 +942,7 @@ export class ChooChooTrain extends Loggable {
         this.logger.error(`HTML CDN pre-scan failed: ${String(error)}`)
       }
       // Mark as completed even on error to avoid retrying
-      registry.markPreScanCompleted()
+      registry.releasePreScan()
       return totalCdnPackages
     }
     return totalCdnPackages

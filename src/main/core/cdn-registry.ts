@@ -17,6 +17,7 @@ export class CdnRegistry {
   private readonly processedCdnImports: Set<string> = new Set()
   private readonly expandedCdnImports: Map<string, CdnImport[]> = new Map()
   private preScanCompleted: boolean = false
+  private preScanPromise: Promise<void> | undefined
   private cdnOnlyMode: boolean = false
   private currentCdnPackage: string | undefined
   private currentCdnVersion: string | undefined
@@ -233,6 +234,47 @@ export class CdnRegistry {
    */
   public isPreScanCompleted(): boolean {
     return this.preScanCompleted
+  }
+
+  /**
+   * Attempts to claim the pre-scan work. Returns true if this caller should perform
+   * the pre-scan, false if another process is already doing it or has completed it.
+   *
+   * @returns True if caller should run pre-scan, false otherwise.
+   */
+  public claimPreScan(): boolean {
+    // If already completed, no one should run it
+    if (this.preScanCompleted) {
+      return false
+    }
+
+    // If a pre-scan is in progress, skip it (don't wait)
+    if (this.preScanPromise !== undefined) {
+      return false
+    }
+
+    // Claim the pre-scan by creating a promise marker
+    this.preScanPromise = new Promise<void>(() => {
+      // This promise is just a marker that pre-scan is in progress
+      // It will be replaced with a resolved promise in releasePreScan
+    })
+
+    return true
+  }
+
+  /**
+   * Releases the pre-scan claim, allowing other processes to proceed.
+   * Should be called after pre-scan work is complete.
+   */
+  public releasePreScan(): void {
+    this.preScanCompleted = true
+    // Resolve the promise to unblock any waiting processes
+    if (this.preScanPromise !== undefined) {
+      // The promise was created with a resolve function we need to call
+      // Since we can't access it directly, we'll just mark as completed
+      // and any waiting processes will see the completed flag
+      this.preScanPromise = Promise.resolve()
+    }
   }
 
   /**

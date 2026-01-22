@@ -70,7 +70,7 @@ export class WcScope extends Scope {
    * Entry point for the scope. All scopes run asynchronously.
    */
   @Trace()
-  public override async run(): Promise<void> {
+  public override async run(cdnMode?: boolean): Promise<void> {
     const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
       throw new EmptyScopeError(this.name)
@@ -81,7 +81,7 @@ export class WcScope extends Scope {
     Object.keys(collectorKeys).forEach((key) => {
       switch (key) {
         case 'elements':
-          promises.push(this.captureAllMetrics())
+          promises.push(this.captureAllMetrics(cdnMode))
           break
       }
     })
@@ -94,11 +94,9 @@ export class WcScope extends Scope {
    * in the current working directory's project.
    */
   @Trace()
-  async captureAllMetrics(): Promise<void> {
-    const registry = CdnRegistry.getInstance()
-
+  async captureAllMetrics(cdnMode?: boolean): Promise<void> {
     // Check if we're in CDN-only mode
-    if (registry.isCdnOnlyMode()) {
+    if (cdnMode) {
       this.logger.debug('Running in CDN-only mode - processing only CDN imports from registry')
       await this.captureCdnOnlyMetrics()
       return

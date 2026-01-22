@@ -23,11 +23,11 @@ export class NpmScope extends Scope {
    * along with peer dependencies and the installer.
    */
   @Trace()
-  private async collectDependencies(): Promise<void> {
+  private async collectDependencies(cdnMode?: boolean): Promise<void> {
     const registry = CdnRegistry.getInstance()
 
     // Check if we're in CDN-only mode
-    if (registry.isCdnOnlyMode()) {
+    if (cdnMode) {
       const cdnPackage = registry.getCurrentCdnPackage()
       if (!cdnPackage) {
         this.logger.debug('CDN-only mode enabled but no current CDN package found')
@@ -104,7 +104,7 @@ export class NpmScope extends Scope {
    * Entry point for the scope.
    */
   @Trace()
-  public override async run(): Promise<void> {
+  public override async run(cdnMode?: boolean): Promise<void> {
     const collectorKeys = this.config.collect[this.name]
     if (collectorKeys === undefined || Object.keys(collectorKeys).length === 0) {
       throw new EmptyScopeError(this.name)
@@ -115,7 +115,7 @@ export class NpmScope extends Scope {
     Object.keys(collectorKeys).forEach((key) => {
       switch (key) {
         case 'dependencies':
-          promises.push(this.collectDependencies())
+          promises.push(this.collectDependencies(cdnMode))
           break
       }
     })

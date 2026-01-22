@@ -31,6 +31,7 @@ export class IbmTelemetry {
   private readonly environment: Environment
   private readonly gitInfo: object
   private readonly logger: Logger
+  private readonly cdnMode: boolean
 
   /**
    * Constructs a new telemetry collector.
@@ -46,13 +47,15 @@ export class IbmTelemetry {
     environment: Environment,
     gitInfo: object,
     logger: Logger,
-    date: string
+    date: string,
+    cdnMode?: boolean
   ) {
     this.config = config
     this.date = date
     this.environment = environment
     this.gitInfo = gitInfo
     this.logger = logger
+    this.cdnMode = cdnMode ?? false
   }
 
   /**
@@ -120,7 +123,7 @@ export class IbmTelemetry {
       // Catch here so that all scopes get a chance to run
       promises.push(
         scopeInstance
-          .run()
+          .run(scopeName === 'wc' || scopeName === 'npm' ? this.cdnMode : undefined)
           .then(() => {
             this.logger.debug('Scope succeeded: ' + scopeName)
           })

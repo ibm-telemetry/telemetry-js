@@ -502,13 +502,18 @@ export class ChooChooTrain extends Loggable {
    * @param config - Parsed configFile object.
    */
   @Trace()
-  private async collect(environment: Environment, config: Record<string, unknown> & ConfigSchema) {
+  private async collect(
+    environment: Environment,
+    config: Record<string, unknown> & ConfigSchema,
+    cdnMode?: boolean
+  ) {
     const ibmTelemetry = new IbmTelemetry(
       config,
       environment,
       this.gitInfo ?? {},
       this.logger,
-      this.date ?? new Date().toISOString()
+      this.date ?? new Date().toISOString(),
+      cdnMode
     )
 
     try {
@@ -890,10 +895,6 @@ export class ChooChooTrain extends Loggable {
               `${allAllowedAttributeStringValues.size} total string values`
           )
 
-          // Enable CDN-only mode ONCE for the entire package (not per version)
-          registry.enableCdnOnlyMode(pkg, versions[0] ?? '')
-          this.logger.debug(`Enabled CDN-only mode for package: ${pkg}`)
-
           // Process CDN metrics for ALL versions in a SINGLE collection burst
           if (mergedConfig && this.environment) {
             // Filter config to only include WC and NPM scopes for CDN packages
@@ -916,13 +917,9 @@ export class ChooChooTrain extends Loggable {
               this.logger.debug(`Collecting for package ${pkg} (all versions in single burst)`)
 
               // This single collect() call will process ALL versions of the package
-              await this.collect(this.environment, mergedConfig)
+              await this.collect(this.environment, mergedConfig, true)
             }
           }
-
-          // Disable CDN-only mode after collection completes
-          registry.disableCdnOnlyMode()
-          this.logger.debug(`Disabled CDN-only mode for package: ${pkg}`)
 
           // Only count once per package, not per version
           totalCdnPackages++

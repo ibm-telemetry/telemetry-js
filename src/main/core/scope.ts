@@ -32,7 +32,7 @@ export abstract class Scope extends Loggable {
   /**
    * Entry point for the scope. All scopes run asynchronously.
    */
-  public abstract run(): Promise<void>
+  public abstract run(cdnMode?: boolean): Promise<void>
 
   /**
    * The metrics captured by this scope.

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>About Page - Multiple Versions</title>
+    <!-- Different version of same package -->
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/version/v2.40.0/dropdown.min.js"
+    ></script>
+    <script
+      type="module"
+      src="https://1.www.s81c.com/common/carbon/web-components/version/v2.40.0/modal.min.js"
+    ></script>
+  </head>
+  <body>
+    <h1>About Page - Different Version</h1>
+
+    <!-- Components from different version -->
+    <cds-dropdown>
+      <cds-dropdown-item>Option 1</cds-dropdown-item>
+      <cds-dropdown-item>Option 2</cds-dropdown-item>
+    </cds-dropdown>
+
+    <cds-modal open>
+      <cds-modal-header>
+        <cds-modal-heading>Modal Title</cds-modal-heading>
+      </cds-modal-header>
+      <cds-modal-body>Modal content goes here</cds-modal-body>
+    </cds-modal>
+  </body>
+</html>

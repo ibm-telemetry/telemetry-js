@@ -916,9 +916,9 @@ export class ChooChooTrain extends Loggable {
               }
 
               // Testing purpose only
-              if (1 + 1 == 2) {
-                mergedConfig.endpoint = 'https://wwwstage-api.ibm.com/ibm-telemetry/v1/metrics'
-              }
+              // if (1 + 1 == 2) {
+              //   mergedConfig.endpoint = 'https://wwwstage-api.ibm.com/ibm-telemetry/v1/metrics'
+              // }
               this.logger.debug(`Collecting for package ${pkg} (all versions in single burst)`)
 
               // This single collect() call will process ALL versions of the package

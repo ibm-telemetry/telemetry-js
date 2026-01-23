@@ -163,6 +163,8 @@ export class IbmTelemetry {
       compression: CompressionAlgorithm.GZIP
     })
 
+    this.logger.debug('Sending metrics to', config.endpoint)
+
     return await new Promise((resolve) => {
       exporter.export(metrics, (result) => {
         this.logger.debug('Metrics exporter finished')

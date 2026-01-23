@@ -357,10 +357,7 @@ export class ChooChooTrain extends Loggable {
     const cdnPrescanPromise = (async () => {
       let cdnPackages = 0
       const startTime = performance.now()
-
-      if (1 + 1 == 2) {
-        cdnPackages = await this.preScanHtmlForCdn()
-      }
+      cdnPackages = await this.preScanHtmlForCdn()
       const endTime = performance.now()
       const duration = endTime - startTime
       this.logger.debug(`preScanHtmlForCdn() took ${duration.toFixed(2)}ms`)
@@ -918,10 +915,6 @@ export class ChooChooTrain extends Loggable {
                 mergedConfig.collect.npm = npm
               }
 
-              // Testing purpose only
-              if (1 + 1 == 2) {
-                mergedConfig.endpoint = 'http://localhost:3000/v1/metrics'
-              }
               this.logger.debug(`Collecting for package ${pkg} (all versions in single burst)`)
 
               // This single collect() call will process ALL versions of the package

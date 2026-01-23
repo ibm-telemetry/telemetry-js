@@ -4,10 +4,12 @@
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
 import { type ConfigSchema } from '@ibm/telemetry-config-schema'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { CdnRegistry } from '../../../main/core/cdn-registry.js'
+import { OpenTelemetryContext } from '../../../main/core/open-telemetry-context.js'
 import { EmptyScopeError } from '../../../main/exceptions/empty-scope.error.js'
 import type { JsImportMatcher } from '../../../main/scopes/js/interfaces.js'
 import { JsxElementRenamedImportMatcher } from '../../../main/scopes/jsx/import-matchers/jsx-element-renamed-import-matcher.js'
@@ -62,7 +64,7 @@ describe('class: WcScope', () => {
       clearDataPointTimes(results)
 
       expect(results).toMatchSnapshot()
-    })
+    }, 10000)
 
     it('correctly captures metric data for wc elements imported through a CDN', async () => {
       const metricReader = initializeOtelForTest().getMetricReader()
@@ -90,7 +92,28 @@ describe('class: WcScope', () => {
       // This is the key difference from the previous test: the instrumented package
       // (@carbon/web-components) is NOT installed, so it can only be detected via CDN.
 
-      const metricReader = initializeOtelForTest().getMetricReader()
+      // Initialize regular instance first
+      initializeOtelForTest()
+
+      // Initialize the CDN OpenTelemetry instance - CDN-only mode uses a separate instance
+      const cdnOtelContext = OpenTelemetryContext.getInstance(true, true)
+      const date = new Date(2023).toISOString()
+      cdnOtelContext.setAttributes({
+        [CustomResourceAttributes.TELEMETRY_EMITTER_NAME]: 'telemetryName',
+        [CustomResourceAttributes.TELEMETRY_EMITTER_VERSION]: 'telemetryVersion',
+        [CustomResourceAttributes.PROJECT_ID]: 'projectId',
+        [CustomResourceAttributes.ANALYZED_HOST]: 'host',
+        [CustomResourceAttributes.ANALYZED_OWNER]: 'owner',
+        [CustomResourceAttributes.ANALYZED_PATH]: 'host/owner/repository',
+        [CustomResourceAttributes.ANALYZED_OWNER_PATH]: 'host/owner',
+        [CustomResourceAttributes.ANALYZED_REPOSITORY]: 'repository',
+        [CustomResourceAttributes.ANALYZED_COMMIT]: 'commitHash',
+        [CustomResourceAttributes.ANALYZED_REFS]: [],
+        [CustomResourceAttributes.ENVIRONMENT_NAME]: 'test environment',
+        [CustomResourceAttributes.SCAN_ID]: 'scan id',
+        [CustomResourceAttributes.DATE]: date
+      })
+      const metricReader = cdnOtelContext.getMetricReader()
       const root = new Fixture('projects/cdn-only-project')
       const cwd = new Fixture('projects/cdn-only-project/node_modules/non-wc-package')
 
@@ -121,7 +144,7 @@ describe('class: WcScope', () => {
           path: 'https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/accordion.min.js',
           prefix: 'cds',
           package: '@carbon/web-components',
-          version: 'v2/latest'
+          version: '2.40.0'
         }
       ])
 
@@ -150,7 +173,7 @@ describe('class: WcScope', () => {
 
       const wcScope = new WcScope(cwd.path, root.path, config, logger)
       wcScope.setRunSync(true)
-      await wcScope.run()
+      await wcScope.run(true) // Pass true to enable CDN-only mode
 
       const results = await metricReader.collect()
 

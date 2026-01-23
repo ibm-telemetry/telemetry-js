@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.10.2...v1.11.0) (2026-01-23)
+
+
+### Features
+
+* introducing CDN prescan ([#331](https://github.com/ibm-telemetry/telemetry-js/issues/331)) ([235b581](https://github.com/ibm-telemetry/telemetry-js/commit/235b58105700e42dac870f956d79f5e50b051a27))
+
 ## [1.10.2](https://github.com/ibm-telemetry/telemetry-js/compare/v1.10.1...v1.10.2) (2025-09-10)
 
 

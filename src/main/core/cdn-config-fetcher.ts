@@ -15,12 +15,12 @@ const configCache = new Map<string, string>()
  *
  * CDN URLs have formats like:
  * - `.../tag/v2/canary/...` → version string is "v2/canary"
- * - `.../version/2.35.0-rc.0/...` → version string is "2.35.0-rc.0"
+ * - `.../version/2.35.0-rc.0/...` → version string is "2.35.0-rc.0".
  *
  * Conversion rules:
  * - "v2/canary" → "canary" (current major version uses tag directly)
  * - "v1/canary" → "v1-canary" (older versions use hyphenated format)
- * - "2.35.0-rc.0" → "2.35.0-rc.0" (semantic versions pass through)
+ * - "2.35.0-rc.0" → "2.35.0-rc.0" (semantic versions pass through).
  *
  * @param cdnVersion - The version string from CDN import (already parsed from URL).
  * @returns The npm-compatible version string.
@@ -54,7 +54,7 @@ export function convertCdnVersionToNpmVersion(cdnVersion: string): string {
  * - "2.10.0-canary.9663990473.0" → "2.10.0"
  * - "2.35.0-rc.0" → "2.35.0-rc.0"
  * - "2.46.0" → "2.46.0"
- * - "1.5.0-beta.3" → "1.5.0"
+ * - "1.5.0-beta.3" → "1.5.0".
  *
  * @param version - The version string to normalize.
  * @returns The normalized version string.
@@ -72,7 +72,7 @@ export function normalizeVersion(version: string): string {
   const [, baseVersion, prerelease] = versionMatch
 
   // If no pre-release identifier, return base version
-  if (!prerelease) {
+  if (prerelease === undefined || prerelease === '') {
     return baseVersion ?? version
   }
 

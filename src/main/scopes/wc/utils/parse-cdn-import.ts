@@ -14,7 +14,6 @@ import { getWcPrefix } from './get-wc-prefix.js'
  * Parse info from a CDN link and return a CdnImport object.
  *
  * @param scriptSource - A CDN link from an HTML `<script>` tag.
- * @param logger - Optional logger for fetching multi-component imports.
  * @returns - A CdnImport object containing the info parsed from `scriptSource`.
  */
 export function parseCdnImport(scriptSource: string) {
@@ -77,14 +76,18 @@ export async function parseCdnImportWithExpansion(
 
   // Always include the filename component if it's not already in the list
   const allComponentNames = new Set(componentNames)
-  if (filenameComponent && !allComponentNames.has(filenameComponent)) {
+  if (
+    filenameComponent !== undefined &&
+    filenameComponent !== '' &&
+    !allComponentNames.has(filenameComponent)
+  ) {
     allComponentNames.add(filenameComponent)
     logger.debug(`Added filename component to expanded list: ${filenameComponent}`)
   }
 
   // Create a CdnImport for each component found
   // Use resolved version if provided, otherwise fall back to CDN version
-  const versionToUse = resolvedVersion || version
+  const versionToUse = resolvedVersion ?? version
   const cdnImports: CdnImport[] = Array.from(allComponentNames).map((componentName) => {
     // Strip the prefix from component name if it starts with the prefix
     // Component names from collector include prefix (e.g., "c4d-card")

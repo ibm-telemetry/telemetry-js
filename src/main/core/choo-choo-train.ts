@@ -501,6 +501,7 @@ export class ChooChooTrain extends Loggable {
    *
    * @param environment - Environment variable configuration for this run.
    * @param config - Parsed configFile object.
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   @Trace()
   private async collect(
@@ -597,19 +598,23 @@ export class ChooChooTrain extends Loggable {
       const packageJsonContent = await readFile(packageJsonPath, 'utf-8')
       const packageJson = JSON.parse(packageJsonContent)
 
-      // Collect all dependencies (dependencies, devDependencies, peerDependencies, optionalDependencies)
+      // Collect all dependencies (dependencies, devDependencies,
+      // peerDependencies, optionalDependencies)
       const allDependencies = new Set<string>()
 
-      if (packageJson.dependencies) {
+      if (packageJson.dependencies !== undefined && packageJson.dependencies !== null) {
         Object.keys(packageJson.dependencies).forEach((dep) => allDependencies.add(dep))
       }
-      if (packageJson.devDependencies) {
+      if (packageJson.devDependencies !== undefined && packageJson.devDependencies !== null) {
         Object.keys(packageJson.devDependencies).forEach((dep) => allDependencies.add(dep))
       }
-      if (packageJson.peerDependencies) {
+      if (packageJson.peerDependencies !== undefined && packageJson.peerDependencies !== null) {
         Object.keys(packageJson.peerDependencies).forEach((dep) => allDependencies.add(dep))
       }
-      if (packageJson.optionalDependencies) {
+      if (
+        packageJson.optionalDependencies !== undefined &&
+        packageJson.optionalDependencies !== null
+      ) {
         Object.keys(packageJson.optionalDependencies).forEach((dep) => allDependencies.add(dep))
       }
 
@@ -633,8 +638,11 @@ export class ChooChooTrain extends Loggable {
    * This ensures CDN usage is captured even when WC packages aren't installed.
    * Runs only once per conductor process. Reuses existing WC infrastructure.
    *
-   * If a CDN package is also installed via npm, the CDN metrics will be deferred
-   * and appended when the installed package is processed to avoid rate limiting.
+   * If a CDN package is also installed via npm, the CDN metrics will be
+   * deferred and appended when the installed package is processed to avoid
+   * rate limiting.
+   *
+   * @returns Number of CDN packages processed.
    */
   @Trace()
   private async preScanHtmlForCdn(): Promise<number> {
@@ -682,6 +690,8 @@ export class ChooChooTrain extends Loggable {
       this.logger.debug(`Found ${htmlFiles.length} HTML files for CDN pre-scan`)
 
       // Group elements and CDN imports by package
+      // Stores mixed element types from accumulator
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mixed WC/JSX types
       const packageData = new Map<string, { elements: any[]; cdnImports: any[] }>()
 
       // Process each HTML file using existing WC infrastructure
@@ -704,7 +714,11 @@ export class ChooChooTrain extends Loggable {
         // Filter to only non-installed packages BEFORE expanding
         const cdnLinksToExpand = cdnLinks.filter((src) => {
           const basicImport = parseCdnImport(src)
-          return basicImport.package && !registry.isPackageInstalled(basicImport.package)
+          return (
+            basicImport.package !== undefined &&
+            basicImport.package !== '' &&
+            !registry.isPackageInstalled(basicImport.package)
+          )
         })
 
         this.logger.debug(
@@ -715,7 +729,7 @@ export class ChooChooTrain extends Loggable {
         // Expand each CDN import individually to keep them separate
         for (let i = 0; i < cdnLinksToExpand.length; i++) {
           const cdnUrl = cdnLinksToExpand[i]
-          if (!cdnUrl) continue
+          if (cdnUrl === undefined || cdnUrl === '') continue
 
           // Parse basic import info to get package and version
           const basicImport = parseCdnImport(cdnUrl)
@@ -741,7 +755,13 @@ export class ChooChooTrain extends Loggable {
           )
 
           // Filter valid imports
-          const validExpandedImports = expandedImports.filter((cdn) => cdn.package && cdn.version)
+          const validExpandedImports = expandedImports.filter(
+            (cdn) =>
+              cdn.package !== undefined &&
+              cdn.package !== '' &&
+              cdn.version !== undefined &&
+              cdn.version !== ''
+          )
 
           if (validExpandedImports.length > 0) {
             // Register each CDN URL's expanded imports separately
@@ -814,7 +834,11 @@ export class ChooChooTrain extends Loggable {
           this.logger.debug(`Package ${pkg} is NOT installed. Processing CDN metrics immediately.`)
 
           // Fetch configs and resolve versions for ALL versions upfront
-          const configs: Array<{ version: string; config: any; hasWc: boolean }> = []
+          const configs: Array<{
+            version: string
+            config: Record<string, unknown> & ConfigSchema
+            hasWc: boolean
+          }> = []
 
           for (const cdnVersion of versions) {
             const { config, resolvedVersion } = await fetchCdnPackageConfig(
@@ -831,7 +855,7 @@ export class ChooChooTrain extends Loggable {
             registry.updateCdnImportVersions(pkg, cdnVersion, resolvedVersion)
 
             // Parse and store each config
-            if (config) {
+            if (config !== undefined && config !== '') {
               try {
                 const parsedConfig = await this.parseAndValidateConfig(config)
                 const hasWc = parsedConfig?.collect?.wc !== undefined
@@ -862,7 +886,7 @@ export class ChooChooTrain extends Loggable {
 
           // Merge all WC configs to get the union of all allowed attributes
           const mergedConfig = configsWithWc[0]?.config
-          if (!mergedConfig) {
+          if (mergedConfig === undefined || mergedConfig === null) {
             this.logger.debug(`No valid config found for ${pkg}`)
             continue
           }
@@ -873,12 +897,18 @@ export class ChooChooTrain extends Loggable {
 
           for (const { config } of configsWithWc) {
             const wcConfig = config?.collect?.wc
-            if (wcConfig?.elements?.allowedAttributeNames) {
+            if (
+              wcConfig?.elements?.allowedAttributeNames !== undefined &&
+              wcConfig?.elements?.allowedAttributeNames !== null
+            ) {
               wcConfig.elements.allowedAttributeNames.forEach((name: string) =>
                 allAllowedAttributeNames.add(name)
               )
             }
-            if (wcConfig?.elements?.allowedAttributeStringValues) {
+            if (
+              wcConfig?.elements?.allowedAttributeStringValues !== undefined &&
+              wcConfig?.elements?.allowedAttributeStringValues !== null
+            ) {
               wcConfig.elements.allowedAttributeStringValues.forEach((value: string) =>
                 allAllowedAttributeStringValues.add(value)
               )
@@ -886,12 +916,26 @@ export class ChooChooTrain extends Loggable {
           }
 
           // Apply merged attributes to the config
-          if (mergedConfig.collect?.wc?.elements) {
-            mergedConfig.collect.wc.elements.allowedAttributeNames =
-              Array.from(allAllowedAttributeNames)
-            mergedConfig.collect.wc.elements.allowedAttributeStringValues = Array.from(
-              allAllowedAttributeStringValues
-            )
+          if (
+            mergedConfig.collect?.wc?.elements !== undefined &&
+            mergedConfig.collect?.wc?.elements !== null
+          ) {
+            const attributeNames = Array.from(allAllowedAttributeNames)
+            const attributeValues = Array.from(allAllowedAttributeStringValues)
+
+            // Only set if arrays are non-empty (schema requires [string, ...string[]])
+            if (attributeNames.length > 0) {
+              mergedConfig.collect.wc.elements.allowedAttributeNames = attributeNames as [
+                string,
+                ...string[]
+              ]
+            }
+            if (attributeValues.length > 0) {
+              mergedConfig.collect.wc.elements.allowedAttributeStringValues = attributeValues as [
+                string,
+                ...string[]
+              ]
+            }
           }
 
           this.logger.debug(
@@ -901,17 +945,21 @@ export class ChooChooTrain extends Loggable {
           )
 
           // Process CDN metrics for ALL versions in a SINGLE collection burst
-          if (mergedConfig && this.environment) {
+          if (
+            mergedConfig !== undefined &&
+            mergedConfig !== null &&
+            this.environment !== undefined
+          ) {
             // Filter config to only include WC and NPM scopes for CDN packages
             const wc = mergedConfig?.collect?.wc
             const npm = mergedConfig?.collect?.npm
 
-            if (wc || npm) {
+            if ((wc !== undefined && wc !== null) || (npm !== undefined && npm !== null)) {
               mergedConfig.collect = {}
-              if (wc) {
+              if (wc !== undefined && wc !== null) {
                 mergedConfig.collect.wc = wc
               }
-              if (npm) {
+              if (npm !== undefined && npm !== null) {
                 mergedConfig.collect.npm = npm
               }
 

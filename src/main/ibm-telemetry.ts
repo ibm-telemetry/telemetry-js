@@ -41,6 +41,7 @@ export class IbmTelemetry {
    * @param gitInfo - Object containing project git information.
    * @param logger - A logger instance.
    * @param date - Date scan started.
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   public constructor(
     config: ConfigSchema,

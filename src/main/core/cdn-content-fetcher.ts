@@ -13,14 +13,19 @@ const contentCache = new Map<string, string[]>()
 /**
  * Fetches the component map for a CDN package from the collector service.
  *
- * This queries the collector's imports-map endpoint which contains pre-computed
- * mappings of CDN files to their imported components, avoiding the need to
- * fetch and parse minified CDN content.
+ * This queries the collector's imports-map endpoint which contains
+ * pre-computed mappings of CDN files to their imported components,
+ * avoiding the need to fetch and parse minified CDN content.
  *
- * @param cdnUrl - The full CDN URL (e.g., https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js).
+ * @param cdnUrl - The full CDN URL (e.g.,
+ * https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js).
  * @param logger - Logger instance.
- * @param collectorEndpoint - Optional collector endpoint URL (e.g., 'https://collector.example.com/v1/metrics'). If not provided, falls back to fetching CDN content directly.
- * @param resolvedVersion - Optional resolved version (e.g., "2.46.0" instead of "v2/canary"). If provided, this will be used instead of parsing from the URL.
+ * @param collectorEndpoint - Optional collector endpoint URL (e.g.,
+ * 'https://collector.example.com/v1/metrics'). If not provided, falls back
+ * to fetching CDN content directly.
+ * @param resolvedVersion - Optional resolved version (e.g., "2.46.0" instead
+ * of "v2/canary"). If provided, this will be used instead of parsing from
+ * the URL.
  * @returns Array of component names for the CDN file, or empty array if fetch fails.
  */
 export async function fetchCdnComponentImports(
@@ -37,7 +42,7 @@ export async function fetchCdnComponentImports(
   }
 
   // If collector endpoint is provided, use it to fetch component map
-  if (collectorEndpoint) {
+  if (collectorEndpoint !== undefined && collectorEndpoint !== '') {
     return fetchFromCollector(cdnUrl, logger, collectorEndpoint, resolvedVersion)
   }
 
@@ -63,16 +68,16 @@ async function fetchFromCollector(
   // Extract package info from CDN URL
   const { packageName, version: cdnVersion, fileName } = parseCdnUrl(cdnUrl, logger)
 
-  if (!packageName) {
+  if (packageName === '') {
     logger.debug(`Could not extract package name from CDN URL: ${cdnUrl}`)
     contentCache.set(cdnUrl, [])
     return []
   }
 
   // Use resolved version if provided, otherwise use CDN version
-  const versionToUse = resolvedVersion || cdnVersion
+  const versionToUse = resolvedVersion ?? cdnVersion
 
-  if (!versionToUse) {
+  if (versionToUse === '') {
     logger.debug(`No version available for ${packageName}`)
     contentCache.set(cdnUrl, [])
     return []
@@ -81,7 +86,8 @@ async function fetchFromCollector(
   try {
     // Convert endpoint to imports-map endpoint
     // Handle both metrics endpoint and logs endpoint formats:
-    // - 'https://collector.example.com/v1/metrics' -> 'https://collector.example.com/v1/imports-map'
+    // - 'https://collector.example.com/v1/metrics' ->
+    //   'https://collector.example.com/v1/imports-map'
     // - 'https://collector.example.com/v1/logs' -> 'https://collector.example.com/v1/imports-map'
     let baseEndpoint = collectorEndpoint
     if (baseEndpoint.includes('/metrics')) {
@@ -161,7 +167,7 @@ async function fetchFromCdn(cdnUrl: string, logger: Logger): Promise<string[]> {
  *
  * Handles CDN URL formats like:
  * - https://1.www.s81c.com/carbon/web-components/version/2.46.0/button.min.js
- * - https://1.www.s81c.com/carbon/web-components/tag/v2/canary/button.min.js
+ * - https://1.www.s81c.com/carbon/web-components/tag/v2/canary/button.min.js.
  *
  * @param cdnUrl - The CDN URL to parse.
  * @param logger - Logger instance.
@@ -190,14 +196,14 @@ function parseCdnUrl(
       }
     }
 
-    if (!packageName) {
+    if (packageName === '') {
       logger.debug(`Unknown CDN package in URL: ${cdnUrl}`)
       return { packageName: '', version: '', fileName: '' }
     }
 
     // Extract version and file name
     const afterPackage = cdnUrl.split(packagePath)[1]
-    if (!afterPackage) {
+    if (afterPackage === undefined || afterPackage === '') {
       return { packageName: '', version: '', fileName: '' }
     }
 
@@ -206,12 +212,18 @@ function parseCdnUrl(
     let fileName = ''
 
     // Handle version format: /version/2.46.0/...
-    if (segments[0] === 'version' && segments[1]) {
+    if (segments[0] === 'version' && segments[1] !== undefined && segments[1] !== '') {
       version = segments[1]
       fileName = segments[segments.length - 1]?.replace('.min.js', '') ?? ''
     }
     // Handle tag format: /tag/v2/canary/...
-    else if (segments[0] === 'tag' && segments[1] && segments[2]) {
+    else if (
+      segments[0] === 'tag' &&
+      segments[1] !== undefined &&
+      segments[1] !== '' &&
+      segments[2] !== undefined &&
+      segments[2] !== ''
+    ) {
       version = `${segments[1]}/${segments[2]}`
       fileName = segments[segments.length - 1]?.replace('.min.js', '') ?? ''
     }
@@ -272,7 +284,7 @@ function matchComponentsFromMap(
  * - import './button.js' or import"./button.js" (minified)
  * - import './components/button/button.js'
  * - import("./button.js")
- * - require("./button.js")
+ * - require("./button.js").
  *
  * @param content - The JavaScript file content.
  * @param logger - Logger instance.
@@ -295,7 +307,7 @@ function extractComponentNamesFromCDN(content: string, logger: Logger): string[]
    * Pattern 1: Static imports
    * Handles both normal and minified code:
    *   import './component.js'
-   *   import"./component.js"
+   *   import"./component.js".
    *
    * IMPORTANT:
    * We use [^'"]* instead of .* to avoid greedy matching
@@ -308,17 +320,21 @@ function extractComponentNamesFromCDN(content: string, logger: Logger): string[]
 
   for (const match of staticMatches) {
     const componentName = match[1]
-    if (componentName && !isInternalDependency(componentName)) {
+    if (
+      componentName !== undefined &&
+      componentName !== '' &&
+      !isInternalDependency(componentName)
+    ) {
       components.add(componentName)
       logger.debug(`Found static import: ${componentName}`)
-    } else if (componentName) {
+    } else if (componentName !== undefined && componentName !== '') {
       logger.debug(`Skipped internal dependency: ${componentName}`)
     }
   }
 
   /**
    * Pattern 2: Dynamic imports
-   *   import("./component.js")
+   *   import("./component.js").
    */
   const dynamicImportRegex = /import\s*\(\s*['"]\.\/(?:[^'"]*\/)?([^/'"]+?)(?:\.min)?\.js['"]\s*\)/g
 
@@ -327,17 +343,21 @@ function extractComponentNamesFromCDN(content: string, logger: Logger): string[]
 
   for (const match of dynamicMatches) {
     const componentName = match[1]
-    if (componentName && !isInternalDependency(componentName)) {
+    if (
+      componentName !== undefined &&
+      componentName !== '' &&
+      !isInternalDependency(componentName)
+    ) {
       components.add(componentName)
       logger.debug(`Found dynamic import: ${componentName}`)
-    } else if (componentName) {
+    } else if (componentName !== undefined && componentName !== '') {
       logger.debug(`Skipped internal dependency: ${componentName}`)
     }
   }
 
   /**
    * Pattern 3: CommonJS requires
-   *   require("./component.js")
+   *   require("./component.js").
    */
   const requireRegex = /require\s*\(\s*['"]\.\/(?:[^'"]*\/)?([^/'"]+?)(?:\.min)?\.js['"]\s*\)/g
 
@@ -346,10 +366,14 @@ function extractComponentNamesFromCDN(content: string, logger: Logger): string[]
 
   for (const match of requireMatches) {
     const componentName = match[1]
-    if (componentName && !isInternalDependency(componentName)) {
+    if (
+      componentName !== undefined &&
+      componentName !== '' &&
+      !isInternalDependency(componentName)
+    ) {
       components.add(componentName)
       logger.debug(`Found require: ${componentName}`)
-    } else if (componentName) {
+    } else if (componentName !== undefined && componentName !== '') {
       logger.debug(`Skipped internal dependency: ${componentName}`)
     }
   }

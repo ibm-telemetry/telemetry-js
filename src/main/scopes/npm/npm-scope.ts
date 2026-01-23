@@ -21,6 +21,8 @@ export class NpmScope extends Scope {
   /**
    * Finds and generates metrics for all for the instrumented package installation details,
    * along with peer dependencies and the installer.
+   *
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   @Trace()
   private async collectDependencies(cdnMode?: boolean): Promise<void> {
@@ -105,6 +107,8 @@ export class NpmScope extends Scope {
 
   /**
    * Entry point for the scope.
+   *
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   @Trace()
   public override async run(cdnMode?: boolean): Promise<void> {

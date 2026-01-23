@@ -117,7 +117,8 @@ export class CdnRegistry {
       }
     }
 
-    // Update original imports - only those matching package, version, AND one of the identified paths
+    // Update original imports - only those matching package, version, AND one
+    // of the identified paths
     for (const [filePath, cdnImports] of this.cdnImportsByFile.entries()) {
       const updatedImports = cdnImports.map((cdnImport) => {
         if (
@@ -132,7 +133,8 @@ export class CdnRegistry {
       this.cdnImportsByFile.set(filePath, updatedImports)
     }
 
-    // Update expanded imports - only those matching package, version, AND one of the identified paths
+    // Update expanded imports - only those matching package, version, AND one
+    // of the identified paths
     for (const [filePath, cdnImports] of this.expandedCdnImports.entries()) {
       const updatedImports = cdnImports.map((cdnImport) => {
         if (
@@ -178,7 +180,7 @@ export class CdnRegistry {
     const packages = new Set<string>()
     for (const cdnImports of this.cdnImportsByFile.values()) {
       for (const cdnImport of cdnImports) {
-        if (cdnImport.package) {
+        if (cdnImport.package !== undefined && cdnImport.package !== '') {
           packages.add(cdnImport.package)
         }
       }
@@ -196,7 +198,12 @@ export class CdnRegistry {
 
     for (const cdnImports of this.cdnImportsByFile.values()) {
       for (const cdnImport of cdnImports) {
-        if (cdnImport.package && cdnImport.version) {
+        if (
+          cdnImport.package !== undefined &&
+          cdnImport.package !== '' &&
+          cdnImport.version !== undefined &&
+          cdnImport.version !== ''
+        ) {
           const key = `${cdnImport.package}@${cdnImport.version}`
           if (!packageVersions.has(key)) {
             packageVersions.set(key, {
@@ -305,7 +312,7 @@ export class CdnRegistry {
    * @returns The package name and optional version, or undefined if not in CDN-only mode.
    */
   public getCurrentCdnPackage(): { name: string; version?: string } | undefined {
-    if (this.currentCdnPackage) {
+    if (this.currentCdnPackage !== undefined && this.currentCdnPackage !== '') {
       const result: { name: string; version?: string } = { name: this.currentCdnPackage }
       if (this.currentCdnVersion !== undefined) {
         result.version = this.currentCdnVersion

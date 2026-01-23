@@ -10,8 +10,8 @@ import * as path from 'node:path'
 
 import { parseDocument } from 'htmlparser2'
 
-import { fetchCdnComponentImports } from '../../core/cdn-content-fetcher.js'
 import { fetchCdnPackageConfig } from '../../core/cdn-config-fetcher.js'
+import { fetchCdnComponentImports } from '../../core/cdn-content-fetcher.js'
 import { CdnRegistry } from '../../core/cdn-registry.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
@@ -70,6 +70,8 @@ export class WcScope extends Scope {
 
   /**
    * Entry point for the scope. All scopes run asynchronously.
+   *
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   @Trace()
   public override async run(cdnMode?: boolean): Promise<void> {
@@ -94,6 +96,8 @@ export class WcScope extends Scope {
   /**
    * Generates metrics for all discovered instrumented wc and jsx elements found
    * in the current working directory's project.
+   *
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   @Trace()
   async captureAllMetrics(cdnMode?: boolean): Promise<void> {
@@ -472,7 +476,11 @@ export class WcScope extends Scope {
           const allComponentNames = new Set(componentNames)
 
           // Always include the filename component if it's not already in the list
-          if (basicImport.name && !allComponentNames.has(basicImport.name)) {
+          if (
+            basicImport.name !== undefined &&
+            basicImport.name !== '' &&
+            !allComponentNames.has(basicImport.name)
+          ) {
             allComponentNames.add(basicImport.name)
             this.logger.debug(`Added filename component to expanded list: ${basicImport.name}`)
           }

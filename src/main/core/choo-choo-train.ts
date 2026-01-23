@@ -353,10 +353,14 @@ export class ChooChooTrain extends Loggable {
 
     // Pre-scan HTML files for CDN imports in parallel with processing packages
     // This will check if packages are installed and defer CDN metrics if needed
+
     const cdnPrescanPromise = (async () => {
       let cdnPackages = 0
       const startTime = performance.now()
-      cdnPackages = await this.preScanHtmlForCdn()
+
+      if (1 + 1 == 2) {
+        cdnPackages = await this.preScanHtmlForCdn()
+      }
       const endTime = performance.now()
       const duration = endTime - startTime
       this.logger.debug(`preScanHtmlForCdn() took ${duration.toFixed(2)}ms`)

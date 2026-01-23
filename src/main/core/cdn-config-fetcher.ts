@@ -47,6 +47,45 @@ export function convertCdnVersionToNpmVersion(cdnVersion: string): string {
 }
 
 /**
+ * Normalizes a version string by removing disallowed pre-release identifiers.
+ * Only keeps -rc.[number] suffixes, removes canary and other pre-release tags.
+ *
+ * Examples:
+ * - "2.10.0-canary.9663990473.0" → "2.10.0"
+ * - "2.35.0-rc.0" → "2.35.0-rc.0"
+ * - "2.46.0" → "2.46.0"
+ * - "1.5.0-beta.3" → "1.5.0"
+ *
+ * @param version - The version string to normalize.
+ * @returns The normalized version string.
+ */
+export function normalizeVersion(version: string): string {
+  // Match semantic version with optional pre-release and build metadata
+  // Format: major.minor.patch[-prerelease][+build]
+  const versionMatch = version.match(/^(\d+\.\d+\.\d+)(?:-([^+]+))?(?:\+(.+))?$/)
+
+  if (!versionMatch) {
+    // Not a valid semantic version, return as-is
+    return version
+  }
+
+  const [, baseVersion, prerelease] = versionMatch
+
+  // If no pre-release identifier, return base version
+  if (!prerelease) {
+    return baseVersion ?? version
+  }
+
+  // Check if pre-release is an allowed -rc.[number] format
+  if (/^rc\.\d+$/.test(prerelease)) {
+    return `${baseVersion}-${prerelease}`
+  }
+
+  // Remove all other pre-release identifiers (canary, beta, alpha, etc.)
+  return baseVersion ?? version
+}
+
+/**
  * Fetches the telemetry config for a CDN package from unpkg.
  * Falls back to null if the config cannot be fetched.
  *
@@ -94,9 +133,15 @@ export async function fetchCdnPackageConfig(
     // e.g., /@carbon/web-components@latest/... -> /@carbon/web-components@2.46.0/...
     const finalUrl = response.url
     const versionMatch = finalUrl.match(new RegExp(`${packageName}@([^/]+)/`))
-    const resolvedVersion = versionMatch?.[1] ?? npmVersion
+    const rawResolvedVersion = versionMatch?.[1] ?? npmVersion
 
-    logger.debug(`Resolved CDN version: ${cdnVersion} -> ${resolvedVersion}`)
+    // Normalize version to remove canary and other disallowed pre-release identifiers
+    // Only -rc.[number] suffixes are allowed
+    const resolvedVersion = normalizeVersion(rawResolvedVersion)
+
+    logger.debug(
+      `Resolved CDN version: ${cdnVersion} -> ${rawResolvedVersion} -> ${resolvedVersion}`
+    )
 
     const yamlContent = await response.text()
     configCache.set(cacheKey, `${resolvedVersion}|${yamlContent}`)

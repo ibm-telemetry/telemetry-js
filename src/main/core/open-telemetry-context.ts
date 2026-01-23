@@ -22,14 +22,23 @@ interface InitializedOpenTelemetryContext {
  */
 export class OpenTelemetryContext {
   private static instance?: OpenTelemetryContext
+  private static cdnInstance?: OpenTelemetryContext
 
   /**
    * Returns a singleton OTelContext instance.
    *
    * @param reInitialize - Whether or not to reinitialize otel. Defaults to false.
+   * @param useCdnInstance - Whether to use the CDN-specific instance. Defaults to false.
    * @returns A singleton instance.
    */
-  public static getInstance(reInitialize = false): OpenTelemetryContext {
+  public static getInstance(reInitialize = false, useCdnInstance = false): OpenTelemetryContext {
+    if (useCdnInstance) {
+      if (reInitialize || OpenTelemetryContext.cdnInstance === undefined) {
+        OpenTelemetryContext.cdnInstance = new OpenTelemetryContext()
+      }
+      return OpenTelemetryContext.cdnInstance
+    }
+
     if (reInitialize || OpenTelemetryContext.instance === undefined) {
       OpenTelemetryContext.instance = new OpenTelemetryContext()
     }

@@ -10,6 +10,8 @@ import * as path from 'node:path'
 
 import { parseDocument } from 'htmlparser2'
 
+import { fetchCdnComponentImports } from '../../core/cdn-content-fetcher.js'
+import { fetchCdnPackageConfig } from '../../core/cdn-config-fetcher.js'
 import { CdnRegistry } from '../../core/cdn-registry.js'
 import { Trace } from '../../core/log/trace.js'
 import { Scope } from '../../core/scope.js'
@@ -96,9 +98,17 @@ export class WcScope extends Scope {
   @Trace()
   async captureAllMetrics(cdnMode?: boolean): Promise<void> {
     // Check if we're in CDN-only mode
+
+    this.logger.debug('Capture all metrics cdnMode is', cdnMode ? 'true' : 'false')
+
     if (cdnMode) {
       this.logger.debug('Running in CDN-only mode - processing only CDN imports from registry')
+
+      // Set flag to use CDN-specific OpenTelemetry instance
+      this.useCdnInstance = true
+
       await this.captureCdnOnlyMetrics()
+      this.logger.debug(`Finished captureCDNONLYMETRICS`, cdnMode ? 'true' : 'false')
       return
     }
 
@@ -144,8 +154,16 @@ export class WcScope extends Scope {
     const promises: Promise<void>[] = []
 
     for (const sourceFile of sourceFiles) {
+      let actualSourceFile
+      try {
+        actualSourceFile = await sourceFile.createSourceFile()
+      } catch {
+        this.logger.debug(`Failed to create source file for ${sourceFile.fileName}`)
+        continue
+      }
+
       const resultPromise = this.captureFileMetrics(
-        await sourceFile.createSourceFile(),
+        actualSourceFile,
         instrumentedPackage,
         jsImportMatchers,
         cdnImportMatchers
@@ -181,6 +199,7 @@ export class WcScope extends Scope {
     // Get all versions for this package to use the first one as context
     // The actual version for each element comes from the individual CDN import
     const packageVersions = registry.getDiscoveredPackageVersions()
+
     const versions = packageVersions
       .filter((pv) => pv.package === currentCdnPackage.name)
       .map((pv) => pv.version)
@@ -357,9 +376,6 @@ export class WcScope extends Scope {
       await this.resolveLinkedImports(accumulator, instrumentedPackage.name)
     }
 
-    // Check if CDN imports were already processed during pre-scan
-    this.filterAlreadyProcessedCdnImports(sourceFile.fileName ?? '')
-
     this.resolveElementImports(accumulator, jsImportMatchers, cdnImportMatchers)
 
     this.logger.debug('Post-filter accumulator contents:', JSON.stringify(accumulator))
@@ -418,85 +434,67 @@ export class WcScope extends Scope {
     accumulator.jsImports = newImports
   }
 
-  /**
-   * Filters out CDN imports that were already processed during the pre-scan phase.
-   * This prevents duplicate metric collection when WC packages are installed.
-   *
-   * @param accumulator - The accumulator containing CDN imports.
-   * @param filePath - Path to the current file being processed.
-   */
-  @Trace()
-  private filterAlreadyProcessedCdnImports(filePath: string): void {
-    const registry = CdnRegistry.getInstance()
-    const preScanCdnImports = registry.getCdnImports(filePath)
-
-    if (preScanCdnImports === undefined || preScanCdnImports.length === 0) {
-      return
-    }
-
-    this.logger.debug(`Found ${preScanCdnImports.length} pre-scanned CDN imports for ${filePath}`)
-
-    // Mark all pre-scanned CDN imports as processed
-    for (const cdnImport of preScanCdnImports) {
-      registry.markAsProcessed(cdnImport)
-      this.logger.debug(`Marked CDN import as processed: ${cdnImport.package}@${cdnImport.version}`)
-    }
-  }
-
-  /**
-   * Finds CDN imports in the registry by matching the script source URL.
-   * This ensures we use the registry's expanded imports (which may include multiple components)
-   * and resolved versions instead of parsing the URL fresh.
-   *
-   * @param scriptSource - The CDN URL from the HTML script tag.
-   * @param registry - The CDN registry instance.
-   * @returns Array of CDN imports from the registry, or undefined if not found.
-   */
-  private findCdnImportsInRegistry(
-    scriptSource: string,
-    registry: CdnRegistry
-  ): CdnImport[] | undefined {
-    // Get all files with CDN imports
-    const filesWithCdnImports = registry.getFilesWithCdnImports()
-
-    // Search through all registered CDN imports to find ones matching this URL
-    for (const filePath of filesWithCdnImports) {
-      const cdnImports = registry.getCdnImports(filePath)
-      if (!cdnImports) continue
-
-      // Find all CDN imports with matching path (URL)
-      const matchingImports = cdnImports.filter((cdnImport) => cdnImport.path === scriptSource)
-      if (matchingImports.length > 0) {
-        return matchingImports
-      }
-    }
-
-    return undefined
-  }
-
   async resolveLinkedImports(accumulator: WcElementAccumulator, instrumentedPackage: string) {
     const mergedJsImports = [...accumulator.jsImports]
-    const registry = CdnRegistry.getInstance()
 
     for (const scriptSource of accumulator.scriptSources) {
       if (isCdnLink(scriptSource)) {
-        // First, try to get the CDN imports from the registry (which has expanded and updated versions)
-        const registryCdnImports = this.findCdnImportsInRegistry(scriptSource, registry)
+        // Regular WC mode should ALWAYS expand CDN imports directly
+        // Do NOT check registry - that's only for CDN-only mode
+        const basicImport = parseCdnImport(scriptSource)
+
+        // Resolve the version if it's a tag (e.g., v2/next -> 2.46.0)
+        const { resolvedVersion } = await fetchCdnPackageConfig(
+          basicImport.package,
+          basicImport.version,
+          this.logger
+        )
+
+        this.logger.debug(
+          `Package is installed, expanding CDN import with resolved version: ${resolvedVersion}`
+        )
+
+        // Fetch component names from the CDN file
+        const componentNames = await fetchCdnComponentImports(
+          scriptSource,
+          this.logger,
+          this.config.endpoint,
+          resolvedVersion
+        )
 
         let cdnImports: CdnImport[]
-        if (registryCdnImports && registryCdnImports.length > 0) {
-          // Use pre-scanned expanded imports from registry
-          cdnImports = registryCdnImports
-          this.logger.debug(
-            `Found ${cdnImports.length} CDN imports in registry for ${scriptSource}`
-          )
+        // If no components found, fall back to single component from URL
+        if (componentNames.length === 0) {
+          this.logger.debug(`No components found in CDN file, using URL-based component name`)
+          cdnImports = [basicImport]
         } else {
-          // If not in registry, this package is installed - just parse the single component from URL
-          // Don't expand because the package is installed and will be processed via npm scope
-          const singleImport = parseCdnImport(scriptSource)
-          cdnImports = [singleImport]
+          // Create CdnImport objects for each component
+          const allComponentNames = new Set(componentNames)
+
+          // Always include the filename component if it's not already in the list
+          if (basicImport.name && !allComponentNames.has(basicImport.name)) {
+            allComponentNames.add(basicImport.name)
+            this.logger.debug(`Added filename component to expanded list: ${basicImport.name}`)
+          }
+
+          cdnImports = Array.from(allComponentNames).map((componentName) => {
+            // Strip the prefix from component name if it starts with the prefix
+            const prefix = basicImport.prefix ?? ''
+            const nameWithoutPrefix = componentName.startsWith(prefix + '-')
+              ? componentName.slice(prefix.length + 1)
+              : componentName
+
+            return {
+              name: nameWithoutPrefix,
+              path: scriptSource,
+              prefix: prefix,
+              package: basicImport.package,
+              version: resolvedVersion
+            }
+          })
+
           this.logger.debug(
-            `Package is installed, using single CDN import from URL: ${singleImport.name}`
+            `Expanded CDN import ${scriptSource} into ${cdnImports.length} components: ${Array.from(allComponentNames).join(', ')}`
           )
         }
 
@@ -543,15 +541,6 @@ export class WcScope extends Scope {
       .find((cdnImport) => cdnImport !== undefined)
 
     if (cdnImport === undefined) {
-      return
-    }
-
-    // Check if this CDN import was already processed during pre-scan
-    const registry = CdnRegistry.getInstance()
-    if (registry.isProcessed(cdnImport)) {
-      this.logger.debug(
-        `Skipping already processed CDN import: ${cdnImport.package}@${cdnImport.version}`
-      )
       return
     }
 

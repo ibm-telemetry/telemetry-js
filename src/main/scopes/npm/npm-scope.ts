@@ -28,6 +28,9 @@ export class NpmScope extends Scope {
 
     // Check if we're in CDN-only mode
     if (cdnMode) {
+      // Set flag to use CDN-specific OpenTelemetry instance
+      this.useCdnInstance = true
+
       const cdnPackage = registry.getCurrentCdnPackage()
       if (!cdnPackage) {
         this.logger.debug('CDN-only mode enabled but no current CDN package found')

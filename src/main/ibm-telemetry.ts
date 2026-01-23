@@ -78,7 +78,8 @@ export class IbmTelemetry {
     this.logger.debug('Schema: ' + JSON.stringify(configSchemaJson))
     this.logger.debug('Config: ' + JSON.stringify(this.config, undefined, 2))
 
-    const otelContext = OpenTelemetryContext.getInstance(true)
+    // Use separate OpenTelemetry instances for CDN vs regular collections
+    const otelContext = OpenTelemetryContext.getInstance(true, this.cdnMode)
 
     const { projectRoot, documentObject } = await this.getData()
 
@@ -89,7 +90,7 @@ export class IbmTelemetry {
 
     const results = await otelContext.getMetricReader().collect()
 
-    this.logger.debug('Collection results:')
+    this.logger.debug(`Collection results for ${this.environment.cwd} in cdnMode ${this.cdnMode}: `)
     this.logger.debug(JSON.stringify(results, undefined, 2))
 
     this.environment.isExportEnabled &&

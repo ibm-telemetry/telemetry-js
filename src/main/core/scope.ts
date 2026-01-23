@@ -42,6 +42,7 @@ export abstract class Scope extends Loggable {
   protected readonly config: ConfigSchema
   protected readonly cwd: string
   protected readonly root: string
+  protected useCdnInstance: boolean = false
 
   private scopeMeter?: Meter
 
@@ -71,7 +72,9 @@ export abstract class Scope extends Loggable {
   public capture(dataPoint: ScopeMetric): void {
     // Ensure a scope exists
     if (this.scopeMeter === undefined) {
-      this.scopeMeter = OpenTelemetryContext.getInstance().getMeterProvider().getMeter(this.name)
+      this.scopeMeter = OpenTelemetryContext.getInstance(false, this.useCdnInstance)
+        .getMeterProvider()
+        .getMeter(this.name)
     }
 
     // Ensure a counter exists

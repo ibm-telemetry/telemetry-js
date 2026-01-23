@@ -31,6 +31,7 @@ export class IbmTelemetry {
   private readonly environment: Environment
   private readonly gitInfo: object
   private readonly logger: Logger
+  private readonly cdnMode: boolean
 
   /**
    * Constructs a new telemetry collector.
@@ -40,19 +41,22 @@ export class IbmTelemetry {
    * @param gitInfo - Object containing project git information.
    * @param logger - A logger instance.
    * @param date - Date scan started.
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   public constructor(
     config: ConfigSchema,
     environment: Environment,
     gitInfo: object,
     logger: Logger,
-    date: string
+    date: string,
+    cdnMode?: boolean
   ) {
     this.config = config
     this.date = date
     this.environment = environment
     this.gitInfo = gitInfo
     this.logger = logger
+    this.cdnMode = cdnMode ?? false
   }
 
   /**
@@ -75,7 +79,8 @@ export class IbmTelemetry {
     this.logger.debug('Schema: ' + JSON.stringify(configSchemaJson))
     this.logger.debug('Config: ' + JSON.stringify(this.config, undefined, 2))
 
-    const otelContext = OpenTelemetryContext.getInstance(true)
+    // Use separate OpenTelemetry instances for CDN vs regular collections
+    const otelContext = OpenTelemetryContext.getInstance(true, this.cdnMode)
 
     const { projectRoot, documentObject } = await this.getData()
 
@@ -86,7 +91,7 @@ export class IbmTelemetry {
 
     const results = await otelContext.getMetricReader().collect()
 
-    this.logger.debug('Collection results:')
+    this.logger.debug(`Collection results for ${this.environment.cwd} in cdnMode ${this.cdnMode}: `)
     this.logger.debug(JSON.stringify(results, undefined, 2))
 
     this.environment.isExportEnabled &&
@@ -120,7 +125,7 @@ export class IbmTelemetry {
       // Catch here so that all scopes get a chance to run
       promises.push(
         scopeInstance
-          .run()
+          .run(scopeName === 'wc' || scopeName === 'npm' ? this.cdnMode : undefined)
           .then(() => {
             this.logger.debug('Scope succeeded: ' + scopeName)
           })
@@ -158,6 +163,8 @@ export class IbmTelemetry {
       temporalityPreference: AggregationTemporality.DELTA,
       compression: CompressionAlgorithm.GZIP
     })
+
+    this.logger.debug('Sending metrics to', config.endpoint)
 
     return await new Promise((resolve) => {
       exporter.export(metrics, (result) => {

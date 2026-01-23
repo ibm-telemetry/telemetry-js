@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { createHash } from 'node:crypto'
+import { existsSync } from 'node:fs'
 import * as net from 'node:net'
 
 import { CustomResourceAttributes } from '@ibm/telemetry-attributes-js'
@@ -12,14 +13,23 @@ import { ConfigSchema } from '@ibm/telemetry-config-schema'
 import configSchemaJson from '@ibm/telemetry-config-schema/config.schema.json' assert { type: 'json' }
 
 import { IbmTelemetry } from '../ibm-telemetry.js'
+import { processFile } from '../scopes/js/process-file.js'
+import { isCdnLink } from '../scopes/wc/utils/is-cdn-link.js'
+import { parseCdnImport, parseCdnImportWithExpansion } from '../scopes/wc/utils/parse-cdn-import.js'
+import { WcElementAccumulator } from '../scopes/wc/wc-element-accumulator.js'
+import { wcNodeHandlerMap } from '../scopes/wc/wc-node-handler-map.js'
 import { hash } from './anonymize/hash.js'
+import { fetchCdnPackageConfig } from './cdn-config-fetcher.js'
+import { CdnRegistry } from './cdn-registry.js'
 import { ConfigValidator } from './config-validator.js'
 import { Environment, EnvironmentConfig } from './environment.js'
+import { getRepositoryRoot } from './get-repository-root.js'
+import { getTrackedSourceFiles } from './get-tracked-source-files.js'
 import { GitInfoProvider } from './git-info-provider.js'
 import { Loggable } from './log/loggable.js'
 import type { Logger } from './log/logger.js'
 import { Trace } from './log/trace.js'
-import { parseYamlFile } from './parse-yaml-file.js'
+import { parseYamlFile, parseYamlString } from './parse-yaml-file.js'
 
 const MAX_RETRIES = 3
 const MAX_BACKLOG = 64
@@ -125,6 +135,8 @@ export class ChooChooTrain extends Loggable {
     let connection: net.Socket | net.Server | undefined
     let lockFileName: string = LOCK_FILE
 
+    this.logger.debug('Starting ChooChooTrain Run()', this.configPath)
+
     this.parsedConfig = await this.getPackageData(this.configPath)
 
     // is now using the Web Components server
@@ -142,55 +154,65 @@ export class ChooChooTrain extends Loggable {
       fs.writeSync(fd, `${process.pid}`)
       fs.closeSync(fd)
       this.isConductor = true
+      this.logger.debug('Created lock file', lockFileName)
     } catch (err) {
       if ((err as NodeJS.ErrnoException)?.code === 'EEXIST') {
         this.isConductor = false // another process already owns the lock
+        this.logger.debug('Lock file already exists:', lockFileName)
       } else {
         throw err
       }
     }
 
-    if (this.isConductor) {
-      try {
-        connection = await this.createServerSocket(this.handleServerConnection.bind(this))
-      } catch (err) {
-        // Fallback to client if someone else created server first
-        if ((err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
-          this.logger.debug('Address is in use, however we try to connect')
-          try {
-            connection = await this.tryConnectToServerWithBackoff()
-          } catch {
-            // give up 🥲
-            this.logger.debug('Could not establish server or client connection. Exiting')
+    try {
+      if (this.isConductor) {
+        try {
+          this.logger.debug('Creating server socket...')
+          connection = await this.createServerSocket(this.handleServerConnection.bind(this))
+        } catch (err) {
+          // Fallback to client if someone else created server first
+          if ((err as NodeJS.ErrnoException)?.code === 'EADDRINUSE') {
+            this.logger.debug('Address is in use, however we try to connect')
+            try {
+              connection = await this.tryConnectToServerWithBackoff()
+            } catch {
+              // give up 🥲
+              this.logger.debug('Could not establish server or client connection. Exiting')
+              return
+            }
+          } else if (err instanceof Error) {
+            this.logger.error(err)
             return
           }
-        } else if (err instanceof Error) {
-          this.logger.error(err)
+        }
+      } else {
+        try {
+          connection = await this.tryConnectToServerWithBackoff()
+        } catch {
+          this.logger.debug('Could not connect to conductor. Exiting')
           return
         }
       }
-    } else {
-      try {
-        connection = await this.tryConnectToServerWithBackoff()
-      } catch {
-        this.logger.debug('Could not connect to conductor. Exiting')
+
+      if (!connection) {
+        this.logger.debug('Could not establish server or client connection. Exiting')
         return
       }
-    }
 
-    if (!connection) {
-      this.logger.debug('Could not establish server or client connection. Exiting')
-      return
-    }
-
-    try {
-      if (connection instanceof net.Server) {
-        await this.doWork(connection)
-      } else {
-        await this.sendWorkToConductor(connection)
+      try {
+        if (connection instanceof net.Server) {
+          await this.doWork(connection)
+        } else {
+          await this.sendWorkToConductor(connection)
+        }
+      } finally {
+        await this.logger.close()
       }
     } finally {
-      await this.logger.close()
+      // Always clean up lock and IPC files if we are the conductor
+      if (this.isConductor) {
+        this.cleanupLockFiles(lockFileName)
+      }
     }
   }
 
@@ -329,6 +351,20 @@ export class ChooChooTrain extends Loggable {
       )
     }
 
+    // Pre-scan HTML files for CDN imports in parallel with processing packages
+    // This will check if packages are installed and defer CDN metrics if needed
+
+    const cdnPrescanPromise = (async () => {
+      let cdnPackages = 0
+      const startTime = performance.now()
+      cdnPackages = await this.preScanHtmlForCdn()
+      const endTime = performance.now()
+      const duration = endTime - startTime
+      this.logger.debug(`preScanHtmlForCdn() took ${duration.toFixed(2)}ms`)
+      return cdnPackages
+    })()
+
+    // Initialize package counter
     this.totalPackages = 0
 
     // Consume work until the queue is empty
@@ -353,6 +389,10 @@ export class ChooChooTrain extends Loggable {
       }
     }
 
+    // Wait for CDN prescan to complete and add to total packages
+    const cdnPackages = await cdnPrescanPromise
+    this.totalPackages += cdnPackages
+
     this.totalDuration = Number((performance.now() - start).toFixed(2))
 
     this.sendLogs(
@@ -364,14 +404,8 @@ export class ChooChooTrain extends Loggable {
 
     server.close(() => {
       this.logger.debug('Server closing')
-      if (this.isConductor) {
-        try {
-          fs.unlinkSync(LOCK_FILE)
-          if (fs.existsSync(this.ipcAddr)) {
-            fs.unlinkSync(this.ipcAddr)
-          }
-        } catch {}
-      }
+      // Lock cleanup is now handled by the finally block in run()
+      // This ensures cleanup happens even if doWork() completes normally
     })
   }
 
@@ -429,7 +463,9 @@ export class ChooChooTrain extends Loggable {
 
   @Trace()
   private async getPackageData(configFilePath: string) {
-    const config = await parseYamlFile(configFilePath)
+    const config = existsSync(configFilePath)
+      ? await parseYamlFile(configFilePath)
+      : parseYamlString(configFilePath)
     const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
     configValidator.validate(config)
 
@@ -443,19 +479,43 @@ export class ChooChooTrain extends Loggable {
   }
 
   /**
+   * Parses and validates a config file without modifying instance properties.
+   * Used for CDN configs to avoid overwriting conductor's projectId and endpoint.
+   *
+   * @param configFilePath - Path to config file or YAML string.
+   * @returns Parsed and validated config object.
+   */
+  @Trace()
+  private async parseAndValidateConfig(configFilePath: string) {
+    const config = existsSync(configFilePath)
+      ? await parseYamlFile(configFilePath)
+      : parseYamlString(configFilePath)
+    const configValidator: ConfigValidator = new ConfigValidator(configSchemaJson, this.logger)
+    configValidator.validate(config)
+
+    return config
+  }
+
+  /**
    * This is the main entrypoint for telemetry collection.
    *
    * @param environment - Environment variable configuration for this run.
    * @param config - Parsed configFile object.
+   * @param cdnMode - Whether to run in CDN-only mode.
    */
   @Trace()
-  private async collect(environment: Environment, config: Record<string, unknown> & ConfigSchema) {
+  private async collect(
+    environment: Environment,
+    config: Record<string, unknown> & ConfigSchema,
+    cdnMode?: boolean
+  ) {
     const ibmTelemetry = new IbmTelemetry(
       config,
       environment,
       this.gitInfo ?? {},
       this.logger,
-      this.date ?? new Date().toISOString()
+      this.date ?? new Date().toISOString(),
+      cdnMode
     )
 
     try {
@@ -472,15 +532,38 @@ export class ChooChooTrain extends Loggable {
     }
   }
 
+  /**
+   * Cleans up lock file and IPC socket file.
+   * Safe to call multiple times - ignores errors if files don't exist.
+   *
+   * @param lockFileName - Path to the lock file to remove.
+   */
+  private cleanupLockFiles(lockFileName: string): void {
+    try {
+      if (fs.existsSync(lockFileName)) {
+        fs.unlinkSync(lockFileName)
+        this.logger.debug('Removed lock file', lockFileName)
+      }
+      if (fs.existsSync(this.ipcAddr)) {
+        fs.unlinkSync(this.ipcAddr)
+        this.logger.debug('Removed IPC socket', this.ipcAddr)
+      }
+    } catch (err) {
+      // Ignore cleanup errors - best effort
+      if (err instanceof Error) {
+        this.logger.debug('Error during lock cleanup (ignored):', err.message)
+      } else {
+        this.logger.debug('Error during lock cleanup (ignored):', String(err))
+      }
+    }
+  }
+
   @Trace()
   private handleSignal(server: net.Server, type: string) {
     if (this.isConductor) {
-      try {
-        fs.unlinkSync(LOCK_FILE)
-        if (fs.existsSync(this.ipcAddr)) {
-          fs.unlinkSync(this.ipcAddr)
-        }
-      } catch {}
+      // Determine which lock file to clean up based on IPC address
+      const lockFileName = this.ipcAddr === WC_IPC_ADDR ? WC_LOCK_FILE : LOCK_FILE
+      this.cleanupLockFiles(lockFileName)
     }
 
     server.close((err) => {
@@ -494,6 +577,429 @@ export class ChooChooTrain extends Loggable {
         })
       }
     })
+  }
+
+  /**
+   * Checks which packages are listed in the root package.json dependencies.
+   * Marks these packages in the CDN registry so we can skip CDN metrics for them.
+   *
+   * @param root - Root directory of the project.
+   */
+  @Trace()
+  private async checkRootDependencies(root: string): Promise<void> {
+    const registry = CdnRegistry.getInstance()
+
+    try {
+      const { readFile } = await import('node:fs/promises')
+      const { join } = await import('node:path')
+
+      // Read the root package.json
+      const packageJsonPath = join(root, 'package.json')
+      const packageJsonContent = await readFile(packageJsonPath, 'utf-8')
+      const packageJson = JSON.parse(packageJsonContent)
+
+      // Collect all dependencies (dependencies, devDependencies,
+      // peerDependencies, optionalDependencies)
+      const allDependencies = new Set<string>()
+
+      if (packageJson.dependencies !== undefined && packageJson.dependencies !== null) {
+        Object.keys(packageJson.dependencies).forEach((dep) => allDependencies.add(dep))
+      }
+      if (packageJson.devDependencies !== undefined && packageJson.devDependencies !== null) {
+        Object.keys(packageJson.devDependencies).forEach((dep) => allDependencies.add(dep))
+      }
+      if (packageJson.peerDependencies !== undefined && packageJson.peerDependencies !== null) {
+        Object.keys(packageJson.peerDependencies).forEach((dep) => allDependencies.add(dep))
+      }
+      if (
+        packageJson.optionalDependencies !== undefined &&
+        packageJson.optionalDependencies !== null
+      ) {
+        Object.keys(packageJson.optionalDependencies).forEach((dep) => allDependencies.add(dep))
+      }
+
+      // Mark all dependencies as installed in the registry
+      for (const pkg of allDependencies) {
+        registry.markPackageAsInstalled(pkg)
+      }
+
+      this.logger.debug(`Found ${allDependencies.size} packages in package.json dependencies`)
+    } catch (error) {
+      // If we can't read package.json, we'll just process all CDN metrics immediately
+      this.logger.debug('Could not read package.json, will process all CDN metrics immediately')
+      if (error instanceof Error) {
+        this.logger.debug(error.message)
+      }
+    }
+  }
+
+  /**
+   * Pre-scans HTML files for CDN imports before processing packages.
+   * This ensures CDN usage is captured even when WC packages aren't installed.
+   * Runs only once per conductor process. Reuses existing WC infrastructure.
+   *
+   * If a CDN package is also installed via npm, the CDN metrics will be
+   * deferred and appended when the installed package is processed to avoid
+   * rate limiting.
+   *
+   * @returns Number of CDN packages processed.
+   */
+  @Trace()
+  private async preScanHtmlForCdn(): Promise<number> {
+    const registry = CdnRegistry.getInstance()
+    let totalCdnPackages = 0
+
+    // Attempt to claim the pre-scan work
+    const shouldRunPreScan = registry.claimPreScan()
+    if (!shouldRunPreScan) {
+      this.logger.debug(
+        'HTML CDN pre-scan already completed or in progress by another conductor, skipping'
+      )
+      return 0
+    }
+
+    this.logger.debug('Starting HTML CDN pre-scan at conductor level')
+
+    try {
+      if (!this.environment) {
+        this.logger.debug('Environment not initialized, skipping CDN pre-scan')
+        return 0
+      }
+
+      // Get repository root for file discovery
+      const root = await getRepositoryRoot(this.environment.cwd, this.logger)
+
+      // Check which packages are installed by examining the dependency tree
+      await this.checkRootDependencies(root)
+
+      // Find all tracked HTML files in the project
+      // Note: We use getTrackedSourceFiles directly here because we want ALL HTML files
+      // regardless of package dependencies, unlike findRelevantSourceFiles which filters
+      // based on installed packages
+      const htmlFiles = await getTrackedSourceFiles(this.environment.cwd, root, this.logger, [
+        '.html',
+        '.htm'
+      ])
+
+      if (htmlFiles.length === 0) {
+        this.logger.debug('No HTML files found for CDN pre-scan')
+        registry.releasePreScan()
+        return 0
+      }
+
+      this.logger.debug(`Found ${htmlFiles.length} HTML files for CDN pre-scan`)
+
+      // Group elements and CDN imports by package
+      // Stores mixed element types from accumulator
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mixed WC/JSX types
+      const packageData = new Map<string, { elements: any[]; cdnImports: any[] }>()
+
+      // Process each HTML file using existing WC infrastructure
+      for (const htmlFile of htmlFiles) {
+        let sourceFile
+        try {
+          sourceFile = await htmlFile.createSourceFile()
+        } catch {
+          this.logger.debug(`Failed to create source file for ${htmlFile.fileName}`)
+          continue
+        }
+        const accumulator = new WcElementAccumulator()
+
+        // Reuse existing processFile with WC node handlers
+        processFile(accumulator, sourceFile, wcNodeHandlerMap, this.logger)
+
+        // Extract CDN imports from script sources
+        const cdnLinks = accumulator.scriptSources.filter((src) => isCdnLink(src))
+
+        // Filter to only non-installed packages BEFORE expanding
+        const cdnLinksToExpand = cdnLinks.filter((src) => {
+          const basicImport = parseCdnImport(src)
+          return (
+            basicImport.package !== undefined &&
+            basicImport.package !== '' &&
+            !registry.isPackageInstalled(basicImport.package)
+          )
+        })
+
+        this.logger.debug(
+          `Found ${cdnLinks.length} CDN links, expanding ${cdnLinksToExpand.length} ` +
+            `(skipped ${cdnLinks.length - cdnLinksToExpand.length} for installed packages)`
+        )
+
+        // Expand each CDN import individually to keep them separate
+        for (let i = 0; i < cdnLinksToExpand.length; i++) {
+          const cdnUrl = cdnLinksToExpand[i]
+          if (cdnUrl === undefined || cdnUrl === '') continue
+
+          // Parse basic import info to get package and version
+          const basicImport = parseCdnImport(cdnUrl)
+
+          // Fetch telemetry config to resolve the version (e.g., "v2/canary" -> "2.46.0")
+          // This call is cached, so the later call at line ~801 will hit the cache
+          const { resolvedVersion } = await fetchCdnPackageConfig(
+            basicImport.package,
+            basicImport.version,
+            this.logger
+          )
+
+          this.logger.debug(
+            `Resolved CDN version ${basicImport.version} to ${resolvedVersion} for ${basicImport.package}`
+          )
+
+          // Pass the collector endpoint and resolved version for efficient component map fetching
+          const expandedImports = await parseCdnImportWithExpansion(
+            cdnUrl,
+            this.logger,
+            this.logEndpoint,
+            resolvedVersion
+          )
+
+          // Filter valid imports
+          const validExpandedImports = expandedImports.filter(
+            (cdn) =>
+              cdn.package !== undefined &&
+              cdn.package !== '' &&
+              cdn.version !== undefined &&
+              cdn.version !== ''
+          )
+
+          if (validExpandedImports.length > 0) {
+            // Register each CDN URL's expanded imports separately
+            // This keeps components from different URLs isolated
+            registry.registerCdnImports(htmlFile.fileName, validExpandedImports)
+            registry.registerExpandedCdnImports(htmlFile.fileName, validExpandedImports)
+
+            this.logger.debug(
+              `Registered ${validExpandedImports.length} expanded CDN imports for ${cdnUrl}`
+            )
+
+            // Group by package for metric collection
+            for (const cdnImport of validExpandedImports) {
+              if (!packageData.has(cdnImport.package)) {
+                packageData.set(cdnImport.package, { elements: [], cdnImports: [] })
+              }
+              const pkgData = packageData.get(cdnImport.package)
+              if (!pkgData) continue
+              pkgData.cdnImports.push(cdnImport)
+              pkgData.elements.push(...accumulator.elements)
+            }
+          }
+        }
+      }
+
+      registry.markPreScanCompleted()
+      this.logger.debug('HTML CDN pre-scan completed at conductor level')
+
+      if (registry.hasCdnImports()) {
+        const packageVersions = registry.getDiscoveredPackageVersions()
+        this.logger.debug(
+          `Discovered CDN package versions: ${packageVersions.map((pv) => `${pv.package}@${pv.version}`).join(', ')}`
+        )
+
+        // Group CDN versions by package to consolidate into single payload
+        const packageVersionsMap = new Map<string, string[]>()
+        for (const { package: pkg, version } of packageVersions) {
+          if (!packageVersionsMap.has(pkg)) {
+            packageVersionsMap.set(pkg, [])
+          }
+          packageVersionsMap.get(pkg)?.push(version)
+        }
+
+        // this.logger.debug(
+        //   'Current CDN package version map',
+        //   JSON.stringify(Object.fromEntries(packageVersionsMap), undefined, 2)
+        // )
+
+        // this.logger.debug(
+        //   `Package data`,
+        //   JSON.stringify(Object.fromEntries(packageData), undefined, 2)
+        // )
+
+        // Process each unique package
+        for (const [pkg, versions] of packageVersionsMap.entries()) {
+          this.logger.debug(`Processing CDN package: ${pkg} with versions: ${versions.join(', ')}`)
+
+          // Check if this package is installed via npm
+          const isInstalled = registry.isPackageInstalled(pkg)
+
+          if (isInstalled) {
+            this.logger.debug(
+              `Package ${pkg} is installed via npm. Skipping CDN metrics (will be captured via npm install).`
+            )
+
+            // Skip this package entirely - it will be processed when the installed package runs
+            continue
+          }
+
+          this.logger.debug(`Package ${pkg} is NOT installed. Processing CDN metrics immediately.`)
+
+          // Fetch configs and resolve versions for ALL versions upfront
+          const configs: Array<{
+            version: string
+            config: Record<string, unknown> & ConfigSchema
+            hasWc: boolean
+          }> = []
+
+          for (const cdnVersion of versions) {
+            const { config, resolvedVersion } = await fetchCdnPackageConfig(
+              pkg,
+              cdnVersion,
+              this.logger
+            )
+
+            this.logger.debug(
+              `CDN attribute config for ${pkg}@${cdnVersion} (resolved: ${resolvedVersion})`
+            )
+
+            // Update all CDN imports for this package@version with the resolved version
+            registry.updateCdnImportVersions(pkg, cdnVersion, resolvedVersion)
+
+            // Parse and store each config
+            if (config !== undefined && config !== '') {
+              try {
+                const parsedConfig = await this.parseAndValidateConfig(config)
+                const hasWc = parsedConfig?.collect?.wc !== undefined
+                configs.push({ version: resolvedVersion, config: parsedConfig, hasWc })
+                this.logger.debug(`Config for ${pkg}@${resolvedVersion} has WC scope: ${hasWc}`)
+              } catch (error) {
+                this.logger.debug(
+                  `Failed to parse config for ${pkg}@${resolvedVersion}: ${String(error)}`
+                )
+              }
+            }
+          }
+
+          // Find configs with WC scope
+          // Find configs with WC scope - we need at least one to process WC metrics
+          const configsWithWc = configs.filter((c) => c.hasWc)
+
+          if (configsWithWc.length === 0) {
+            this.logger.debug(
+              `No configs with WC scope found for ${pkg}, skipping (npm metrics will be collected via npm scope)`
+            )
+            continue
+          }
+
+          // Enable CDN-only mode ONCE for the entire package (not per version)
+          registry.enableCdnOnlyMode(pkg, versions[0] ?? '')
+          this.logger.debug(`Enabled CDN-only mode for package: ${pkg}`)
+
+          // Merge all WC configs to get the union of all allowed attributes
+          const mergedConfig = configsWithWc[0]?.config
+          if (mergedConfig === undefined || mergedConfig === null) {
+            this.logger.debug(`No valid config found for ${pkg}`)
+            continue
+          }
+
+          // Merge allowedAttributeNames and allowedAttributeStringValues from all configs
+          const allAllowedAttributeNames = new Set<string>()
+          const allAllowedAttributeStringValues = new Set<string>()
+
+          for (const { config } of configsWithWc) {
+            const wcConfig = config?.collect?.wc
+            if (
+              wcConfig?.elements?.allowedAttributeNames !== undefined &&
+              wcConfig?.elements?.allowedAttributeNames !== null
+            ) {
+              wcConfig.elements.allowedAttributeNames.forEach((name: string) =>
+                allAllowedAttributeNames.add(name)
+              )
+            }
+            if (
+              wcConfig?.elements?.allowedAttributeStringValues !== undefined &&
+              wcConfig?.elements?.allowedAttributeStringValues !== null
+            ) {
+              wcConfig.elements.allowedAttributeStringValues.forEach((value: string) =>
+                allAllowedAttributeStringValues.add(value)
+              )
+            }
+          }
+
+          // Apply merged attributes to the config
+          if (
+            mergedConfig.collect?.wc?.elements !== undefined &&
+            mergedConfig.collect?.wc?.elements !== null
+          ) {
+            const attributeNames = Array.from(allAllowedAttributeNames)
+            const attributeValues = Array.from(allAllowedAttributeStringValues)
+
+            // Only set if arrays are non-empty (schema requires [string, ...string[]])
+            if (attributeNames.length > 0) {
+              mergedConfig.collect.wc.elements.allowedAttributeNames = attributeNames as [
+                string,
+                ...string[]
+              ]
+            }
+            if (attributeValues.length > 0) {
+              mergedConfig.collect.wc.elements.allowedAttributeStringValues = attributeValues as [
+                string,
+                ...string[]
+              ]
+            }
+          }
+
+          this.logger.debug(
+            `Merged ${configsWithWc.length} WC configs for ${pkg}: ` +
+              `${allAllowedAttributeNames.size} total attribute names, ` +
+              `${allAllowedAttributeStringValues.size} total string values`
+          )
+
+          // Process CDN metrics for ALL versions in a SINGLE collection burst
+          if (
+            mergedConfig !== undefined &&
+            mergedConfig !== null &&
+            this.environment !== undefined
+          ) {
+            // Filter config to only include WC and NPM scopes for CDN packages
+            const wc = mergedConfig?.collect?.wc
+            const npm = mergedConfig?.collect?.npm
+
+            if ((wc !== undefined && wc !== null) || (npm !== undefined && npm !== null)) {
+              mergedConfig.collect = {}
+              if (wc !== undefined && wc !== null) {
+                mergedConfig.collect.wc = wc
+              }
+              if (npm !== undefined && npm !== null) {
+                mergedConfig.collect.npm = npm
+              }
+
+              // Testing purpose only
+              // if (1 + 1 == 2) {
+              //   mergedConfig.endpoint = 'https://wwwstage-api.ibm.com/ibm-telemetry/v1/metrics'
+              // }
+              this.logger.debug(`Collecting for package ${pkg} (all versions in single burst)`)
+
+              // This single collect() call will process ALL versions of the package
+              await this.collect(this.environment, mergedConfig, true)
+            }
+          }
+
+          // Disable CDN-only mode after collection completes
+          registry.disableCdnOnlyMode()
+          this.logger.debug(`Disabled CDN-only mode for package: ${pkg}`)
+
+          // Only count once per package, not per version
+          totalCdnPackages++
+          this.logger.debug('Scope succeeded: cdn')
+        }
+        return totalCdnPackages
+      } else {
+        this.logger.debug('No CDN imports found in HTML files')
+      }
+
+      // Mark pre-scan as completed
+      registry.releasePreScan()
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error(error)
+      } else {
+        this.logger.error(`HTML CDN pre-scan failed: ${String(error)}`)
+      }
+      // Mark as completed even on error to avoid retrying
+      registry.releasePreScan()
+      return totalCdnPackages
+    }
+    return totalCdnPackages
   }
 
   /**

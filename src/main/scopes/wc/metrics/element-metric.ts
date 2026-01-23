@@ -22,7 +22,7 @@ import type { CdnImport } from '../interfaces.js'
 import { type WcElement, type WcElementAttribute } from '../interfaces.js'
 import { isCdnImport } from '../utils/is-cdn-import.js'
 import { isJsxElement } from '../utils/is-jsx-element.js'
-import { CDN_NPM_TAGS, WC_PACKAGE_REACT_WRAPPERS } from '../wc-defs.js'
+import { WC_PACKAGE_REACT_WRAPPERS } from '../wc-defs.js'
 
 /**
  * Wc scope metric that generates a wc.element individual metric for a given element.
@@ -94,6 +94,11 @@ export class ElementMetric extends ScopeMetric {
       this.instrumentedPackage.version
     )
 
+    this.logger.debug(
+      'The package details are',
+      JSON.stringify(this.instrumentedPackage, undefined, 2)
+    )
+
     let metricData: Attributes = {
       [WcScopeAttributes.NAME]: this.element.name,
       [WcScopeAttributes.ATTRIBUTE_NAMES]: Object.keys(anonymizedAttributes),
@@ -106,27 +111,39 @@ export class ElementMetric extends ScopeMetric {
       [WcScopeAttributes.FRAMEWORK_WRAPPER]: 'none'
     }
 
-    let hashVersionRaw = true
-
     if (isCdnImport(this.matchingImport)) {
+      this.logger.debug('IMport source is CDN', JSON.stringify(this.matchingImport))
+
       // add fields specific to CDN imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'cdn'
-      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.package
-      const importTag = this.matchingImport.version.split('/')[1]
-      if (importTag !== undefined && CDN_NPM_TAGS.includes(importTag)) {
-        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = this.matchingImport.version
-        hashVersionRaw = false
-      } else {
-        // CDN import expected to specify version
-        const [version, preRelease] = this.matchingImport.version.split('v')[1]?.split('-') ?? []
-        const parsedVersion = version?.split('.') ?? []
-        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = parsedVersion.join('.')
-        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = parsedVersion[0]
-        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = parsedVersion[1]
-        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH] = parsedVersion[2]
-        metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE] = preRelease
-      }
+      // Always use the instrumented package name, not the CDN package name
+      // This ensures metrics are attributed to the package being analyzed
+
+      this.logger.debug(
+        `The CDN import name is ${this.matchingImport.package} and the instrumented package name is ${this.instrumentedPackage.name}`
+      )
+      metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.instrumentedPackage.name
+
+      // CDN import version is already resolved (e.g., "2.46.0" or "v2.46.0")
+      // by the time it reaches ElementMetric via parseCdnImportWithExpansion
+      this.logger.debug('The CDN import version is ', this.matchingImport.version)
+
+      // Remove leading 'v' if present
+      const versionString = this.matchingImport.version.startsWith('v')
+        ? this.matchingImport.version.slice(1)
+        : this.matchingImport.version
+
+      const [version, preRelease] = versionString.split('-')
+      const parsedVersion = version?.split('.') ?? []
+
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_RAW] = parsedVersion.join('.')
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MAJOR] = parsedVersion[0]
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_MINOR] = parsedVersion[1]
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PATCH] = parsedVersion[2]
+      metricData[NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE] = preRelease
     } else {
+      this.logger.debug('IMport source is npm', JSON.stringify(this.matchingImport))
+
       // add fields specific to npm imports
       metricData[WcScopeAttributes.IMPORT_SOURCE] = 'npm'
       metricData[WcScopeAttributes.MODULE_SPECIFIER] = this.matchingImport.path
@@ -167,14 +184,13 @@ export class ElementMetric extends ScopeMetric {
       NpmScopeAttributes.INSTRUMENTED_RAW,
       NpmScopeAttributes.INSTRUMENTED_OWNER,
       NpmScopeAttributes.INSTRUMENTED_NAME,
+      NpmScopeAttributes.INSTRUMENTED_VERSION_RAW,
       NpmScopeAttributes.INSTRUMENTED_VERSION_PRE_RELEASE
     ] as [string | number, ...(string | number)[]]
 
-    if (hashVersionRaw) {
-      hashedAttributes.push(NpmScopeAttributes.INSTRUMENTED_VERSION_RAW)
-    }
-
     metricData = hash(metricData, hashedAttributes)
+
+    this.logger.debug(JSON.stringify(metricData))
 
     return metricData
   }

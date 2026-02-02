@@ -71,7 +71,7 @@
     "domhandler": "^5.0.3",
     "domutils": "^3.2.2",
     "esbuild": "^0.25.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jsdoc": "^48.11.0",
     "eslint-plugin-n": "^16.6.2",

@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substituteObject } from '../../../../main/core/anonymize/substitute-object.js'
+import { ComplexValue } from '../../../../main/scopes/js/complex-value.js'
 import type { JsImport } from '../../../../main/scopes/js/interfaces.js'
 import type { WcElement, WcElementAttribute } from '../../../../main/scopes/wc/interfaces.js'
 import { ElementMetric } from '../../../../main/scopes/wc/metrics/element-metric.js'
@@ -167,5 +168,88 @@ describe('class: ElementMetric', () => {
         ]
       )
     )
+  })
+
+  describe('allowedAttributeObjectKeys', () => {
+    const configWithObjectKeys: ConfigSchema = {
+      projectId: 'abc123',
+      version: 1,
+      endpoint: '',
+      collect: {
+        wc: {
+          elements: {
+            allowedAttributeNames: ['attrName'],
+            allowedAttributeStringValues: ['_placeholder'],
+            allowedAttributeObjectKeys: ['key1', 'key2']
+          }
+        }
+      }
+    }
+
+    it('expands an allowed object attribute into dotted sub-key entries', () => {
+      const element: WcElement = {
+        name: 'element-name',
+        attributes: [
+          {
+            name: 'attrName',
+            value: new ComplexValue({
+              key1: new ComplexValue({ items: [] }),
+              key2: true,
+              key3: new ComplexValue({ items: [] })
+            })
+          }
+        ]
+      }
+
+      const attributes = new ElementMetric(
+        element,
+        jsImport,
+        { name: 'instrumented', version: '1.0.0' },
+        configWithObjectKeys,
+        logger
+      ).attributes
+
+      const names = attributes[WcScopeAttributes.ATTRIBUTE_NAMES] as string[]
+      const values = attributes[WcScopeAttributes.ATTRIBUTE_VALUES] as string[]
+
+      expect(names).toContain('attrName.key1')
+      expect(names).toContain('attrName.key2')
+      expect(names.some((n) => n.startsWith('[redacted'))).toBe(true)
+      expect(values[names.indexOf('attrName.key2')]).toBe('true')
+    })
+
+    it('does not expand when allowedAttributeObjectKeys is absent', () => {
+      const configNoObjectKeys: ConfigSchema = {
+        projectId: 'abc123',
+        version: 1,
+        endpoint: '',
+        collect: {
+          wc: {
+            elements: {
+              allowedAttributeNames: ['attrName'],
+              allowedAttributeStringValues: ['_placeholder']
+            }
+          }
+        }
+      }
+
+      const element: WcElement = {
+        name: 'element-name',
+        attributes: [{ name: 'attrName', value: new ComplexValue({ key1: true, key2: true }) }]
+      }
+
+      const attributes = new ElementMetric(
+        element,
+        jsImport,
+        { name: 'instrumented', version: '1.0.0' },
+        configNoObjectKeys,
+        logger
+      ).attributes
+
+      const names = attributes[WcScopeAttributes.ATTRIBUTE_NAMES] as string[]
+
+      expect(names).toContain('attrName')
+      expect(names.some((n) => n.includes('.'))).toBe(false)
+    })
   })
 })

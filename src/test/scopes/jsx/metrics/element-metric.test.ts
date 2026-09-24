@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest'
 
 import { hash } from '../../../../main/core/anonymize/hash.js'
 import { substituteObject } from '../../../../main/core/anonymize/substitute-object.js'
+import { ComplexValue } from '../../../../main/scopes/js/complex-value.js'
 import type { JsImport } from '../../../../main/scopes/js/interfaces.js'
 import { DEFAULT_ELEMENT_NAME } from '../../../../main/scopes/jsx/constants.js'
 import type { JsxElement, JsxElementAttribute } from '../../../../main/scopes/jsx/interfaces.js'
@@ -259,5 +260,134 @@ describe('class: ElementMetric', () => {
         ]
       )
     )
+  })
+
+  describe('allowedAttributeObjectKeys', () => {
+    const configWithObjectKeys: ConfigSchema = {
+      projectId: 'abc123',
+      version: 1,
+      endpoint: '',
+      collect: {
+        jsx: {
+          elements: {
+            allowedAttributeNames: ['attrName'],
+            allowedAttributeStringValues: ['_placeholder'],
+            allowedAttributeObjectKeys: ['key1', 'key2']
+          }
+        }
+      }
+    }
+
+    it('expands an allowed object attribute into dotted sub-key entries', () => {
+      const element: JsxElement = {
+        name: 'ElementName',
+        prefix: undefined,
+        attributes: [
+          {
+            name: 'attrName',
+            value: new ComplexValue({
+              key1: new ComplexValue({ items: [] }),
+              key2: true,
+              key3: new ComplexValue({ items: [] })
+            })
+          }
+        ]
+      }
+
+      const attributes = new ElementMetric(
+        element,
+        jsImport,
+        { name: 'instrumented', version: '1.0.0' },
+        configWithObjectKeys,
+        logger
+      ).attributes
+
+      const names = attributes[JsxScopeAttributes.ATTRIBUTE_NAMES] as string[]
+      const values = attributes[JsxScopeAttributes.ATTRIBUTE_VALUES] as string[]
+
+      expect(names).toContain('attrName.key1')
+      expect(names).toContain('attrName.key2')
+      expect(names.some((n) => n.startsWith('[redacted'))).toBe(true)
+      expect(values[names.indexOf('attrName.key2')]).toBe('true')
+    })
+
+    it('does not expand object attributes when allowedAttributeObjectKeys is empty', () => {
+      const configNoObjectKeys: ConfigSchema = {
+        projectId: 'abc123',
+        version: 1,
+        endpoint: '',
+        collect: {
+          jsx: {
+            elements: {
+              allowedAttributeNames: ['attrName'],
+              allowedAttributeStringValues: ['_placeholder']
+            }
+          }
+        }
+      }
+
+      const element: JsxElement = {
+        name: 'ElementName',
+        prefix: undefined,
+        attributes: [
+          {
+            name: 'attrName',
+            value: new ComplexValue({ key1: true, key2: true })
+          }
+        ]
+      }
+
+      const attributes = new ElementMetric(
+        element,
+        jsImport,
+        { name: 'instrumented', version: '1.0.0' },
+        configNoObjectKeys,
+        logger
+      ).attributes
+
+      const names = attributes[JsxScopeAttributes.ATTRIBUTE_NAMES] as string[]
+
+      expect(names).toContain('attrName')
+      expect(names.some((n) => n.includes('.'))).toBe(false)
+    })
+
+    it('leaves non-object attributes untouched when allowedAttributeObjectKeys is set', () => {
+      const element: JsxElement = {
+        name: 'ElementName',
+        prefix: undefined,
+        attributes: [
+          { name: 'complexAttr', value: new ComplexValue({ key1: true }) },
+          { name: 'nonComplexAttr', value: 'hello' }
+        ]
+      }
+
+      const configWithLabel: ConfigSchema = {
+        ...configWithObjectKeys,
+        collect: {
+          jsx: {
+            elements: {
+              allowedAttributeNames: ['complexAttr', 'nonComplexAttr'],
+              allowedAttributeStringValues: ['hello'],
+              allowedAttributeObjectKeys: ['key1']
+            }
+          }
+        }
+      }
+
+      const attributes = new ElementMetric(
+        element,
+        jsImport,
+        { name: 'instrumented', version: '1.0.0' },
+        configWithLabel,
+        logger
+      ).attributes
+
+      const names = attributes[JsxScopeAttributes.ATTRIBUTE_NAMES] as string[]
+      const values = attributes[JsxScopeAttributes.ATTRIBUTE_VALUES] as string[]
+
+      expect(names).toContain('complexAttr.key1')
+      expect(names).toContain('nonComplexAttr')
+      expect(values[names.indexOf('nonComplexAttr')]).toBe('hello')
+    })
   })
 })

@@ -6,7 +6,9 @@ exports[`class: JsxExpressionHandler > correctly returns node text 1`] = `
   undefined,
   null,
   ComplexValue {
-    "complexValue": "{key: 'value'}",
+    "complexValue": {
+      "key": "value",
+    },
   },
   true,
   false,

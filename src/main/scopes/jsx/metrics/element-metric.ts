@@ -15,6 +15,7 @@ import { type Logger } from '../../../core/log/logger.js'
 import { PackageDetailsProvider } from '../../../core/package-details-provider.js'
 import { ScopeMetric } from '../../../core/scope-metric.js'
 import type { JsImport } from '../../js/interfaces.js'
+import { expandObjectAttributes } from '../../js/utils/expand-object-attributes.js'
 import type { PackageData } from '../../npm/interfaces.js'
 import { type JsxElement, type JsxElementAttribute } from '../interfaces.js'
 
@@ -27,6 +28,7 @@ export class ElementMetric extends ScopeMetric {
   private readonly matchingImport: JsImport
   private readonly allowedAttributeNames: string[]
   private readonly allowedAttributeStringValues: string[]
+  private readonly allowedAttributeObjectKeys: string[]
   private readonly instrumentedPackage: PackageData
 
   /**
@@ -53,6 +55,7 @@ export class ElementMetric extends ScopeMetric {
     this.allowedAttributeNames = config.collect.jsx?.elements?.allowedAttributeNames ?? []
     this.allowedAttributeStringValues =
       config.collect.jsx?.elements?.allowedAttributeStringValues ?? []
+    this.allowedAttributeObjectKeys = config.collect.jsx?.elements?.allowedAttributeObjectKeys ?? []
   }
 
   /**
@@ -70,9 +73,24 @@ export class ElementMetric extends ScopeMetric {
       )
     )
 
+    // Expand any allowed attribute whose value is a ComplexValue (object) into dotted sub-keys
+    // before anonymization, so individual sub-keys can be tracked.
+    let expandedAttrMap: Record<string, JsxElementAttribute['value']> = attrMap
+    let expandedAllowedNames: string[] = this.allowedAttributeNames
+
+    if (this.allowedAttributeObjectKeys.length > 0) {
+      const { expanded, addedKeys } = expandObjectAttributes(
+        attrMap,
+        this.allowedAttributeNames,
+        this.allowedAttributeObjectKeys
+      )
+      expandedAttrMap = expanded
+      expandedAllowedNames = [...this.allowedAttributeNames, ...addedKeys]
+    }
+
     const anonymizedAttributes = substituteObject(
-      attrMap,
-      this.allowedAttributeNames,
+      expandedAttrMap,
+      expandedAllowedNames,
       this.allowedAttributeStringValues
     )
 

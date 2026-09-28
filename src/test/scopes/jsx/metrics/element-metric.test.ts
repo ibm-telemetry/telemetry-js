@@ -305,6 +305,7 @@ describe('class: ElementMetric', () => {
       const names = attributes[JsxScopeAttributes.ATTRIBUTE_NAMES] as string[]
       const values = attributes[JsxScopeAttributes.ATTRIBUTE_VALUES] as string[]
 
+      expect(names).toContain('attrName')
       expect(names).toContain('attrName.key1')
       expect(names).toContain('attrName.key2')
       expect(names.some((n) => n.startsWith('[redacted'))).toBe(true)
@@ -385,6 +386,7 @@ describe('class: ElementMetric', () => {
       const names = attributes[JsxScopeAttributes.ATTRIBUTE_NAMES] as string[]
       const values = attributes[JsxScopeAttributes.ATTRIBUTE_VALUES] as string[]
 
+      expect(names).toContain('complexAttr')
       expect(names).toContain('complexAttr.key1')
       expect(names).toContain('nonComplexAttr')
       expect(values[names.indexOf('nonComplexAttr')]).toBe('hello')

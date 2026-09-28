@@ -212,6 +212,7 @@ describe('class: ElementMetric', () => {
       const names = attributes[WcScopeAttributes.ATTRIBUTE_NAMES] as string[]
       const values = attributes[WcScopeAttributes.ATTRIBUTE_VALUES] as string[]
 
+      expect(names).toContain('attrName')
       expect(names).toContain('attrName.key1')
       expect(names).toContain('attrName.key2')
       expect(names.some((n) => n.startsWith('[redacted'))).toBe(true)

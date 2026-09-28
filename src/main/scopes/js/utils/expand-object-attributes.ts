@@ -45,6 +45,11 @@ export function expandObjectAttributes(
       attrValue.complexValue !== null &&
       !Array.isArray(attrValue.complexValue)
     ) {
+      // Always keep the original attribute name so it is never omitted, even when
+      // sub-keys are also expanded.
+      expanded[attrName] = attrValue
+      addedKeys.push(attrName)
+
       const subObj = attrValue.complexValue as Record<string, AttributeValue>
       for (const subKey of Object.keys(subObj)) {
         const dottedKey = `${attrName}.${subKey}`

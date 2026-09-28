@@ -13,11 +13,12 @@ export type AttributeValue = string | number | boolean | ComplexValue | null | u
 
 /**
  * For each entry in `attrMap` whose name is in `allowedAttributeNames` and whose value is a
- * `ComplexValue` wrapping a plain object, replaces the single entry with one entry per sub-key
- * (keyed as `attrName.subKey`). Sub-keys whose name is in `allowedAttributeObjectKeys` are
- * returned in `addedKeys` so the caller can treat them as safe during substitution.
- * Sub-keys not in `allowedAttributeObjectKeys` are still emitted under their dotted key so they
- * are individually anonymized rather than the whole object being anonymized as one value.
+ * `ComplexValue` wrapping a plain object, keeps the original entry and additionally adds one
+ * entry per sub-key (keyed as `attrName.subKey`). The original attribute name and sub-keys whose
+ * name is in `allowedAttributeObjectKeys` are returned in `addedKeys` so the caller can treat
+ * them as safe during substitution. Sub-keys not in `allowedAttributeObjectKeys` are still
+ * emitted under their dotted key so they are individually anonymized rather than the whole object
+ * being anonymized as one value.
  *
  * Attributes whose value is not an object `ComplexValue`, or whose name is not in
  * `allowedAttributeNames`, are passed through unchanged.

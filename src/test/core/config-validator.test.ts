@@ -323,6 +323,45 @@ describe('class: ConfigValidator', () => {
         }
       ])
     })
+
+    it('requires at least one key if allowedAttributeObjectKeys is defined', async () => {
+      const fixture = new Fixture('config-files/invalid/empty-allowed-attribute-object-keys.yml')
+      const config = await fixture.parse()
+      let err
+
+      try {
+        validator.validate(config)
+      } catch (e) {
+        err = e
+      }
+
+      expect(err).toBeInstanceOf(ConfigValidationError)
+
+      expect((err as ConfigValidationError).errors).toStrictEqual([
+        {
+          instancePath: '/collect/jsx/elements',
+          keyword: 'type',
+          message: 'must be null',
+          params: {
+            type: 'null'
+          }
+        },
+        {
+          instancePath: '/collect/jsx/elements/allowedAttributeObjectKeys',
+          keyword: 'minItems',
+          message: 'must NOT have fewer than 1 items',
+          params: {
+            limit: 1
+          }
+        },
+        {
+          instancePath: '/collect/jsx/elements',
+          keyword: 'anyOf',
+          message: 'must match a schema in anyOf',
+          params: {}
+        }
+      ])
+    })
   })
 
   describe('js', () => {

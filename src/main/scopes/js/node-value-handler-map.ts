@@ -18,6 +18,7 @@ import { JsxSpreadAttributeHandler } from './node-handlers/value-handlers/jsx-sp
 import { type NodeValueHandler } from './node-handlers/value-handlers/node-value-handler.js'
 import { NullKeywordHandler } from './node-handlers/value-handlers/null-keyword-handler.js'
 import { NumericLiteralHandler } from './node-handlers/value-handlers/numeric-literal-handler.js'
+import { ObjectLiteralExpressionHandler } from './node-handlers/value-handlers/object-literal-expression-handler.js'
 import { StringLiteralHandler } from './node-handlers/value-handlers/string-literal-handler.js'
 import { TrueKeywordHandler } from './node-handlers/value-handlers/true-keyword-handler.js'
 
@@ -33,7 +34,8 @@ export const nodeValueHandlersMap: NodeValueHandlerMap = {
   [ts.SyntaxKind.JsxExpression]: JsxExpressionHandler,
   [ts.SyntaxKind.JsxAttribute]: JsxAttributeHandler,
   [ts.SyntaxKind.JsxSpreadAttribute]: JsxSpreadAttributeHandler,
-  [ts.SyntaxKind.Identifier]: IdentifierHandler
+  [ts.SyntaxKind.Identifier]: IdentifierHandler,
+  [ts.SyntaxKind.ObjectLiteralExpression]: ObjectLiteralExpressionHandler
 }
 
 export const getNodeValueHandler = (

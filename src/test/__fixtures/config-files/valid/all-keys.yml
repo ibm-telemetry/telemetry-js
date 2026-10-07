@@ -18,6 +18,9 @@ collect:
       allowedAttributeStringValues:
         - 'one'
         - 'two'
+      allowedAttributeObjectKeys:
+        - 'subKey'
+        - 'otherSubKey'
   js:
     functions:
       allowedArgumentStringValues:

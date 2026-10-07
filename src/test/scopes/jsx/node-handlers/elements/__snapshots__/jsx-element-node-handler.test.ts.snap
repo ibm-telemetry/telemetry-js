@@ -62,7 +62,10 @@ exports[`class: JsxElementNodeHandler > correctly returns the JsxElements for a 
       {
         "name": "attr13",
         "value": ComplexValue {
-          "complexValue": "{key: 'value', key2: 10}",
+          "complexValue": {
+            "key": "value",
+            "key2": 10,
+          },
         },
       },
     ],

@@ -21,7 +21,7 @@ jobs:
           private-key: ${{ secrets.TELEMETRY_APP_PRIVATE_KEY }}
 
       - name: Update release PR 🔄
-        uses: google-github-actions/release-please-action@v3
+        uses: googleapis/release-please-action@v3
         id: release
         with:
           release-type: node

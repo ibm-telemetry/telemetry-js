@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.11.0...v1.12.0) (2026-10-07)
+
+
+### Features
+
+* collect complex attribute keys ([#345](https://github.com/ibm-telemetry/telemetry-js/issues/345)) ([fcd8fdf](https://github.com/ibm-telemetry/telemetry-js/commit/fcd8fdff325a2bea3fd94edf60bdd14a548a59ef))
+
 ## [1.11.0](https://github.com/ibm-telemetry/telemetry-js/compare/v1.10.2...v1.11.0) (2026-01-23)
 
 
